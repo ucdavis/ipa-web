@@ -1,0 +1,1 @@
+ALTER TABLE CourseOfferings CHANGE COLUMN `Title` `Title` VARCHAR(100) NOT NULL ;

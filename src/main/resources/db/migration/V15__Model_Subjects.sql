@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS  `Subjects` (
+  `SubjectId` INT NOT NULL AUTO_INCREMENT,
+  `Name` VARCHAR(45) NOT NULL,
+  `Code` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`SubjectId`))
+ENGINE = InnoDB;

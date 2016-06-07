@@ -1,0 +1,2 @@
+ALTER TABLE `Activities` 
+ADD COLUMN `Frequency` INT NOT NULL DEFAULT 1;

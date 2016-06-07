@@ -1,0 +1,15 @@
+package edu.ucdavis.dss.ipa.repositories;
+
+import org.springframework.data.repository.CrudRepository;
+
+import edu.ucdavis.dss.ipa.entities.Instructor;
+
+public interface InstructorRepository extends CrudRepository<Instructor, Long> {
+
+	Instructor findById(Long id);
+
+	Instructor findByEmployeeId(String employeeId);
+
+	Instructor findByLoginIdIgnoreCase(String loginId);
+
+}

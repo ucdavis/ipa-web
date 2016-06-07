@@ -1,0 +1,2 @@
+ALTER TABLE CourseOfferings ADD COLUMN `TeachingAssistantCount` INT NOT NULL DEFAULT 0;
+ALTER TABLE CourseOfferings ADD COLUMN `ReaderCount` INT NOT NULL DEFAULT 0;

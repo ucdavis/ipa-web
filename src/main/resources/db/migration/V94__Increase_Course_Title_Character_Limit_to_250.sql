@@ -1,0 +1,1 @@
+ALTER TABLE `Courses` CHANGE COLUMN `Title` `Title` VARCHAR(250) NOT NULL ;

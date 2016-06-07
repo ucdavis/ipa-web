@@ -1,0 +1,1 @@
+ALTER TABLE UserRoles DROP COLUMN Override;
