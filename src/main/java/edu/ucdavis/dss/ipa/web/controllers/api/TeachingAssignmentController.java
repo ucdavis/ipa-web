@@ -4,15 +4,11 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 
-@WebController
+@RestController
 public class TeachingAssignmentController {
 
 	@Inject TeachingAssignmentService teachingAssignmentService;

@@ -8,14 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -23,7 +18,7 @@ import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.UserService;
 
-@WebController
+@RestController
 public class CourseController {
 	@Inject AuthenticationService authenticationService;
 	@Inject UserService userService;

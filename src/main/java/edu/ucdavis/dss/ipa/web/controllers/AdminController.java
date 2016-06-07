@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebController
+@RestController
 public class AdminController {
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;

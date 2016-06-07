@@ -8,13 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
@@ -23,7 +18,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.UserService;
 
-@WebController
+@RestController
 public class TeachingCallApiController {
 	@Inject TeachingCallService teachingCallService;
 	@Inject AuthenticationService authenticationService;

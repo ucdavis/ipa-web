@@ -8,16 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.CourseOffering;
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -39,7 +33,7 @@ import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.web.views.SectionViews;
 import edu.ucdavis.dss.ipa.web.views.TeachingPreferenceViews;
 
-@WebController
+@RestController
 public class TeachingPreferenceController {
 	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject AuthenticationService authenticationService;

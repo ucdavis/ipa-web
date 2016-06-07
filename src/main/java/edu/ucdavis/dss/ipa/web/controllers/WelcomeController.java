@@ -4,7 +4,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for the public pages.
@@ -12,7 +12,7 @@ import edu.ucdavis.dss.ipa.config.annotation.WebController;
  * @author Christopher Thielen
  *
  */
-@WebController
+@RestController
 public class WelcomeController {
 	
 	@PreAuthorize("permitAll")

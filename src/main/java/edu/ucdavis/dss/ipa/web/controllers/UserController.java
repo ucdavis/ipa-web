@@ -12,16 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.GraduateStudent;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
@@ -42,7 +37,7 @@ import edu.ucdavis.dss.ipa.web.views.UserViews;
 import edu.ucdavis.dss.ipa.web.views.WorkgroupUserRolesView;
 import edu.ucdavis.dss.ipa.web.views.WorkgroupViews;
 
-@WebController
+@RestController
 public class UserController {
 	private static final Logger log = LogManager.getLogger();
 	

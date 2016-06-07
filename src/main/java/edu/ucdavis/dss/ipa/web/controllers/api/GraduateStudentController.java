@@ -5,15 +5,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.GraduateStudent;
 import edu.ucdavis.dss.ipa.entities.TeachingAssistantPreference;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
@@ -23,7 +18,7 @@ import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.TeachingAssistantPreferenceService;
 import edu.ucdavis.dss.ipa.web.views.TeachingPreferenceViews;
 
-@WebController
+@RestController
 public class GraduateStudentController {
 	@Inject TeachingAssistantPreferenceService teachingAssistantPreferenceService;
 	@Inject GraduateStudentService graduateStudentService;

@@ -7,18 +7,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller for the Summary screen.
  */
-@WebController
+@RestController
 public class SummaryController {
 	@Inject WorkgroupService workgroupService;
 	@Inject AuthenticationService authenticationService;

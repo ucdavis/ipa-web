@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
@@ -19,8 +18,9 @@ import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.UserService;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebController
+@RestController
 public class TeachingCallController {
 	private static final Logger log = LogManager.getLogger();
 

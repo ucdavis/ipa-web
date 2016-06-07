@@ -9,16 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
@@ -31,7 +25,7 @@ import edu.ucdavis.dss.ipa.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.web.views.TeachingCallResponseViews;
 
-@WebController
+@RestController
 public class TeachingCallResponseController {
 	private static final Logger log = LogManager.getLogger();
 

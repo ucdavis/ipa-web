@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Building;
 import edu.ucdavis.dss.ipa.services.BuildingService;
+import org.springframework.web.bind.annotation.RestController;
 
-@WebController
+@RestController
 public class BuildingController {
 	@Inject BuildingService buildingService;
 

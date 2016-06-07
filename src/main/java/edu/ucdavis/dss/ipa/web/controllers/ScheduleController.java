@@ -14,16 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.enums.TermState;
@@ -46,7 +41,7 @@ import edu.ucdavis.dss.ipa.web.components.teachingCall.views.factories.TeachingC
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
 
-@WebController
+@RestController
 public class ScheduleController {
 	@Inject ScheduleService scheduleService;
 	@Inject SectionService sectionService;

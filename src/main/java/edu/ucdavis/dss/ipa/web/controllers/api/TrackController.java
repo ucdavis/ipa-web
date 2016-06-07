@@ -8,14 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import edu.ucdavis.dss.ipa.config.annotation.WebController;
 import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.Track;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
@@ -25,7 +19,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 
-@WebController
+@RestController
 public class TrackController {
 	@Inject TrackService trackService;
 	@Inject WorkgroupService workgroupService;
