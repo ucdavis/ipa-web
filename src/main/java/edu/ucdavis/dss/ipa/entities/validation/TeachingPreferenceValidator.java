@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.validation;
+package edu.ucdavis.dss.ipa.entities.validation;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

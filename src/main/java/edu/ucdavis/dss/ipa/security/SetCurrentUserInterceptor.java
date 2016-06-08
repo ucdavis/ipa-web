@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.interceptors;
+package edu.ucdavis.dss.ipa.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;

@@ -7,12 +7,11 @@ import java.util.Date;
 
 import edu.ucdavis.dss.ipa.entities.AuthenticationPrincipal;
 import edu.ucdavis.dss.ipa.entities.AuthenticationUser;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.validation.Email;
+import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.web.views.UserViews;
 
 @SuppressWarnings("serial")

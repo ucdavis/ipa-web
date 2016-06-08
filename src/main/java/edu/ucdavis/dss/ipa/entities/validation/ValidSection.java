@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.validation;
+package edu.ucdavis.dss.ipa.entities.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

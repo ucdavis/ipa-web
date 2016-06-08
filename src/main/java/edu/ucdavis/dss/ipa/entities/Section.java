@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.validation.ValidSection;
+import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
 import edu.ucdavis.dss.ipa.web.deserializers.SectionDeserializer;
 import edu.ucdavis.dss.ipa.web.views.CourseOfferingGroupViews;
 import edu.ucdavis.dss.ipa.web.views.ScheduleViews;

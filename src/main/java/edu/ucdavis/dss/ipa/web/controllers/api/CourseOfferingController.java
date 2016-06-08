@@ -19,7 +19,7 @@ import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.CourseOfferingService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.components.teachingCall.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.web.components.term.views.TermCourseOfferingView;
 import edu.ucdavis.dss.ipa.web.components.term.views.factories.TermViewFactory;

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.enums.ActivityState;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.web.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
 

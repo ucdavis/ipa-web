@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api;
+package edu.ucdavis.dss.ipa.config;
 
 import java.io.IOException;
 

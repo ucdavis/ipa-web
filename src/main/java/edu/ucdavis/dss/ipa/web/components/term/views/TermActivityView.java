@@ -9,7 +9,7 @@ import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.Building;
 import edu.ucdavis.dss.ipa.entities.Track;
-import edu.ucdavis.dss.ipa.enums.ActivityState;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 
 public class TermActivityView {
 	private long id, sectionId, sectionGroupId, courseOfferingId;

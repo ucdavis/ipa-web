@@ -20,7 +20,7 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.components.annual.views.AnnualCourseOfferingGroupView;
 import edu.ucdavis.dss.ipa.web.components.teachingCall.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;

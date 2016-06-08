@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.utilities;
+package edu.ucdavis.dss.utilities;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

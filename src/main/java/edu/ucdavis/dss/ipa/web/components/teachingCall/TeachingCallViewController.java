@@ -17,7 +17,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.components.teachingCall.views.TeachingCallByCourseView;
 import edu.ucdavis.dss.ipa.web.components.teachingCall.views.TeachingCallByInstructorView;
 import edu.ucdavis.dss.ipa.web.components.teachingCall.views.TeachingCallCourseOfferingView;

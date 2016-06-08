@@ -16,7 +16,7 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.TrackService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 
 @RestController

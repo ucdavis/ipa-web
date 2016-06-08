@@ -1,18 +1,15 @@
-package edu.ucdavis.dss.ipa.api;
+package edu.ucdavis.dss.ipa;
 
+import edu.ucdavis.dss.ipa.config.JwtFilter;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
 import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
-@EnableAutoConfiguration
-@ComponentScan
-@Configuration
-public class WebApplication {
+@SpringBootApplication
+public class Application {
     @Bean
     public FilterRegistrationBean jwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -42,6 +39,6 @@ public class WebApplication {
     }
 
     public static void main(final String[] args) throws Exception {
-        SpringApplication.run(WebApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }

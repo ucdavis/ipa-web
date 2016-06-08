@@ -10,8 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 	private static final Logger log = LogManager.getLogger("ExceptionLogger");

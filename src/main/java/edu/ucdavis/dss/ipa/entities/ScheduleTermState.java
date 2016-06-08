@@ -5,7 +5,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.enums.TermState;
+import edu.ucdavis.dss.ipa.entities.enums.TermState;
 import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
 import edu.ucdavis.dss.ipa.web.views.WorkgroupViews;
 

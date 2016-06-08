@@ -18,7 +18,7 @@ import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 
 @Service
 public class JpaUserService implements UserService {

@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 
 public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 	private static final Logger log = LogManager.getLogger("ExceptionLogger");

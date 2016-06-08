@@ -12,7 +12,7 @@ import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.enums.TermState;
+import edu.ucdavis.dss.ipa.entities.enums.TermState;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;

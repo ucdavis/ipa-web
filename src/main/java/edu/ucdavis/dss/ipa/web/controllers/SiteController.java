@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 
 @RestController

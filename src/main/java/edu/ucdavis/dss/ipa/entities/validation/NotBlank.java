@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.validation;
+package edu.ucdavis.dss.ipa.entities.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,19 +9,17 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.ReportAsSingleViolation;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE,
 	ElementType.CONSTRUCTOR, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = {})
-@Pattern(regexp = "^[a-z0-9`!#$%^&*'{}?/+=|_~-]+(\\.[a-z0-9`!#$%^&*'{}?/+=|" +
-		"_~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?)+(\\.[a-z0-9]" +
-		"([a-z0-9-]*[a-z0-9])?)*$", flags = {Pattern.Flag.CASE_INSENSITIVE})
+@Constraint(validatedBy = {NotBlankValidator.class})
+@NotNull
 @ReportAsSingleViolation
-public @interface Email {
-	String message() default "{edu.ucdavis.dss.ipa.web.validation.Email.message}";
+public @interface NotBlank {
+	String message() default "{edu.ucdavis.dss.ipa.web.validation.NotBlank.message}";
 
 	Class<?>[] groups() default {};
 
@@ -32,6 +30,6 @@ public @interface Email {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	static @interface List {
-		Email[] value();
+		NotBlank[] value();
 	}
 }

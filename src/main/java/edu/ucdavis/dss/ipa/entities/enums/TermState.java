@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.enums;
+package edu.ucdavis.dss.ipa.entities.enums;
 
 public enum TermState {
 	ANNUAL_DRAFT("Annual Draft"),

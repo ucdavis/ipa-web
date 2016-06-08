@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.utilities;
+package edu.ucdavis.dss.utilities;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

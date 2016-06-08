@@ -29,7 +29,7 @@ import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.ipa.utilities.Email;
+import edu.ucdavis.dss.utilities.Email;
 
 @Service
 public class JpaTeachingCallReceiptService implements TeachingCallReceiptService {

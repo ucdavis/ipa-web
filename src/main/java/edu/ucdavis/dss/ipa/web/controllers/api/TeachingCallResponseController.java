@@ -21,7 +21,7 @@ import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.TeachingCallResponseService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.web.views.TeachingCallResponseViews;
 

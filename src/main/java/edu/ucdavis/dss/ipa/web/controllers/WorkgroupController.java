@@ -31,7 +31,7 @@ import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupOpsService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.ipa.utilities.UserLogger;
+import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.web.components.summary.views.SummaryActivitiesView;
 import edu.ucdavis.dss.ipa.web.components.summary.views.factories.SummaryViewFactory;
 import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;

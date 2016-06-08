@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.validation.Email;
+import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.web.deserializers.InstructorDeserializer;
 import edu.ucdavis.dss.ipa.web.views.InstructorViews;
 import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;

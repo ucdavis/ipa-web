@@ -15,7 +15,7 @@ import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.Building;
 import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.enums.ActivityState;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 public class ActivityDeserializer extends JsonDeserializer<Object> {
