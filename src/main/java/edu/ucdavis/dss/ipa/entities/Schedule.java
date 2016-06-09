@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
-import edu.ucdavis.dss.ipa.web.views.WorkgroupViews;
+import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
+import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
 @SuppressWarnings("serial")
 @Entity

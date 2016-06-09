@@ -19,8 +19,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.dw.dto.DwCensusSnapshot;
-import edu.ucdavis.dss.ipa.web.views.CourseOfferingGroupViews;
-import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
+import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
+import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 
 @SuppressWarnings("serial")
 @Entity

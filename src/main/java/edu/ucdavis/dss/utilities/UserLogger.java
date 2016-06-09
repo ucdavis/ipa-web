@@ -3,7 +3,7 @@ package edu.ucdavis.dss.utilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import edu.ucdavis.dss.ipa.web.helpers.CurrentUser;
+import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 
 public class UserLogger {
 	private static final Logger log = LogManager.getLogger("UserLogger");

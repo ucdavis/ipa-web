@@ -25,11 +25,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
-import edu.ucdavis.dss.ipa.web.deserializers.SectionDeserializer;
-import edu.ucdavis.dss.ipa.web.views.CourseOfferingGroupViews;
-import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
-import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
-import edu.ucdavis.dss.ipa.web.views.SectionViews;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionDeserializer;
+import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
+import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.api.views.SectionViews;
 
 @SuppressWarnings("serial")
 @Entity

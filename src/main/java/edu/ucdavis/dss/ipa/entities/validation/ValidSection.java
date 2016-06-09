@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Documented
 public @interface ValidSection {
 
-    String message() default "{edu.ucdavis.dss.ipa.web.validation.ValidSequencePattern.message}";
+    String message() default "{edu.ucdavis.dss.ipa.api.validation.ValidSequencePattern.message}";
 
     Class<?>[] groups() default { };
 

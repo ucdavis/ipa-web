@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.web.deserializers.ActivityDeserializer;
-import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("serial")

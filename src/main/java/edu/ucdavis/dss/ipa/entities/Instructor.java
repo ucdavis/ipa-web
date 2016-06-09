@@ -24,11 +24,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import edu.ucdavis.dss.ipa.entities.validation.Email;
-import edu.ucdavis.dss.ipa.web.deserializers.InstructorDeserializer;
-import edu.ucdavis.dss.ipa.web.views.InstructorViews;
-import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
-import edu.ucdavis.dss.ipa.web.views.TeachingCallResponseViews;
-import edu.ucdavis.dss.ipa.web.views.TeachingPreferenceViews;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorDeserializer;
+import edu.ucdavis.dss.ipa.api.views.InstructorViews;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
+import edu.ucdavis.dss.ipa.api.views.TeachingPreferenceViews;
 
 @SuppressWarnings("serial")
 @Entity

@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 
 /**
  * Information provided by the UCD Registrar.

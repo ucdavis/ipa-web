@@ -20,8 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.web.deserializers.TeachingCallResponseDeserializer;
-import edu.ucdavis.dss.ipa.web.views.TeachingCallResponseViews;
+import edu.ucdavis.dss.ipa.api.deserializers.TeachingCallResponseDeserializer;
+import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
 
 /**
  * @author okadri
