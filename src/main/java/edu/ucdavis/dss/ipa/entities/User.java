@@ -81,17 +81,6 @@ public class User implements Serializable {
 		return roles;
 	}
 
-	@Transient
-	@JsonIgnore
-	public boolean isAdmin() {
-		for (String role : this.getRoleAssignments()) {
-			if (role.equals("admin")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	// Used by Spring Security for generic hasRole calculations
 	@JsonIgnore
 	@Transient
@@ -106,34 +95,26 @@ public class User implements Serializable {
 		return roles;
 	}
 
-	/**
-	 * Returns a unique list of workgroup codes associated to this user
-	 * 
-	 * @return
-	 */
 	@Transient
-	public List<Long> getWorkgroupIds() {
-		List<Long> workgroupIds = new ArrayList<Long>();
-
-		for(UserRole userRole : this.getUserRoles()) {
-			if(userRole.isActive() && userRole.getWorkgroup() != null) {
-				if( workgroupIds.contains(userRole.getWorkgroup()) == false ) {
-					workgroupIds.add(userRole.getWorkgroup().getId());
-				}
+	@JsonIgnore
+	// TODO: Check if needed after deleting UserController
+	public boolean isAdmin() {
+		for (String role : this.getRoleAssignments()) {
+			if (role.equals("admin")) {
+				return true;
 			}
 		}
-		
-		return workgroupIds;
+		return false;
 	}
-	
+
 	/**
 	 * Returns a unique list of workgroups associated to this user via userRoles
-	 * 
+	 * Used in AuthenticationService
+	 *
 	 * @return
 	 */
 	@Transient
-	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
-	@JsonProperty("workgroups")
+	@JsonIgnore
 	public List<Workgroup> getWorkgroups()
 	{
 		List<Workgroup> workgroups = new ArrayList<Workgroup>();
@@ -149,8 +130,7 @@ public class User implements Serializable {
 	}
 
 	// Used by Spring Security for hasPermission calculations
-	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
-	@JsonProperty("roleAssignments")
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	public List<UserRole> getUserRoles() {
 		return userRoles;
@@ -180,6 +160,8 @@ public class User implements Serializable {
 	
 	@Basic
 	@Column(name = "Token", nullable = true, unique = true)
+	@JsonIgnore
+	// TODO: Is this needed?
 	public String getToken() {
 		return token;
 	}

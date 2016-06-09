@@ -33,6 +33,7 @@ public class JpaWorkgroupService implements WorkgroupService {
 
 	@Override
 	public Workgroup findOneByCode(String code) {
+
 		return this.workgroupRepository.findOneByCode(code);
 	}
 

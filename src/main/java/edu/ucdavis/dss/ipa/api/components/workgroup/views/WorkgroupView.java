@@ -12,10 +12,14 @@ import java.util.List;
 public class WorkgroupView {
 	List<Track> tags = new ArrayList<Track>();
 	List<UserRole> userRoles = new ArrayList<UserRole>();
+	List<Role> roles = new ArrayList<Role>();
+	List<WorkgroupUserView> users = new ArrayList<WorkgroupUserView>();
 
-	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles) {
+	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles, List<Role> roles, List<WorkgroupUserView> users) {
 		setTags(workgroup.getActiveTracks());
 		setUserRoles(userRoles);
+		setRoles(roles);
+		setUsers(users);
 	}
 
 	public List<Track> getTags() {
@@ -34,4 +38,19 @@ public class WorkgroupView {
 		this.userRoles = userRoles;
 	}
 
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
+	public List<WorkgroupUserView> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<WorkgroupUserView> users) {
+		this.users = users;
+	}
 }

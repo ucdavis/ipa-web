@@ -34,7 +34,6 @@ public class UserRole implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "UserRoleId", unique = true, nullable = false)
-	@JsonIgnore
 	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
 	public long getId() {
 		return this.id;
