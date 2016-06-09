@@ -23,10 +23,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.web.views.UserViews;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "Users")
-public class User implements Serializable {
+public class User {
 	private long id;
 	private String loginId, email, firstName, lastName, token;
 	private Date lastAccessed;
