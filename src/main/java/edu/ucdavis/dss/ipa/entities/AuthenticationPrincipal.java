@@ -17,8 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
-public class AuthenticationPrincipal implements Serializable,UserDetails {
-	private static final long serialVersionUID = 1L;
+public class AuthenticationPrincipal implements UserDetails {
 	private AuthenticationUser user, impersonatedUser;
 	private long activeWorkgroupId;
 	private String activeWorkgroupName;

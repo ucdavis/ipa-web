@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.security;
 
+import edu.ucdavis.dss.ipa.entities.AuthenticationPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
@@ -14,6 +15,7 @@ import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -70,9 +72,9 @@ public class JwtCasFilter extends AbstractAuthenticationProcessingFilter {
 
                     final String username = assertion.getPrincipal().getName();
 
-                    final AuthUserDetails userDetails = (AuthUserDetails)userDetailsService.loadUserByUsername(username);
+                    final UserDetails userDetails = (UserDetails)userDetailsService.loadUserByUsername(username);
 
-                    authToken = new AuthenticationToken(userDetails);
+                    authToken = new AuthenticationToken(null);
                 } else {
                     // No CAS ticket, no auth header, so redirect to CAS
                     SecurityContextHolder.clearContext();
