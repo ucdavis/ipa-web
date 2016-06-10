@@ -33,7 +33,7 @@ public class Application {
     public FilterRegistrationBean cas20Registration() {
         FilterRegistrationBean cas20 = new FilterRegistrationBean();
         cas20.setFilter(new Cas20ProxyReceivingTicketValidationFilter());
-        cas20.addUrlPatterns("/auth/*");
+        cas20.addUrlPatterns("/login", "/post-login");
         cas20.addInitParameter("casServerUrlPrefix", "https://cas.ucdavis.edu/cas");
         cas20.addInitParameter("serverName", "http://localhost:8080");
         cas20.addInitParameter("encoding", "UTF-8");
@@ -44,7 +44,7 @@ public class Application {
     public FilterRegistrationBean casRequestWrapper() {
         FilterRegistrationBean requestWrapper = new FilterRegistrationBean();
         requestWrapper.setFilter(new HttpServletRequestWrapperFilter());
-        requestWrapper.addUrlPatterns("/auth/*");
+        requestWrapper.addUrlPatterns("/login", "/post-login");
         return requestWrapper;
     }
 

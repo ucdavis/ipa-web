@@ -17,7 +17,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
-@RequestMapping("/auth")
 public class AuthController {
 
     /**
@@ -29,7 +28,7 @@ public class AuthController {
      * @return JSON body with either 'token' or 'redirect' field set.
      */
     @CrossOrigin // TODO: make CORS more specific depending on profile
-    @RequestMapping(value = "validate", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public LoginResponse validate(@RequestBody final LoginResponse token,  final HttpServletRequest request) throws ServletException {
         LoginResponse response = new LoginResponse();
 
@@ -69,7 +68,7 @@ public class AuthController {
      * @param request
      * @return redirects to "Location"
      */
-    @RequestMapping(value = "processCas", method = RequestMethod.GET)
+    @RequestMapping(value = "/post-login", method = RequestMethod.GET)
     public ResponseEntity processCAS(final HttpServletRequest request,
                                      @RequestParam(value = "ref", required = false) String ref) {
         Enumeration<String> requestHeaders = request.getHeaderNames();
@@ -83,7 +82,7 @@ public class AuthController {
 
     private static class LoginResponse {
         public String token;
-        final public String redirect = "https://cas.ucdavis.edu/cas/login?service=http://localhost:8080/auth/processCas";
+        final public String redirect = "https://cas.ucdavis.edu/cas/login?service=http://localhost:8080/post-login";
 
         public LoginResponse() { };
         public LoginResponse(final String token) {
