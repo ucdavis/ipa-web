@@ -27,7 +27,7 @@ public class DiffMeeting implements DiffEntity {
 	@Id
 	private String javersId;
 
-	private String parentId, buildingCode, roomCode, dayIndicator;
+	private String parentId, bannerLocation, dayIndicator;
 	private char activityCode;
 	private int frequency;
 	private Time beginTime, endTime;
@@ -35,8 +35,7 @@ public class DiffMeeting implements DiffEntity {
 	
 	private DiffMeeting(Builder builder) {
 		parentId = builder.parentId;
-		buildingCode = builder.buildingCode;
-		roomCode = builder.roomCode;
+		bannerLocation = builder.bannerLocation;
 		dayIndicator = builder.dayIndicator;
 		activityCode = builder.activityCode;
 		javersId = generateJaversId();
@@ -72,11 +71,8 @@ public class DiffMeeting implements DiffEntity {
 
 		DiffMeeting compare = (DiffMeeting) o;
 
-		if ( (buildingCode != null && buildingCode.equals(compare.buildingCode)) ||
-				(buildingCode == null && compare.buildingCode == null) )
-			differences--;
-		if ( (roomCode != null && roomCode.equals(compare.roomCode)) ||
-				(roomCode == null && compare.roomCode == null) )
+		if ( (bannerLocation != null && bannerLocation.equals(compare.bannerLocation)) ||
+				(bannerLocation == null && compare.bannerLocation == null) )
 			differences--;
 		if ( (dayIndicator != null && dayIndicator.equals(compare.dayIndicator)) ||
 				(dayIndicator == null && compare.dayIndicator == null) )
@@ -102,7 +98,7 @@ public class DiffMeeting implements DiffEntity {
 	}
 	
 	private String generateJaversId() {
-		return parentId + "/" + buildingCode + "," + roomCode + "," + dayIndicator + "," + activityCode;
+		return parentId + "/" + bannerLocation + "," + dayIndicator + "," + activityCode;
 	}
 
 	/**
@@ -119,17 +115,16 @@ public class DiffMeeting implements DiffEntity {
 	 * All other values are optional.
 	 */
 	public static class Builder {
-		private String parentId, buildingCode, roomCode, dayIndicator;
+		private String parentId, bannerLocation, dayIndicator;
 		private char activityCode;
 
 		private int frequency;
 		private Time beginTime, endTime;
 		private LocalDateTime beginDate, endDate;
 
-		public Builder(String parentId, String buildingCode, String roomCode, String dayIndicator, char activityCode) {
+		public Builder(String parentId, String bannerLocation, String dayIndicator, char activityCode) {
 			this.parentId = parentId;
-			this.buildingCode = buildingCode;
-			this.roomCode = roomCode;
+			this.bannerLocation = bannerLocation;
 			this.dayIndicator = dayIndicator;
 			this.activityCode = activityCode;
 		}

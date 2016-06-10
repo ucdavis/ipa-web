@@ -1,22 +1,20 @@
 package edu.ucdavis.dss.ipa.api.components.term.views;
 
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.ActivityType;
+import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Building;
-import edu.ucdavis.dss.ipa.entities.Track;
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-
 public class TermActivityView {
 	private long id, sectionId, sectionGroupId, courseOfferingId;
-	private TermBuildingView building;
 	private Date beginDate, endDate;
 	private Time startTime, endTime;
-	private String room, dayIndicator, title, sequenceNumber, codeDescription, termCode, crn, description;
+	private String bannerLocation, dayIndicator, title, sequenceNumber, codeDescription, termCode, crn, description;
 	private ActivityState activityState;
 	private int frequency;
 	private boolean virtual, shared;
@@ -26,12 +24,11 @@ public class TermActivityView {
 	public TermActivityView(Activity activity) {
 		if (activity == null) return;
 		setId(activity.getId());
-		setBuilding(activity.getBuilding());
+		setBannerLocation(activity.getBannerLocation());
 		setBeginDate(activity.getBeginDate());
 		setEndDate(activity.getEndDate());
 		setStartTime(activity.getStartTime());
 		setEndTime(activity.getEndTime());
-		setRoom(activity.getRoom());
 		setDayIndicator(activity.getDayIndicator());
 		setActivityState(activity.getActivityState());
 		setFrequency(activity.getFrequency());
@@ -55,15 +52,6 @@ public class TermActivityView {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public TermBuildingView getBuilding() {
-		return building;
-	}
-
-	public void setBuilding(Building building) {
-		if (building == null) return;
-		this.building = new TermBuildingView(building);
 	}
 
 	public Date getBeginDate() {
@@ -98,12 +86,12 @@ public class TermActivityView {
 		this.endTime = endTime;
 	}
 
-	public String getRoom() {
-		return room;
+	public String getBannerLocation() {
+		return bannerLocation;
 	}
 
-	public void setRoom(String room) {
-		this.room = room;
+	public void setBannerLocation(String bannerLocation) {
+		this.bannerLocation = bannerLocation;
 	}
 
 	public String getDayIndicator() {

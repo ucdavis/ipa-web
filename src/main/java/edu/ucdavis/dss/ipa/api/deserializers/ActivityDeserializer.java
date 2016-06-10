@@ -1,22 +1,20 @@
 package edu.ucdavis.dss.ipa.api.deserializers;
 
-import java.io.IOException;
-import java.sql.Time;
-import java.util.Date;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Building;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+
+import java.io.IOException;
+import java.sql.Time;
+import java.util.Date;
 
 public class ActivityDeserializer extends JsonDeserializer<Object> {
 
@@ -54,10 +52,6 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 			activity.setEndTime(endTime);
 		}
 		
-		if (node.has("room")) {
-			activity.setRoom(node.get("room").textValue());
-		}
-
 		if (node.has("activityState")) {
 			activity.setActivityState(ActivityState.valueOf(node.get("activityState").textValue()));
 		}
@@ -89,15 +83,8 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 			activity.setSection(section);
 		}
 		
-		if (node.has("building") && !node.get("building").isNull()) {
-			Building building = new Building();
-			if (node.get("building").get("id") != null) {
-				building.setId(node.get("building").get("id").longValue());
-			}
-			if (node.get("building").get("name") != null) {
-				building.setName(node.get("building").get("name").textValue());
-			}
-			activity.setBuilding(building);
+		if (node.has("bannerLocation") && !node.get("bannerLocation").isNull()) {
+			activity.setBannerLocation(node.get("bannerLocation").textValue());
 		}
 
 		if (node.has("virtual")) {

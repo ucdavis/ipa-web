@@ -23,15 +23,13 @@ public class JpaMeetingMapper implements Function<Activity, DiffMeeting> {
 
 	@Override
 	public DiffMeeting apply(Activity activity) {
-		String buildingCode = null;
-		if (activity.getBuilding() != null)
-			buildingCode = activity.getBuilding().getName();
+		String buildingCode = activity.getBannerLocation();
 
 		// Convert date to LocalDateTime to avoid time zone issues
 		LocalDateTime beginDate = LocalDateTime.ofInstant(activity.getBeginDate().toInstant(), ZoneId.systemDefault());
 		LocalDateTime endDate = LocalDateTime.ofInstant(activity.getEndDate().toInstant(), ZoneId.systemDefault());
 
-		return new DiffMeeting.Builder(parentId, buildingCode, activity.getRoom(), activity.getDayIndicator(), activity.getActivityTypeCode().getActivityTypeCode())
+		return new DiffMeeting.Builder(parentId, activity.getBannerLocation(), activity.getDayIndicator(), activity.getActivityTypeCode().getActivityTypeCode())
 				.beginDate(beginDate)
 				.endDate(endDate)
 				.beginTime(activity.getStartTime())

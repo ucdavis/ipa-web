@@ -54,8 +54,7 @@ public class TermViewController {
 		for (Section section : sectionGroup.getSections() ) {
 			slotActivity.setBeginDate(activity.getBeginDate());
 			slotActivity.setEndDate(activity.getEndDate());
-			slotActivity.setBuilding(activity.getBuilding());
-			slotActivity.setRoom(activity.getRoom());
+			slotActivity.setBannerLocation(activity.getBannerLocation());
 			slotActivity.setStartTime(activity.getStartTime());
 			slotActivity.setEndTime(activity.getEndTime());
 			slotActivity.setDayIndicator(activity.getDayIndicator());

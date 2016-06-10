@@ -86,11 +86,10 @@ public class ActivityController {
 			activityToChange.setActivityTypeCode(activity.getActivityTypeCode());
 			activityToChange.setBeginDate(activity.getBeginDate());
 			activityToChange.setEndDate(activity.getEndDate());
-			activityToChange.setBuilding(activity.getBuilding());
+			activityToChange.setBannerLocation(activity.getBannerLocation());
 			activityToChange.setActivityState(activity.getActivityState());
 			activityToChange.setDayIndicator(activity.getDayIndicator());
 			activityToChange.setEndTime(activity.getEndTime());
-			activityToChange.setRoom(activity.getRoom());
 			activityToChange.setStartTime(activity.getStartTime());
 			activityToChange.setVirtual(activity.isVirtual());
 			activityToChange.setSection(originalActivity.getSection());

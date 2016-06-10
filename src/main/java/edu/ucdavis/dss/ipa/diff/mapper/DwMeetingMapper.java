@@ -39,8 +39,10 @@ public class DwMeetingMapper implements Function<DwMeeting, DiffMeeting> {
 
 		LocalDateTime endDate = LocalDateTime.ofInstant(meeting.getEndDate().toInstant(), ZoneId.systemDefault());
 		LocalDateTime beginDate = LocalDateTime.ofInstant(meeting.getStartDate().toInstant(), ZoneId.systemDefault());
-		
-		return new DiffMeeting.Builder(parentId, meeting.getBuildingCode(), meeting.getRoomCode(), meeting.getDayIndicator(), meeting.getScheduleCode().getScheduleCode())
+
+		String bannerLocation = meeting.getBuildingCode() + " " + meeting.getRoomCode();
+
+		return new DiffMeeting.Builder(parentId, bannerLocation, meeting.getDayIndicator(), meeting.getScheduleCode().getScheduleCode())
 				.beginDate(beginDate)
 				.endDate(endDate)
 				.beginTime(meeting.getBeginTime())
