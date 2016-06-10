@@ -14,12 +14,14 @@ public class WorkgroupView {
 	List<UserRole> userRoles = new ArrayList<UserRole>();
 	List<Role> roles = new ArrayList<Role>();
 	List<WorkgroupUserView> users = new ArrayList<WorkgroupUserView>();
+	List<Location> locations = new ArrayList<Location>();
 
 	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles, List<Role> roles, List<WorkgroupUserView> users) {
 		setTags(workgroup.getActiveTracks());
 		setUserRoles(userRoles);
 		setRoles(roles);
 		setUsers(users);
+		setLocations(workgroup.getLocations());
 	}
 
 	public List<Track> getTags() {
@@ -52,5 +54,13 @@ public class WorkgroupView {
 
 	public void setUsers(List<WorkgroupUserView> users) {
 		this.users = users;
+	}
+
+	public List<Location> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<Location> locations) {
+		this.locations = locations;
 	}
 }
