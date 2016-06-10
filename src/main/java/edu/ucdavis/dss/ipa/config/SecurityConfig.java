@@ -21,7 +21,7 @@ import javax.inject.Inject;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] UNRESTRICTED_PATHS = new String[] {
-            "/error", "/pre-login", "/api/directory/GS", "/api/group/UCD/college"
+            "/error", "/pre-login", "/login"
     };
 
 //    @Inject
