@@ -28,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.web.deserializers.ActivityDeserializer;
-import edu.ucdavis.dss.ipa.web.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("serial")
@@ -40,11 +40,10 @@ public class Activity implements Serializable {
 	private long id;
 
 	private Section section;
-	private Building building;
-	
+
 	private Date beginDate, endDate;
 	private Time startTime, endTime;
-	private String room, dayIndicator;
+	private String dayIndicator, bannerLocation;
 	private ActivityState activityState;
 	private int frequency;
 	private boolean virtual, shared;
@@ -114,18 +113,6 @@ public class Activity implements Serializable {
 		this.endTime = endTime;
 	}
 
-	@Basic
-	@Column(name = "Room", nullable = true, length = 45)
-	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
-	public String getRoom() {
-		return room;
-	}
-
-	public void setRoom(String room) {
-		this.room = room;
-	}
-
 	/**
 	 * dayIndicator is a 7 digit string with each digit representing a day
 	 * of the week, the first digit being Sunday and the last being Saturday
@@ -169,17 +156,15 @@ public class Activity implements Serializable {
 		this.section = section;
 	}
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Buildings_BuildingId", nullable = true)
 	@JsonView(SectionGroupViews.Detailed.class)
-	public Building getBuilding() {
-		return building;
+	public String getBannerLocation() {
+		return bannerLocation;
 	}
 
-	public void setBuilding(Building building) {
-		this.building = building;
+	public void setBannerLocation(String bannerLocation) {
+		this.bannerLocation = bannerLocation;
 	}
-	
+
 	@Embedded
 	@JsonProperty
 	@AttributeOverrides({
@@ -273,26 +258,17 @@ public class Activity implements Serializable {
 			}
 		}
 
-		if (this.getRoom() != null) {
-			if (this.getRoom().equals(activity.getRoom()) == false) {
+		if (this.getBannerLocation() != null) {
+			if (this.getBannerLocation().equals(activity.getBannerLocation()) == false) {
 				return false;
 			}
-		} else if (activity.getRoom() != null) {
-			if (activity.getRoom().equals(this.getRoom()) == false) {
-				return false;
-			}
-		}
-
-		if (this.getBuilding() != null) {
-			if (this.getBuilding().equals(activity.getBuilding()) == false) {
-				return false;
-			}
-		} else if (activity.getBuilding() != null) {
-			if (activity.getBuilding().equals(this.getBuilding()) == false) {
+		} else if (activity.getBannerLocation() != null) {
+			if (activity.getBannerLocation().equals(this.getBannerLocation()) == false) {
 				return false;
 			}
 		}
 
+		// TODO: Check also for Location
 		return true;
 	}
 

@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.UserViews;
+import edu.ucdavis.dss.ipa.api.views.UserViews;
 
 @SuppressWarnings("serial")
 @Entity
@@ -34,7 +34,6 @@ public class UserRole implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "UserRoleId", unique = true, nullable = false)
-	@JsonIgnore
 	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
 	public long getId() {
 		return this.id;

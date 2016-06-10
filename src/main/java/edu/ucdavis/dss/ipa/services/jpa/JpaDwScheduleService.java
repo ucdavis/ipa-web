@@ -1,51 +1,17 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import edu.ucdavis.dss.dw.dto.*;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.dw.dto.DwCensusSnapshot;
-import edu.ucdavis.dss.dw.dto.DwInstructor;
-import edu.ucdavis.dss.dw.dto.DwMeeting;
-import edu.ucdavis.dss.dw.dto.DwSection;
-import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Building;
-import edu.ucdavis.dss.ipa.entities.CensusSnapshot;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.BuildingService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.DwScheduleService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorWorkgroupRelationshipService;
-import edu.ucdavis.dss.ipa.services.RoleService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JpaDwScheduleService implements DwScheduleService {
@@ -65,7 +31,6 @@ public class JpaDwScheduleService implements DwScheduleService {
 	@Inject CourseService courseService;
 	@Inject WorkgroupService workgroupService;
 	@Inject ActivityService activityService;
-	@Inject BuildingService buildingService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 
@@ -210,22 +175,19 @@ public class JpaDwScheduleService implements DwScheduleService {
 				Activity activity = new Activity();
 				ActivityType activityType = new ActivityType();
 				activityType.setActivityTypeCode((char)dwMeeting.getScheduleCode().getScheduleCode());
-				Building building = this.buildingService.findOrCreateByName(dwMeeting.getBuildingCode());
 
 				activity.setSection(section);
-				activity.setBuilding(building);
+				activity.setBannerLocation(dwMeeting.getBuildingCode() + " " + dwMeeting.getRoomCode());
 				activity.setActivityTypeCode(activityType);
 				activity.setStartTime(dwMeeting.getBeginTime());
 				activity.setEndTime(dwMeeting.getEndTime());
 				activity.setBeginDate(dwMeeting.getStartDate());
 				activity.setEndDate(dwMeeting.getEndDate());
-				activity.setBuilding(building);
-				activity.setRoom((String) dwMeeting.getRoomCode());
 				activity.setDayIndicator(dwMeeting.getDayIndicator());
 				activity.setActivityState(markPublished ? ActivityState.CONFIRMED : ActivityState.DRAFT);
 
 				// Set activity to 'Virtual' if it has no startTime nor location
-				if (dwMeeting.getBeginTime() == null && building == null) {
+				if (dwMeeting.getBeginTime() == null && dwMeeting.getBuildingCode() == null) {
 					activity.setVirtual(true);
 				}
 

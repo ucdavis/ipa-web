@@ -26,9 +26,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.web.deserializers.CourseOfferingGroupDeserializer;
-import edu.ucdavis.dss.ipa.web.views.CourseOfferingGroupViews;
-import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
+import edu.ucdavis.dss.ipa.api.deserializers.CourseOfferingGroupDeserializer;
+import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
+import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 
 @SuppressWarnings("serial")
 @Entity

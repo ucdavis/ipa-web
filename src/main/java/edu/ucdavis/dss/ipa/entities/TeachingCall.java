@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.web.components.teachingCall.views.TeachingCallViews;
-import edu.ucdavis.dss.ipa.web.deserializers.TeachingCallDeserializer;
-import edu.ucdavis.dss.ipa.web.views.ScheduleViews;
+import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallViews;
+import edu.ucdavis.dss.ipa.api.deserializers.TeachingCallDeserializer;
+import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 
 @SuppressWarnings("serial")
 @Entity

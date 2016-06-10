@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import edu.ucdavis.dss.ipa.web.deserializers.TeachingPreferenceDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.TeachingPreferenceDeserializer;
 
 @SuppressWarnings("serial")
 @Entity

@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @NotNull
 @ReportAsSingleViolation
 public @interface NotBlank {
-	String message() default "{edu.ucdavis.dss.ipa.web.validation.NotBlank.message}";
+	String message() default "{edu.ucdavis.dss.ipa.api.validation.NotBlank.message}";
 
 	Class<?>[] groups() default {};
 

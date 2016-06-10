@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.TeachingCallReceiptViews;
+import edu.ucdavis.dss.ipa.api.views.TeachingCallReceiptViews;
 
 /**
  * @author okadri

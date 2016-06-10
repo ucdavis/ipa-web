@@ -21,7 +21,7 @@ import javax.validation.constraints.Pattern;
 		"([a-z0-9-]*[a-z0-9])?)*$", flags = {Pattern.Flag.CASE_INSENSITIVE})
 @ReportAsSingleViolation
 public @interface Email {
-	String message() default "{edu.ucdavis.dss.ipa.web.validation.Email.message}";
+	String message() default "{edu.ucdavis.dss.ipa.api.validation.Email.message}";
 
 	Class<?>[] groups() default {};
 

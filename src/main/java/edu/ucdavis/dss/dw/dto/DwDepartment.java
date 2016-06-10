@@ -3,7 +3,7 @@ package edu.ucdavis.dss.dw.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.WorkgroupViews;
+import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DwDepartment {

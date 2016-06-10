@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.WorkgroupViews;
+import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
 @SuppressWarnings("serial")
 @Entity
@@ -45,7 +45,8 @@ public class Workgroup implements Serializable {
 	private List<UserRole> userRoles = new ArrayList<UserRole>();
 	private List<GraduateStudent> graduateStudents = new ArrayList<GraduateStudent>();
 	private List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships = new ArrayList<InstructorWorkgroupRelationship>();
-	
+	private List<Location> locations = new ArrayList<Location>();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "WorkgroupId", unique = true, nullable = false, length = 250)
@@ -181,6 +182,15 @@ public class Workgroup implements Serializable {
 
 	public void setGraduateStudents(List<GraduateStudent> graduateStudents) {
 		this.graduateStudents = graduateStudents;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
+	public List<Location> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<Location> locations) {
+		this.locations = locations;
 	}
 
 }

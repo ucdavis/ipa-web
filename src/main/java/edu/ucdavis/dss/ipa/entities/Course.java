@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.web.views.TeachingPreferenceViews;
+import edu.ucdavis.dss.ipa.api.views.TeachingPreferenceViews;
 
 @SuppressWarnings("serial")
 @Entity

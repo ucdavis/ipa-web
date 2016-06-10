@@ -159,7 +159,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 								newActivity.setStartTime(activity.getStartTime() );
 							}
 							if(copyRooms) {
-								newActivity.setRoom(activity.getRoom());
+								newActivity.setBannerLocation(activity.getBannerLocation());
 							}
 
 							newActivity.setSection(newSection);
