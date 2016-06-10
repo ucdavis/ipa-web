@@ -35,4 +35,21 @@ public class WorkgroupViewController {
 		return trackService.findOrCreateTrackByWorkgroupAndTrackName(workgroup, tag.getName());
 	}
 
+	@PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public Track updateTag(@PathVariable String workgroupCode, @PathVariable long tagId,
+						   @RequestBody Track tag, HttpServletResponse httpResponse) {
+		Track editedTag = trackService.findOneById(tagId);
+		editedTag.setName(tag.getName());
+		return trackService.saveTrack(editedTag);
+	}
+
+	@PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
+		trackService.archiveTrackByTrackId(tagId);
+	}
+
 }
