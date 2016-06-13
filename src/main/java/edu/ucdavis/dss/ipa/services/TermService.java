@@ -28,4 +28,6 @@ public interface TermService {
 	List<Term> findByTermCodeInAndExistingEndDateAfterNow(Set<String> termCodes);
 
 	List<Term> findByStartDateAfter(Date targetDate);
+
+	Boolean isTermHistorical(String termCode);
 }

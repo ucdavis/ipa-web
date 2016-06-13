@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @Entity
@@ -13,6 +15,8 @@ public class Location implements Serializable {
 	private long id;
 	private String description;
 	private Workgroup workgroup;
+	private List<Activity> activities = new ArrayList<Activity>();
+	private boolean archived;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +52,21 @@ public class Location implements Serializable {
 		this.workgroup = workgroup;
 	}
 
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "location")
+	@JsonIgnore
+	public List<Activity> getActivities() {
+		return this.activities;
+	}
+
+	public void setActivities(List<Activity> activities) {
+		this.activities = activities;
+	}
+
+	public boolean isArchived() {
+		return archived;
+	}
+
+	public void setArchived(boolean archived) {
+		this.archived = archived;
+	}
 }

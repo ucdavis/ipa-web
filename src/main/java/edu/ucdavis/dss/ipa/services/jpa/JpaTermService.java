@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -83,5 +84,22 @@ public class JpaTermService implements TermService {
 	@Override
 	public List<Term> findByStartDateAfter(Date targetDate) {
 		return this.termRepository.findByStartDateAfter(targetDate);
+	}
+
+	@Override
+	public Boolean isTermHistorical(String termCode) {
+		Term term = this.findOneByTermCode(termCode);
+		Date now = Calendar.getInstance().getTime();
+
+		if (term == null) {
+			return false;
+		}
+
+		// Returns negative if 'now' comes after 'endDate'
+		// Zero if they are equal
+		// Positive if 'now' comes before 'endDate'
+		boolean isHistorical = now.compareTo(term.getEndDate()) > 0;
+
+		return isHistorical;
 	}
 }

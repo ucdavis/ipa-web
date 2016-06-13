@@ -47,7 +47,7 @@ public class Activity implements Serializable {
 	private ActivityState activityState;
 	private int frequency;
 	private boolean virtual, shared;
-	
+	private Location location;
 	private ActivityType activityTypeCode;
 	
 	@Id
@@ -282,5 +282,17 @@ public class Activity implements Serializable {
 
 	public void setShared(boolean shared) {
 		this.shared = shared;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Locations_LocationId", nullable = false)
+	@NotNull
+	@JsonIgnore
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 }
