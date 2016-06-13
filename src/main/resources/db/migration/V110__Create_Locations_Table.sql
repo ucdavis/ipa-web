@@ -1,5 +1,5 @@
 CREATE TABLE `Locations` (
-  `LocationId` INT(11) NOT NULL,
+  `LocationId` INT(11) NOT NULL AUTO_INCREMENT,
   `Description` VARCHAR(50) NOT NULL,
   `Workgroups_WorkgroupId` INT(11) NOT NULL,
   PRIMARY KEY (`LocationId`),
