@@ -23,6 +23,13 @@ public interface TrackService {
 
 	void archiveTrackByTrackId(Long id);
 
+	/**
+	 * Finds or Creates a track based on trackName and workgroup. If found the track will be unarchived
+	 * and then returned.
+	 * @param workgroup
+	 * @param trackName
+     * @return
+     */
 	Track findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName);
 
 }

@@ -83,6 +83,9 @@ public class JpaTrackService implements TrackService {
 			track.setWorkgroup(workgroup);
 			track.setName(trackName);
 			track = this.trackRepository.save(track);
+		} else if (track.isArchived()) {
+			track.setArchived(false);
+			track = this.trackRepository.save(track);
 		}
 
 		return track;
