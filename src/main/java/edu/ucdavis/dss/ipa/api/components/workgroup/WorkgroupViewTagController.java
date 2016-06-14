@@ -41,7 +41,7 @@ public class WorkgroupViewTagController {
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
-    public void deleteTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
-        trackService.archiveTrackByTrackId(tagId);
+    public Track archiveTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
+        return trackService.archiveTrackByTrackId(tagId);
     }
 }

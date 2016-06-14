@@ -44,8 +44,8 @@ public class WorkgroupViewLocationController {
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/locations/{locationId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
-    public void archiveLocation(@PathVariable String workgroupCode, @PathVariable long locationId, HttpServletResponse httpResponse) {
-        locationService.archiveById(locationId);
+    public Location archiveLocation(@PathVariable String workgroupCode, @PathVariable long locationId, HttpServletResponse httpResponse) {
+        return locationService.archiveById(locationId);
     }
 
 }

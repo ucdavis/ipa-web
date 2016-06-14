@@ -34,7 +34,7 @@ public class JpaLocationService implements LocationService {
 
 
     @Override
-    public void archiveById(Long id) {
+    public Location archiveById(Long id) {
         Location location = this.locationRepository.findOne(id);
 
         // Remove this location from COGs only in active schedules
@@ -47,7 +47,7 @@ public class JpaLocationService implements LocationService {
         }
 
         location.setArchived(true);
-        this.locationRepository.save(location);
+        return this.locationRepository.save(location);
     }
 
     @Override

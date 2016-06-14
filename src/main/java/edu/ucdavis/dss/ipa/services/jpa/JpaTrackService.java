@@ -54,7 +54,7 @@ public class JpaTrackService implements TrackService {
 	}
 
 	@Override
-	public void archiveTrackByTrackId(Long id) {
+	public Track archiveTrackByTrackId(Long id) {
 		
 		Track track = this.trackRepository.findOne(id);
 
@@ -69,7 +69,7 @@ public class JpaTrackService implements TrackService {
 		}
 
 		track.setArchived(true);
-		this.trackRepository.save(track);
+		return this.trackRepository.save(track);
 	}
 
 	@Override

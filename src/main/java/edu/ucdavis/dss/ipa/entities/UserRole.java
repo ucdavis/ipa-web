@@ -150,4 +150,17 @@ public class UserRole implements Serializable {
 		boolean isSenate = userRole.getRoleToken().equals("senateInstructor");
 		return isFederation || isSenate;
 	}
+
+	@JsonProperty("userId")
+	@Transient
+	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
+	// Renamed to 'getUserIdentification()' because
+	// 'UserRoleRepository.findByWorkgroupId(long id)' got confused
+	public long getUserIdentification() {
+		if(user != null) {
+			return user.getId();
+		} else {
+			return 0;
+		}
+	}
 }

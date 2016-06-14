@@ -129,7 +129,6 @@ public class User {
 	}
 
 	// Used by Spring Security for hasPermission calculations
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
 	public List<UserRole> getUserRoles() {
 		return userRoles;

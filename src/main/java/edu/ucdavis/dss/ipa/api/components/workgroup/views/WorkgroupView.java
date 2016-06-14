@@ -11,14 +11,12 @@ import java.util.List;
 
 public class WorkgroupView {
 	List<Track> tags = new ArrayList<Track>();
-	List<UserRole> userRoles = new ArrayList<UserRole>();
 	List<Role> roles = new ArrayList<Role>();
-	List<WorkgroupUserView> users = new ArrayList<WorkgroupUserView>();
+	List<User> users = new ArrayList<User>();
 	List<Location> locations = new ArrayList<Location>();
 
-	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles, List<Role> roles, List<WorkgroupUserView> users) {
-		setTags(workgroup.getActiveTracks());
-		setUserRoles(userRoles);
+	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles, List<Role> roles, List<User> users) {
+		setTags(workgroup.getTracks());
 		setRoles(roles);
 		setUsers(users);
 		setLocations(workgroup.getLocations());
@@ -32,14 +30,6 @@ public class WorkgroupView {
 		this.tags = tags;
 	}
 
-	public List<UserRole> getUserRoles() {
-		return userRoles;
-	}
-
-	public void setUserRoles(List<UserRole> userRoles) {
-		this.userRoles = userRoles;
-	}
-
 	public List<Role> getRoles() {
 		return roles;
 	}
@@ -48,11 +38,11 @@ public class WorkgroupView {
 		this.roles = roles;
 	}
 
-	public List<WorkgroupUserView> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<WorkgroupUserView> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 

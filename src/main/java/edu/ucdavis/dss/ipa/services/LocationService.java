@@ -17,5 +17,5 @@ public interface LocationService {
 
     Location findOrCreateByWorkgroupAndDescription(Workgroup workgroup, String description);
 
-    void archiveById(Long locationId);
+    Location archiveById(Long locationId);
 }

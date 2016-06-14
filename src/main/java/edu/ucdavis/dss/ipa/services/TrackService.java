@@ -21,7 +21,7 @@ public interface TrackService {
 
 	List<Track> searchTracks(String query, Workgroup workgroup);
 
-	void archiveTrackByTrackId(Long id);
+	Track archiveTrackByTrackId(Long id);
 
 	/**
 	 * Finds or Creates a track based on trackName and workgroup. If found the track will be unarchived
