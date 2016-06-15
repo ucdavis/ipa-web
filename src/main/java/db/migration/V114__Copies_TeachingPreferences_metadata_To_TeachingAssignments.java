@@ -29,7 +29,6 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                             " ADD COLUMN `CourseRelease` TINYINT(1) NOT NULL DEFAULT 0," +
                             " ADD COLUMN `Sabbatical` TINYINT(1) NOT NULL DEFAULT 0," +
                             " ADD COLUMN `ScheduleId` INT(11) NOT NULL," +
-                            " ADD COLUMN `TeachingPreferenceId` INT(11) NOT NULL," +
                             " ADD COLUMN `Approved` TINYINT(1) NOT NULL DEFAULT 0;"
             );
 
@@ -129,7 +128,6 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                 long sabbatical = rsTps.getLong("isSabbatical");
                 long scheduleId = rsTps.getLong("Schedules_ScheduleId");
                 long approved = rsTps.getLong("Approved");
-                long teachingPreferenceId = rsTps.getLong("TeachingPreferenceId");
 
                 // Look for associated SectionGroups to CourseOfferingId
                 PreparedStatement psSectionGroups = connection.prepareStatement(
@@ -187,8 +185,8 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                         // Need to create an assignment
                         PreparedStatement psCreateAssignment = connection.prepareStatement(
                                 "INSERT INTO `TeachingAssignments` (priority, termCode, buyout, courseRelease," +
-                                        "sabbatical, scheduleId, approved, Instructors_InstructorId, SectionGroups_SectionGroupId, TeachingPreferenceId) " +
-                                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                                        "sabbatical, scheduleId, approved, Instructors_InstructorId, SectionGroups_SectionGroupId) " +
+                                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
                         );
 
                         psCreateAssignment.setLong(1, priority);
@@ -200,7 +198,6 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                         psCreateAssignment.setLong(7, approved);
                         psCreateAssignment.setLong(8, instructorId);
                         psCreateAssignment.setLong(9, sectionGroupId);
-                        psCreateAssignment.setLong(10, teachingPreferenceId);
 
                         psCreateAssignment.execute();
                         psCreateAssignment.close();
