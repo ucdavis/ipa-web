@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TrackRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
@@ -20,33 +20,33 @@ public class JpaTrackService implements TrackService {
 
 	@Override
 	@Transactional
-	public Track saveTrack(Track track)
+	public Tag saveTrack(Tag tag)
 	{
-		return this.trackRepository.save(track);
+		return this.trackRepository.save(tag);
 	}
 
 	@Override
-	public Track findOneById(Long id) {
+	public Tag findOneById(Long id) {
 		return this.trackRepository.findOne(id);
 	}
 
 	@Override
-	public List<CourseOfferingGroup> getCourseOfferingGroupsByTrackId(Long id) {
-		Track track = this.findOneById(id);
-		return track.getCourseOfferingGroups();
+	public List<Course> getCourseOfferingGroupsByTrackId(Long id) {
+		Tag tag = this.findOneById(id);
+		return tag.getCourses();
 	}
 
 	@Override
-	public List<Track> searchTracks(String query, Workgroup workgroup) {
+	public List<Tag> searchTracks(String query, Workgroup workgroup) {
 
-		List<Track> results = new ArrayList<Track>();
-		List<Track> tracks = new ArrayList<Track>();
+		List<Tag> results = new ArrayList<Tag>();
+		List<Tag> tags = new ArrayList<Tag>();
 
-		tracks = workgroup.getTracks();
+		tags = workgroup.getTags();
 		
-		for (Track track : tracks) {
-			if(track.getName().toLowerCase().contains(query.toLowerCase())) {
-				results.add(track);
+		for (Tag tag : tags) {
+			if(tag.getName().toLowerCase().contains(query.toLowerCase())) {
+				results.add(tag);
 			}
 		}
 		
@@ -54,40 +54,40 @@ public class JpaTrackService implements TrackService {
 	}
 
 	@Override
-	public Track archiveTrackByTrackId(Long id) {
+	public Tag archiveTrackByTrackId(Long id) {
 		
-		Track track = this.trackRepository.findOne(id);
+		Tag tag = this.trackRepository.findOne(id);
 
-		// Remove this track from COGs only in active schedules
-		for (CourseOfferingGroup cog : track.getCourseOfferingGroups()){
+		// Remove this tag from COGs only in active schedules
+		for (Course cog : tag.getCourses()){
 			boolean isHistorical = scheduleService.isScheduleClosed(cog.getSchedule().getId());
 			if (!isHistorical) {
-				List<Track> tracks = cog.getTracks();
-				tracks.remove(track);
-				cog.setTracks(tracks);
+				List<Tag> tags = cog.getTags();
+				tags.remove(tag);
+				cog.setTags(tags);
 			}
 		}
 
-		track.setArchived(true);
-		return this.trackRepository.save(track);
+		tag.setArchived(true);
+		return this.trackRepository.save(tag);
 	}
 
 	@Override
-	public Track findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName) {
+	public Tag findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName) {
 		if (workgroup == null) return null;
 
-		Track track = this.trackRepository.findOneByWorkgroupIdAndName(workgroup.getId(), trackName);
+		Tag tag = this.trackRepository.findOneByWorkgroupIdAndName(workgroup.getId(), trackName);
 
-		if (track == null) {
-			track = new Track();
-			track.setWorkgroup(workgroup);
-			track.setName(trackName);
-			track = this.trackRepository.save(track);
-		} else if (track.isArchived()) {
-			track.setArchived(false);
-			track = this.trackRepository.save(track);
+		if (tag == null) {
+			tag = new Tag();
+			tag.setWorkgroup(workgroup);
+			tag.setName(trackName);
+			tag = this.trackRepository.save(tag);
+		} else if (tag.isArchived()) {
+			tag.setArchived(false);
+			tag = this.trackRepository.save(tag);
 		}
 
-		return track;
+		return tag;
 	}
 }

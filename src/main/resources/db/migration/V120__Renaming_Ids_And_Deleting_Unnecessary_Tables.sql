@@ -133,10 +133,38 @@ ADD CONSTRAINT `ScheduleId`
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
 
+-- Rename FK Workgroups_WorkgroupId to WorkgroupId in Tags
+ALTER TABLE `Tags`
+  DROP FOREIGN KEY `fk_Tracks_Workgroups`;
+ALTER TABLE `Tags`
+  CHANGE COLUMN `Workgroups_WorkgroupId` `WorkgroupId` INT(11) NOT NULL ;
+ALTER TABLE `Tags`
+  ADD CONSTRAINT `fk_Tracks_Workgroups`
+FOREIGN KEY (`WorkgroupId`)
+REFERENCES `Workgroups` (`Id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
 -- Rename FK Users_UserId, Workgroups_WorkgroupId and Roles_RoleId in UserRoles
 ALTER TABLE `UserRoles` 
 CHANGE COLUMN `Users_UserId` `UserId` INT(11) NOT NULL ,
 CHANGE COLUMN `Workgroups_WorkgroupId` `WorkgroupId` INT(11) NULL DEFAULT NULL ,
 CHANGE COLUMN `Roles_RoleId` `RoleId` INT(11) NOT NULL ;
+
+ALTER TABLE `SectionGroups`
+  DROP COLUMN `ReaderCount`,
+  DROP COLUMN `TeachingAssistantCount`;
+
+ALTER TABLE `Courses_has_Tags`
+  DROP FOREIGN KEY `fk_Courses_has_Tracks`;
+ALTER TABLE `Courses_has_Tags`
+  CHANGE COLUMN `TrackId` `TagId` INT(11) NOT NULL ;
+ALTER TABLE `Courses_has_Tags`
+  ADD CONSTRAINT `fk_Courses_has_Tracks`
+FOREIGN KEY (`TagId`)
+REFERENCES `tags` (`Id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
 
 SET foreign_key_checks = 1;

@@ -2,11 +2,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.repositories.CourseOfferingRepository;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.CourseOfferingService;
@@ -25,12 +23,12 @@ public class JpaCourseOfferingService implements CourseOfferingService {
 	}
 
 	@Override
-	public CourseOffering findOrCreateOneByCourseOfferingGroupAndTermCode(CourseOfferingGroup cog, String termCode) {
+	public CourseOffering findOrCreateOneByCourseOfferingGroupAndTermCode(Course cog, String termCode) {
 		CourseOffering courseOffering = this.courseOfferingRepository.findOneByCourseOfferingGroupAndTermCode(cog, termCode);
 
 		if (courseOffering == null) {
 			courseOffering = new CourseOffering();
-			courseOffering.setCourseOfferingGroup(cog);
+			courseOffering.setCourse(cog);
 			courseOffering.setTermCode(termCode);
 			courseOffering.setSeatsTotal(0L);
 
@@ -46,7 +44,7 @@ public class JpaCourseOfferingService implements CourseOfferingService {
 	}
 
 	@Override
-	public void deleteByCourseOfferingGroupAndTermCode(CourseOfferingGroup cog, String termCode) {
+	public void deleteByCourseOfferingGroupAndTermCode(Course cog, String termCode) {
 		CourseOffering courseOffering = this.courseOfferingRepository.findOneByCourseOfferingGroupAndTermCode(cog, termCode);
 		if (courseOffering != null) {
 			this.courseOfferingRepository.delete(courseOffering.getId());
@@ -57,7 +55,7 @@ public class JpaCourseOfferingService implements CourseOfferingService {
 	public CourseOffering createCourseOfferingByCourseIdAndTermCodeAndScheduleId(Long courseId, String termCode, Long scheduleId) {
 		Course course = courseService.findOneById(courseId);
 
-		CourseOfferingGroup courseOfferingGroup = courseOfferingGroupService.findOrCreateCourseOfferingGroupByCourseAndScheduleId(scheduleId, course);
+		Course courseOfferingGroup = courseOfferingGroupService.findOrCreateCourseOfferingGroupByCourseAndScheduleId(scheduleId, course);
 
 		return this.findOrCreateOneByCourseOfferingGroupAndTermCode(courseOfferingGroup, termCode);
 	}

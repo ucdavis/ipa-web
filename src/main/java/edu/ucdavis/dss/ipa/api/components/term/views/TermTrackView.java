@@ -1,15 +1,15 @@
 package edu.ucdavis.dss.ipa.api.components.term.views;
 
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Tag;
 
 public class TermTrackView {
 	private long id;
 	private String name;
 
-	public TermTrackView(Track track) {
-		if (track == null) return;
-		setId(track.getId());
-		setName(track.getName());
+	public TermTrackView(Tag tag) {
+		if (tag == null) return;
+		setId(tag.getId());
+		setName(tag.getName());
 	}
 
 	public long getId() {

@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.term.views;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 
 import java.sql.Time;
@@ -219,8 +219,8 @@ public class TermActivityView {
 	}
 
 	public void setTracks(Activity activity) {
-		for(Track track :activity.getSection().getSectionGroup().getCourseOfferingGroup().getTracks()) {
-			this.tracks.add(new TermTrackView(track));
+		for(Tag tag :activity.getSection().getSectionGroup().getCourseOfferingGroup().getTags()) {
+			this.tracks.add(new TermTrackView(tag));
 		}
 	}
 

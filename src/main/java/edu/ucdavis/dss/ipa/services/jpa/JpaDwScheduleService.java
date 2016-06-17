@@ -49,7 +49,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 		Course course = courseService.findOrCreateByEffectiveTermAndSubjectCodeAndCourseNumberAndTitle(
 				dwSg.getEffectiveTermCode(), dwSg.getSubject().getCode(), dwSg.getCourseNumber(), dwSg.getTitle());
 
-		CourseOfferingGroup cog = this.courseOfferingGroupService.findOrCreateCourseOfferingGroupByCourseAndScheduleId(schedule.getId(), course);
+		Course cog = this.courseOfferingGroupService.findOrCreateCourseOfferingGroupByCourseAndScheduleId(schedule.getId(), course);
 
 		cog.setUnitsHigh(dwSg.getCreditHoursHigh());
 		cog.setUnitsLow(dwSg.getCreditHoursLow());

@@ -45,7 +45,7 @@ public class V112__Copies_Courses_metadata_to_CourseOfferingGroup implements Jdb
 					String courseNumber = rsCourse.getString("CourseNumber");
 					String effectiveTermCode = rsCourse.getString("EffectiveTermCode");
 
-					// Set Course metadata on CourseOfferingGroup
+					// Set Course metadata on Course
 					PreparedStatement psSetMetaData = connection.prepareStatement(
 						" UPDATE `CourseOfferingGroups` cogs " +
 						" SET cogs.`SubjectCode` = ?, " +

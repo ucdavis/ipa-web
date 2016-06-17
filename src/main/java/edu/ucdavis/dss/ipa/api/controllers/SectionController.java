@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.ucdavis.dss.ipa.api.components.term.views.TermSectionView;
+import edu.ucdavis.dss.ipa.entities.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -15,12 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
@@ -72,7 +68,7 @@ public class SectionController {
 			return;
 		}
 
-		Schedule schedule = section.getSectionGroup().getCourseOffering().getCourseOfferingGroup().getSchedule();
+		Schedule schedule = section.getSectionGroup().getCourseOffering().getCourse().getSchedule();
 		String termCode = section.getSectionGroup().getCourseOffering().getTermCode();
 
 		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, termCode);
@@ -153,8 +149,8 @@ public class SectionController {
 			HttpServletResponse httpResponse) {
 		List<Section> sections = new ArrayList<Section>();
 
-		for(CourseOfferingGroup courseOfferingGroup : scheduleService.findById(id).getCourseOfferingGroups() ) {
-			for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings()) {
+		for(Course course : scheduleService.findById(id).getCourses() ) {
+			for (CourseOffering courseOffering : course.getSectionGroups()) {
 				for (SectionGroup sectionGroup : courseOffering.getSectionGroups()) {
 					if ( courseOffering.getTermCode().equals(termCode)) {
 						sections.addAll(sectionGroup.getSections());

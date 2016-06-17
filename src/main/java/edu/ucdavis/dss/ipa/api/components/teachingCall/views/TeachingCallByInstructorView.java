@@ -8,7 +8,6 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
 import edu.ucdavis.dss.ipa.entities.Term;
 
 /**

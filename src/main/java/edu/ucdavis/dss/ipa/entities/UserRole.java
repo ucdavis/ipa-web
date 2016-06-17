@@ -33,7 +33,7 @@ public class UserRole implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "UserRoleId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
 	public long getId() {
 		return this.id;
@@ -44,7 +44,7 @@ public class UserRole implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "Users_UserId", nullable = false)
+	@JoinColumn(name = "UserId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public User getUser() {
@@ -56,7 +56,7 @@ public class UserRole implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "Workgroups_WorkgroupId", nullable = true)
+	@JoinColumn(name = "WorkgroupId", nullable = true)
 	@JsonIgnore
 	public Workgroup getWorkgroup() {
 		return workgroup;
@@ -67,7 +67,7 @@ public class UserRole implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "Roles_RoleId", nullable = false)
+	@JoinColumn(name = "RoleId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Role getRole() {
@@ -87,7 +87,7 @@ public class UserRole implements Serializable {
 	
 	@JsonProperty("workgroupId")
 	@Transient
-	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
+	@JsonIgnore
 	// Renamed to 'getWorkgroupIdentification()' because
 	// 'UserRoleRepository.findByWorkgroupId(long id)' got confused
 	public long getWorkgroupIdentification() {
@@ -95,28 +95,6 @@ public class UserRole implements Serializable {
 			return workgroup.getId();
 		} else {
 			return 0;
-		}
-	}
-
-	@JsonProperty("workgroupName")
-	@Transient
-	@JsonIgnore
-	public String getWorkgroupName() {
-		if(workgroup != null) {
-			return workgroup.getName();
-		} else {
-			return "";
-		}
-	}
-	
-	@JsonProperty("workgroupCode")
-	@Transient
-	@JsonIgnore
-	public String getWorkgroupCode() {
-		if(workgroup != null) {
-			return workgroup.getCode();
-		} else {
-			return "";
 		}
 	}
 

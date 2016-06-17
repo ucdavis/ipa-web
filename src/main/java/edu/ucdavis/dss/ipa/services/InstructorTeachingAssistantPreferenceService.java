@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.InstructorTeachingAssistantPreference;
-
 @Validated
 public interface InstructorTeachingAssistantPreferenceService {
 	InstructorTeachingAssistantPreference saveInstructorTeachingAssistantPreference(@NotNull @Valid InstructorTeachingAssistantPreference instructorTeachingAssistantPreference);

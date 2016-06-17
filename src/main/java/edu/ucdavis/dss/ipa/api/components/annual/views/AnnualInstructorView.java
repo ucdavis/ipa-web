@@ -5,8 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Section;
@@ -53,8 +52,8 @@ public class AnnualInstructorView {
 	@SuppressWarnings("unchecked")
 	public void setCourses(Instructor instructor, Schedule schedule) {
 		List<Section> sections = new ArrayList<Section>();
-		for (CourseOfferingGroup cog: schedule.getCourseOfferingGroups()) {
-			for (CourseOffering courseOffering: cog.getCourseOfferings()) {
+		for (Course cog: schedule.getCourses()) {
+			for (CourseOffering courseOffering: cog.getSectionGroups()) {
 				for (SectionGroup sg: courseOffering.getSectionGroups()) {
 					for (Section section: sg.getSections()) {
 						if (section.getInstructors().contains(instructor) ||

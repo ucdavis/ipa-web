@@ -3,8 +3,6 @@ package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-
 public class TeachingCallTermUnscheduledCoursesView {
 	private List<Course> courses = new ArrayList<Course>();
 	private String termCode;

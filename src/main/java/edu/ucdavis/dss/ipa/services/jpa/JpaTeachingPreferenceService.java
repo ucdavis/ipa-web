@@ -9,13 +9,11 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
 import edu.ucdavis.dss.ipa.repositories.TeachingPreferenceRepository;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
@@ -69,7 +67,7 @@ public class JpaTeachingPreferenceService implements TeachingPreferenceService {
 		
 		List<TeachingPreference> teachingPreferences = new ArrayList<TeachingPreference>();
 		
-		for( TeachingPreference teachingPreference : schedule.getTeachingPreferences() ) {
+		for( TeachingPreference teachingPreference : schedule.getTeachingAssignments() ) {
 			if(teachingPreference.getInstructor().getId() == instructor.getId()) {
 				teachingPreferences.add(teachingPreference);
 			}
@@ -135,8 +133,8 @@ public class JpaTeachingPreferenceService implements TeachingPreferenceService {
 
 	@Override
 	public List<TeachingPreference> getTeachingPreferencesByCourseOfferingGroupId(Long cogId) {
-		CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById(cogId);
-		List<Long> courseOfferingGroupIds = cog.getCourseOfferings()
+		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(cogId);
+		List<Long> courseOfferingGroupIds = cog.getSectionGroups()
 				.stream()
 				.map(CourseOffering::getId).collect(Collectors.toList());
 		return this.teachingPreferenceRepository.findByCourseOfferingIdIn(courseOfferingGroupIds);

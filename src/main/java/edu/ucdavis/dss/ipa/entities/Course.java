@@ -1,99 +1,139 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.CourseOfferingGroupDeserializer;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import edu.ucdavis.dss.ipa.api.views.TeachingPreferenceViews;
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "Courses")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonAutoDetect(creatorVisibility = JsonAutoDetect.Visibility.NONE,
+	fieldVisibility = JsonAutoDetect.Visibility.NONE,
+	getterVisibility = JsonAutoDetect.Visibility.NONE,
+	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+	setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonDeserialize(using = CourseOfferingGroupDeserializer.class)
 public class Course implements Serializable {
 	private long id;
-	private String subjectCode, effectiveTermCode, courseNumber, title;
-	private List<CourseOfferingGroup> courseOfferingGroups;
-	private List<Course> courseOverlaps = new ArrayList<Course>();
-
-	@JsonView(TeachingPreferenceViews.Detailed.class)
+	private String title, subjectCode, courseNumber, effectiveTermCode, sequencePattern;
+	private float unitsLow, unitsHigh;
+	private Schedule schedule;
+	private List<SectionGroup> sectionGroups = new ArrayList<>();
+	private List<Tag> tags = new ArrayList<Tag>(0);
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "CourseId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	public long getId()
-	{
-		return this.id;
+	public long getId() {
+		return id;
 	}
 
-	public void setId(long id)
-	{
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	@JsonView(TeachingPreferenceViews.Detailed.class)
-	@Basic
-	@Column(name = "SubjectCode", nullable = false, length = 45)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true, cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<SectionGroup> getSectionGroups()
+	{
+		return this.sectionGroups;
+	}
+
+	public void setSectionGroups(List<SectionGroup> sectionGroups)
+	{
+		this.sectionGroups = sectionGroups;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="ScheduleId", nullable=false)
+	@JsonIgnore
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "Courses_has_Tags", joinColumns = {
+			@JoinColumn(name = "CourseId", nullable = false, updatable = false) },
+			inverseJoinColumns = { @JoinColumn(name = "TagId",
+			nullable = false, updatable = false) })
+	@JsonIgnore
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
+	@Transient
 	@JsonProperty
-	public String getSubjectCode()
-	{
-		return this.subjectCode;
+	public long getYear() {
+		return schedule.getYear();
 	}
 
-	public void setSubjectCode(String subjectCode)
-	{
-		this.subjectCode = subjectCode;
-	}
-
-	@JsonView(TeachingPreferenceViews.Detailed.class)
 	@Basic
-	@Column(name = "CourseNumber", nullable = false, length = 7)
+	@Column(name = "Title", nullable = false, length = 45)
 	@JsonProperty
-	public String getCourseNumber()
-	{
-		return this.courseNumber;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setCourseNumber(String courseNumber)
-	{
-		this.courseNumber = courseNumber;
-	}
-
-	@JsonView(TeachingPreferenceViews.Detailed.class)
-	@Basic
-	@Column(name = "Title", nullable = false, length = 30)
-	@JsonProperty
-	public String getTitle()
-	{
-		return this.title;
-	}
-
-	public void setTitle(String title)
-	{
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	@Column(name = "EffectiveTermCode", nullable = false)
+	@Basic
+	@Column(name = "UnitsLow", nullable = true)
 	@JsonProperty
+	public float getUnitsLow() {
+		return unitsLow;
+	}
+
+	public void setUnitsLow(float unitsLow) {
+		this.unitsLow = unitsLow;
+	}
+
+	@Basic
+	@Column(name = "UnitsHigh", nullable = true)
+	@JsonProperty
+	public float getUnitsHigh() {
+		return unitsHigh;
+	}
+
+	public void setUnitsHigh(float unitsHigh) {
+		this.unitsHigh = unitsHigh;
+	}
+
+	@JsonProperty
+	public String getSubjectCode() {
+		return subjectCode;
+	}
+
+	public void setSubjectCode(String subjectCode) {
+		this.subjectCode = subjectCode;
+	}
+
+	@JsonProperty
+	public String getCourseNumber() {
+		return courseNumber;
+	}
+
+	public void setCourseNumber(String courseNumber) {
+		this.courseNumber = courseNumber;
+	}
+
 	public String getEffectiveTermCode() {
 		return effectiveTermCode;
 	}
@@ -101,76 +141,13 @@ public class Course implements Serializable {
 	public void setEffectiveTermCode(String effectiveTermCode) {
 		this.effectiveTermCode = effectiveTermCode;
 	}
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = {CascadeType.ALL})
-	@JsonIgnore
-	public List<CourseOfferingGroup> getCourseOfferingGroups() {
-		return courseOfferingGroups;
-	}
 
-	public void setCourseOfferingGroups(List<CourseOfferingGroup> courseOfferingGroups) {
-		this.courseOfferingGroups = courseOfferingGroups;
-	}
-	
 	@JsonProperty
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "CourseOverlaps", joinColumns = {
-			@JoinColumn(name = "CoursesA_CourseId", nullable = false) },
-			inverseJoinColumns = { @JoinColumn(name = "CoursesB_CourseId",
-			nullable = false) })
-	public List<Course> getCourseOverlaps() {
-		return courseOverlaps;
+	public String getSequencePattern() {
+		return sequencePattern;
 	}
 
-	public void setCourseOverlaps(List<Course> courseOverlaps) {
-		if(courseOverlaps != null) {
-			List<Course> screenedOverlaps = new ArrayList<Course>();
-			
-			for(Course courseOverlap : courseOverlaps) {
-				if(courseOverlap.getId() != this.getId()) {
-					screenedOverlaps.add(courseOverlap);
-				}
-			}
-			
-			this.courseOverlaps = screenedOverlaps;
-		} else {
-			this.courseOverlaps = courseOverlaps;
-		}
+	public void setSequencePattern(String sequencePattern) {
+		this.sequencePattern = sequencePattern;
 	}
-
-	public void addCourseOverlaps(Course course) {
-		if(course.getId() != this.getId()) {
-			addCourseOverlaps(course, true);
-		}
-	}
-
-	public void addCourseOverlaps(Course course, boolean add) {
-		if (course != null) {
-			if(getCourseOverlaps().contains(course)) {
-				getCourseOverlaps().set(getCourseOverlaps().indexOf(course), course);
-			}
-			else {
-				getCourseOverlaps().add(course);
-			}
-			if (add) {
-				course.addCourseOverlaps(this, false);
-			}
-		}
-	}
-
-	public void removeCourseOverlaps(Course course) {
-		removeCourseOverlaps(course, true);
-	}
-
-	public void removeCourseOverlaps(Course course, boolean remove) {
-		if (course != null) {
-			if(getCourseOverlaps().contains(course)) {
-				getCourseOverlaps().remove(course);
-			}
-			if (remove) {
-				course.removeCourseOverlaps(this, false);
-			}
-		}
-	}
-
 }

@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -36,8 +36,6 @@ import edu.ucdavis.dss.ipa.diff.entities.DiffSectionGroup;
 import edu.ucdavis.dss.ipa.diff.mapper.DwSectionGroupMapper;
 import edu.ucdavis.dss.ipa.diff.mapper.JpaSectionGroupMapper;
 import edu.ucdavis.dss.ipa.diff.mapper.SectionGroupGrouper;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -81,8 +79,8 @@ public class JpaDwSyncService implements DwSyncService {
 
 		// Get all section groups in all course offerings in all course offering groups in the schedule
 		sectionGroups = new HashSet<DiffSectionGroup>();
-		for (CourseOfferingGroup cog : schedule.getCourseOfferingGroups()) {
-			for (CourseOffering co : cog.getCourseOfferings()) 
+		for (Course cog : schedule.getCourses()) {
+			for (CourseOffering co : cog.getSectionGroups())
 				sectionGroups.addAll(co.getSectionGroups().stream()
 						// Convert JPA SectionGroups to DiffSectionGroups for diffing
 						.map(new JpaSectionGroupMapper())

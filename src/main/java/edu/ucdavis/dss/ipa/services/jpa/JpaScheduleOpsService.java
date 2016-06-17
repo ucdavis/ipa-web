@@ -7,25 +7,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.dw.dto.DwInstructor;
 import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Role;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-import edu.ucdavis.dss.ipa.entities.Track;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -90,17 +79,17 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 		Schedule newSchedule = scheduleService.createSchedule(existingSchedule.getWorkgroup().getId(), newScheduleYear);
 
 		// Create the CourseOfferingGroups
-		for(CourseOfferingGroup cog : existingSchedule.getCourseOfferingGroups()) {
-			CourseOfferingGroup newCog = new CourseOfferingGroup();
+		for(Course cog : existingSchedule.getCourses()) {
+			Course newCog = new Course();
 
 			newCog.setSchedule(newSchedule);
 			
-			List<Track> tracks = new ArrayList<Track>();
-			for(Track track : cog.getTracks()) {
-				tracks.add(track);
+			List<Tag> tags = new ArrayList<Tag>();
+			for(Tag tag : cog.getTags()) {
+				tags.add(tag);
 			}
 			
-			newCog.setTracks(tracks);
+			newCog.setTags(tags);
 			newCog.setCourse(cog.getCourse());
 			newCog.setTitle(cog.getTitle());
 			newCog.setUnitsLow(cog.getUnitsLow());
@@ -109,12 +98,12 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 			newCog = courseOfferingGroupService.saveCourseOfferingGroup(newCog);
 
 			// Create the CourseOfferings
-			for(CourseOffering courseOffering : cog.getCourseOfferings()) {
+			for(CourseOffering courseOffering : cog.getSectionGroups()) {
 				String updatedTermCode = adjustTermCodeYear(courseOffering.getTermCode(), newScheduleYear);
 				
 				CourseOffering newCourseOffering = new CourseOffering();
 				
-				newCourseOffering.setCourseOfferingGroup(newCog);
+				newCourseOffering.setCourse(newCog);
 				newCourseOffering.setTermCode(updatedTermCode);
 				newCourseOffering.setSeatsTotal(courseOffering.getSeatsTotal());
 				

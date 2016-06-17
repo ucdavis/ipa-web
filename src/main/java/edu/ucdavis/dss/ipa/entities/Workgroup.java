@@ -41,15 +41,13 @@ public class Workgroup implements Serializable {
 	private long id;
 	private String name, code;
 	private Set<Schedule> schedules = new HashSet<Schedule>();
-	private List<Track> tracks = new ArrayList<Track>();
+	private List<Tag> tags = new ArrayList<Tag>();
 	private List<UserRole> userRoles = new ArrayList<UserRole>();
-	private List<GraduateStudent> graduateStudents = new ArrayList<GraduateStudent>();
-	private List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships = new ArrayList<InstructorWorkgroupRelationship>();
 	private List<Location> locations = new ArrayList<Location>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "WorkgroupId", unique = true, nullable = false, length = 250)
+	@Column(name = "Id", unique = true, nullable = false, length = 250)
 	@JsonView(WorkgroupViews.Summary.class)
 	public long getId()
 	{
@@ -93,6 +91,7 @@ public class Workgroup implements Serializable {
 
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
+	@JsonIgnore
 	public List<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -101,25 +100,8 @@ public class Workgroup implements Serializable {
 		this.userRoles = userRoles;
 	}
 
-	// Returns a unique list of users that have userRoles associated to the workgroup
-	@Transient
-	@JsonProperty("users")
-	@JsonView(WorkgroupViews.Detailed.class)
-	@Transactional
-	public List<User> getUsers()
-	{
-		List<User> users = new ArrayList<User>();
-
-		for(UserRole userRole : this.getUserRoles()) {
-			if( !users.contains(userRole.getUser()) ) {
-				users.add(userRole.getUser());
-			}
-		}
-		return users;
-	}
-
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
-	@JsonView(WorkgroupViews.Detailed.class)
+	@JsonIgnore
 	public Set<Schedule> getSchedules() {
 		return schedules;
 	}
@@ -147,44 +129,17 @@ public class Workgroup implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
-	public List<Track> getTracks() {
-		return tracks;
-	}
-
-	public void setTracks(List<Track> tracks) {
-		this.tracks = tracks;
-	}
-
-	@Transient
-	public List<Track> getActiveTracks() {
-		return tracks.stream().filter(t -> !t.isArchived()).collect(Collectors.toList());
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
 	@JsonIgnore
-	public List<InstructorWorkgroupRelationship> getInstructorWorkgroupRelationships() {
-		return instructorWorkgroupRelationships;
+	public List<Tag> getTags() {
+		return tags;
 	}
 
-	public void setInstructorWorkgroupRelationships(List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships) {
-		this.instructorWorkgroupRelationships = instructorWorkgroupRelationships;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Workgroup[id=%d,name=%s,code=%s]", this.getId(), this.getName(), this.getCode());
-	}
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
-	public List<GraduateStudent> getGraduateStudents() {
-		return graduateStudents;
-	}
-
-	public void setGraduateStudents(List<GraduateStudent> graduateStudents) {
-		this.graduateStudents = graduateStudents;
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
+	@JsonIgnore
 	public List<Location> getLocations() {
 		return locations;
 	}

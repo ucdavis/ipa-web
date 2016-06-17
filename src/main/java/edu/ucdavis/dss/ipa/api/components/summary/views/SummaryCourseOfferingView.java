@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.CensusSnapshot;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.GraduateStudent;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingAssistantPreference;
 
 public class SummaryCourseOfferingView {
 	private String title, subjectCode, termCode, courseNumber, sequencePattern;
@@ -73,7 +69,7 @@ public class SummaryCourseOfferingView {
 	}
 	
 	private void setTitle(CourseOffering courseOffering) {
-		this.title = courseOffering.getCourseOfferingGroup().getTitle();
+		this.title = courseOffering.getCourse().getTitle();
 	}
 
 	public String getTermCode() {
@@ -89,7 +85,7 @@ public class SummaryCourseOfferingView {
 	}
 	
 	private void setCourseNumber(CourseOffering courseOffering) {
-		this.courseNumber = courseOffering.getCourseOfferingGroup().getCourse().getCourseNumber();
+		this.courseNumber = courseOffering.getCourse().getCourse().getCourseNumber();
 	}
 
 	public String getSubjectCode() {
@@ -97,7 +93,7 @@ public class SummaryCourseOfferingView {
 	}
 	
 	private void setSubjectCode(CourseOffering courseOffering) {
-		this.subjectCode = courseOffering.getCourseOfferingGroup().getCourse().getSubjectCode();
+		this.subjectCode = courseOffering.getCourse().getCourse().getSubjectCode();
 	}
 
 	public List<GraduateStudent> getTeachingAssistants() {

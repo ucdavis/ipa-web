@@ -7,10 +7,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
 
 @Validated
 public interface TeachingPreferenceService {

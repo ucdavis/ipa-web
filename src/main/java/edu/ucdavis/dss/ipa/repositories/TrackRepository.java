@@ -1,11 +1,10 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+import edu.ucdavis.dss.ipa.entities.Tag;
 import org.springframework.data.repository.CrudRepository;
 
-import edu.ucdavis.dss.ipa.entities.Track;
+public interface TrackRepository extends CrudRepository<Tag, Long> {
 
-public interface TrackRepository extends CrudRepository<Track, Long> {
-
-	Track findOneByWorkgroupIdAndName(long workgroupId, String trackName);
+	Tag findOneByWorkgroupIdAndName(long workgroupId, String trackName);
 
 }

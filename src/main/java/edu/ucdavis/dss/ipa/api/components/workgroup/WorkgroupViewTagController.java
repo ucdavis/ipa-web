@@ -1,8 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.workgroup;
 
-import edu.ucdavis.dss.ipa.api.components.workgroup.views.WorkgroupView;
 import edu.ucdavis.dss.ipa.api.components.workgroup.views.factories.WorkgroupViewFactory;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.TrackService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
@@ -23,7 +22,7 @@ public class WorkgroupViewTagController {
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Track addTag(@PathVariable String workgroupCode, @RequestBody Track tag, HttpServletResponse httpResponse) {
+    public Tag addTag(@PathVariable String workgroupCode, @RequestBody Tag tag, HttpServletResponse httpResponse) {
         Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
         return trackService.findOrCreateTrackByWorkgroupAndTrackName(workgroup, tag.getName());
     }
@@ -31,9 +30,9 @@ public class WorkgroupViewTagController {
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Track updateTag(@PathVariable String workgroupCode, @PathVariable long tagId,
-                           @RequestBody Track tag, HttpServletResponse httpResponse) {
-        Track editedTag = trackService.findOneById(tagId);
+    public Tag updateTag(@PathVariable String workgroupCode, @PathVariable long tagId,
+                         @RequestBody Tag tag, HttpServletResponse httpResponse) {
+        Tag editedTag = trackService.findOneById(tagId);
         editedTag.setName(tag.getName());
         return trackService.saveTrack(editedTag);
     }
@@ -41,7 +40,7 @@ public class WorkgroupViewTagController {
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
-    public Track archiveTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
+    public Tag archiveTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
         return trackService.archiveTrackByTrackId(tagId);
     }
 }

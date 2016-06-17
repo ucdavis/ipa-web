@@ -23,17 +23,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
 
 @Entity
-@Table(name = "Tracks")
-public class Track {
+@Table(name = "Tags")
+public class Tag {
 	private long id;
 	private String name;
 	private boolean archived;
 	private Workgroup workgroup;
-	private List<CourseOfferingGroup> courseOfferingGroups = new ArrayList<CourseOfferingGroup>(0);
+	private List<Course> courses = new ArrayList<Course>(0);
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TrackId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	@JsonView(CourseOfferingGroupViews.Detailed.class)
 	public long getId()
@@ -61,7 +61,7 @@ public class Track {
 	}
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Workgroups_WorkgroupId", nullable = false)
+	@JoinColumn(name = "WorkgroupId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Workgroup getWorkgroup() {
@@ -73,39 +73,16 @@ public class Track {
 	}
 
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tracks")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
 	@JsonIgnore
-	public List<CourseOfferingGroup> getCourseOfferingGroups()
+	public List<Course> getCourses()
 	{
-		return this.courseOfferingGroups;
+		return this.courses;
 	}
 
-	public void setCourseOfferingGroups(List<CourseOfferingGroup> courseOfferingGroups)
+	public void setCourses(List<Course> courses)
 	{
-		this.courseOfferingGroups = courseOfferingGroups;
-	}
-
-	public void addCourseOfferingGroup(CourseOfferingGroup courseOfferingGroup) {
-		addCourseOfferingGroup(courseOfferingGroup, true);
-	}
-
-	public void addCourseOfferingGroup(CourseOfferingGroup courseOfferingGroup, boolean add) {
-		if (courseOfferingGroup != null) {
-			if(getCourseOfferingGroups().contains(courseOfferingGroup)) {
-				getCourseOfferingGroups().set(getCourseOfferingGroups().indexOf(courseOfferingGroup), courseOfferingGroup);
-			}
-			else {
-				getCourseOfferingGroups().add(courseOfferingGroup);
-			}
-			if (add) {
-				courseOfferingGroup.addTrack(this, false);
-			}
-		}
-	}
-
-	@Override
-	public String toString() {
-		return String.format(this.getName());
+		this.courses = courses;
 	}
 
 	@Column(name = "archived", unique = false, nullable = false)

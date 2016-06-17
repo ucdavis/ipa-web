@@ -43,7 +43,7 @@ public class TeachingCall implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TeachingCallId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	@JsonView({ScheduleViews.Summary.class, TeachingCallViews.Detailed.class})
 	public long getId() {
@@ -55,7 +55,7 @@ public class TeachingCall implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Schedules_ScheduleId", nullable = false)
+	@JoinColumn(name = "ScheduleId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Schedule getSchedule() {

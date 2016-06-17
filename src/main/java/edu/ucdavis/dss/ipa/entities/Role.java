@@ -21,7 +21,7 @@ public class Role implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "RoleId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	public long getId() {
 		return this.id;

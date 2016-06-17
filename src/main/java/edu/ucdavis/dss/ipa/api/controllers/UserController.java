@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
-import edu.ucdavis.dss.ipa.entities.GraduateStudent;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;

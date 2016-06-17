@@ -39,7 +39,7 @@ public class TeachingCallReceipt implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TeachingCallReceiptId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonView(TeachingCallReceiptViews.Detailed.class)
 	public long getId() {
 		return this.id;
@@ -50,8 +50,9 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Instructors_InstructorId", nullable = false)
+	@JoinColumn(name = "InstructorId", nullable = false)
 	@NotNull
+	@JsonIgnore
 	public Instructor getInstructor() {
 		return instructor;
 	}
@@ -61,7 +62,7 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "TeachingCalls_TeachingCallId", nullable = false)
+	@JoinColumn(name = "TeachingCallId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public TeachingCall getTeachingCall() {

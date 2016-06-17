@@ -52,7 +52,7 @@ public class Activity implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ActivityId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	@JsonView(SectionGroupViews.Detailed.class)
 	public long getId() {
@@ -145,7 +145,7 @@ public class Activity implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Sections_SectionId", nullable = false)
+	@JoinColumn(name = "SectionId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Section getSection() {
@@ -285,7 +285,7 @@ public class Activity implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Locations_LocationId", nullable = false)
+	@JoinColumn(name = "LocationId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Location getLocation() {

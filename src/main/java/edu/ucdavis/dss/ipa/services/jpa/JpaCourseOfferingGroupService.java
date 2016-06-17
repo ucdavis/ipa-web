@@ -5,17 +5,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Track;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.CourseOfferingGroupRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
@@ -40,15 +36,15 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 	@Inject CourseService courseService;
 	
 	@Override
-	public CourseOfferingGroup getCourseOfferingGroupById(Long id) {
+	public Course getCourseOfferingGroupById(Long id) {
 		return this.courseOfferingGroupRepository.findOne(id);
 	}
 
 	@Override
 	@Transactional
-	public CourseOfferingGroup findOrCreateCourseOfferingGroupByCourseAndScheduleId( Long scheduleId,
-			@Validated Course course) {
-		CourseOfferingGroup cog = this.courseOfferingGroupRepository.findByCourseIdAndScheduleId(course.getId(), scheduleId);
+	public Course findOrCreateCourseOfferingGroupByCourseAndScheduleId(Long scheduleId,
+																	   @Validated Course course) {
+		Course cog = this.courseOfferingGroupRepository.findByCourseIdAndScheduleId(course.getId(), scheduleId);
 
 		if(cog != null) {
 			return cog;
@@ -59,9 +55,9 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 
 	@Override
 	@Transactional
-	public CourseOfferingGroup createCourseOfferingGroupByCourseAndScheduleId( Long scheduleId, @Validated Course course) {
+	public Course createCourseOfferingGroupByCourseAndScheduleId(Long scheduleId, @Validated Course course) {
 
-		CourseOfferingGroup cog =
+		Course cog =
 				this.sectionGroupRepository.findBySubjectCodeAndCourseNumberAndScheduleIdAndTitle(
 						course.getSubjectCode(),
 						course.getCourseNumber(),
@@ -84,7 +80,7 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 					course.getCourseNumber(),
 					course.getTitle());
 
-			cog = new CourseOfferingGroup();
+			cog = new Course();
 			cog.setSchedule(schedule);
 			cog.setCourse(savedCourse);
 			cog.setTitle(course.getTitle());
@@ -92,28 +88,28 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 		}
 
 		String trackName = Character.getNumericValue(course.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
-		Track track = trackService.findOrCreateTrackByWorkgroupAndTrackName(schedule.getWorkgroup(), trackName);
-		this.addTrackToCourseOfferingGroup(cog.getId(), track);
+		Tag tag = trackService.findOrCreateTrackByWorkgroupAndTrackName(schedule.getWorkgroup(), trackName);
+		this.addTrackToCourseOfferingGroup(cog.getId(), tag);
 
 		return this.courseOfferingGroupRepository.save(cog);
 	}
 	
 	@Override
-	public CourseOfferingGroup saveCourseOfferingGroup(CourseOfferingGroup courseOfferingGroup) {
-		return this.courseOfferingGroupRepository.save(courseOfferingGroup);
+	public Course saveCourseOfferingGroup(Course course) {
+		return this.courseOfferingGroupRepository.save(course);
 	}
 
 	@Override
 	public boolean deleteCourseOfferingGroupById(Long id) {
-		CourseOfferingGroup courseOfferingGroup = this.getCourseOfferingGroupById(id);
+		Course course = this.getCourseOfferingGroupById(id);
 		
-		if (courseOfferingGroup == null) {
+		if (course == null) {
 			return false;
 		}
 
 		try {
-			courseOfferingGroup.setTracks(new ArrayList<Track>());
-			this.saveCourseOfferingGroup(courseOfferingGroup);
+			course.setTags(new ArrayList<Tag>());
+			this.saveCourseOfferingGroup(course);
 			this.courseOfferingGroupRepository.delete(id);
 
 			return true;
@@ -128,11 +124,11 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 
 	@Override
 	public SectionGroup findSectionGroupByOfferingGroupIdAndTermCodeAndSequence(Long courseOfferingGroupId, String termCode, String sequence) {
-		CourseOfferingGroup courseOfferingGroup = this.courseOfferingGroupRepository.findOne(courseOfferingGroupId);
+		Course course = this.courseOfferingGroupRepository.findOne(courseOfferingGroupId);
 		SectionGroup coWithNoTermCode = null;
 
-		if (courseOfferingGroup != null) {
-			for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings()) {
+		if (course != null) {
+			for (CourseOffering courseOffering : course.getSectionGroups()) {
 				for (SectionGroup sectionGroup : courseOffering.getSectionGroups()) {
 					if (sectionGroup.getTermCode() == null) {
 						// In the case the termCode is null, save it but keep looping to see if there is a matching termcode
@@ -150,35 +146,35 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 			// If the above loop is over and we found a course offering with an empty termcode, return it
 			return coWithNoTermCode;
 		} else {
-			// No CourseOfferingGroup found for this id
+			// No Course found for this id
 			return null;
 		}
 	}
 
 	@Override
-	public List<Track> getTracksByCourseOfferingGroupId(Long id) {
-		CourseOfferingGroup courseOfferingGroup = this.getCourseOfferingGroupById(id);
-		return courseOfferingGroup.getTracks();
+	public List<Tag> getTracksByCourseOfferingGroupId(Long id) {
+		Course course = this.getCourseOfferingGroupById(id);
+		return course.getTags();
 	}
 
 	@Override
-	public CourseOfferingGroup addTrackToCourseOfferingGroup(Long id, Track track) {
-		CourseOfferingGroup courseOfferingGroup = this.getCourseOfferingGroupById(id);
-		List<Track> tracks = courseOfferingGroup.getTracks();
-		if(!tracks.contains(track)) {
-			tracks.add(track);
+	public Course addTrackToCourseOfferingGroup(Long id, Tag tag) {
+		Course course = this.getCourseOfferingGroupById(id);
+		List<Tag> tags = course.getTags();
+		if(!tags.contains(tag)) {
+			tags.add(tag);
 		}
-		courseOfferingGroup.setTracks(tracks);
-		return this.courseOfferingGroupRepository.save(courseOfferingGroup);
+		course.setTags(tags);
+		return this.courseOfferingGroupRepository.save(course);
 	}
 
 //	@Override
 //	@Transactional
-//	public List<CourseOfferingGroup> getOtherScheduleOfferingsForCourse(
+//	public List<Course> getOtherScheduleOfferingsForCourse(
 //			Long courseOfferingGroupId) {
 //
-//		CourseOfferingGroup courseOfferingGroup = this.getCourseOfferingGroupById(courseOfferingGroupId);
-//		List<CourseOfferingGroup> courseOfferingGroups = new ArrayList<CourseOfferingGroup>();
+//		Course courseOfferingGroup = this.getCourseOfferingGroupById(courseOfferingGroupId);
+//		List<Course> courseOfferingGroups = new ArrayList<Course>();
 //
 //		if (courseOfferingGroup.getSectionGroups() == null
 //		||	courseOfferingGroup.getSectionGroups().size() == 0) return null;
@@ -192,36 +188,36 @@ public class JpaCourseOfferingGroupService implements CourseOfferingGroupService
 //			);
 //
 //		for (SectionGroup sectionGroup : sectionGroups) {
-//			if (!courseOfferingGroups.contains(sectionGroup.getCourseOfferingGroup())
-//			&&	sectionGroup.getCourseOfferingGroup().getId() != courseOfferingGroupId) {
-//				courseOfferingGroups.add(sectionGroup.getCourseOfferingGroup());
+//			if (!courseOfferingGroups.contains(sectionGroup.getCourse())
+//			&&	sectionGroup.getCourse().getId() != courseOfferingGroupId) {
+//				courseOfferingGroups.add(sectionGroup.getCourse());
 //			}
 //		}
 //		return courseOfferingGroups;
 //	}
 
 	@Override
-	public CourseOfferingGroup setCourseSubject(Long id, String subject) {
-		CourseOfferingGroup courseOfferingGroup = this.getCourseOfferingGroupById(id);
+	public Course setCourseSubject(Long id, String subject) {
+		Course course = this.getCourseOfferingGroupById(id);
 
-		if (courseOfferingGroup == null || this.scheduleService.isScheduleClosed(courseOfferingGroup.getSchedule().getId()))
-			return courseOfferingGroup;
+		if (course == null || this.scheduleService.isScheduleClosed(course.getSchedule().getId()))
+			return course;
 
 		// Clearing the title and hitting save should revert to the original Course title
 		if (subject == null || subject.isEmpty()) {
-			subject = courseOfferingGroup.getCourse().getTitle();
+			subject = course.getCourse().getTitle();
 		}
 
-		courseOfferingGroup.setTitle(subject);
-		return this.saveCourseOfferingGroup(courseOfferingGroup);
+		course.setTitle(subject);
+		return this.saveCourseOfferingGroup(course);
 	}
 
 	@Override
 	@Transactional
-	public CourseOfferingGroup findOrCreateCourseOfferingGroupByScheduleIdAndCourseId( Long scheduleId,
-			Long courseId) {
+	public Course findOrCreateCourseOfferingGroupByScheduleIdAndCourseId(Long scheduleId,
+																		 Long courseId) {
 		Course course = this.courseService.findOneById(courseId);
-		CourseOfferingGroup cog = this.courseOfferingGroupRepository.findByCourseIdAndScheduleId(courseId, scheduleId);
+		Course cog = this.courseOfferingGroupRepository.findByCourseIdAndScheduleId(courseId, scheduleId);
 
 		if(cog != null) {
 			return cog;

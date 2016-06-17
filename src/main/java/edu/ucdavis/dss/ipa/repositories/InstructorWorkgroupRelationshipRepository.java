@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import edu.ucdavis.dss.ipa.entities.InstructorWorkgroupRelationship;
-
 public interface InstructorWorkgroupRelationshipRepository extends CrudRepository<InstructorWorkgroupRelationship, Long> {
 
 	InstructorWorkgroupRelationship findOneById(Long id);

@@ -8,16 +8,14 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
@@ -100,14 +98,14 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 			case "workgroup":
 				return userHasRequiredRoleAndWorkgroup(user, role, this.workgroupService.findOneById((Long)item));
 			
-			case "track":
-				Track track = this.trackService.findOneById((Long)item);
-				if(track == null) { return false; }
+			case "tag":
+				Tag tag = this.trackService.findOneById((Long)item);
+				if(tag == null) { return false; }
 				
-				return userHasRequiredRoleAndWorkgroup(user, role, track.getWorkgroup());
+				return userHasRequiredRoleAndWorkgroup(user, role, tag.getWorkgroup());
 				
 			case "courseOfferingGroup":
-				CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById((Long)item);
+				Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById((Long)item);
 				if (cog == null) { return false; }
 				
 				return userHasRequiredRoleAndWorkgroup(user, role, cog.getSchedule().getWorkgroup());
@@ -116,7 +114,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				CourseOffering courseOffering = this.courseOfferingService.findCourseOfferingById((Long)item);
 				if (courseOffering == null) { return false; }
 
-				return userHasRequiredRoleAndWorkgroup(user, role, courseOffering.getCourseOfferingGroup().getSchedule().getWorkgroup());
+				return userHasRequiredRoleAndWorkgroup(user, role, courseOffering.getCourse().getSchedule().getWorkgroup());
 
 			case "section":
 				Section section = this.sectionService.getSectionById((Long)item);

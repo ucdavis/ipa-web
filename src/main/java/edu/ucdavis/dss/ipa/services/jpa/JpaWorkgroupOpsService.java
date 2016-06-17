@@ -5,11 +5,11 @@ import java.util.Calendar;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
@@ -50,19 +50,19 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 	}
 	
 	private void createDefaultTracks(Workgroup workgroup) {
-		// Create 'Undergraduate' track
-		Track track = new Track();
+		// Create 'Undergraduate' tag
+		Tag tag = new Tag();
 		
-		track.setWorkgroup(workgroup);
-		track.setName("Undergraduate");
-		this.trackService.saveTrack(track);
+		tag.setWorkgroup(workgroup);
+		tag.setName("Undergraduate");
+		this.trackService.saveTrack(tag);
 		
-		// Create 'Graduate' track
-		track = new Track();
+		// Create 'Graduate' tag
+		tag = new Tag();
 		
-		track.setWorkgroup(workgroup);
-		track.setName("Graduate");
-		this.trackService.saveTrack(track);
+		tag.setWorkgroup(workgroup);
+		tag.setName("Graduate");
+		this.trackService.saveTrack(tag);
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 
 		if(workgroup != null) {
 			for( Schedule schedule : workgroup.getSchedules() ) {
-				for (CourseOfferingGroup courseOfferingGroup : schedule.getCourseOfferingGroups()) {
-					courseOfferingGroupService.deleteCourseOfferingGroupById(courseOfferingGroup.getId());
+				for (Course course : schedule.getCourses()) {
+					courseOfferingGroupService.deleteCourseOfferingGroupById(course.getId());
 				}
 				scheduleService.deleteByScheduleId(schedule.getId());
 			}

@@ -18,10 +18,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -45,13 +45,13 @@ public class Schedule implements Serializable {
 	private boolean importing;
 	private String secretToken;
 	private Workgroup workgroup;
-	private Set<CourseOfferingGroup> courseOfferingGroups = new HashSet<CourseOfferingGroup>();
+	private Set<Course> courses = new HashSet<Course>();
 	private List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
-	private List<TeachingPreference> teachingPreferences = new ArrayList<TeachingPreference>();
-	
+	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ScheduleId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty("id")
 	@JsonView({WorkgroupViews.Summary.class,ScheduleViews.Summary.class})
 	public long getId() {
@@ -90,8 +90,9 @@ public class Schedule implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Workgroups_WorkgroupId", nullable = false)
+	@JoinColumn(name = "WorkgroupId", nullable = false)
 	@NotNull
+	@JsonIgnore
 	public Workgroup getWorkgroup() {
 		return this.workgroup;
 	}
@@ -113,34 +114,16 @@ public class Schedule implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
-	@JsonView(ScheduleViews.Detailed.class)
-	public Set<CourseOfferingGroup> getCourseOfferingGroups() {
-		return courseOfferingGroups;
+	@JsonIgnore
+	public Set<Course> getCourses() {
+		return courses;
 	}
 
-	public void setCourseOfferingGroups(Set<CourseOfferingGroup> courseOfferingGroups) {
-		this.courseOfferingGroups = courseOfferingGroups;
+	public void setCourses(Set<Course> courses) {
+		this.courses = courses;
 	}
 
-	public void addCourseOfferingGroup(@NotNull @Valid CourseOfferingGroup courseOfferingGroup) {
-		addCourseOfferingGroup(courseOfferingGroup, true);
-	}
-
-	public void addCourseOfferingGroup(@NotNull @Valid CourseOfferingGroup courseOfferingGroup, boolean add) {
-		if (courseOfferingGroup != null) {
-			if(getCourseOfferingGroups().contains(courseOfferingGroup)) {
-				getCourseOfferingGroups().remove(courseOfferingGroup);
-				getCourseOfferingGroups().add(courseOfferingGroup);
-			} else {
-				getCourseOfferingGroups().add(courseOfferingGroup);
-			}
-			if(add) {
-				courseOfferingGroup.setSchedule(this);
-			}
-		}
-	}
-
-	@JsonView(ScheduleViews.Summary.class)
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingCall> getTeachingCalls() {
 		return teachingCalls;
@@ -151,11 +134,12 @@ public class Schedule implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
-	public List<TeachingPreference> getTeachingPreferences() {
-		return teachingPreferences;
+	@JsonIgnore
+	public List<TeachingAssignment> getTeachingAssignments() {
+		return teachingAssignments;
 	}
 
-	public void setTeachingPreferences(List<TeachingPreference> teachingPreferences) {
-		this.teachingPreferences = teachingPreferences;
+	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+		this.teachingAssignments = teachingAssignments;
 	}
 }

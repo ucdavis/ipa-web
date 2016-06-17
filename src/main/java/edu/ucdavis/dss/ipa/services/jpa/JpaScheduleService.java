@@ -8,18 +8,12 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TermService;
@@ -79,8 +73,8 @@ public class JpaScheduleService implements ScheduleService {
 			long id, SectionGroup sectionGroup) {
 		Schedule schedule = this.findById(id);
 		List<SectionGroup> SGs = new ArrayList<SectionGroup>();
-		for (CourseOfferingGroup cog : schedule.getCourseOfferingGroups()) {
-			for (CourseOffering courseOffering : cog.getCourseOfferings()) {
+		for (Course cog : schedule.getCourses()) {
+			for (CourseOffering courseOffering : cog.getSectionGroups()) {
 				for (SectionGroup sg : courseOffering.getSectionGroups()) {
 					if (sg.getSubjectCode().equals(sectionGroup.getSubjectCode())
 							&&	sg.getCourseNumber().equals(sectionGroup.getCourseNumber())
@@ -98,7 +92,7 @@ public class JpaScheduleService implements ScheduleService {
 		List<User> users = new ArrayList<User>();
 		Schedule schedule = this.findById(scheduleId);
 
-		for(TeachingPreference teachingPreference : schedule.getTeachingPreferences() ) {
+		for(TeachingPreference teachingPreference : schedule.getTeachingAssignments() ) {
 
 			if( (teachingPreference.isApproved() == true) && teachingPreference.getTermCode().equals(termCode)) {
 

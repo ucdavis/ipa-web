@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 
 public class CourseOfferingGroupDeserializer extends JsonDeserializer<Object> {
 
@@ -19,7 +19,7 @@ public class CourseOfferingGroupDeserializer extends JsonDeserializer<Object> {
 		ObjectCodec oc = jsonParser.getCodec();
 		JsonNode node = oc.readTree(jsonParser);
 
-		CourseOfferingGroup cog = new CourseOfferingGroup();
+		Course cog = new Course();
 
 		if (node.has("id")) {
 			cog.setId(node.get("id").longValue());

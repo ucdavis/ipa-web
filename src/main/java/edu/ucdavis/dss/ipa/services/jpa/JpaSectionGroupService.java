@@ -17,13 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.ucdavis.dss.dw.DwClient;
 import edu.ucdavis.dss.dw.dto.DwSectionGroup;
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
@@ -156,9 +153,9 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Override
 	public List<SectionGroup> getSectionGroupsByScheduleIdAndTermCode(long scheduleId, String termCode) {
 		Schedule schedule = this.scheduleService.findById(scheduleId);
-		List<Long> courseOfferingIds = schedule.getCourseOfferingGroups()
+		List<Long> courseOfferingIds = schedule.getCourses()
 				.stream()
-				.map(s -> s.getCourseOfferings().stream()
+				.map(s -> s.getSectionGroups().stream()
 						.filter(co -> termCode == null || termCode.trim().isEmpty() || co.getTermCode().equals(termCode.trim()))
 						.map(CourseOffering::getId).collect(Collectors.toList()))
 				.flatMap(Collection::stream)
@@ -199,8 +196,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 		Schedule schedule = this.scheduleService.findById(scheduleId);
 		Instructor instructor = this.instructorService.getInstructorById(instructorId);
 
-		for(CourseOfferingGroup courseOfferingGroup : schedule.getCourseOfferingGroups() ) {
-			for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings() ) {
+		for(Course course : schedule.getCourses() ) {
+			for (CourseOffering courseOffering : course.getSectionGroups() ) {
 				for (SectionGroup sectionGroup : courseOffering.getSectionGroups() ) {
 
 					if (sectionGroup.getTermCode().equals(termCode) ) {

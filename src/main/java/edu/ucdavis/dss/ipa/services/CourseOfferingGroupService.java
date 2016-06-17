@@ -2,31 +2,30 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Track;
 
 @Validated
 public interface CourseOfferingGroupService {
 
-	CourseOfferingGroup getCourseOfferingGroupById(Long id);
+	Course getCourseOfferingGroupById(Long id);
 	SectionGroup findSectionGroupByOfferingGroupIdAndTermCodeAndSequence(Long courseOfferingGroupId, String termCode, String sequence);
 
-	List<Track> getTracksByCourseOfferingGroupId(Long id);
+	List<Tag> getTracksByCourseOfferingGroupId(Long id);
 
-	CourseOfferingGroup createCourseOfferingGroupByCourseAndScheduleId(Long scheduleId, Course course);
-	CourseOfferingGroup findOrCreateCourseOfferingGroupByCourseAndScheduleId(Long scheduleId, Course course);
+	Course createCourseOfferingGroupByCourseAndScheduleId(Long scheduleId, Course course);
+	Course findOrCreateCourseOfferingGroupByCourseAndScheduleId(Long scheduleId, Course course);
 
-	CourseOfferingGroup saveCourseOfferingGroup(CourseOfferingGroup courseOfferingGroup);
+	Course saveCourseOfferingGroup(Course course);
 
 	boolean deleteCourseOfferingGroupById(Long id);
 
-	CourseOfferingGroup addTrackToCourseOfferingGroup(Long id, Track track);
+	Course addTrackToCourseOfferingGroup(Long id, Tag tag);
 
-	CourseOfferingGroup setCourseSubject(Long id, String subject);
+	Course setCourseSubject(Long id, String subject);
 
-	CourseOfferingGroup findOrCreateCourseOfferingGroupByScheduleIdAndCourseId(Long scheduleId, Long courseId);
+	Course findOrCreateCourseOfferingGroupByScheduleIdAndCourseId(Long scheduleId, Long courseId);
 }

@@ -42,16 +42,13 @@ public class Instructor implements Serializable {
 	private String email;
 	private String loginId;
 	private String employeeId;
-	private List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships = new ArrayList<InstructorWorkgroupRelationship>();
-	private List<TeachingPreference> teachingPreferences = new ArrayList<TeachingPreference>();
 	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
-	private List<InstructorTeachingAssistantPreference> instructorTeachingAssistantPreferences = new ArrayList<InstructorTeachingAssistantPreference>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "InstructorId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	@JsonView({
 		TeachingCallResponseViews.Detailed.class,
@@ -149,44 +146,12 @@ public class Instructor implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")
 	@JsonIgnore
-	public List<TeachingPreference> getTeachingPreferences() {
-		return teachingPreferences;
-	}
-
-	public void setTeachingPreferences(List<TeachingPreference> teachingPreferences) {
-		this.teachingPreferences = teachingPreferences;
-	}
-
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")
-	@JsonIgnore
 	public List<TeachingCallResponse> getTeachingCallResponses() {
 		return teachingCallResponses;
 	}
 
 	public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
 		this.teachingCallResponses = teachingCallResponses;
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")
-	@JsonIgnore
-	public List<InstructorWorkgroupRelationship> getInstructorWorkgroupRelationships() {
-		return instructorWorkgroupRelationships;
-	}
-
-	public void setInstructorWorkgroupRelationships(List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships) {
-		this.instructorWorkgroupRelationships = instructorWorkgroupRelationships;
-	}
-
-	@JsonBackReference
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")
-	public List<InstructorTeachingAssistantPreference> getInstructorTeachingAssistantPreferences() {
-		return instructorTeachingAssistantPreferences;
-	}
-
-	public void setInstructorTeachingAssistantPreferences(
-			List<InstructorTeachingAssistantPreference> instructorTeachingAssistantPreferences) {
-		this.instructorTeachingAssistantPreferences = instructorTeachingAssistantPreferences;
 	}
 
 	@JsonProperty

@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.CensusSnapshot;
 import edu.ucdavis.dss.ipa.entities.Section;
 
 @Validated

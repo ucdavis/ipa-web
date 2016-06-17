@@ -38,7 +38,7 @@ public class ScheduleExcelView extends AbstractXlsView {
 			Row excelHeader = sheet.createRow(row);
 			
 			excelHeader.createCell(0).setCellValue(cog.getDescription());
-			excelHeader.createCell(1).setCellValue(StringUtils.join(cog.getTracks(), ','));
+			excelHeader.createCell(1).setCellValue(StringUtils.join(cog.getTags(), ','));
 
 			int col = 2;
 			for(ScheduleTermState state : this.annualViewDTO.getScheduleTermStates()) {

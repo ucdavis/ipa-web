@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.entities.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Track;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
@@ -38,7 +37,7 @@ public class CourseOfferingGroupController {
 	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	@JsonView(CourseOfferingGroupViews.Detailed.class)
-	public CourseOfferingGroup getCourseOfferingGroupExpandedDetails(@PathVariable Long id, Model model) {
+	public Course getCourseOfferingGroupExpandedDetails(@PathVariable Long id, Model model) {
 		return this.courseOfferingGroupService.getCourseOfferingGroupById(id);
 	}
 
@@ -46,10 +45,10 @@ public class CourseOfferingGroupController {
 	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public AnnualCourseOfferingGroupView updateCourseOfferingGroup(
-			@RequestBody CourseOfferingGroup cogDto,
+			@RequestBody Course cogDto,
 			@PathVariable Long id,
 			HttpServletResponse httpResponse) {
-		CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
+		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
 
 		if (cog != null && this.scheduleService.isScheduleClosed(cog.getSchedule().getId())) {
 			httpResponse.setStatus(HttpStatus.LOCKED.value());
@@ -73,7 +72,7 @@ public class CourseOfferingGroupController {
 			return null;
 		}
 
-		CourseOfferingGroup newCog = this.courseOfferingGroupService.createCourseOfferingGroupByCourseAndScheduleId(scheduleId, course);
+		Course newCog = this.courseOfferingGroupService.createCourseOfferingGroupByCourseAndScheduleId(scheduleId, course);
 
 		httpResponse.setStatus(HttpStatus.OK.value());
 		UserLogger.log(currentUser, "Created new courseOfferingGroup '" + newCog.getDescription() + "' schedule with ID " + scheduleId);
@@ -84,7 +83,7 @@ public class CourseOfferingGroupController {
 	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public void deleteCourseOfferingGroup(@PathVariable Long id, HttpServletResponse httpResponse) {
-		CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
+		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
 		if (cog != null) {
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 			UserLogger.log(currentUser, "Deleted courseOfferingGroup '" + cog.getDescription() + "' with ID " + id);
@@ -109,25 +108,25 @@ public class CourseOfferingGroupController {
 	@RequestMapping(value = "/api/courseOfferingGroups/{id}/tracks", method = RequestMethod.POST)
 	@ResponseBody
 	@JsonView(CourseOfferingGroupViews.Summary.class)
-	public AnnualCourseOfferingGroupView updateCourseOfferingGroupTracks( @RequestBody List<Track> tracks, @PathVariable Long id, 
-			HttpServletResponse httpResponse) {
-		CourseOfferingGroup courseOfferingGroup = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
+	public AnnualCourseOfferingGroupView updateCourseOfferingGroupTracks(@RequestBody List<Tag> tags, @PathVariable Long id,
+																		 HttpServletResponse httpResponse) {
+		Course course = this.courseOfferingGroupService.getCourseOfferingGroupById(id);
 
-		if (courseOfferingGroup != null && this.scheduleService.isScheduleClosed(courseOfferingGroup.getSchedule().getId())) {
+		if (course != null && this.scheduleService.isScheduleClosed(course.getSchedule().getId())) {
 			httpResponse.setStatus(HttpStatus.LOCKED.value());
 		} else {
-			Workgroup workgroup = courseOfferingGroup.getSchedule().getWorkgroup();
+			Workgroup workgroup = course.getSchedule().getWorkgroup();
 
-			for(Track track : tracks) {
-				track.setWorkgroup(workgroup);
+			for(Tag tag : tags) {
+				tag.setWorkgroup(workgroup);
 			}
-			courseOfferingGroup.setTracks(tracks);
+			course.setTags(tags);
 
 			httpResponse.setStatus(HttpStatus.OK.value());
-			UserLogger.log(currentUser, "Updated tracks for courseOfferingGroup '" + courseOfferingGroup.getDescription() + "' with ID " + id);
-			courseOfferingGroup = this.courseOfferingGroupService.saveCourseOfferingGroup(courseOfferingGroup);
+			UserLogger.log(currentUser, "Updated tags for course '" + course.getDescription() + "' with ID " + id);
+			course = this.courseOfferingGroupService.saveCourseOfferingGroup(course);
 		}
 
-		return new AnnualCourseOfferingGroupView(courseOfferingGroup);
+		return new AnnualCourseOfferingGroupView(course);
 	}
 }

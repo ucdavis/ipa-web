@@ -5,20 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleInstructorNoteService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
@@ -68,8 +59,8 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	public List<TeachingCallCourseOfferingView> createTeachingCallCourseOfferingView(Schedule schedule) {
 		List<TeachingCallCourseOfferingView> teachingCallCourseOfferingViews = new ArrayList<TeachingCallCourseOfferingView>();
 
-		for (CourseOfferingGroup courseOfferingGroup : schedule.getCourseOfferingGroups()) {
-			for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings()) {
+		for (Course course : schedule.getCourses()) {
+			for (CourseOffering courseOffering : course.getSectionGroups()) {
 				TeachingCallCourseOfferingView teachingCallCourseOfferingView = new TeachingCallCourseOfferingView(courseOffering);
 				teachingCallCourseOfferingViews.add(teachingCallCourseOfferingView);
 			}
@@ -117,7 +108,7 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	public List<TeachingCallByCourseView> createTeachingCallByCourseView(Schedule schedule) {
 		List<TeachingCallByCourseView> teachingCallByCourseViews = new ArrayList<TeachingCallByCourseView>();
 
-		for (CourseOfferingGroup cog : schedule.getCourseOfferingGroups()) {
+		for (Course cog : schedule.getCourses()) {
 			List<TeachingPreference> teachingPreferences = teachingPreferenceService.getTeachingPreferencesByCourseOfferingGroupId(cog.getId());
 			teachingCallByCourseViews.add(new TeachingCallByCourseView(cog, teachingPreferences));
 		}

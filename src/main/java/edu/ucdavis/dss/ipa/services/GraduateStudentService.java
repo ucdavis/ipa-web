@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.GraduateStudent;
-
 @Validated
 public interface GraduateStudentService {
 	GraduateStudent saveGraduateStudent(@NotNull @Valid GraduateStudent graduateStudent);

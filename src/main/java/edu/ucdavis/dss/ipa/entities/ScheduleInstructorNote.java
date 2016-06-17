@@ -26,7 +26,7 @@ public class ScheduleInstructorNote {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ScheduleInstructorNoteId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	public long getId() {
 		return id;
@@ -37,7 +37,7 @@ public class ScheduleInstructorNote {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Instructors_InstructorId", nullable = false)
+	@JoinColumn(name = "InstructorId", nullable = false)
 	@JsonIgnore
 	public Instructor getInstructor() {
 		return instructor;
@@ -48,7 +48,7 @@ public class ScheduleInstructorNote {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Schedules_ScheduleId", nullable = false)
+	@JoinColumn(name = "ScheduleId", nullable = false)
 	@JsonIgnore
 	public Schedule getSchedule() {
 		return schedule;

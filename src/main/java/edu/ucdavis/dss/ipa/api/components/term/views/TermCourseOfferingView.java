@@ -15,14 +15,14 @@ public class TermCourseOfferingView {
 	public TermCourseOfferingView(CourseOffering courseOffering) {
 		if (courseOffering == null) return;
 		setTermCode(courseOffering.getTermCode());
-		setCourseNumber(courseOffering.getCourseOfferingGroup().getCourse().getCourseNumber());
+		setCourseNumber(courseOffering.getCourse().getCourse().getCourseNumber());
 		setId(courseOffering.getId());
-		setSubjectCode(courseOffering.getCourseOfferingGroup().getCourse().getSubjectCode());
-		setTitle(courseOffering.getCourseOfferingGroup().getTitle());
+		setSubjectCode(courseOffering.getCourse().getCourse().getSubjectCode());
+		setTitle(courseOffering.getCourse().getTitle());
 		setSeatsTotal(courseOffering.getSeatsTotal());
 		setEnrollmentTotal(courseOffering);
 		setSectionGroups(courseOffering.getSectionGroups());
-		setTracks(courseOffering.getCourseOfferingGroup().getTracks());
+		setTracks(courseOffering.getCourse().getTags());
 		setInstructors(courseOffering);
 	}
 
@@ -92,9 +92,9 @@ public class TermCourseOfferingView {
 		return tracks;
 	}
 
-	public void setTracks(List<Track> tracks) {
-		for (Track track : tracks) {
-			this.tracks.add(new TermTrackView(track));
+	public void setTracks(List<Tag> tags) {
+		for (Tag tag : tags) {
+			this.tracks.add(new TermTrackView(tag));
 		}
 	}
 

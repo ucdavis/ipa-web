@@ -42,13 +42,12 @@ public class Section implements Serializable {
 	private String crn;
 	private String sequenceNumber;
 	private SectionGroup sectionGroup;
-	private List<CensusSnapshot> censusSnapshots = new ArrayList<CensusSnapshot>(0);
 	private List<Activity> activities = new ArrayList<Activity>();
 	private Boolean visible, crnRestricted;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "SectionId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	@JsonView({
 		CourseOfferingGroupViews.Detailed.class,
@@ -114,7 +113,7 @@ public class Section implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SectionGroups_SectionGroupId", nullable = false)
+	@JoinColumn(name = "SectionGroupId", nullable = false)
 	@NotNull
 	@JsonBackReference
 	public SectionGroup getSectionGroup() {
@@ -132,21 +131,6 @@ public class Section implements Serializable {
 		return this.sectionGroup.getId();
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "section", orphanRemoval = true, cascade = {CascadeType.ALL})
-	@JsonView({
-		ScheduleViews.Detailed.class,
-		CourseOfferingGroupViews.Detailed.class,
-		SectionViews.Summary.class,
-		ScheduleViews.Detailed.class
-		})
-	public List<CensusSnapshot> getCensusSnapshots() {
-		return censusSnapshots;
-	}
-
-	public void setCensusSnapshots(List<CensusSnapshot> censusSnapshots) {
-		this.censusSnapshots = censusSnapshots;
-	}
-
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "section", cascade = {CascadeType.ALL})
 	@JsonProperty
 	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
@@ -156,21 +140,6 @@ public class Section implements Serializable {
 
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
-	}
-
-	@Transient
-	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
-	public List<Instructor> getInstructors()
-	{
-		List<Instructor> instructors = new ArrayList<Instructor>();
-
-		for(TeachingPreference teachingPreference : this.getSectionGroup().getCourseOffering().getTeachingPreferences() ) {
-			if(teachingPreference.isApproved().equals(true) ) {
-				instructors.add(teachingPreference.getInstructor());
-			}
-		}
-		return instructors;
 	}
 
 	@Basic

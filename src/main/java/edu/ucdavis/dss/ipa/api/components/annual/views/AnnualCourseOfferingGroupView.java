@@ -4,30 +4,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.CensusSnapshot;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Track;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Tag;
 
 public class AnnualCourseOfferingGroupView {
 	private long id, year;
 	private String description;
-	private List<Track> tracks = new ArrayList<Track>();
+	private List<Tag> tags = new ArrayList<Tag>();
 	private HashMap<String,Long> seatTotals = new HashMap<String,Long>(); // AC-set desired number of seats
 	private HashMap<String,Long> currentSeats = new HashMap<String,Long>(); // from CDW
 	private HashMap<String,Object> courseOfferingInfo = new HashMap<String,Object>();
 	private AnnualCourseView course;
 
-	public AnnualCourseOfferingGroupView(CourseOfferingGroup cog) {
+	public AnnualCourseOfferingGroupView(Course cog) {
 		setId(cog.getId());
 		setYear(cog.getYear());
 		setCourseOfferingInfo(cog.getCourseOfferingInfo());
 		setDescription(cog.getDescription());
-		setTracks(cog);
-		setSeatsTotal(cog.getCourseOfferings());
-		setSectionSeatCounts(cog.getCourseOfferings());
+		setTags(cog);
+		setSeatsTotal(cog.getSectionGroups());
+		setSectionSeatCounts(cog.getSectionGroups());
 		setCourse(cog);
 	}
 
@@ -47,14 +43,14 @@ public class AnnualCourseOfferingGroupView {
 		this.description = description;
 	}
 
-	public List<Track> getTracks() {
-		return this.tracks;
+	public List<Tag> getTags() {
+		return this.tags;
 	}
 
-	private void setTracks(CourseOfferingGroup cog) {
-		for (Track track: cog.getTracks()) {
-			if (!this.tracks.contains(track)) {
-				this.tracks.add(track);
+	private void setTags(Course cog) {
+		for (Tag tag : cog.getTags()) {
+			if (!this.tags.contains(tag)) {
+				this.tags.add(tag);
 			}
 		}
 	}
@@ -112,7 +108,7 @@ public class AnnualCourseOfferingGroupView {
 		return course;
 	}
 
-	public void setCourse(CourseOfferingGroup cog) {
+	public void setCourse(Course cog) {
 		this.course = new AnnualCourseView(cog.getCourse());
 	}
 

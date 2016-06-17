@@ -6,15 +6,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.CensusSnapshot;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.CensusSnapshotRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
@@ -49,7 +44,7 @@ public class JpaSectionService implements SectionService {
 		Section section = this.getSectionById(id);
 		if(section == null) return false;
 
-		CourseOfferingGroup cog = section.getSectionGroup().getCourseOffering().getCourseOfferingGroup();
+		Course cog = section.getSectionGroup().getCourseOffering().getCourse();
 		String termCode = section.getSectionGroup().getCourseOffering().getTermCode();
 		if (isLocked(cog.getId(), termCode)) return false;
 
@@ -81,7 +76,7 @@ public class JpaSectionService implements SectionService {
 		Section section = this.getSectionById(updatedSection.getId());
 		if (section == null) return null;
 
-		CourseOfferingGroup cog = section.getSectionGroup().getCourseOffering().getCourseOfferingGroup();
+		Course cog = section.getSectionGroup().getCourseOffering().getCourse();
 		String termCode = section.getSectionGroup().getCourseOffering().getTermCode();
 		if (isLocked(cog.getId(), termCode)) return null;
 
@@ -96,8 +91,8 @@ public class JpaSectionService implements SectionService {
 	@Transactional
 	public Section addSectionToCourseOfferingGroup(Long courseOfferingGroupId, String termCode, Section section) {
 
-		CourseOfferingGroup courseOfferingGroup = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
-		CourseOffering courseOffering = this.courseOfferingService.findOrCreateOneByCourseOfferingGroupAndTermCode(courseOfferingGroup, termCode);
+		Course course = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
+		CourseOffering courseOffering = this.courseOfferingService.findOrCreateOneByCourseOfferingGroupAndTermCode(course, termCode);
 
 		if (isLocked(courseOfferingGroupId, courseOffering.getTermCode())) return null;
 
@@ -121,8 +116,8 @@ public class JpaSectionService implements SectionService {
 	public boolean deleteSectionsBySequence(
 			Long courseOfferingGroupId, String sequence) {
 		boolean deletedAll = true;
-		CourseOfferingGroup courseOfferingGroup = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
-		for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings()) {
+		Course course = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
+		for (CourseOffering courseOffering : course.getSectionGroups()) {
 			for (SectionGroup sg : courseOffering.getSectionGroups()) {
 				List<Section> toDelete = new ArrayList<Section>();
 				for (Section section : sg.getSections()) {
@@ -145,13 +140,13 @@ public class JpaSectionService implements SectionService {
 	@Override
 	public boolean updateSectionSequences(Long courseOfferingGroupId, String oldSequence, String newSequence) {
 		boolean renamedAll = true;
-		CourseOfferingGroup courseOfferingGroup = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
-		for (CourseOffering courseOffering : courseOfferingGroup.getCourseOfferings()) {
+		Course course = this.courseOfferingGroupService.getCourseOfferingGroupById(courseOfferingGroupId);
+		for (CourseOffering courseOffering : course.getSectionGroups()) {
 			for (SectionGroup co : courseOffering.getSectionGroups()) {
 				for (Section section : co.getSections()) {
 					String termCode = section.getSectionGroup().getCourseOffering().getTermCode();
 					if (section.getSequenceNumber().equals(oldSequence)) {
-						if (isLocked(courseOfferingGroup.getId(), termCode)) renamedAll = false;
+						if (isLocked(course.getId(), termCode)) renamedAll = false;
 						else section.setSequenceNumber(newSequence);
 					}
 				}
@@ -159,14 +154,14 @@ public class JpaSectionService implements SectionService {
 		}
 
 		if (renamedAll) {
-			this.courseOfferingGroupService.saveCourseOfferingGroup(courseOfferingGroup);
+			this.courseOfferingGroupService.saveCourseOfferingGroup(course);
 		}
 
 		return renamedAll;
 	}
 
 	private boolean isLocked(long cogId, String termCode) {
-		CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById(cogId);
+		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(cogId);
 		Schedule schedule = cog.getSchedule();
 		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, termCode);
 

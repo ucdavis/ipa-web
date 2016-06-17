@@ -3,9 +3,6 @@ package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-
 public class TeachingCallCourseOfferingView {
 	private long id, seatsTotal;
 	private String termCode, subjectCode, effectiveTermCode, courseNumber, title;
@@ -16,10 +13,10 @@ public class TeachingCallCourseOfferingView {
 		setId(courseOffering.getId());
 		setSeatsTotal(courseOffering.getSeatsTotal());
 		setTermCode(courseOffering.getTermCode());
-		setSubjectCode(courseOffering.getCourseOfferingGroup().getCourse().getSubjectCode());
-		setEffectiveTermCode(courseOffering.getCourseOfferingGroup().getCourse().getEffectiveTermCode());
-		setCourseNumber(courseOffering.getCourseOfferingGroup().getCourse().getCourseNumber());
-		setTitle(courseOffering.getCourseOfferingGroup().getCourse().getTitle());
+		setSubjectCode(courseOffering.getCourse().getCourse().getSubjectCode());
+		setEffectiveTermCode(courseOffering.getCourse().getCourse().getEffectiveTermCode());
+		setCourseNumber(courseOffering.getCourse().getCourse().getCourseNumber());
+		setTitle(courseOffering.getCourse().getCourse().getTitle());
 		setInstructors(courseOffering);
 	}
 

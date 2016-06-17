@@ -1,9 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
 
 /**
  * Used by InstructorController and CourseOfferingGroupsController

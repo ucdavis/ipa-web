@@ -20,7 +20,7 @@ public class Location implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "LocationId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	public long getId() {
 		return this.id;
@@ -42,7 +42,7 @@ public class Location implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name= "Workgroups_WorkgroupId", nullable=false)
+	@JoinColumn(name= "WorkgroupId", nullable=false)
 	@JsonIgnore
 	public Workgroup getWorkgroup() {
 		return this.workgroup;

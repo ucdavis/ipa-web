@@ -1,10 +1,9 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.data.repository.CrudRepository;
 
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+public interface CourseOfferingGroupRepository extends CrudRepository<Course, Long> {
 
-public interface CourseOfferingGroupRepository extends CrudRepository<CourseOfferingGroup, Long> {
-
-	CourseOfferingGroup findByCourseIdAndScheduleId(long id, Long scheduleId);
+	Course findByCourseIdAndScheduleId(long id, Long scheduleId);
 }

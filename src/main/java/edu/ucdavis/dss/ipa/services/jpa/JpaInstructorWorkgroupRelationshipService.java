@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorWorkgroupRelationship;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.InstructorWorkgroupRelationshipRepository;
 import edu.ucdavis.dss.ipa.services.InstructorWorkgroupRelationshipService;

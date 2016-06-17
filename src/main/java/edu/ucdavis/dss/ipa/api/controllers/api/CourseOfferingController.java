@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
@@ -44,7 +43,7 @@ public class CourseOfferingController {
 	public CourseOffering updateCourseOfferingSeatsTotal (
 			@RequestBody CourseOffering co,
 			HttpServletResponse httpResponse) {
-		CourseOfferingGroup cog = this.courseOfferingGroupService.getCourseOfferingGroupById(co.getCourseOfferingGroup().getId());
+		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(co.getCourse().getId());
 		if (cog == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;

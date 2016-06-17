@@ -3,8 +3,6 @@ package edu.ucdavis.dss.ipa.entities.validation;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
-
 public class TeachingPreferenceValidator implements Validator {
 	@SuppressWarnings("rawtypes")
 

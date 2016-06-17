@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.CourseOffering;
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingPreference;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Term;
 
 public class TeachingCallByCourseView {
@@ -15,10 +13,10 @@ public class TeachingCallByCourseView {
 	private HashMap<String,TeachingCallCourseOfferingView> courseOfferings = new HashMap<String,TeachingCallCourseOfferingView>();
 	private HashMap<String,List<TeachingCallTeachingPreferenceView>> teachingPreferences = new HashMap<String,List<TeachingCallTeachingPreferenceView>>();
 
-	public TeachingCallByCourseView(CourseOfferingGroup cog, List<TeachingPreference> cogTeachingPreferences) {
+	public TeachingCallByCourseView(Course cog, List<TeachingPreference> cogTeachingPreferences) {
 		setId(cog.getId());
 		setDescription(cog.getDescription());
-		setCourseOfferings(cog.getCourseOfferings());
+		setCourseOfferings(cog.getSectionGroups());
 		setTeachingPreferences(cogTeachingPreferences);
 	}
 

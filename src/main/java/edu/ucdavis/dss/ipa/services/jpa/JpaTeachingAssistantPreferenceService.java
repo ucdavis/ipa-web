@@ -7,9 +7,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.GraduateStudent;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.TeachingAssistantPreference;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssistantPreferenceRepository;
 import edu.ucdavis.dss.ipa.services.GraduateStudentService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;

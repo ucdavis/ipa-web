@@ -3,7 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.annual.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.CourseOfferingGroup;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 
@@ -57,14 +57,14 @@ public class AnnualView {
 	}
 
 	private void setCourseOfferingGroups(Schedule schedule) {
-		for (CourseOfferingGroup cog: schedule.getCourseOfferingGroups()) {
+		for (Course cog: schedule.getCourses()) {
 			this.courseOfferingGroups.add(new AnnualCourseOfferingGroupView(cog));
 		}
 	}
 
 	private void setInstructors(Schedule schedule) {
 //		List<Instructor> scheduleInstructors = new ArrayList<Instructor>();
-//		for(TeachingPreference teachingPreference : schedule.getTeachingPreferences() ) {
+//		for(TeachingPreference teachingPreference : schedule.getTeachingAssignments() ) {
 //			if( teachingPreference.isApproved() == true && !scheduleInstructors.contains(teachingPreference.getInstructor())) {
 //				scheduleInstructors.add(teachingPreference.getInstructor());
 //			}

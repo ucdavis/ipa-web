@@ -27,10 +27,15 @@ public class TeachingAssignment implements Serializable {
 	private long id;
 	private Instructor instructor;
 	private SectionGroup sectionGroup;
+	private Schedule schedule;
+	private String termCode;
+	private int priority;
+	private boolean buyout, courseRelease, sabbatical, approved;
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "TeachingAssignmentId", unique = true, nullable = false)
+	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
 	public long getId() {
 		return this.id;
@@ -42,7 +47,7 @@ public class TeachingAssignment implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Instructors_InstructorId", nullable = false)
+	@JoinColumn(name = "InstructorId", nullable = false)
 	@NotNull
 	public Instructor getInstructor() {
 		return instructor;
@@ -54,12 +59,77 @@ public class TeachingAssignment implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SectionGroups_SectionGroupId", nullable = false)
+	@JoinColumn(name = "SectionGroupId", nullable = false)
 	public SectionGroup getSectionGroup() {
 		return sectionGroup;
 	}
 
 	public void setSectionGroup(SectionGroup sectionGroup) {
 		this.sectionGroup = sectionGroup;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="ScheduleId", nullable=false)
+	@JsonIgnore
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+
+	@JsonProperty
+	public String getTermCode() {
+		return termCode;
+	}
+
+	public void setTermCode(String termCode) {
+		this.termCode = termCode;
+	}
+
+	@JsonProperty
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	@JsonProperty
+	public boolean isBuyout() {
+		return buyout;
+	}
+
+	public void setBuyout(boolean buyout) {
+		this.buyout = buyout;
+	}
+
+	@JsonProperty
+	public boolean isCourseRelease() {
+		return courseRelease;
+	}
+
+	public void setCourseRelease(boolean courseRelease) {
+		this.courseRelease = courseRelease;
+	}
+
+	@JsonProperty
+	public boolean isSabbatical() {
+		return sabbatical;
+	}
+
+	public void setSabbatical(boolean sabbatical) {
+		this.sabbatical = sabbatical;
+	}
+
+	@JsonProperty
+	public boolean isApproved() {
+		return approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
 	}
 }

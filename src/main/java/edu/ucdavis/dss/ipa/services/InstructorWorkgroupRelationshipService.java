@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.services;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorWorkgroupRelationship;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 
 @Validated
