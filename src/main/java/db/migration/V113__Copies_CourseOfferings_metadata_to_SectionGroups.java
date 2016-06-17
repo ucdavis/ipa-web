@@ -69,7 +69,8 @@ public class V113__Copies_CourseOfferings_metadata_to_SectionGroups implements J
 
 
 		} finally {
-			rsSgs.close();
+			psAddMetadataColumns.close();
+			psSgs.close();
 		}
 	}
 

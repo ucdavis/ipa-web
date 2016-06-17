@@ -15,13 +15,14 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
 
     @Override
     public void migrate(Connection connection) {
-        ResultSet rsAllTeachingAssignments = null;
+        PreparedStatement psAllTeachingAssignments = null;
+        PreparedStatement psAddMetadataColumns = null;
 
         try {
             connection.setAutoCommit(false);
 
             // Add required metadata columns to SectionGroups
-            PreparedStatement psAddMetadataColumns = connection.prepareStatement(
+            psAddMetadataColumns = connection.prepareStatement(
                     " ALTER TABLE `TeachingAssignments`" +
                             " ADD COLUMN `TermCode` VARCHAR(6) NOT NULL," +
                             " ADD COLUMN `Priority` INT(11) NOT NULL," +
@@ -33,11 +34,11 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
             );
 
             // Find Orphaned teachingAssignments that aren't associated to a teachingPreference (Caused by initial historical schedule import)
-            PreparedStatement psAllTeachingAssignments = connection.prepareStatement(
+            psAllTeachingAssignments = connection.prepareStatement(
                     " SELECT * FROM `TeachingAssignments`;"
             );
 
-            rsAllTeachingAssignments = psAllTeachingAssignments.executeQuery();
+            ResultSet rsAllTeachingAssignments = psAllTeachingAssignments.executeQuery();
 
             psAddMetadataColumns.execute();
 
@@ -88,16 +89,22 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                             psSetMetaData.execute();
                             psSetMetaData.close();
                         }
+                        psCourseOfferingGroup.close();
                     }
+                    psCourseOffering.close();
                 }
+                psSectionGroup.close();
             }
         } catch(SQLException e) {
             e.printStackTrace();
             return;
         } finally {
             try {
-                if (rsAllTeachingAssignments != null) {
-                    rsAllTeachingAssignments.close();
+                if (psAllTeachingAssignments != null) {
+                    psAllTeachingAssignments.close();
+                }
+                if (psAddMetadataColumns != null) {
+                    psAddMetadataColumns.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -109,13 +116,13 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
         // If not, make them.
         // Update existing teachingAssignments
 
-        ResultSet rsTps = null;
+        PreparedStatement psTps = null;
 
         try {
             // Get all the SectionGroups
-            PreparedStatement psTps = connection.prepareStatement(
+            psTps = connection.prepareStatement(
                     "SELECT * FROM `TeachingPreferences`");
-            rsTps = psTps.executeQuery();
+            ResultSet rsTps = psTps.executeQuery();
 
             // Loop over TeachingPreferences
             while(rsTps.next()) {
@@ -202,18 +209,22 @@ public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments im
                         psCreateAssignment.execute();
                         psCreateAssignment.close();
                     }
+                    psTeachingAssignments.close();
                 }
+                psSectionGroups.close();
             }
+
+            connection.commit();
+
         }  catch(SQLException e) {
             e.printStackTrace();
             return;
         } finally {
             try {
-                if (rsTps != null) {
-                    rsTps.close();
+                if (psTps != null) {
+                    psTps.close();
                 }
 
-                connection.commit();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

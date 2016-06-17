@@ -18,10 +18,10 @@ public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements 
 
     @Override
     public void migrate(Connection connection) throws Exception {
-        ResultSet rsAllCourses = null;
+        PreparedStatement psAllCourses = null;
 
         try {
-//            connection.setAutoCommit(false);
+            connection.setAutoCommit(false);
 
             // Add required metadata columns to SectionGroups
             PreparedStatement psAddMetadataColumns = connection.prepareStatement(
@@ -29,6 +29,7 @@ public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements 
                             " ADD COLUMN `SequencePattern` VARCHAR(3) NOT NULL;"
             );
             psAddMetadataColumns.execute();
+            psAddMetadataColumns.close();
 
             // Make the Sequence Number not Null
             PreparedStatement psSequenceNumberNotNull = connection.prepareStatement(
@@ -36,12 +37,13 @@ public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements 
                             " CHANGE COLUMN `SequenceNumber` `SequenceNumber` VARCHAR(3) NOT NULL;"
             );
             psSequenceNumberNotNull.execute();
+            psSequenceNumberNotNull.close();
 
             // Find Orphaned teachingAssignments that aren't associated to a teachingPreference (Caused by initial historical schedule import)
-            PreparedStatement psAllCourses = connection.prepareStatement(
+            psAllCourses = connection.prepareStatement(
                     " SELECT * FROM `Courses`;"
             );
-            rsAllCourses = psAllCourses.executeQuery();
+            ResultSet rsAllCourses = psAllCourses.executeQuery();
 
             while (rsAllCourses.next()) {
                 long courseId = rsAllCourses.getLong("id");
@@ -131,6 +133,7 @@ public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements 
                                 newCourseId = rsCreateCourse.getLong(1);
                                 sequenceCourseIdPairs.put(key, newCourseId);
                             }
+                            psCreateCourse.close();
 
                         }
 
@@ -150,19 +153,21 @@ public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements 
                         psSetMetaData.execute();
                         psSetMetaData.close();
                     }
+                    psSections.close();
                 }
+                psSectionGroups.close();
 
             }
 
-//            connection.commit();
+            connection.commit();
 
         } catch(SQLException e) {
             e.printStackTrace();
             return;
         } finally {
             try {
-                if (rsAllCourses != null) {
-                    rsAllCourses.close();
+                if (psAllCourses != null) {
+                    psAllCourses.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
