@@ -21,12 +21,12 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TermService;
-import edu.ucdavis.dss.ipa.services.TrackService;
+import edu.ucdavis.dss.ipa.services.TagService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupOpsService;
@@ -42,13 +42,15 @@ import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 public class WorkgroupController {
 	@Inject WorkgroupService workgroupService;
 	@Inject InstructorService instructorService;
-	@Inject TrackService trackService;
+	@Inject
+	TagService tagService;
 	@Inject AuthenticationService authenticationService;
 	@Inject UserService userService;
 	@Inject UserRoleService userRoleService;
 	@Inject ScheduleService scheduleService;
 	@Inject ScheduleOpsService scheduleOpsService;
-	@Inject CourseOfferingGroupService courseOfferingGroupService;
+	@Inject
+	CourseService courseService;
 	@Inject WorkgroupOpsService workgroupOpsService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject TermService termService;
@@ -78,7 +80,7 @@ public class WorkgroupController {
 		Workgroup workgroup = workgroupService.findOneById(Id);
 
 		String loginId = authenticationService.getCurrentUser().getLoginid();
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 
 		return this.workgroupService.getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor);
 	}

@@ -14,8 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.utilities.UserLogger;
@@ -28,7 +27,8 @@ import edu.ucdavis.dss.ipa.api.views.CourseOfferingViews;
 @RestController
 public class CourseOfferingController {
 	@Inject CourseOfferingService courseOfferingService;
-	@Inject CourseOfferingGroupService courseOfferingGroupService;
+	@Inject
+	CourseService courseService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TeachingCallViewFactory teachingCallViewFactory;
 	@Inject TermViewFactory termViewFactory;
@@ -43,7 +43,7 @@ public class CourseOfferingController {
 	public CourseOffering updateCourseOfferingSeatsTotal (
 			@RequestBody CourseOffering co,
 			HttpServletResponse httpResponse) {
-		Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById(co.getCourse().getId());
+		Course cog = this.courseService.getCourseOfferingGroupById(co.getCourse().getId());
 		if (cog == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;

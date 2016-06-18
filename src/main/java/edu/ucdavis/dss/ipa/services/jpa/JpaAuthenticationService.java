@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +18,6 @@ import edu.ucdavis.dss.ipa.entities.AuthenticationPrincipal;
 import edu.ucdavis.dss.ipa.entities.AuthenticationUser;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
@@ -79,7 +76,7 @@ public class JpaAuthenticationService implements AuthenticationService, UserDeta
 	
 	public AuthenticationUser newAuthenticationUser(String loginId) {
 		User user = userService.getUserByLoginId(loginId);
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		AuthenticationUser authenticationUser = new AuthenticationUser();
 
 		if (user == null) {

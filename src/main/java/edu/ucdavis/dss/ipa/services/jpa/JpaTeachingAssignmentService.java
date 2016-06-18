@@ -9,7 +9,6 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssistantPreferenceRepository;
-import edu.ucdavis.dss.ipa.services.GraduateStudentService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 

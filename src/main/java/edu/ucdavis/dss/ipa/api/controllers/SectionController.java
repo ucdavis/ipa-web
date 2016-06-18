@@ -17,13 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.ipa.api.views.SectionViews;
 
 @RestController
@@ -46,7 +44,7 @@ public class SectionController {
 			@RequestParam(value = "termCode", required = true) String termCode,
 			HttpServletResponse httpResponse) {
 
-		Section newSection = this.sectionService.addSectionToCourseOfferingGroup(id, termCode,section);
+		Section newSection = this.sectionService.addSection(id, termCode,section);
 
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.OK.value());
@@ -84,7 +82,7 @@ public class SectionController {
 
 		// If this was the last section, delete the sectionGroup as well
 		if (sectionsInSectionGroup == 1) {
-			sectionGroupService.deleteSectionGroupById(sectionGroup.getId());
+			sectionGroupService.delete(sectionGroup.getId());
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 		} else if (this.sectionService.deleteSectionById(id)) {
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());

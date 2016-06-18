@@ -30,7 +30,7 @@ public class SectionGroupController {
 			@PathVariable long id,
 			@RequestParam(value = "termCode", required = false) String termCode,
 			HttpServletResponse httpResponse) {
-		return this.sectionGroupService.getSectionGroupsByScheduleIdAndTermCode(id, termCode);
+		return this.sectionGroupService.findByScheduleIdAndTermCode(id, termCode);
 	}
 
 	/**

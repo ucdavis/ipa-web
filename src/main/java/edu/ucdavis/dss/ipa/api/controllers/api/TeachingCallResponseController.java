@@ -119,7 +119,7 @@ public class TeachingCallResponseController {
 			HttpServletResponse httpResponse)
 	{
 		String loginId = authenticationService.getCurrentUser().getLoginid();
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		if (instructor == null) {
 			log.warn("Cannot get teaching call status: no such instructor.");
 			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());

@@ -29,7 +29,6 @@ import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.Email;

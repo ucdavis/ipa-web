@@ -18,12 +18,9 @@ import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
-import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallTeachingPreferenceView;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
@@ -92,7 +89,7 @@ public class TeachingPreferenceController {
 
 		// Set the instructor if exists
 		if (teachingPreference != null && teachingPreference.getInstructor() != null) {
-			Instructor instructor = instructorService.getInstructorById(teachingPreference.getInstructor().getId());
+			Instructor instructor = instructorService.getOneById(teachingPreference.getInstructor().getId());
 			teachingPreference.setInstructor(instructor);
 		} else {
 			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());

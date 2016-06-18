@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.TrackService;
+import edu.ucdavis.dss.ipa.services.TagService;
 import edu.ucdavis.dss.ipa.services.WorkgroupOpsService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
@@ -22,9 +22,11 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 	@Inject WorkgroupService workgroupService;
 	@Inject ScheduleOpsService scheduleOpsService;
-	@Inject TrackService trackService;
+	@Inject
+	TagService tagService;
 	@Inject ScheduleService scheduleService;
-	@Inject CourseOfferingGroupService courseOfferingGroupService;
+	@Inject
+	CourseService courseService;
 	
 	private static final long YEARS_OF_HISTORICAL_SCHEDULES = 7;
 
@@ -55,14 +57,14 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 		
 		tag.setWorkgroup(workgroup);
 		tag.setName("Undergraduate");
-		this.trackService.saveTrack(tag);
+		this.tagService.saveTrack(tag);
 		
 		// Create 'Graduate' tag
 		tag = new Tag();
 		
 		tag.setWorkgroup(workgroup);
 		tag.setName("Graduate");
-		this.trackService.saveTrack(tag);
+		this.tagService.saveTrack(tag);
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 		if(workgroup != null) {
 			for( Schedule schedule : workgroup.getSchedules() ) {
 				for (Course course : schedule.getCourses()) {
-					courseOfferingGroupService.deleteCourseOfferingGroupById(course.getId());
+					courseService.deleteCourseOfferingGroupById(course.getId());
 				}
 				scheduleService.deleteByScheduleId(schedule.getId());
 			}

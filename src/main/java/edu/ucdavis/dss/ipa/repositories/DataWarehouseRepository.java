@@ -32,4 +32,6 @@ public interface DataWarehouseRepository {
 	public Set<DwSectionGroup> getPrivateSectionGroupsByDeptCodeAndYear(String code, long year);
 
 	public List<DwCourse> searchCourses(String query);
+
+	public List<DwSectionGroup> getSectionGroupsByCourseId(String subjectCode, String courseNumber, String effectiveTermCode, String termCode);
 }

@@ -43,7 +43,7 @@ public class InstructorController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public Instructor addInstructor(@RequestBody Instructor instructor, HttpServletResponse httpResponse) {
-		Instructor newInstructor = this.instructorService.saveInstructor(instructor);
+		Instructor newInstructor = this.instructorService.save(instructor);
 		
 		httpResponse.setStatus(HttpStatus.OK.value());
 		
@@ -55,7 +55,7 @@ public class InstructorController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public SummaryInstructorView getInstructor (@PathVariable Long workgroupId, @PathVariable Long instructorId, HttpServletResponse httpResponse) {
-		Instructor instructor = this.instructorService.getInstructorById(instructorId);
+		Instructor instructor = this.instructorService.getOneById(instructorId);
 		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
 		
 		return summaryViewFactory.createSummaryInstructorView(instructor, workgroup);

@@ -8,34 +8,21 @@ import edu.ucdavis.dss.dw.dto.DwSectionGroup;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 
+import javax.validation.Valid;
+
 @Validated
 public interface SectionGroupService {
 
-	SectionGroup getSectionGroupById(Long id);
+	SectionGroup getOneById(Long id);
 
-	List<SectionGroup> getSectionGroups();
+	SectionGroup save(SectionGroup sectionGroup);
 
-	SectionGroup saveSectionGroup(SectionGroup sectionGroup);
+	void delete(Long id);
 
-	void deleteSectionGroupById(Long id);
+	List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 
-	SectionGroup createSectionGroup(SectionGroup co);
+	List<SectionGroup> findByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId);
 
-	SectionGroup createSectionGroup(SectionGroup co, boolean initSection);
+	Section addSection(Long sectionGroupId, Section section);
 
-	Section addAutoIncrementSection(long sectionGroupId);
-
-	String getSectionGroupSequence(long sectionGroupId);
-
-	List<SectionGroup> getSectionGroupsByScheduleIdAndTermCode(long scheduleId, String termCode);
-
-	List<DwSectionGroup> getSectionGroupsByCourseId(Long courseId, String termCode);
-
-	SectionGroup findOneById(Long courseId);
-	
-	List<SectionGroup> getSectionGroupsByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId);
-
-	List<SectionGroup> getSectionGroupsByCourseOfferingId(long courseOfferingId);
-
-	List<SectionGroup> findAllEager();
 }

@@ -15,7 +15,6 @@ import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
@@ -181,7 +180,7 @@ public class TermViewController {
 
 		SectionGroup sectionGroup = new SectionGroup();
 		sectionGroup.setCourseOffering(courseOffering);
-		sectionGroup = sectionGroupService.saveSectionGroup(sectionGroup);
+		sectionGroup = sectionGroupService.save(sectionGroup);
 
 		section.setSectionGroup(sectionGroup);
 		sectionService.saveSection(section);
@@ -199,7 +198,7 @@ public class TermViewController {
 			@PathVariable long instructorId,
 			HttpServletResponse httpResponse) {
 		SectionGroup sectionGroup = this.sectionGroupService.findOneById(sectionGroupId);
-		Instructor instructor = this.instructorService.getInstructorById(instructorId);
+		Instructor instructor = this.instructorService.getOneById(instructorId);
 		if (sectionGroup != null && instructor != null) {
 			TeachingAssignment teachingAssignment = teachingAssignmentService
 					.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);

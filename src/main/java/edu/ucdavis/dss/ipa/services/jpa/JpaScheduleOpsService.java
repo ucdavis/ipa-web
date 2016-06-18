@@ -20,8 +20,7 @@ import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.DwScheduleService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.RoleService;
@@ -30,7 +29,6 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
@@ -43,8 +41,8 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	@Inject ScheduleService scheduleService;
 	@Inject DwScheduleService dwScheduleService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
-	@Inject CourseOfferingGroupService courseOfferingGroupService;
-	@Inject CourseOfferingService courseOfferingService;
+	@Inject
+	CourseService courseService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
@@ -52,7 +50,6 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	@Inject InstructorService instructorService;
 	@Inject RoleService roleService;
 	@Inject UserRoleService userRoleService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject WorkgroupService workgroupService;
 	@Inject DataWarehouseRepository dwRepository;
 
@@ -61,111 +58,112 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	 */
 	@Override
 	public Schedule createScheduleFromExisting(Long workgroupId, Long newScheduleYear, Long copyFromYear, Boolean copyInstructors, Boolean copyRooms, Boolean copyTimes) {
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		Schedule existingSchedule = this.scheduleService.findByWorkgroupAndYear(workgroup, copyFromYear);
-
-		if (scheduleService.findByWorkgroupAndYear(workgroup, newScheduleYear) != null) {
-			log.error("Cannot createScheduleFromExisting as schedule for year: " + newScheduleYear + " already exists.");
-			return null;
-		}
-		
-		if (existingSchedule == null) {
-			log.error("Cannot createScheduleFromExisting as existing schedule for year: " + copyFromYear + " does not exist.");
-			return null;
-		}
-
-		log.info("Creating schedule from existing year (" + existingSchedule.getYear() + ") to year " + newScheduleYear);
-
-		Schedule newSchedule = scheduleService.createSchedule(existingSchedule.getWorkgroup().getId(), newScheduleYear);
-
-		// Create the CourseOfferingGroups
-		for(Course cog : existingSchedule.getCourses()) {
-			Course newCog = new Course();
-
-			newCog.setSchedule(newSchedule);
-			
-			List<Tag> tags = new ArrayList<Tag>();
-			for(Tag tag : cog.getTags()) {
-				tags.add(tag);
-			}
-			
-			newCog.setTags(tags);
-			newCog.setCourse(cog.getCourse());
-			newCog.setTitle(cog.getTitle());
-			newCog.setUnitsLow(cog.getUnitsLow());
-			newCog.setUnitsHigh(cog.getUnitsHigh());
-			
-			newCog = courseOfferingGroupService.saveCourseOfferingGroup(newCog);
-
-			// Create the CourseOfferings
-			for(CourseOffering courseOffering : cog.getSectionGroups()) {
-				String updatedTermCode = adjustTermCodeYear(courseOffering.getTermCode(), newScheduleYear);
-				
-				CourseOffering newCourseOffering = new CourseOffering();
-				
-				newCourseOffering.setCourse(newCog);
-				newCourseOffering.setTermCode(updatedTermCode);
-				newCourseOffering.setSeatsTotal(courseOffering.getSeatsTotal());
-				
-				courseOfferingService.saveCourseOffering(newCourseOffering);
-
-				// Create the SectionGroups
-				for(SectionGroup sg : courseOffering.getSectionGroups()) {
-					SectionGroup newSg = new SectionGroup();
-
-					newSg.setCourseOffering(newCourseOffering);
-	
-					sectionGroupService.saveSectionGroup(newSg);
-	
-					// Create the Sections
-					for(Section section : sg.getSections()) {
-						Section newSection = new Section();
-
-						newSection.setSectionGroup(newSg);
-						newSection.setSeats(section.getSeats());
-						newSection.setSequenceNumber(section.getSequenceNumber());
-						newSection.setVisible(section.isVisible());
-						newSection.setCrnRestricted(section.isCrnRestricted());
-
-						sectionService.saveSection(newSection);
-
-						if(copyInstructors) {
-							// Create the TeachingPreferences
-							for (Instructor instructor : section.getInstructors()) {
-								TeachingPreference teachingPreference = teachingPreferenceService.findOrCreateOneBySectionIdAndInstructorId(newSection.getId(), instructor.getId());
-								teachingPreference.setApproved(false);
-								teachingPreference.setTermCode(adjustTermCodeYear(newCourseOffering.getTermCode(), newScheduleYear));
-								teachingPreferenceService.saveTeachingPreference(teachingPreference);
-							}
-						}
-	
-						// Create the activities
-						for(Activity activity : section.getActivities()) {
-							Activity newActivity = new Activity();
-
-							if(copyTimes) {
-								newActivity.setEndTime(activity.getEndTime() );
-								newActivity.setStartTime(activity.getStartTime() );
-							}
-							if(copyRooms) {
-								newActivity.setBannerLocation(activity.getBannerLocation());
-							}
-
-							newActivity.setSection(newSection);
-							newActivity.setDayIndicator(activity.getDayIndicator());
-							newActivity.setFrequency(activity.getFrequency());
-							newActivity.setVirtual(activity.isVirtual());
-							newActivity.setActivityState(ActivityState.DRAFT);
-							newActivity.setActivityTypeCode(activity.getActivityTypeCode());
-							
-							activityService.saveActivity(newActivity);
-						}
-					}
-				}
-			}
-		}
-		
-		return newSchedule;
+//		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+//		Schedule existingSchedule = this.scheduleService.findByWorkgroupAndYear(workgroup, copyFromYear);
+//
+//		if (scheduleService.findByWorkgroupAndYear(workgroup, newScheduleYear) != null) {
+//			log.error("Cannot createScheduleFromExisting as schedule for year: " + newScheduleYear + " already exists.");
+//			return null;
+//		}
+//
+//		if (existingSchedule == null) {
+//			log.error("Cannot createScheduleFromExisting as existing schedule for year: " + copyFromYear + " does not exist.");
+//			return null;
+//		}
+//
+//		log.info("Creating schedule from existing year (" + existingSchedule.getYear() + ") to year " + newScheduleYear);
+//
+//		Schedule newSchedule = scheduleService.createSchedule(existingSchedule.getWorkgroup().getId(), newScheduleYear);
+//
+//		// Create the CourseOfferingGroups
+//		for(Course cog : existingSchedule.getCourses()) {
+//			Course newCog = new Course();
+//
+//			newCog.setSchedule(newSchedule);
+//
+//			List<Tag> tags = new ArrayList<Tag>();
+//			for(Tag tag : cog.getTags()) {
+//				tags.add(tag);
+//			}
+//
+//			newCog.setTags(tags);
+//			newCog.setCourse(cog.getCourse());
+//			newCog.setTitle(cog.getTitle());
+//			newCog.setUnitsLow(cog.getUnitsLow());
+//			newCog.setUnitsHigh(cog.getUnitsHigh());
+//
+//			newCog = courseService.saveCourseOfferingGroup(newCog);
+//
+//			// Create the CourseOfferings
+//			for(CourseOffering courseOffering : cog.getSectionGroups()) {
+//				String updatedTermCode = adjustTermCodeYear(courseOffering.getTermCode(), newScheduleYear);
+//
+//				CourseOffering newCourseOffering = new CourseOffering();
+//
+//				newCourseOffering.setCourse(newCog);
+//				newCourseOffering.setTermCode(updatedTermCode);
+//				newCourseOffering.setSeatsTotal(courseOffering.getSeatsTotal());
+//
+//				courseOfferingService.saveCourseOffering(newCourseOffering);
+//
+//				// Create the SectionGroups
+//				for(SectionGroup sg : courseOffering.getSectionGroups()) {
+//					SectionGroup newSg = new SectionGroup();
+//
+//					newSg.setCourseOffering(newCourseOffering);
+//
+//					sectionGroupService.save(newSg);
+//
+//					// Create the Sections
+//					for(Section section : sg.getSections()) {
+//						Section newSection = new Section();
+//
+//						newSection.setSectionGroup(newSg);
+//						newSection.setSeats(section.getSeats());
+//						newSection.setSequenceNumber(section.getSequenceNumber());
+//						newSection.setVisible(section.isVisible());
+//						newSection.setCrnRestricted(section.isCrnRestricted());
+//
+//						sectionService.saveSection(newSection);
+//
+//						if(copyInstructors) {
+//							// Create the TeachingPreferences
+//							for (Instructor instructor : section.getInstructors()) {
+//								TeachingPreference teachingPreference = teachingPreferenceService.findOrCreateOneBySectionIdAndInstructorId(newSection.getId(), instructor.getId());
+//								teachingPreference.setApproved(false);
+//								teachingPreference.setTermCode(adjustTermCodeYear(newCourseOffering.getTermCode(), newScheduleYear));
+//								teachingPreferenceService.saveTeachingPreference(teachingPreference);
+//							}
+//						}
+//
+//						// Create the activities
+//						for(Activity activity : section.getActivities()) {
+//							Activity newActivity = new Activity();
+//
+//							if(copyTimes) {
+//								newActivity.setEndTime(activity.getEndTime() );
+//								newActivity.setStartTime(activity.getStartTime() );
+//							}
+//							if(copyRooms) {
+//								newActivity.setBannerLocation(activity.getBannerLocation());
+//							}
+//
+//							newActivity.setSection(newSection);
+//							newActivity.setDayIndicator(activity.getDayIndicator());
+//							newActivity.setFrequency(activity.getFrequency());
+//							newActivity.setVirtual(activity.isVirtual());
+//							newActivity.setActivityState(ActivityState.DRAFT);
+//							newActivity.setActivityTypeCode(activity.getActivityTypeCode());
+//
+//							activityService.saveActivity(newActivity);
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//		return newSchedule;
+		return null;
 	}
 
 	/**
@@ -287,10 +285,10 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 
 				
 				// Create instructor (not a role nor a user - it is a piece of data)
-				Instructor instructor = this.instructorService.getInstructorByLoginId(dwInstructor.getLoginId());
+				Instructor instructor = this.instructorService.getOneByLoginId(dwInstructor.getLoginId());
 				if(instructor == null) {
 					// Some instructors may be in the DB already without a login ID ...
-					instructor = this.instructorService.getInstructorByEmployeeId(dwInstructor.getEmployeeId());
+					instructor = this.instructorService.getOneByEmployeeId(dwInstructor.getEmployeeId());
 				}
 
 				if(instructor == null) {
@@ -314,7 +312,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 					instructor.setLoginId(dwInstructor.getLoginId());
 				}
 				
-				this.instructorService.saveInstructor(instructor);
+				this.instructorService.save(instructor);
 
 				// Ensure this user will have the 'instructor' role
 				if(user.getRoles().contains(instructorRole) == false) {

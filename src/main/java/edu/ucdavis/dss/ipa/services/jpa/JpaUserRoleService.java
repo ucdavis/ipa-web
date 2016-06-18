@@ -107,7 +107,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 			if(roleName.equals("senateInstructor") || roleName.equals("federationInstructor")) {
 				log.info("Creating instructor for user '" + user.getLoginId() + "'");
-				Instructor instructor = instructorService.findOrCreateInstructor(
+				Instructor instructor = instructorService.findOrCreate(
 					user.getFirstName(),
 					user.getLastName(),
 					user.getEmail(),
@@ -130,7 +130,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 							instructor.setEmployeeId(dwInstructor.getEmployeeId());
 							log.info("Queried Data Warehouse for employeeId on instructor '" + instructor.getLoginId() + "'");
-							instructorService.saveInstructor(instructor);
+							instructorService.save(instructor);
 						}
 					}
 				} catch (Exception e) {
@@ -165,7 +165,7 @@ public class JpaUserRoleService implements UserRoleService {
 				userRoleRepository.delete(userRole);
 
 				if(roleName.equals("senateInstructor") || roleName.equals("federationInstructor") ) {
-					instructorService.removeOrphanedInstructorByLoginId(loginId);
+					instructorService.removeOrphanedByLoginId(loginId);
 				}
 				return;
 			}
@@ -228,7 +228,7 @@ public class JpaUserRoleService implements UserRoleService {
 		for (String instructorRole: INSTRUCTOR_ROLES) {
 			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
 			for (UserRole userRole: instructorRoles) {
-				Instructor instructor = instructorService.getInstructorByLoginId(userRole.getUser().getLoginId());
+				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
 				if (instructor != null) {
 					// Add to list of instructors if not already there. This should never happen since
 					// an instructor should be either Senate OR Federation, but not both.

@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
@@ -16,220 +18,93 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.ucdavis.dss.dw.DwClient;
 import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
 
 @Service
 public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SectionGroupRepository sectionGroupRepository;
-	@Inject SectionRepository sectionRepository;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject ScheduleService scheduleService;
+	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
 
 	@Override
 	@Transactional
 	//@PreAuthorize("hasAnyRole('admin','academicCoordinator')")
-	public SectionGroup getSectionGroupById(Long id) {
+	public SectionGroup getOneById(Long id) {
 		return sectionGroupRepository.findOne(id);
 	}
 
 	@Override
-	@Transactional
-	//@PreAuthorize("hasAnyRole('admin','academicCoordinator')")
-	public List<SectionGroup> getSectionGroups() {
-		return (List<SectionGroup>)sectionGroupRepository.findAll();
-	}
-
-	@Override
-	public SectionGroup saveSectionGroup(SectionGroup sectionGroup) {
+	public SectionGroup save(SectionGroup sectionGroup) {
 		return this.sectionGroupRepository.save(sectionGroup);
 	}
 
 	@Override
-	public void deleteSectionGroupById(Long id) {
+	public void delete(Long id) {
 		this.sectionGroupRepository.delete(id);
 	}
 
 	@Override
-	@Transactional
-	public SectionGroup createSectionGroup(SectionGroup co) {
-		return this.createSectionGroup(co, true);
-	}
-
-	/**
-	 * Takes a SectionGroup and a boolean
-	 * to whether initialize a section or not
-	 */
-	@Override
-	@Transactional
-	public SectionGroup createSectionGroup(
-			SectionGroup co, boolean initSection) {
-
-		co = this.sectionGroupRepository.save(co);
-
-		if ((co.getSections() == null || co.getSections().size() == 0) && initSection) {
-			co.setSections(new ArrayList<Section>());
-
-			Section section = new Section();
-			section.setSequenceNumber("001");
-			section.setSectionGroup(co);
-
-			this.sectionRepository.save(section);
-
-			co.addSection(section);
-		}
-
-		return this.saveSectionGroup(co);
-	}
-
-	@Override
-	@Transactional
-	public Section addAutoIncrementSection(long sectionGroupId) {
-		Section section = new Section();
-		SectionGroup co = this.getSectionGroupById(sectionGroupId);
-		section.setSectionGroup(co);
-
-		// Sort the sections in the CO by the sequence number alphabetically
-		List<Section> sections = co.getSections();
-		Collections.sort(sections, new Comparator<Section>() {
-			@Override
-			public int compare(Section s1, Section s2) {
-				return s1.getSequenceNumber().compareTo(s2.getSequenceNumber());
-			}
-		} );
-
-		String lastSq = sections.get(sections.size() - 1).getSequenceNumber();
-
-		// Get the last 2 characters and increment them
-		String nextSqNum = "";
-		int sqLength = 1;
-		if (lastSq.length() > 1 && StringUtils.isNumeric(lastSq.substring(lastSq.length() - 2))) {
-			// If the last 2 characters are numbers
-			sqLength = 2;
-			nextSqNum = String.format("%02d", Integer.parseInt(lastSq.substring(lastSq.length() - 2)) + 1);
-		} else if (lastSq.length() > 0 && StringUtils.isNumeric(lastSq.substring(lastSq.length() - 1))) {
-			// If the last character is a number
-			nextSqNum = String.format("%01d", Integer.parseInt(lastSq.substring(lastSq.length() - 1)) + 1);
-		} else if (lastSq.length() > 0) {
-			// If the last character is a letter
-			nextSqNum = String.valueOf((char) (lastSq.charAt(lastSq.length() - 1) + 1));
-		}
-
-		// Concatenate the calculated sequence, save the section and return
-		section.setSequenceNumber(lastSq.substring(0, lastSq.length() - sqLength) + nextSqNum);
-		return this.sectionRepository.save(section);
-	}
-
-	@Override
-	public String getSectionGroupSequence(long sectionGroupId) {
-		List<String> sequenceSamples = this.sectionGroupRepository.findSequenceSamplesBySectionGroupId(sectionGroupId);
-		
-		if((sequenceSamples == null) || (sequenceSamples.size() == 0)) return null;
-		
-		String sequenceSample = sequenceSamples.get(0);
-		
-		char sequenceStartChar = sequenceSample.charAt(0);
-		
-		if(Character.isLetter(sequenceStartChar)) {
-			return "" + sequenceStartChar;
-		} else {
-			return sequenceSample;
-		}
-	}
-
-	@Override
-	public List<SectionGroup> getSectionGroupsByScheduleIdAndTermCode(long scheduleId, String termCode) {
+	public List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
 		Schedule schedule = this.scheduleService.findById(scheduleId);
-		List<Long> courseOfferingIds = schedule.getCourses()
+		List<SectionGroup> sectionGroups = schedule.getCourses()
 				.stream()
-				.map(s -> s.getSectionGroups().stream()
-						.filter(co -> termCode == null || termCode.trim().isEmpty() || co.getTermCode().equals(termCode.trim()))
-						.map(CourseOffering::getId).collect(Collectors.toList()))
+				.map(course -> course.getSectionGroups().stream()
+						.filter(sectionGroup -> termCode == null || termCode.trim().isEmpty() || sectionGroup.getTermCode().equals(termCode.trim()))
+						.collect(Collectors.toList()))
 				.flatMap(Collection::stream)
 				.collect(Collectors.toList());
-		return this.sectionGroupRepository.findByCourseOfferingIdIn(courseOfferingIds);
-	}
-
-	@Override
-	public List<DwSectionGroup> getSectionGroupsByCourseId(Long courseId, String termCode) {
-		Course course = courseService.findOneById(courseId);
-		if (course == null) return null;
-
-		DwClient dwClient = null;
-
-		try {
-			dwClient = new DwClient();
-			List<DwSectionGroup> sectionGroups = dwClient.getCourseCensusBySubjectCodeAndCourseNumberAndEffectiveTermAndTermCode(
-					course.getSubjectCode(), course.getCourseNumber(), course.getEffectiveTermCode(), termCode);
-
-			return sectionGroups;
-		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-			return null;
-		}
-	}
-
-	@Override
-	public SectionGroup findOneById(Long id) {
-		return sectionGroupRepository.findById(id);
+		return sectionGroups;
 	}
 
 	/**
-	 * Returns a List of sectionGroups in a specified schedule term, that have approved teachingPreferences for a specified instructor.
+	 * Returns a List of sectionGroups in a specified schedule term for a specified instructor.
 	 */
 	@Override
-	public List<SectionGroup> getSectionGroupsByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId) {
-		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
-		Schedule schedule = this.scheduleService.findById(scheduleId);
-		Instructor instructor = this.instructorService.getInstructorById(instructorId);
-
-		for(Course course : schedule.getCourses() ) {
-			for (CourseOffering courseOffering : course.getSectionGroups() ) {
-				for (SectionGroup sectionGroup : courseOffering.getSectionGroups() ) {
-
-					if (sectionGroup.getTermCode().equals(termCode) ) {
-						for (TeachingPreference teachingPreference : sectionGroup.getCourseOffering().getTeachingPreferences() ) {
-
-							if (teachingPreference.isApproved() && teachingPreference.getInstructor().equals(instructor) ) {
-								sectionGroups.add(sectionGroup);
-							}
-						}
-					}
-				}
-			}
-		}
-		return sectionGroups;
+	public List<SectionGroup> findByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId) {
+		return sectionGroupRepository.findByScheduleIdAndTermCodeAndInstructorId(scheduleId, termCode, instructorId);
 	}
 
-	@Override
-	public List<SectionGroup> getSectionGroupsByCourseOfferingId(long courseOfferingId) {
-		return this.sectionGroupRepository.findByCourseOfferingId(courseOfferingId);
-	}
-
+	/*
+	 * 1- find or create a CO that has a matching COG AND termCode, then add section to it.
+	 * 2- Find a sectionGroup that has a matching sequence pattern, or create a new one
+	 */
 	@Override
 	@Transactional
-	public List<SectionGroup> findAllEager() {
-		List<SectionGroup> sectionGroups = (List<SectionGroup>) this.sectionGroupRepository.findAll();
-		for (SectionGroup sectionGroup : sectionGroups) {
-			Hibernate.initialize(sectionGroup.getSections());
-			for (Section section : sectionGroup.getSections()) {
-				Hibernate.initialize(section.getActivities());
-			}
+	public Section addSection(Long sectionGroupId, Section section) {
+		if (isLocked(sectionGroupId)) return null;
+
+		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
+
+		if (sectionGroup == null) {
+			return null;
+		} else {
+			section.setSectionGroup(sectionGroup);
 		}
-		return sectionGroups;
+
+		return sectionService.saveSection(section);
+	}
+
+	private boolean isLocked(long sectionGroupId) {
+		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
+		if (sectionGroup == null) { return false; }
+
+		Schedule schedule = sectionGroup.getCourse().getSchedule();
+		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, sectionGroup.getTermCode());
+
+		if (termState != null && termState.scheduleTermLocked()) {
+			ExceptionLogger.logAndMailException(
+					this.getClass().getName(),
+					new UnsupportedOperationException("Term " + sectionGroup.getTermCode() + " is locked in schedule with id " + schedule.getId())
+			);
+			return true;
+		}
+
+		return false;
 	}
 
 }

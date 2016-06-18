@@ -14,7 +14,6 @@ import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.UserService;
 
 @RestController

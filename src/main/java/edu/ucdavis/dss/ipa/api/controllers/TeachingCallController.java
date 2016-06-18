@@ -57,7 +57,7 @@ public class TeachingCallController {
 			return "";
 		}
 		
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		
 		if (instructor == null) {
 			log.warn("Cannot get teaching call: no such instructor for user " + user);

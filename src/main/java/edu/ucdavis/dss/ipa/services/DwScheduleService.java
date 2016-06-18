@@ -17,13 +17,4 @@ public interface DwScheduleService {
 	@Transactional
 	void addOrUpdateDwSectionGroupToSchedule(DwSectionGroup dwCo, Schedule schedule, boolean markPublished);
 
-	/**
-	 * Uses the given DwSectionGroup to update the census snapshots found in a Schedule
-	 * with ID scheduleId.
-	 * 
-	 * @param dwSg
-	 * @param id
-	 */
-	@Transactional
-	void updateCensusSnapshotsForSectionGroupAndSchedule(DwSectionGroup dwSg, long scheduleId);
 }

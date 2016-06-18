@@ -15,9 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.GraduateStudentService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTeachingAssistantPreferenceService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -121,7 +119,7 @@ public class InstructorTeachingAssistantPreferenceController {
 			@RequestParam(value = "scheduleId", required = true) Long scheduleId
 			) {
 
-		List<SectionGroup> sectionGroups = sectionGroupService.getSectionGroupsByScheduleIdAndTermCodeAndInstructorId(scheduleId, termCode, id);
+		List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCodeAndInstructorId(scheduleId, termCode, id);
 		
 		return sectionGroups;
 	}
@@ -146,8 +144,8 @@ public class InstructorTeachingAssistantPreferenceController {
 			HttpServletResponse httpResponse) {
 
 		GraduateStudent graduateStudent = graduateStudentService.findOneById(graduateStudentId);
-		SectionGroup sectionGroup = sectionGroupService.getSectionGroupById(sectionGroupId);
-		Instructor instructor = instructorService.getInstructorById(instructorId);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		Instructor instructor = instructorService.getOneById(instructorId);
 		InstructorTeachingAssistantPreference instructorTeachingAssistantPreference = new InstructorTeachingAssistantPreference();
 
 		if(graduateStudent == null || sectionGroup == null || instructor == null) {

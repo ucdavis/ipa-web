@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import java.util.List;
 import java.util.Set;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -109,4 +110,21 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 			return null;
 		}
 	}
+
+	@Override
+	public List<DwSectionGroup> getSectionGroupsByCourseId(String subjectCode, String courseNumber, String effectiveTermCode, String termCode) {
+		DwClient dwClient = null;
+
+		try {
+			dwClient = new DwClient();
+			List<DwSectionGroup> sectionGroups = dwClient.getCourseCensusBySubjectCodeAndCourseNumberAndEffectiveTermAndTermCode(
+					subjectCode, courseNumber, effectiveTermCode, termCode);
+
+			return sectionGroups;
+		} catch (Exception e) {
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			return null;
+		}
+	}
+
 }

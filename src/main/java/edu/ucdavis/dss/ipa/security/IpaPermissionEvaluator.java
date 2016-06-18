@@ -21,8 +21,7 @@ import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingGroupService;
-import edu.ucdavis.dss.ipa.services.CourseOfferingService;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
@@ -30,8 +29,7 @@ import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
-import edu.ucdavis.dss.ipa.services.TrackService;
+import edu.ucdavis.dss.ipa.services.TagService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
@@ -40,8 +38,10 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 	@Inject ScheduleService scheduleService;
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
-	@Inject TrackService trackService;
-	@Inject CourseOfferingGroupService courseOfferingGroupService;
+	@Inject
+	TagService tagService;
+	@Inject
+	CourseService courseService;
 	@Inject CourseOfferingService courseOfferingService;
 	@Inject InstructorService instructorService;
 	@Inject TeachingPreferenceService teachingPreferenceService;
@@ -99,13 +99,13 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				return userHasRequiredRoleAndWorkgroup(user, role, this.workgroupService.findOneById((Long)item));
 			
 			case "tag":
-				Tag tag = this.trackService.findOneById((Long)item);
+				Tag tag = this.tagService.findOneById((Long)item);
 				if(tag == null) { return false; }
 				
 				return userHasRequiredRoleAndWorkgroup(user, role, tag.getWorkgroup());
 				
 			case "courseOfferingGroup":
-				Course cog = this.courseOfferingGroupService.getCourseOfferingGroupById((Long)item);
+				Course cog = this.courseService.getCourseOfferingGroupById((Long)item);
 				if (cog == null) { return false; }
 				
 				return userHasRequiredRoleAndWorkgroup(user, role, cog.getSchedule().getWorkgroup());
@@ -123,7 +123,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				return userHasRequiredRoleAndWorkgroup(user, role, section.getSectionGroup().getCourseOfferingGroup().getSchedule().getWorkgroup());
 				
 			case "sectionGroup":
-				SectionGroup sectionGroup = this.sectionGroupService.getSectionGroupById((Long)item);
+				SectionGroup sectionGroup = this.sectionGroupService.getOneById((Long)item);
 				if(sectionGroup == null) { return false; }
 
 				return userHasRequiredRoleAndWorkgroup(user, role, sectionGroup.getCourseOfferingGroup().getSchedule().getWorkgroup());
@@ -139,7 +139,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 					return userHasRequiredRoleAndWorkgroup(user, role, workgroup);
 				} else {
 					// Assuming senateInstructor or federationInstructor ...
-					Instructor instructor = instructorService.getInstructorByLoginId(user.getLoginId());
+					Instructor instructor = instructorService.getOneByLoginId(user.getLoginId());
 					if(instructor == null) { return false; }
 
 					return userHasRequiredRoleAndWorkgroup(user, role, workgroup) && instructor.getTeachingPreferences().contains(teachingPreference);

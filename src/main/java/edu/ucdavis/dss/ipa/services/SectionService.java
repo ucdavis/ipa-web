@@ -21,8 +21,6 @@ public interface SectionService {
 
 	Section updateSection(Section section);
 
-	Section addSectionToCourseOfferingGroup(Long cogId, String termCode, @Valid Section section);
-
 	boolean deleteSectionsBySequence(Long courseOfferingGroupId, String sequence);
 
 	boolean updateSectionSequences(Long courseOfferingGroupId, String oldSequence, String newSequence);

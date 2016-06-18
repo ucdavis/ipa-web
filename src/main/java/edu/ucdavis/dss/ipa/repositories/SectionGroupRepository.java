@@ -45,4 +45,6 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 
 	@Query("SELECT sequenceNumber FROM Section s where s.sectionGroup.id = :sectionGroupId")
 	public List<String> findSequenceSamplesBySectionGroupId(@Param("sectionGroupId") long sectionGroupId);
+
+	List<SectionGroup> findByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId);
 }

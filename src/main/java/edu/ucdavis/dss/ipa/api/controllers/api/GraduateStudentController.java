@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.GraduateStudentService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TeachingAssistantPreferenceService;
 import edu.ucdavis.dss.ipa.api.views.TeachingPreferenceViews;
 
 @RestController

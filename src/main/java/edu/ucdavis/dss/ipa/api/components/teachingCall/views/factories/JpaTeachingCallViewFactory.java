@@ -16,7 +16,6 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import edu.ucdavis.dss.ipa.services.TeachingCallResponseService;
-import edu.ucdavis.dss.ipa.services.TeachingPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByCourseView;
@@ -122,7 +121,7 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 
 		for (UserRole userRole: workgroup.getUserRoles()) {
 			if (UserRole.isInstructor(userRole)) {
-				Instructor instructor = instructorService.getInstructorByLoginId(userRole.getUser().getLoginId());
+				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
 				TeachingCallInstructorView teachingCallInstructorView = new TeachingCallInstructorView(instructor);
 
 				if (!instructors.contains(teachingCallInstructorView)) {

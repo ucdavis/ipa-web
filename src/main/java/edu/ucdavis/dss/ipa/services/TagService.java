@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 
 @Validated
-public interface TrackService {
+public interface TagService {
 	Tag saveTrack(@NotNull @Valid Tag tag);
 
 	Tag findOneById(Long id);
@@ -31,5 +31,7 @@ public interface TrackService {
      * @return
      */
 	Tag findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName);
+
+	List<Tag> getTagsByCourseId(Long courseId);
 
 }

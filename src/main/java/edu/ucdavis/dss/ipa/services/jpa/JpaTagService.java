@@ -5,7 +5,7 @@ import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TrackRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.TrackService;
+import edu.ucdavis.dss.ipa.services.TagService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaTrackService implements TrackService {
+public class JpaTagService implements TagService {
 	@Inject TrackRepository trackRepository;
 	@Inject ScheduleService scheduleService;
 
@@ -90,4 +90,11 @@ public class JpaTrackService implements TrackService {
 
 		return tag;
 	}
+
+	@Override
+	public List<Tag> getTagsByCourseId(Long id) {
+		Course course = this.getCourseOfferingGroupById(id);
+		return course.getTags();
+	}
+
 }

@@ -14,10 +14,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.GraduateStudentService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TeachingAssistantPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.api.views.UserViews;
 
@@ -77,7 +75,7 @@ public class TeachingAssistantPreferenceController {
 	public TeachingAssistantPreference approveTeachingAssistantForSectionGroup(@PathVariable long id, HttpServletResponse httpResponse, @RequestBody GraduateStudent teachingAssistant) {
 		// NOTE: graduate students can be approved from: within the sectionGroup's workgroup, outside the workgroup but already in IPA, or from outside IPA (requiring a DW people search and import with a null workgroup)
 		GraduateStudent ipaGraduateStudent = graduateStudentService.findOneByLoginId(teachingAssistant.getLoginId());
-		SectionGroup sectionGroup = sectionGroupService.getSectionGroupById(id);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(id);
 		
 		if(ipaGraduateStudent == null) {
 			teachingAssistant = graduateStudentService.saveGraduateStudent(teachingAssistant);
@@ -134,7 +132,7 @@ public class TeachingAssistantPreferenceController {
 		
 		sectionGroup.setTeachingAssistantCount(teachingAssistantCount);
 		
-		sectionGroupService.saveSectionGroup(sectionGroup);
+		sectionGroupService.save(sectionGroup);
 	}
 	
 	/**
@@ -157,7 +155,7 @@ public class TeachingAssistantPreferenceController {
 		
 		sectionGroup.setReaderCount(readerCount);
 		
-		sectionGroupService.saveSectionGroup(sectionGroup);
+		sectionGroupService.save(sectionGroup);
 	}
 
 	/**
@@ -197,7 +195,7 @@ public class TeachingAssistantPreferenceController {
 	@PreAuthorize("isAuthenticated()")
 	public TeachingAssistantPreference createTeachingAssistantPreference(@PathVariable long sectionGroupId, @PathVariable long TaId, HttpServletResponse httpResponse) {
 		GraduateStudent graduateStudent = graduateStudentService.findOneById(TaId);
-		SectionGroup sectionGroup = sectionGroupService.getSectionGroupById(sectionGroupId);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		TeachingAssistantPreference teachingAssistantPreference = new TeachingAssistantPreference();
 
 		if(graduateStudent == null || sectionGroup == null) {

@@ -44,7 +44,7 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	@Override
 	public List<TeachingCallResponse> findByTeachingCallAndInstructorLoginId(TeachingCall teachingCall, String loginId) {
 		List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		if (instructor == null) return null;
 
 		for(TeachingCallResponse response : teachingCall.getTeachingCallResponses() ) {
@@ -65,7 +65,7 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTerm(
 			Long teachingCallId, long instructorId, String termCode) {
 		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
-		Instructor instructor = instructorService.getInstructorById(instructorId);
+		Instructor instructor = instructorService.getOneById(instructorId);
 		if (instructor == null) return null;
 
 		TeachingCallResponse teachingCallResponse = this.teachingCallResponseRepository.findOneByTeachingCallIdAndInstructorIdAndTermCode(teachingCallId, instructorId, termCode);

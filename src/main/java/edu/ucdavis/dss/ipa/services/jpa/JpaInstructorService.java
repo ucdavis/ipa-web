@@ -12,48 +12,46 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorWorkgroupRelationshipService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaInstructorService implements InstructorService {
 	@Inject InstructorRepository instructorRepository;
 	@Inject WorkgroupService workgroupService;
-	@Inject InstructorWorkgroupRelationshipService instructorWorkgroupRelationshipService;
 
 	private static final Logger log = LogManager.getLogger();
 
 	@Override
-	public Instructor saveInstructor(Instructor instructor) {
+	public Instructor save(Instructor instructor) {
 		return this.instructorRepository.save(instructor);
 	}
 
 	@Override
-	public Instructor getInstructorById(Long id) {
+	public Instructor getOneById(Long id) {
 		return this.instructorRepository.findById(id);
 	}
 
 	@Override
-	public Instructor getInstructorByEmployeeId(String employeeId) {
+	public Instructor getOneByEmployeeId(String employeeId) {
 		return this.instructorRepository.findByEmployeeId(employeeId);
 	}
 
 	@Override
-	public Instructor getInstructorByLoginId(String loginId) {
+	public Instructor getOneByLoginId(String loginId) {
 		return this.instructorRepository.findByLoginIdIgnoreCase(loginId);
 	}
 
 	/**
-	 * Overrides findOrCreateInstructor without employeeId.
+	 * Overrides findOrCreate without employeeId.
 	 * Currently, employeeId is desired for instructor creation but not reliably available from DW.
 	 */
 	@Override
-	public Instructor findOrCreateInstructor(String firstName, String lastName, String email, String loginId, Long workgroupId) {
-		return this.findOrCreateInstructor(firstName, lastName, email, loginId, workgroupId, "");
+	public Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId) {
+		return this.findOrCreate(firstName, lastName, email, loginId, workgroupId, "");
 	}
 
 	@Override
-	public Instructor findOrCreateInstructor(String firstName, String lastName, String email, String loginId, Long workgroupId, String employeeId) {
+	public Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId, String employeeId) {
 
 		// 1) Attempt to find by loginId
 		Instructor instructor = instructorRepository.findByLoginIdIgnoreCase(loginId);
@@ -75,57 +73,21 @@ public class JpaInstructorService implements InstructorService {
 		
 		instructorRepository.save(instructor);
 
-		// Ensure instructor workgroup relationship already exists
-		for (InstructorWorkgroupRelationship instructorWorkgroupRelationship : instructor.getInstructorWorkgroupRelationships()) {
-			if (instructorWorkgroupRelationship.getWorkgroup().getId() == workgroupId) {
-				return instructor;
-			}
-		}
-
-		instructor = addInstructorWorkgroupRelationship(instructor.getId(), workgroupId);
-
 		return instructor;
 	}
 
 	@Override
-	public Instructor addInstructorWorkgroupRelationship(Long instructorId, Long workgroupId) {
-		Instructor instructor = this.getInstructorById(instructorId);
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-
-		InstructorWorkgroupRelationship instructorWorkgroupRelationship = new InstructorWorkgroupRelationship();
-		instructorWorkgroupRelationship.setWorkgroup(workgroup);
-		instructorWorkgroupRelationship.setInstructor(instructor);
-		instructorWorkgroupRelationshipService.saveInstructorWorkgroupRelationship(instructorWorkgroupRelationship);
-
-		List<InstructorWorkgroupRelationship> instructorWorkgroupRelationships  = instructor.getInstructorWorkgroupRelationships();
-		instructorWorkgroupRelationships.add(instructorWorkgroupRelationship);
-		instructor.setInstructorWorkgroupRelationships(instructorWorkgroupRelationships);
-		instructor = instructorRepository.save(instructor);
-
-		return instructor;
-	}
-
-	@Override
-	public void removeOrphanedInstructorByLoginId(String loginId) {
-		Instructor instructor = this.getInstructorByLoginId(loginId);
+	public void removeOrphanedByLoginId(String loginId) {
+		Instructor instructor = this.getOneByLoginId(loginId);
 
 		if (instructor == null) {
 			log.warn("Attempting to find instructor by loginId: " +loginId + ", was not found.");
 			return;
 		}
 
-		if (instructor.getInstructorTeachingAssistantPreferences().size() == 0 &&
-			instructor.getTeachingAssignments().size() == 0 &&
+		if (instructor.getTeachingAssignments().size() == 0 &&
 			instructor.getTeachingCallResponses().size() == 0 &&
-			instructor.getTeachingCallReceipts().size() == 0 &&
-			instructor.getInstructorTeachingAssistantPreferences().size() == 0 &&
-			instructor.getTeachingPreferences().size() == 0) {
-
-				// Remove workgroupRelationships
-				for (InstructorWorkgroupRelationship instructorWorkgroupRelationship : instructor.getInstructorWorkgroupRelationships()) {
-					instructorWorkgroupRelationshipService.deleteById(instructorWorkgroupRelationship.getId());
-				}
-
+			instructor.getTeachingCallReceipts().size() == 0) {
 				instructorRepository.delete(instructor.getId());
 		}
 	}

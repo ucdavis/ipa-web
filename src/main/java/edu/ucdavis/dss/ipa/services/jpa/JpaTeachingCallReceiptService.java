@@ -57,7 +57,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public TeachingCallReceipt findOrCreateByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId) {
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
 		if (instructor == null) return null;
 
@@ -113,7 +113,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 					for (UserRole userRole : userRoles) {
 						String loginId = userRole.getUser().getLoginId();
-						Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+						Instructor instructor = instructorService.getOneByLoginId(loginId);
 
 						if (instructor != null) {
 							instructors.add(instructor);
@@ -264,7 +264,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public TeachingCallReceipt findByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId) {
-		Instructor instructor = instructorService.getInstructorByLoginId(loginId);
+		Instructor instructor = instructorService.getOneByLoginId(loginId);
 
 		if (instructor == null) {
 			return null;

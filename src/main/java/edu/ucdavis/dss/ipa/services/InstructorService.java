@@ -7,11 +7,11 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 @Validated
 public interface InstructorService {
 
-	Instructor saveInstructor(Instructor instructor);
+	Instructor save(Instructor instructor);
 
-	Instructor getInstructorById(Long instructorId);
+	Instructor getOneById(Long instructorId);
 
-	Instructor getInstructorByEmployeeId(String employeeId);
+	Instructor getOneByEmployeeId(String employeeId);
 
 	/**
 	 * Finds instructor by case-insensitive 'loginId', if exists.
@@ -19,13 +19,11 @@ public interface InstructorService {
 	 * @param loginId
 	 * @return
 	 */
-	Instructor getInstructorByLoginId(String loginId);
+	Instructor getOneByLoginId(String loginId);
 
-	Instructor findOrCreateInstructor(String firstName, String lastName, String email, String loginId, Long workgroupId);
+	Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId);
 
-	Instructor findOrCreateInstructor(String firstName, String lastName, String email, String loginId, Long workgroupId, String employeeId);
+	Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId, String employeeId);
 
-	Instructor addInstructorWorkgroupRelationship(Long instructorId, Long workgroupId);
-
-	void removeOrphanedInstructorByLoginId(String loginId);
+	void removeOrphanedByLoginId(String loginId);
 }

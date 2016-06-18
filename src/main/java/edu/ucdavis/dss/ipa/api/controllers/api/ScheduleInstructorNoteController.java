@@ -34,7 +34,7 @@ public class ScheduleInstructorNoteController {
 			@PathVariable long scheduleId,
 			@PathVariable long instructorId,
 			HttpServletResponse httpResponse) {
-		Instructor instructor = instructorService.getInstructorById(instructorId);
+		Instructor instructor = instructorService.getOneById(instructorId);
 		Schedule schedule = scheduleService.findById(scheduleId);
 		if (instructor == null || schedule == null) {
 			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
