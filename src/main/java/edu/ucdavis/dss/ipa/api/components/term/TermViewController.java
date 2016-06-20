@@ -110,7 +110,7 @@ public class TermViewController {
 		return null;
 	}
 
-	@RequestMapping(value = "/api/sectionGroups/{id}/sections", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/termView/sectionGroups/{id}/sections", method = RequestMethod.POST)
 	@ResponseBody
 	@PreAuthorize("hasPermission(#id, 'sectionGroup', 'academicCoordinator')")
 	public TermSectionView createSection(@RequestBody Section section, @PathVariable Long id, HttpServletResponse httpResponse) {
