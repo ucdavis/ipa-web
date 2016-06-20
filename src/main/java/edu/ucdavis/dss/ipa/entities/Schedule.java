@@ -32,7 +32,7 @@ import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 @Entity
 @Table(
 		name = "Schedules",
-		uniqueConstraints = {@UniqueConstraint(columnNames={"Workgroups_WorkgroupId", "Year"})}
+		uniqueConstraints = {@UniqueConstraint(columnNames={"WorkgroupId", "Year"})}
 )
 @JsonAutoDetect(creatorVisibility = JsonAutoDetect.Visibility.NONE,
 	fieldVisibility = JsonAutoDetect.Visibility.NONE,

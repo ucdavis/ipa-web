@@ -18,6 +18,6 @@ public interface TeachingAssignmentRepository extends CrudRepository<TeachingAss
 
 	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 
-	@Query("SELECT t FROM TeachingAssignment ta WHERE ta.sectionGroup IS NOT NULL AND ta.sectionGroup.courseId = :courseId)")
+	@Query("SELECT ta FROM TeachingAssignment ta WHERE ta.sectionGroup IS NOT NULL AND ta.sectionGroup.course.id = :courseId")
 	List<TeachingAssignment> findByCourseId(@Param("courseId") long courseId);
 }
