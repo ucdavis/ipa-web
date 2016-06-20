@@ -21,8 +21,6 @@ public interface SectionGroupService {
 
 	List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 
-	List<SectionGroup> findByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId);
-
 	Section addSection(Long sectionGroupId, Section section);
 
 }

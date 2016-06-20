@@ -8,6 +8,4 @@ import java.util.List;
 public interface SectionGroupRepository extends CrudRepository<SectionGroup, Long> {
 
 	public SectionGroup findById(Long id);
-
-	List<SectionGroup> findByScheduleIdAndTermCodeAndInstructorId(long scheduleId, String termCode, Long instructorId);
 }
