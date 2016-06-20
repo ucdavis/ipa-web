@@ -50,7 +50,8 @@ public class CourseController {
 		} else {
 			httpResponse.setStatus(HttpStatus.OK.value());
 			UserLogger.log(currentUser, "Renamed courseOfferingGroup with ID " + id + " from " + course.getTitle() + " to " + courseDto.getTitle());
-			course = this.courseService.setCourseSubject(id, courseDto.getTitle());
+			course.setTitle(courseDto.getTitle());
+			this.courseService.save(course);
 		}
 
 		return new AnnualCourseView(course);

@@ -32,8 +32,7 @@ public class JpaCourseService implements CourseService {
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject InstructorService instructorService;
 	@Inject TagService tagService;
-	@Inject CourseService courseService;
-	
+
 	@Override
 	public Course getOneById(Long id) {
 		return this.courseRepository.findOne(id);
@@ -110,16 +109,6 @@ public class JpaCourseService implements CourseService {
 	public List<Course> findByTagId(Long id) {
 		Tag tag = tagService.getOneById(id);
 		return tag.getCourses();
-	}
-
-	@Override
-	public Course setCourseSubject(Long id, String subject) {
-		Course course = this.getOneById(id);
-
-		if (course == null || this.scheduleService.isScheduleClosed(course.getSchedule().getId()))
-			return course;
-
-		return this.save(course);
 	}
 
 }
