@@ -31,7 +31,7 @@ public class AdminController {
 	@PreAuthorize("hasPermission('*', 'admin')")
 	@RequestMapping(value = "/impersonate/{loginId}", method = RequestMethod.GET)
 	public String impersonateUser(@PathVariable String loginId, HttpServletResponse httpResponse) {
-		User user = this.userService.getUserByLoginId(loginId);
+		User user = this.userService.getOneByLoginId(loginId);
 		if (user != null) {
 			authenticationService.impersonateUser(loginId);
 			httpResponse.setStatus(HttpStatus.OK.value());

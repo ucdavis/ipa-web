@@ -38,18 +38,18 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	@Transactional
-	public UserRole saveUserRole(UserRole userRole) {
+	public UserRole save(UserRole userRole) {
 		return this.userRoleRepository.save(userRole);
 	}
 
 	@Override
-	public UserRole findOneById(Long id) {
+	public UserRole getOneById(Long id) {
 		return this.userRoleRepository.findOne(id);
 	}
 
 	@Override
-	public List<UserRole> findByUserAndWorkgroup(String loginId, Workgroup workgroup) {
-		User user = userService.getUserByLoginId(loginId);
+	public List<UserRole> findByLoginIdAndWorkgroup(String loginId, Workgroup workgroup) {
+		User user = userService.getOneByLoginId(loginId);
 		List<UserRole> workgroupUserRoles = new ArrayList<UserRole>();
 		for( UserRole userRole : user.getUserRoles() ) {
 			if ( userRole.getWorkgroup() != null && userRole.getWorkgroup().equals(workgroup) ) {
@@ -63,13 +63,13 @@ public class JpaUserRoleService implements UserRoleService {
 	public UserRole findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String roleName) {
 		List<String> EXCLUSIVE_ROLES = Arrays.asList("senateInstructor", "federationInstructor");
 
-		User user = this.userService.findOrCreateUserByLoginId(loginId);
+		User user = this.userService.findOrCreateByLoginId(loginId);
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		Role role = roleService.findOneByName(roleName);
 
 		if( user != null && workgroup != null && role != null) {
 			// Find userRole if it exists
-			for (UserRole userRole : this.findByUserAndWorkgroup(loginId, workgroup)) {
+			for (UserRole userRole : this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
 				if ( userRole.getRole().equals(role) ) {
 					return userRole;
 				}
@@ -89,7 +89,7 @@ public class JpaUserRoleService implements UserRoleService {
 			if (EXCLUSIVE_ROLES.contains(roleName)) {
 				List<UserRole> rolesToBeRemoved = new ArrayList<UserRole>();
 				for (String exclusiveRole: EXCLUSIVE_ROLES) {
-					for (UserRole ur: this.findByUserAndWorkgroup(loginId, workgroup)) {
+					for (UserRole ur: this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
 						if (ur.getRoleToken().equals(exclusiveRole)) {
 							rolesToBeRemoved.add(ur);
 						}
@@ -103,7 +103,7 @@ public class JpaUserRoleService implements UserRoleService {
 			userRoles.add(userRole);
 
 			user.setUserRoles(userRoles);
-			userService.saveUser(user);
+			userService.save(user);
 
 			if(roleName.equals("senateInstructor") || roleName.equals("federationInstructor")) {
 				log.info("Creating instructor for user '" + user.getLoginId() + "'");
@@ -146,21 +146,21 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public void deleteByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String roleName) {
-		User user = this.userService.getUserByLoginId(loginId);
+		User user = this.userService.getOneByLoginId(loginId);
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		Role role = roleService.findOneByName(roleName);
 
-		for (UserRole userRole : this.findByUserAndWorkgroup(loginId, workgroup)) {
+		for (UserRole userRole : this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
 			if ( userRole.getRole().equals(role) ) {
 				List<UserRole> userRoles = user.getUserRoles();
 				userRoles.remove(userRole);
 				user.setUserRoles(userRoles);
-				userService.saveUser(user);
+				userService.save(user);
 
 				List<UserRole> workgroupUserRoles = workgroup.getUserRoles();
 				workgroupUserRoles.remove(userRole);
 				workgroup.setUserRoles(workgroupUserRoles);
-				workgroupService.saveWorkgroup(workgroup);
+				workgroupService.save(workgroup);
 
 				userRoleRepository.delete(userRole);
 
@@ -173,13 +173,8 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public void deleteUserRoleById(Long id) {
-		this.userRoleRepository.delete(id);
-	}
-
-	@Override
 	public boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId) {
-		User user = userService.getUserByLoginId(loginId);
+		User user = userService.getOneByLoginId(loginId);
 		List<String> userRolesToRemove = new ArrayList<String>();
 
 		for (UserRole userRole : user.getUserRoles()){

@@ -44,7 +44,7 @@ public class TermController {
 		List<User> users = scheduleService.getUserInstructorsByScheduleIdAndTermCode(scheduleId, termCode);
 		
 		for(User user : users) {
-			userService.contactUser(user, messageBody, subject);
+			userService.contact(user, messageBody, subject);
 		}
 
 		httpResponse.setStatus(HttpStatus.OK.value());
@@ -72,7 +72,7 @@ public class TermController {
 			httpResponse_p.setStatus(HttpStatus.FORBIDDEN.value());
 		}
 
-		return termService.findOneByTermCode(termCode);
+		return termService.getOneByTermCode(termCode);
 	}
 
 }

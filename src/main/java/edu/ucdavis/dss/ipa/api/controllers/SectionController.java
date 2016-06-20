@@ -59,7 +59,7 @@ public class SectionController {
 	@RequestMapping(value = "/api/sections/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public void deleteSection(@PathVariable Long id, HttpServletResponse httpResponse) {
-		Section section = sectionService.getSectionById(id);
+		Section section = sectionService.getOneById(id);
 
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -84,7 +84,7 @@ public class SectionController {
 		if (sectionsInSectionGroup == 1) {
 			sectionGroupService.delete(sectionGroup.getId());
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
-		} else if (this.sectionService.deleteSectionById(id)) {
+		} else if (this.sectionService.delete(id)) {
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 		}
 	}
@@ -95,7 +95,7 @@ public class SectionController {
 	@JsonView(SectionViews.Summary.class)
 	public void deleteSectionSequence(@PathVariable String sequence, @PathVariable Long courseOfferingGroupId,
 			HttpServletResponse httpResponse) {
-		if (this.sectionService.deleteSectionsBySequence(courseOfferingGroupId, sequence)) {
+		if (this.sectionService.deleteByCourseIdAndSequence(courseOfferingGroupId, sequence)) {
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 		} else {
 			log.info("Some sections with sequence " + sequence + " were not deleted because the term is locked.");
@@ -108,7 +108,7 @@ public class SectionController {
 	@ResponseBody
 	public TermSectionView updateSection(@RequestBody Section section, @PathVariable("id") long id,
 										 HttpServletResponse httpResponse_p) {
-		Section originalSection = sectionService.getSectionById(id);
+		Section originalSection = sectionService.getOneById(id);
 
 		originalSection.setSeats(section.getSeats());
 		originalSection.setCrn(section.getCrn());
@@ -131,7 +131,7 @@ public class SectionController {
 	@JsonView(SectionViews.Summary.class)
 	public void updateSectionSequence(@RequestBody String newSequence, @PathVariable String oldSequence,
 			@PathVariable Long courseOfferingGroupId, HttpServletResponse httpResponse) {
-		if (this.sectionService.updateSectionSequences(courseOfferingGroupId, oldSequence, newSequence)) {
+		if (this.sectionService.updateSequencesByCourseId(courseOfferingGroupId, oldSequence, newSequence)) {
 			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 		} else {
 			log.info("Some sections belong to locked term. Hence, no changes were made");

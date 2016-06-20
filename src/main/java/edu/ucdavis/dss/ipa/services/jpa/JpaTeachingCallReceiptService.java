@@ -23,7 +23,6 @@ import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallReceiptRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import edu.ucdavis.dss.ipa.services.TeachingCallService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
@@ -33,8 +32,8 @@ import edu.ucdavis.dss.utilities.Email;
 
 @Service
 public class JpaTeachingCallReceiptService implements TeachingCallReceiptService {
+
 	@Inject TeachingCallReceiptRepository teachingCallReceiptRepository;
-	@Inject ScheduleService scheduleService;
 	@Inject InstructorService instructorService;
 	@Inject TeachingCallService teachingCallService;
 	@Inject UserService userService;
@@ -131,7 +130,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 						TeachingCallReceipt teachingCallReceipt = this.findByTeachingCallIdAndInstructorLoginId(teachingCall.getId(), instructor.getLoginId());
 
 						if (teachingCallReceipt == null) {
-							teachingCallReceipt = this.createTeachingCallReceipt(instructor, teachingCall);
+							teachingCallReceipt = this.createByInstructorAndTeachingCall(instructor, teachingCall);
 							log.info("Creating TeachingCallReceipt for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "' and instructor '" + instructor.getLoginId() + "'");
 
 							if (teachingCall.isEmailInstructors() == false) {
@@ -181,7 +180,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			return;
 		}
 
-		User user = userService.getUserByLoginId(loginId);
+		User user = userService.getOneByLoginId(loginId);
 		if (user == null) {
 			log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
 			return;
@@ -250,7 +249,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	}
 
 	@Override
-	public TeachingCallReceipt createTeachingCallReceipt(Instructor instructor, TeachingCall teachingCall) {
+	public TeachingCallReceipt createByInstructorAndTeachingCall(Instructor instructor, TeachingCall teachingCall) {
 		TeachingCallReceipt teachingCallReceipt = new TeachingCallReceipt();
 
 		teachingCallReceipt.setInstructor(instructor);

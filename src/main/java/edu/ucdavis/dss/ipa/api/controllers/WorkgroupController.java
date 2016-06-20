@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +21,6 @@ import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.TermService;
-import edu.ucdavis.dss.ipa.services.TagService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupOpsService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryActivitiesView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
@@ -42,20 +32,19 @@ import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 public class WorkgroupController {
 	@Inject WorkgroupService workgroupService;
 	@Inject InstructorService instructorService;
-	@Inject
-	TagService tagService;
+	@Inject TagService tagService;
 	@Inject AuthenticationService authenticationService;
 	@Inject UserService userService;
 	@Inject UserRoleService userRoleService;
 	@Inject ScheduleService scheduleService;
 	@Inject ScheduleOpsService scheduleOpsService;
-	@Inject
-	CourseService courseService;
+	@Inject CourseService courseService;
 	@Inject WorkgroupOpsService workgroupOpsService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject TermService termService;
 	@Inject SummaryViewFactory summaryViewFactory;
 	@Inject CurrentUser currentUser;
+	@Inject TeachingCallResponseService teachingCallResponseService;
 
 	@PreAuthorize("hasPermission(#Id, 'workgroup', 'academicCoordinator')")
 	@RequestMapping(value = "/api/workgroups/{Id}", method = RequestMethod.GET)
@@ -82,7 +71,7 @@ public class WorkgroupController {
 		String loginId = authenticationService.getCurrentUser().getLoginid();
 		Instructor instructor = instructorService.getOneByLoginId(loginId);
 
-		return this.workgroupService.getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor);
+		return this.teachingCallResponseService.getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor);
 	}
 
 	@PreAuthorize("hasPermission('*', 'academicCoordinator')")
@@ -119,7 +108,7 @@ public class WorkgroupController {
 	@ResponseBody
 	@JsonView(WorkgroupViews.Summary.class)
 	public List<Workgroup> allIpaWorkgroups(HttpServletResponse httpResponse) {
-		List<Workgroup> workgroups = workgroupService.getAllWorkgroups();
+		List<Workgroup> workgroups = workgroupService.findAll();
 		return workgroups;
 	}
 
@@ -144,7 +133,7 @@ public class WorkgroupController {
 		if (ipaWorkgroup != null) {
 			httpResponse.setStatus(HttpStatus.OK.value());
 			ipaWorkgroup.setName(workgroup.getName());
-			return workgroupService.saveWorkgroup(ipaWorkgroup);
+			return workgroupService.save(ipaWorkgroup);
 		}
 
 		httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());

@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.dw.dto.DwInstructor;
 import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
@@ -58,7 +55,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	 */
 	@Override
 	public Schedule createScheduleFromExisting(Long workgroupId, Long newScheduleYear, Long copyFromYear, Boolean copyInstructors, Boolean copyRooms, Boolean copyTimes) {
-//		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+//		Workgroup workgroup = workgroupService.getOneById(workgroupId);
 //		Schedule existingSchedule = this.scheduleService.findByWorkgroupAndYear(workgroup, copyFromYear);
 //
 //		if (scheduleService.findByWorkgroupAndYear(workgroup, newScheduleYear) != null) {
@@ -112,7 +109,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 //
 //					newSg.setCourseOffering(newCourseOffering);
 //
-//					sectionGroupService.save(newSg);
+//					sectionGroupService.createByLoginId(newSg);
 //
 //					// Create the Sections
 //					for(Section section : sg.getSections()) {
@@ -124,7 +121,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 //						newSection.setVisible(section.isVisible());
 //						newSection.setCrnRestricted(section.isCrnRestricted());
 //
-//						sectionService.saveSection(newSection);
+//						sectionService.createByLoginId(newSection);
 //
 //						if(copyInstructors) {
 //							// Create the TeachingPreferences
@@ -270,7 +267,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				// Find or create a user, instructor, and proper role for this DwInstructor
 				
 				// Create user
-				User user = this.userService.findOrCreateUserByLoginId(dwInstructor.getLoginId());
+				User user = this.userService.findOrCreateByLoginId(dwInstructor.getLoginId());
 				
 				// Update 'user' if necessary
 				if((user.getEmail() == null) || (user.getEmail().length() == 0)) {
@@ -323,7 +320,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 					userRole.setRole(instructorRole);
 					userRole.setWorkgroup(workgroup);
 					
-					this.userRoleService.saveUserRole(userRole);
+					this.userRoleService.save(userRole);
 				}
 			} else {
 				log.warn("Skipping an instructor during import for workgroup (" + workgroup + ") because certain fields are missing (" + dwInstructor + ").");

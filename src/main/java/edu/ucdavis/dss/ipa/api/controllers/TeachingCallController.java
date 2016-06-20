@@ -46,7 +46,7 @@ public class TeachingCallController {
 	@PreAuthorize("isAuthenticated()")
 	public String teachingCall(HttpServletResponse httpResponse) {
 		String loginId = authenticationService.getCurrentUser().getLoginid();
-		User user = userService.getUserByLoginId(loginId);
+		User user = userService.getOneByLoginId(loginId);
 		Long userId = null;
 		
 		if(user != null) userId = user.getId();

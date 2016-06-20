@@ -97,7 +97,7 @@ public class JpaScheduleService implements ScheduleService {
 			if( (teachingPreference.isApproved() == true) && teachingPreference.getTermCode().equals(termCode)) {
 
 				String loginId = teachingPreference.getInstructor().getLoginId();
-				User user = userService.getUserByLoginId(loginId);
+				User user = userService.getOneByLoginId(loginId);
 
 				if (user != null) {
 					users.add(user);

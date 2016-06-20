@@ -21,12 +21,12 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaWorkgroupService implements WorkgroupService {
+
 	@Inject WorkgroupRepository workgroupRepository;
-	@Inject TeachingCallResponseRepository teachingCallResponseRepository;
 
 	@Override
 	@Transactional
-	public Workgroup saveWorkgroup(Workgroup workgroup)
+	public Workgroup save(Workgroup workgroup)
 	{
 		return this.workgroupRepository.save(workgroup);
 	}
@@ -66,32 +66,12 @@ public class JpaWorkgroupService implements WorkgroupService {
 	}
 
 	@Override
-	public List<Workgroup> getAllWorkgroups() {
+	public List<Workgroup> findAll() {
 		return (List<Workgroup>) this.workgroupRepository.findAll();
 	}
 
 	@Override
-	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor, int years) {
-		if (workgroup == null || instructor == null)
-			return null;
-		
-		long thisYear = Calendar.getInstance().get(Calendar.YEAR);
-		List<Long> yearsList = LongStream.rangeClosed(thisYear - years + 1, thisYear).boxed().collect(Collectors.toList());
-		List<TeachingCallResponse> teachingCallResponses = this.teachingCallResponseRepository.findByInstructorIdAndTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearIn(instructor.getId(), workgroup.getId(), yearsList);
-		
-		return teachingCallResponses;
-	}
-
-	@Override
-	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor) {
-		int NUMBER_OF_YEARS = 10;
-		return getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor, NUMBER_OF_YEARS);
-	}
-
-	@Override
-	public void deleteByWorkgroupId(Long workgroupId) {
+	public void delete(Long workgroupId) {
 		workgroupRepository.delete(workgroupId);
 	}
 }

@@ -32,7 +32,7 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 
 	@Override
 	public Workgroup provisionNewWorkgroup(@Valid Workgroup workgroup) {
-		workgroup = this.workgroupService.saveWorkgroup(workgroup);
+		workgroup = this.workgroupService.save(workgroup);
 
 		// Stop and return here if no code is provided
 		if (workgroup.getCode().trim().isEmpty()) return workgroup;
@@ -57,14 +57,14 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 		
 		tag.setWorkgroup(workgroup);
 		tag.setName("Undergraduate");
-		this.tagService.saveTrack(tag);
+		this.tagService.save(tag);
 		
 		// Create 'Graduate' tag
 		tag = new Tag();
 		
 		tag.setWorkgroup(workgroup);
 		tag.setName("Graduate");
-		this.tagService.saveTrack(tag);
+		this.tagService.save(tag);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 				scheduleService.deleteByScheduleId(schedule.getId());
 			}
 			
-			workgroupService.deleteByWorkgroupId(workgroupId);
+			workgroupService.delete(workgroupId);
 			
 			return true;
 		} else {

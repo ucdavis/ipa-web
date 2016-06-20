@@ -20,24 +20,18 @@ public class JpaTagService implements TagService {
 
 	@Override
 	@Transactional
-	public Tag saveTrack(Tag tag)
+	public Tag save(Tag tag)
 	{
 		return this.trackRepository.save(tag);
 	}
 
 	@Override
-	public Tag findOneById(Long id) {
+	public Tag getOneById(Long id) {
 		return this.trackRepository.findOne(id);
 	}
 
 	@Override
-	public List<Course> getCourseOfferingGroupsByTrackId(Long id) {
-		Tag tag = this.findOneById(id);
-		return tag.getCourses();
-	}
-
-	@Override
-	public List<Tag> searchTracks(String query, Workgroup workgroup) {
+	public List<Tag> searchTags(String query, Workgroup workgroup) {
 
 		List<Tag> results = new ArrayList<Tag>();
 		List<Tag> tags = new ArrayList<Tag>();
@@ -54,7 +48,7 @@ public class JpaTagService implements TagService {
 	}
 
 	@Override
-	public Tag archiveTrackByTrackId(Long id) {
+	public Tag archiveById(Long id) {
 		
 		Tag tag = this.trackRepository.findOne(id);
 
@@ -73,7 +67,7 @@ public class JpaTagService implements TagService {
 	}
 
 	@Override
-	public Tag findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName) {
+	public Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String trackName) {
 		if (workgroup == null) return null;
 
 		Tag tag = this.trackRepository.findOneByWorkgroupIdAndName(workgroup.getId(), trackName);
@@ -89,12 +83,6 @@ public class JpaTagService implements TagService {
 		}
 
 		return tag;
-	}
-
-	@Override
-	public List<Tag> getTagsByCourseId(Long id) {
-		Course course = this.getCourseOfferingGroupById(id);
-		return course.getTags();
 	}
 
 }

@@ -42,10 +42,10 @@ public class TermUpdateTask {
 
 		if(dwTerms != null) {
 			for(DwTerm dwTerm : dwTerms) {
-				Term term = this.termService.findOrCreateTermByTermCode(dwTerm.getCode());
+				Term term = this.termService.findOrCreateByTermCode(dwTerm.getCode());
 				term.setStartDate(dwTerm.getBeginDate());
 				term.setEndDate(dwTerm.getEndDate());
-				this.termService.saveTerm(term);
+				this.termService.save(term);
 			}
 		}
 

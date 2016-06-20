@@ -38,7 +38,7 @@ public class JpaActivityService implements ActivityService {
 		Activity activity = this.findOneById(id);
 		Section section = activity.getSection();
 		section.getActivities().remove(activity);
-		sectionService.saveSection(section);
+		sectionService.save(section);
 		activity = this.findOneById(id);
 		activityRepository.delete(activity);
 	}

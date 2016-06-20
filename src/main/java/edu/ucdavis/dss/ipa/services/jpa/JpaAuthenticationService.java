@@ -55,7 +55,7 @@ public class JpaAuthenticationService implements AuthenticationService, UserDeta
 		authenticationPrincipal.setUser(authenticationUser);
 
 		// Set the first user workgroup as the default
-		User user = this.userService.getUserByLoginId(loginId);
+		User user = this.userService.getOneByLoginId(loginId);
 		
 		if(user != null) {
 			List<Workgroup> workgroups = user.getWorkgroups();
@@ -75,7 +75,7 @@ public class JpaAuthenticationService implements AuthenticationService, UserDeta
 	}
 	
 	public AuthenticationUser newAuthenticationUser(String loginId) {
-		User user = userService.getUserByLoginId(loginId);
+		User user = userService.getOneByLoginId(loginId);
 		Instructor instructor = instructorService.getOneByLoginId(loginId);
 		AuthenticationUser authenticationUser = new AuthenticationUser();
 
@@ -94,7 +94,7 @@ public class JpaAuthenticationService implements AuthenticationService, UserDeta
 
 			// Update user lastAccessed time
 			user.setLastAccessed(new Date());
-			this.userService.saveUser(user);
+			this.userService.save(user);
 
 			return authenticationUser;
 		}
@@ -176,7 +176,7 @@ public class JpaAuthenticationService implements AuthenticationService, UserDeta
 
 	@Override
 	public void setActiveWorkgroupForCurrentUser(Workgroup workgroup) {
-		User user = this.userService.getUserByLoginId(this.getCurrentUser().getLoginid());
+		User user = this.userService.getOneByLoginId(this.getCurrentUser().getLoginid());
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		AuthenticationPrincipal principal = (AuthenticationPrincipal) auth.getPrincipal();
 

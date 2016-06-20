@@ -13,15 +13,13 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 
 @Validated
 public interface TagService {
-	Tag saveTrack(@NotNull @Valid Tag tag);
+	Tag save(@NotNull @Valid Tag tag);
 
-	Tag findOneById(Long id);
+	Tag getOneById(Long id);
 
-	List<Course> getCourseOfferingGroupsByTrackId(Long id);
+	List<Tag> searchTags(String query, Workgroup workgroup);
 
-	List<Tag> searchTracks(String query, Workgroup workgroup);
-
-	Tag archiveTrackByTrackId(Long id);
+	Tag archiveById(Long id);
 
 	/**
 	 * Finds or Creates a track based on trackName and workgroup. If found the track will be unarchived
@@ -30,8 +28,6 @@ public interface TagService {
 	 * @param trackName
      * @return
      */
-	Tag findOrCreateTrackByWorkgroupAndTrackName(Workgroup workgroup, String trackName);
-
-	List<Tag> getTagsByCourseId(Long courseId);
+	Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String trackName);
 
 }

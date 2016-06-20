@@ -31,7 +31,7 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 		
 		state.setTermCode(termCode);
 		
-		Term term = this.termService.findOneByTermCode(termCode);
+		Term term = this.termService.getOneByTermCode(termCode);
 		if(term != null) {
 			Date endDate = term.getEndDate();
 			

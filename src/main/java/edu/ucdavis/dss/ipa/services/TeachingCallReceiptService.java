@@ -20,7 +20,8 @@ public interface TeachingCallReceiptService {
 
 	public void sendNotificationsByWorkgroupId(long workgroupId);
 
-	public TeachingCallReceipt createTeachingCallReceipt(Instructor instructor, TeachingCall teachingCall);
+	public TeachingCallReceipt createByInstructorAndTeachingCall(Instructor instructor, TeachingCall teachingCall);
 
 	public TeachingCallReceipt findByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId);
+
 }

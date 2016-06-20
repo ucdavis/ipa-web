@@ -34,7 +34,6 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	@Inject UserRoleService userRoleService;
 	@Inject InstructorService instructorService;
 	@Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 

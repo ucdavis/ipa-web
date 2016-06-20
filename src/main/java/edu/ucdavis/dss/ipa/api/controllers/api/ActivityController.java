@@ -48,7 +48,7 @@ public class ActivityController {
 	@ResponseBody
 	@PreAuthorize("hasPermission(#id, 'section', 'academicCoordinator')")
 	public TermActivityView createUniqueActivity(@RequestBody Activity activity, @PathVariable Long id, HttpServletResponse httpResponse) {
-		Section section = sectionService.getSectionById(id);
+		Section section = sectionService.getOneById(id);
 
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
@@ -61,7 +61,7 @@ public class ActivityController {
 			List<Activity> activities = section.getActivities();
 			activities.add(newActivity);
 			section.setActivities(activities);
-			sectionService.saveSection(section);
+			sectionService.save(section);
 
 			httpResponse.setStatus(HttpStatus.OK.value());
 			return new TermActivityView(newActivity);

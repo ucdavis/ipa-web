@@ -55,7 +55,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 	// Resource-based (e.g. workgroup, schedule) permissions checking
 	@Override
 	public boolean hasPermission(Authentication auth, Serializable item, String resourceType, Object _role) {
-		User user = this.userService.getUserByLoginId(authenticationService.getCurrentUser().getLoginid());
+		User user = this.userService.getOneByLoginId(authenticationService.getCurrentUser().getLoginid());
 		String role = String.valueOf((String)_role);
 
 		// User is required to check permissions
@@ -99,7 +99,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				return userHasRequiredRoleAndWorkgroup(user, role, this.workgroupService.findOneById((Long)item));
 			
 			case "tag":
-				Tag tag = this.tagService.findOneById((Long)item);
+				Tag tag = this.tagService.getOneById((Long)item);
 				if(tag == null) { return false; }
 				
 				return userHasRequiredRoleAndWorkgroup(user, role, tag.getWorkgroup());
@@ -117,7 +117,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				return userHasRequiredRoleAndWorkgroup(user, role, courseOffering.getCourse().getSchedule().getWorkgroup());
 
 			case "section":
-				Section section = this.sectionService.getSectionById((Long)item);
+				Section section = this.sectionService.getOneById((Long)item);
 				if(section == null) { return false; }
 
 				return userHasRequiredRoleAndWorkgroup(user, role, section.getSectionGroup().getCourseOfferingGroup().getSchedule().getWorkgroup());
@@ -189,7 +189,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 	// Non-resource-based permissions checking (generic; does not require e.g. workgroup, schedule)
 	@Override
 	public boolean hasPermission(Authentication auth, Object resourceType, Object _role) {
-		User user = this.userService.getUserByLoginId(authenticationService.getCurrentUser().getLoginid());
+		User user = this.userService.getOneByLoginId(authenticationService.getCurrentUser().getLoginid());
 		String role = String.valueOf((String)_role);
 
 		// User is required to check permissions

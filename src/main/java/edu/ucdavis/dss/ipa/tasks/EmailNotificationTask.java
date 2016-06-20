@@ -30,7 +30,7 @@ public class EmailNotificationTask {
 		if(runningTask) return; // avoid multiple concurrent jobs
 		runningTask = true;
 
-		List<Workgroup> workgroups = workgroupService.getAllWorkgroups();
+		List<Workgroup> workgroups = workgroupService.findAll();
 
 		for (Workgroup workgroup : workgroups) {
 			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroup.getId());

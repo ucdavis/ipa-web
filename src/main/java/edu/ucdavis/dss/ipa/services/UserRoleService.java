@@ -15,11 +15,11 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 @Validated
 public interface UserRoleService {
 
-	UserRole saveUserRole(@NotNull @Valid UserRole userRole);
+	UserRole save(@NotNull @Valid UserRole userRole);
 
-	UserRole findOneById(Long id);
+	UserRole getOneById(Long id);
 	
-	List<UserRole> findByUserAndWorkgroup(String loginId, Workgroup workgroup);
+	List<UserRole> findByLoginIdAndWorkgroup(String loginId, Workgroup workgroup);
 
 	List<UserRole> findByWorkgroup(Workgroup workgroup);
 
@@ -28,8 +28,6 @@ public interface UserRoleService {
 	List<UserRole> findByWorkgroupIdAndRoleToken(Long workgroupId, String role);
 
 	void deleteByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String role);
-
-	void deleteUserRoleById(Long id);
 
 	boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId);
 

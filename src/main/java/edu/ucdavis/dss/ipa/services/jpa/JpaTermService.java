@@ -20,26 +20,18 @@ public class JpaTermService implements TermService {
 	
 	@Override
 	@Transactional
-	public Term saveTerm(Term term)
+	public Term save(Term term)
 	{
 		return this.termRepository.save(term);
 	}
 
 	@Override
-	public Term findOneByTermCode(String termCode) {
+	public Term getOneByTermCode(String termCode) {
 		return this.termRepository.findOneByTermCode(termCode);
 	}
 
 	@Override
-	public void deleteTermByTermCode(String termCode) {
-		
-		Term term = this.termRepository.findOneByTermCode(termCode);
-
-		this.termRepository.delete(term);
-	}
-
-	@Override
-	public Term findOrCreateTermByTermCode(String termCode) {
+	public Term findOrCreateByTermCode(String termCode) {
 		if (termCode == null) return null;
 
 		Term term = this.termRepository.findOneByTermCode(termCode);
@@ -56,14 +48,12 @@ public class JpaTermService implements TermService {
 
 	@Override
 	public List<Term> findByYear(String year) {
-		List<Term> terms = this.termRepository.findByYear(year);
-
-		return terms;
+		return this.termRepository.findByYear(year);
 	}
 
 	@Override
 	public Term updateOrCreate(Term term) {
-		Term updatedTerm = this.findOneByTermCode(term.getTermCode());
+		Term updatedTerm = this.getOneByTermCode(term.getTermCode());
 		if(updatedTerm == null) {
 			updatedTerm = new Term();
 		}
@@ -71,7 +61,7 @@ public class JpaTermService implements TermService {
 		updatedTerm.setBannerEndWindow1(term.getBannerEndWindow1());
 		updatedTerm.setBannerStartWindow1(term.getBannerStartWindow1());
 
-		this.saveTerm(updatedTerm);
+		this.save(updatedTerm);
 
 		return updatedTerm;
 	}
@@ -87,8 +77,8 @@ public class JpaTermService implements TermService {
 	}
 
 	@Override
-	public Boolean isTermHistorical(String termCode) {
-		Term term = this.findOneByTermCode(termCode);
+	public Boolean isHistoricalByTermCode(String termCode) {
+		Term term = this.getOneByTermCode(termCode);
 		Date now = Calendar.getInstance().getTime();
 
 		if (term == null) {
@@ -98,8 +88,6 @@ public class JpaTermService implements TermService {
 		// Returns negative if 'now' comes after 'endDate'
 		// Zero if they are equal
 		// Positive if 'now' comes before 'endDate'
-		boolean isHistorical = now.compareTo(term.getEndDate()) > 0;
-
-		return isHistorical;
+		return now.compareTo(term.getEndDate()) > 0;
 	}
 }

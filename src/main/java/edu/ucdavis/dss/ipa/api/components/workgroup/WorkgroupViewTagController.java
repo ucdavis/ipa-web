@@ -25,7 +25,7 @@ public class WorkgroupViewTagController {
     @ResponseBody
     public Tag addTag(@PathVariable String workgroupCode, @RequestBody Tag tag, HttpServletResponse httpResponse) {
         Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
-        return tagService.findOrCreateTrackByWorkgroupAndTrackName(workgroup, tag.getName());
+        return tagService.findOrCreateByWorkgroupAndName(workgroup, tag.getName());
     }
 
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
@@ -33,15 +33,15 @@ public class WorkgroupViewTagController {
     @ResponseBody
     public Tag updateTag(@PathVariable String workgroupCode, @PathVariable long tagId,
                          @RequestBody Tag tag, HttpServletResponse httpResponse) {
-        Tag editedTag = tagService.findOneById(tagId);
+        Tag editedTag = tagService.getOneById(tagId);
         editedTag.setName(tag.getName());
-        return tagService.saveTrack(editedTag);
+        return tagService.save(editedTag);
     }
 
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/tags/{tagId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Tag archiveTag(@PathVariable String workgroupCode, @PathVariable long tagId, HttpServletResponse httpResponse) {
-        return tagService.archiveTrackByTrackId(tagId);
+        return tagService.archiveById(tagId);
     }
 }

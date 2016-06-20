@@ -136,7 +136,7 @@ public class TermViewController {
 		}
 
 		section.setSectionGroup(sectionGroup);
-		Section newSection = sectionService.saveSection(section);
+		Section newSection = sectionService.save(section);
 
 		// Cloning activities from previous section
 		if (previousSection != null) {
@@ -159,7 +159,7 @@ public class TermViewController {
 				activities.add(newActivity);
 				newSection.setActivities(activities);
 
-				sectionService.saveSection(newSection);
+				sectionService.save(newSection);
 			}
 		}
 
@@ -183,7 +183,7 @@ public class TermViewController {
 		sectionGroup = sectionGroupService.save(sectionGroup);
 
 		section.setSectionGroup(sectionGroup);
-		sectionService.saveSection(section);
+		sectionService.save(section);
 		sectionGroup.addSection(section);
 
 		httpResponse.setStatus(HttpStatus.OK.value());

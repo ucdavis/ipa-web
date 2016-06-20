@@ -1,8 +1,5 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -40,7 +37,7 @@ public class JpaLocationService implements LocationService {
         // Remove this location from COGs only in active schedules
         for (Activity activity : location.getActivities()) {
             String termCode = activity.getSection().getSectionGroup().getTermCode();
-            boolean isHistorical = termService.isTermHistorical(termCode);
+            boolean isHistorical = termService.isHistoricalByTermCode(termCode);
             if (!isHistorical) {
                 activity.setLocation(null);
             }

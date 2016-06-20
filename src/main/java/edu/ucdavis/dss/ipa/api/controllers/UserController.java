@@ -57,7 +57,7 @@ public class UserController {
 	public User currentUser() {
 		String loginId = authenticationService.getCurrentUser().getLoginid();
 		
-		return userService.getUserByLoginId(loginId);
+		return userService.getOneByLoginId(loginId);
 	}
 
 	@RequestMapping(value = "/api/workgroups/{workgroupId}/userRoles", method = RequestMethod.GET)
@@ -87,7 +87,7 @@ public class UserController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public List<Workgroup> getUserWorkgroups(@PathVariable Long userId, HttpServletResponse httpResponse) {
-		User user = this.userService.getUserById(userId);
+		User user = this.userService.getOneById(userId);
 		List<Workgroup> workgroupList = null;
 		
 		if(user != null) {
@@ -106,7 +106,7 @@ public class UserController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public List<Role> getUserRoles(@PathVariable Long id, HttpServletResponse httpResponse) {
-		List<Role> roleList = this.userService.getUserById(id).getRoles();
+		List<Role> roleList = this.userService.getOneById(id).getRoles();
 
 		httpResponse.setStatus(HttpStatus.OK.value());
 		return roleList;
@@ -116,12 +116,12 @@ public class UserController {
 	@ResponseBody
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
 	public List<UserRole> addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-		User user = this.userService.getUserByLoginId(loginId);
+		User user = this.userService.getOneByLoginId(loginId);
 		Role newRole = roleService.findOneByName(role);
 
 		// Has the user been added to IPA already?
 		if (user == null) {
-			user = userService.findOrCreateUserByLoginId(loginId);
+			user = userService.findOrCreateByLoginId(loginId);
 		}
 
 		//TODO: Ideally this scenario should be handled by a more nuanced hasPermission method
@@ -144,7 +144,7 @@ public class UserController {
 		}
 
 		// query new roleList and return
-		List<UserRole> roleList = userService.getUserByLoginId(loginId).getUserRoles();
+		List<UserRole> roleList = userService.getOneByLoginId(loginId).getUserRoles();
 
 		return roleList;
 	}
@@ -154,7 +154,7 @@ public class UserController {
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
 	public List<UserRole> removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
 		Role newRole = roleService.findOneByName(role);
-		User user = this.userService.getUserByLoginId(loginId);
+		User user = this.userService.getOneByLoginId(loginId);
 
 		//TODO: Ideally this scenario should be handled by a more nuanced hasPermission method
 		// Only Admins can modify the admin role
@@ -170,7 +170,7 @@ public class UserController {
 			userRoleService.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, role);
 
 			// Query new roleList and return
-			user = this.userService.getUserByLoginId(loginId);
+			user = this.userService.getOneByLoginId(loginId);
 			httpResponse.setStatus(HttpStatus.OK.value());
 			UserLogger.log(currentUser, "Removed role '" + role + "' from user " + user.getName() + " (" + loginId + ")");
 		}
@@ -183,7 +183,7 @@ public class UserController {
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
 	public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
 		if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
-			User user = this.userService.getUserByLoginId(loginId);
+			User user = this.userService.getOneByLoginId(loginId);
 			UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with ID " + workgroupId);
 			httpResponse.setStatus(HttpStatus.OK.value());
 		} else {
@@ -204,7 +204,7 @@ public class UserController {
 	@PreAuthorize("isAuthenticated()")
 	public List<User> searchUsers(@PathVariable String query, @RequestParam(value = "localOnly", required = false) boolean localOnly) {
 		if(localOnly) {
-			return this.userService.searchAllUsersByFirstLastAndLoginId(query);
+			return this.userService.searchByFirstLastAndLoginId(query);
 		} else {
 			List<User> users = new ArrayList<User>();
 			List<DwPerson> dwPeople = new ArrayList<DwPerson>();

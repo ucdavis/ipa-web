@@ -42,7 +42,7 @@ public class TeachingCallResponseController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public TeachingCallResponse teachingCallResponse(@PathVariable Long Id) {
-		return this.teachingCallResponseService.findOneById(Id);
+		return this.teachingCallResponseService.getOneById(Id);
 	}
 
 	@RequestMapping(value = "/api/teachingCallResponses", method = RequestMethod.POST)
@@ -52,7 +52,7 @@ public class TeachingCallResponseController {
 	@PreAuthorize("isAuthenticated()")
 	public TeachingCallResponse createTeachingPreference(@RequestBody TeachingCallResponse teachingCallResponse) {
 		UserLogger.log(currentUser, "Created a teaching call response for the termCode '" + teachingCallResponse.getTermCode());
-		return this.teachingCallResponseService.saveTeachingCallResponse(teachingCallResponse);
+		return this.teachingCallResponseService.save(teachingCallResponse);
 	}
 
 	@RequestMapping(value = "/api/teachingCallResponses/{id}", method = RequestMethod.DELETE)
@@ -60,11 +60,11 @@ public class TeachingCallResponseController {
 	// SECUREME
 	@PreAuthorize("isAuthenticated()")
 	public void deleteTeachingPreference(@PathVariable Long id, HttpServletResponse httpResponse) {
-		TeachingCallResponse teachingCallResponse = this.teachingCallResponseService.findOneById(id);
+		TeachingCallResponse teachingCallResponse = this.teachingCallResponseService.getOneById(id);
 
 		UserLogger.log(currentUser, "Deleted teaching call response for the termCode '" + teachingCallResponse.getTermCode());
 		
-		this.teachingCallResponseService.deleteTeachingCallResponseById(id);
+		this.teachingCallResponseService.delete(id);
 		
 		httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
 	}
@@ -81,7 +81,7 @@ public class TeachingCallResponseController {
 			@RequestParam(value = "instructorId", required = true) long instructorId,
 			@RequestBody TeachingCallResponse teachingCallResponse,
 			HttpServletResponse httpResponse) {
-		TeachingCallResponse toBeSaved = this.teachingCallResponseService.findOrCreateOneByTeachingCallIdAndInstructorIdAndTerm(
+		TeachingCallResponse toBeSaved = this.teachingCallResponseService.findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(
 				teachingCallId, instructorId, termCode);
 
 		if (toBeSaved == null) {
@@ -94,7 +94,7 @@ public class TeachingCallResponseController {
 			UserLogger.log(currentUser, "Changed availability for the termCode '" + teachingCallResponse.getTermCode());
 		}
 
-		return this.teachingCallResponseService.saveTeachingCallResponse(toBeSaved);
+		return this.teachingCallResponseService.save(toBeSaved);
 	}
 
 	@PreAuthorize("hasPermission(#scheduleId, 'schedule', 'academicCoordinator')")
@@ -106,7 +106,7 @@ public class TeachingCallResponseController {
 			@RequestParam(value = "termCode", required = true) String termCode,
 			HttpServletResponse httpResponse)
 	{
-		return teachingCallResponseService.getAvailabilitiesForScheduleTerm(scheduleId, termCode);
+		return teachingCallResponseService.findByScheduleIdAndTermCode(scheduleId, termCode);
 	}
 
 	@PreAuthorize("hasPermission(#teachingCallId, 'teachingCall', 'senateInstructor')"

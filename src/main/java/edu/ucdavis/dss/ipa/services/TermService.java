@@ -13,13 +13,11 @@ import edu.ucdavis.dss.ipa.entities.Term;
 
 @Validated
 public interface TermService {
-	Term saveTerm(@NotNull @Valid Term term);
+	Term save(@NotNull @Valid Term term);
 
-	Term findOneByTermCode(String termCode);
+	Term getOneByTermCode(String termCode);
 
-	void deleteTermByTermCode(String termCode);
-
-	Term findOrCreateTermByTermCode(String termCode);
+	Term findOrCreateByTermCode(String termCode);
 
 	List<Term> findByYear(String year);
 	
@@ -29,5 +27,5 @@ public interface TermService {
 
 	List<Term> findByStartDateAfter(Date targetDate);
 
-	Boolean isTermHistorical(String termCode);
+	Boolean isHistoricalByTermCode(String termCode);
 }

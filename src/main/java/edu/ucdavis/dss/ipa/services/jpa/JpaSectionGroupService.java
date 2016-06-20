@@ -1,9 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,16 +8,11 @@ import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.dw.DwClient;
-import edu.ucdavis.dss.dw.dto.DwSectionGroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
-import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 
 @Service
 public class JpaSectionGroupService implements SectionGroupService {
@@ -86,7 +78,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 			section.setSectionGroup(sectionGroup);
 		}
 
-		return sectionService.saveSection(section);
+		return sectionService.save(section);
 	}
 
 	private boolean isLocked(long sectionGroupId) {

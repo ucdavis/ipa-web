@@ -1,11 +1,15 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -19,6 +23,7 @@ import edu.ucdavis.dss.ipa.services.TeachingCallService;
 
 @Service
 public class JpaTeachingCallResponseService implements TeachingCallResponseService {
+
 	@Inject TeachingCallResponseRepository teachingCallResponseRepository;
 	@Inject TeachingCallService teachingCallService;
 	@Inject ScheduleService scheduleService;
@@ -26,18 +31,18 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 
 	@Override
 	@Transactional
-	public TeachingCallResponse saveTeachingCallResponse(TeachingCallResponse teachingCallResponse)
+	public TeachingCallResponse save(TeachingCallResponse teachingCallResponse)
 	{
 		return this.teachingCallResponseRepository.save(teachingCallResponse);
 	}
 
 	@Override
-	public TeachingCallResponse findOneById(Long id) {
+	public TeachingCallResponse getOneById(Long id) {
 		return this.teachingCallResponseRepository.findOne(id);
 	}
 
 	@Override
-	public void deleteTeachingCallResponseById(Long id) {
+	public void delete(Long id) {
 		this.teachingCallResponseRepository.delete(id);
 	}
 
@@ -57,12 +62,12 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	}
 
 	@Override
-	public List<TeachingCallResponse> getAvailabilitiesForScheduleTerm(Long scheduleId, String termCode) {
+	public List<TeachingCallResponse> findByScheduleIdAndTermCode(Long scheduleId, String termCode) {
 		return this.teachingCallResponseRepository.findByTeachingCallScheduleIdAndTermCode(scheduleId, termCode);
 	}
 
 	@Override
-	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTerm(
+	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(
 			Long teachingCallId, long instructorId, String termCode) {
 		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
 		Instructor instructor = instructorService.getOneById(instructorId);
@@ -76,9 +81,30 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 			teachingCallResponse.setTeachingCall(teachingCall);
 			teachingCallResponse.setTermCode(termCode);
 			teachingCallResponse.setAvailabilityBlob(TeachingCall.DefaultBlob());
-			this.saveTeachingCallResponse(teachingCallResponse);
+			this.save(teachingCallResponse);
 		}
 
 		return teachingCallResponse;
 	}
+
+	@Override
+	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
+			Workgroup workgroup, Instructor instructor, int years) {
+		if (workgroup == null || instructor == null)
+			return null;
+
+		long thisYear = Calendar.getInstance().get(Calendar.YEAR);
+		List<Long> yearsList = LongStream.rangeClosed(thisYear - years + 1, thisYear).boxed().collect(Collectors.toList());
+		List<TeachingCallResponse> teachingCallResponses = this.teachingCallResponseRepository.findByInstructorIdAndTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearIn(instructor.getId(), workgroup.getId(), yearsList);
+
+		return teachingCallResponses;
+	}
+
+	@Override
+	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
+			Workgroup workgroup, Instructor instructor) {
+		int NUMBER_OF_YEARS = 10;
+		return getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor, NUMBER_OF_YEARS);
+	}
+
 }

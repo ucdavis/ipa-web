@@ -1,48 +1,41 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.utilities.Email;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JpaUserService implements UserService {
 	private static final Logger log = LogManager.getLogger();
 
 	@Inject UserRepository userRepository;
-	@Inject RoleService roleService;
-	@Inject InstructorService instructorService;
 	@Inject DataWarehouseRepository dwRepository;
 
 	@Override
-	@Transactional
-	public User saveUser(User user)
+	public User save(User user)
 	{
 		return this.userRepository.save(user);
 	}
 
-	public User getUserByLoginId(String loginId)
+	@Override
+	public User getOneByLoginId(String loginId)
 	{
 		return this.userRepository.findByLoginId(loginId);
 	}
 
 	@Override
-	public User getUserById(Long id) {
+	public User getOneById(Long id) {
 		return this.userRepository.findById(id);
 	}
 
@@ -60,13 +53,13 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
-	public User findOrCreateUserByLoginId(String loginId) {
+	public User findOrCreateByLoginId(String loginId) {
 		User user = this.userRepository.findByLoginId(loginId);
 
 		if(user == null) {
-			user = this.createUser(loginId);
+			user = this.createByLoginId(loginId);
 			if(user == null) {
-				log.error("Could not find " + loginId + " in DW for findOrCreateUserByLoginId()!");
+				log.error("Could not find " + loginId + " in DW for findOrCreateByLoginId()!");
 				return null;
 			}
 		}
@@ -75,7 +68,7 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
-	public User createUser(String loginId) {
+	public User createByLoginId(String loginId) {
 		User user = null;
 		List<DwPerson> dwPeopleResults = null;
 
@@ -106,7 +99,7 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
-	public void contactUser(User user, String messageBody, String subject) {
+	public void contact(User user, String messageBody, String subject) {
 
 		String email = user.getEmail();
 		if (email == null) {
@@ -118,7 +111,7 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
-	public List<User> searchAllUsersByFirstLastAndLoginId(String query) {
+	public List<User> searchByFirstLastAndLoginId(String query) {
 		return this.userRepository.findByFirstNameOrLastNameOrLoginId(query);
 	}
 }

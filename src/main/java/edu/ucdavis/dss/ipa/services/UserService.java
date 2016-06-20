@@ -11,15 +11,16 @@ import edu.ucdavis.dss.ipa.entities.User;
 
 @Validated
 public interface UserService {
-	User saveUser(@NotNull @Valid User user);
 
-	User getUserByLoginId(String loginId);
+	User save(@NotNull @Valid User user);
+
+	User getOneByLoginId(String loginId);
 	
-	User getUserById(Long id);
+	User getOneById(Long id);
 	
 	List<User> getAllUsers();
 	
-	List<User> searchAllUsersByFirstLastAndLoginId(String query);
+	List<User> searchByFirstLastAndLoginId(String query);
 
 	/**
 	 * Find or create user by login ID. Will search DW when creating a new user
@@ -28,7 +29,7 @@ public interface UserService {
 	 * @param loginId
 	 * @return
 	 */
-	User findOrCreateUserByLoginId(String loginId);
+	User findOrCreateByLoginId(String loginId);
 
 	/**
 	 * Creates and saves a user. Uses DW to fill in additional details
@@ -37,7 +38,8 @@ public interface UserService {
 	 * @param loginId
 	 * @return
 	 */
-	User createUser(String loginId);
+	User createByLoginId(String loginId);
 	
-	void contactUser(@Valid User user, String messageBody, String subject);
+	void contact(@Valid User user, String messageBody, String subject);
+
 }

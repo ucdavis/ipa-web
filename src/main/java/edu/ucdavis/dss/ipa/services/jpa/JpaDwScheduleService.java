@@ -69,7 +69,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 //			sectionGroup = new SectionGroup();
 //
 //			sectionGroup.setCourseOffering(co);
-//			sectionGroup = this.sectionGroupService.save(sectionGroup);
+//			sectionGroup = this.sectionGroupService.createByLoginId(sectionGroup);
 //
 //			List<SectionGroup> updatedSectionGroups = co.getSectionGroups();
 //			updatedSectionGroups.add(sectionGroup);
@@ -93,7 +93,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 //
 //				seatsTotal += dwSection.getMaximumEnrollment();
 //
-//				section = this.sectionService.saveSection(section);
+//				section = this.sectionService.createByLoginId(section);
 //
 //				List<Section> updatedSections = sectionGroup.getSections();
 //				updatedSections.add(section);
@@ -101,7 +101,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 //			}
 //
 //			sectionGroup.addSection(section);
-//			sectionGroup = sectionGroupService.save(sectionGroup);
+//			sectionGroup = sectionGroupService.createByLoginId(sectionGroup);
 //
 //			List<SectionGroup> updatedSectionGroups = co.getSectionGroups();
 //			updatedSectionGroups.add(sectionGroup);
@@ -120,7 +120,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 //					instructor.setLastName(dwInstructor.getLastName());
 //					instructor.setLoginId(dwInstructor.getLoginId());
 //
-//					this.instructorService.save(instructor);
+//					this.instructorService.createByLoginId(instructor);
 //				}
 //
 //				// Create a teaching assignment if it does not exist already

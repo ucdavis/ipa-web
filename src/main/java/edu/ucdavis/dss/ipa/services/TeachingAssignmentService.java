@@ -11,11 +11,13 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 
 @Validated
 public interface TeachingAssignmentService {
-	TeachingAssignment saveTeachingAssignment(@NotNull @Valid TeachingAssignment teachingAssignment);
-
-	void deleteTeachingAssignmentById(Long id);
 
 	TeachingAssignment findOneById(Long id);
 
+	TeachingAssignment save(@NotNull @Valid TeachingAssignment teachingAssignment);
+
+	void delete(Long id);
+
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
+
 }

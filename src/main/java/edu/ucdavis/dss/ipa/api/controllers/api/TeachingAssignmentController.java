@@ -19,7 +19,7 @@ public class TeachingAssignmentController {
 	public void deleteInstructorAssignment(
 			@PathVariable long teachingAssignmentId,
 			HttpServletResponse httpResponse) {
-		teachingAssignmentService.deleteTeachingAssignmentById(teachingAssignmentId);
+		teachingAssignmentService.delete(teachingAssignmentId);
 	}
 
 }

@@ -31,27 +31,12 @@ public class JpaCourseService implements CourseService {
 	@Inject ScheduleService scheduleService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject InstructorService instructorService;
-	@Inject
-	TagService tagService;
+	@Inject TagService tagService;
 	@Inject CourseService courseService;
 	
 	@Override
 	public Course getOneById(Long id) {
 		return this.courseRepository.findOne(id);
-	}
-
-	@Override
-	@Transactional
-	public Course findOrCreateByDwCourseAndScheduleIdAndSequencePattern(DwCourse dwCourse, Long scheduleId, String sequencePattern) {
-		Course course = this.courseRepository.
-				findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-						dwCourse.getSubject().getCode(), dwCourse.getCourseNumber(), sequencePattern, scheduleId);
-
-		if(course != null) {
-			return course;
-		} else {
-			return this.createByDwCourseAndScheduleIdAndSequencePattern(dwCourse, scheduleId, sequencePattern);
-		}
 	}
 
 	@Transactional
@@ -76,7 +61,7 @@ public class JpaCourseService implements CourseService {
 		course = this.courseRepository.save(course);
 
 		String trackName = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
-		Tag tag = tagService.findOrCreateTrackByWorkgroupAndTrackName(schedule.getWorkgroup(), trackName);
+		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), trackName);
 		this.addTag(course.getId(), tag);
 
 		return this.courseRepository.save(course);
@@ -119,6 +104,12 @@ public class JpaCourseService implements CourseService {
 		}
 		course.setTags(tags);
 		return this.courseRepository.save(course);
+	}
+
+	@Override
+	public List<Course> findByTrackId(Long id) {
+		Tag tag = tagService.getOneById(id);
+		return tag.getCourses();
 	}
 
 	@Override

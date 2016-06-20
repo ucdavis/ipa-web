@@ -14,17 +14,18 @@ import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 
 @Service
 public class JpaTeachingAssignmentService implements TeachingAssignmentService {
+
 	@Inject TeachingAssistantPreferenceRepository teachingAssistantPreferenceRepository;
-	@Inject GraduateStudentService graduateStudentService;
 	@Inject ScheduleService scheduleService;
 	@Inject TeachingAssignmentRepository teachingAssignmentRepository;
+
 	@Override
-	public TeachingAssignment saveTeachingAssignment(TeachingAssignment teachingAssignment) {
+	public TeachingAssignment save(TeachingAssignment teachingAssignment) {
 		return teachingAssignmentRepository.save(teachingAssignment);
 	}
 	
 	@Override
-	public void deleteTeachingAssignmentById(Long id) {
+	public void delete(Long id) {
 		teachingAssignmentRepository.delete(id);
 	}
 
@@ -43,7 +44,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 			teachingAssignment.setInstructor(instructor);
 			teachingAssignment.setSectionGroup(sectionGroup);
 
-			this.saveTeachingAssignment(teachingAssignment);
+			this.save(teachingAssignment);
 		}
 
 		return teachingAssignment;
