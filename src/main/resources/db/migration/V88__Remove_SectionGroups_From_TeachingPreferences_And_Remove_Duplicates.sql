@@ -1,6 +1,6 @@
 ALTER TABLE `TeachingPreferences` DROP COLUMN `SectionGroups_SectionGroupId`;
 
--- Remove duplicate teachingAssignments (purposefully disabled - had issues with MySQL 5.7 and
+-- Remove duplicate teachingPreferences (purposefully disabled - had issues with MySQL 5.7 and
 -- no database exists anymore which needs this, especially not new ones)
 --CREATE TABLE `TeachingPreferences_deduped` like `TeachingPreferences`;
 
