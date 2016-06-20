@@ -8,6 +8,4 @@ public interface SectionRepository extends CrudRepository<Section, Long> {
 
 	Section findById(Long id);
 
-	Section findByCrnAndSectionGroupCourseOfferingTermCode(String crn, String termCode);
-
 }

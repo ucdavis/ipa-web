@@ -8,14 +8,12 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
-import edu.ucdavis.dss.ipa.repositories.TeachingAssistantPreferenceRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 
 @Service
 public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
-	@Inject TeachingAssistantPreferenceRepository teachingAssistantPreferenceRepository;
 	@Inject ScheduleService scheduleService;
 	@Inject TeachingAssignmentRepository teachingAssignmentRepository;
 

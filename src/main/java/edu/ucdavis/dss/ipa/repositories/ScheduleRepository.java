@@ -21,6 +21,6 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
 
 	List<Schedule> findByYear(long year);
 
-	@Query("SELECT DISTINCT co.termCode FROM CourseOffering co, CourseOfferingGroup cog WHERE co.courseOfferingGroup = cog and cog.schedule.id = :scheduleId")
+	@Query("SELECT DISTINCT sg.termCode FROM SectionGroup sg, Course c WHERE sg.course = c and c.schedule.id = :scheduleId")
 	List<String> getActiveTermCodesForScheduleId(@Param("scheduleId") long scheduleId);
 }
