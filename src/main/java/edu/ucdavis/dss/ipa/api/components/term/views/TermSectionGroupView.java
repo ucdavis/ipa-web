@@ -9,7 +9,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 
 public class TermSectionGroupView {
-	private long id, courseOfferingId;
+	private long id;
 	private String sequencePattern;
 	private List<TermSectionView> sections = new ArrayList<TermSectionView>();
 	private List<TermTeachingAssignmentView> teachingAssignments = new ArrayList<TermTeachingAssignmentView>();
@@ -22,8 +22,7 @@ public class TermSectionGroupView {
 		setSharedActivities(sectionGroup);
 		setSections(sectionGroup.getSections());
 		setTeachingAssignments(sectionGroup.getTeachingAssignments());
-		setSequencePattern(sectionGroup.getSequencePattern());
-		setCourseOfferingId(sectionGroup.getCourseOffering().getId());
+		setSequencePattern(sectionGroup.getCourse().getSequencePattern());
 		setInstructors(sectionGroup);
 	}
 
@@ -105,14 +104,6 @@ public class TermSectionGroupView {
 			}
 		}
 		return false;
-	}
-
-	public long getCourseOfferingId() {
-		return courseOfferingId;
-	}
-
-	public void setCourseOfferingId(long courseOfferingId) {
-		this.courseOfferingId = courseOfferingId;
 	}
 
 	public List<TermInstructorView> getInstructors() {

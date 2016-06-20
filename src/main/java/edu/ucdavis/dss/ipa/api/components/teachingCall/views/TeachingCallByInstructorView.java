@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
-import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
-import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.entities.*;
 
 /**
  * Used by InstructorController to return the list of instructors and their preferences
@@ -21,14 +17,14 @@ import edu.ucdavis.dss.ipa.entities.Term;
 public class TeachingCallByInstructorView {
 	private String firstName, lastName;
 	private long id;
-	private HashMap<String,List<TeachingCallTeachingPreferenceView>> teachingPreferences = new HashMap<String,List<TeachingCallTeachingPreferenceView>>();
+	private HashMap<String,List<TeachingCallTeachingAssignmentView>> teachingPreferences = new HashMap<String,List<TeachingCallTeachingAssignmentView>>();
 	private HashMap<String,TeachingCallTeachingCallResponseView> teachingCallResponses = new HashMap<String,TeachingCallTeachingCallResponseView>();
 	private TeachingCallTeachingCallReceiptView teachingCallReceipt;
 	private TeachingCallScheduleInstructorNoteView scheduleInstructorNote;
 
 	public TeachingCallByInstructorView(
 			Instructor instructor,
-			List<TeachingPreference> scheduleTeachingPreferences,
+			List<TeachingAssignment> teachingAssignments,
 			List<TeachingCallResponse> scheduleTeachingCallResponses,
 			TeachingCallReceipt teachingCallReceipt,
 			ScheduleInstructorNote scheduleInstructorNote,
@@ -36,7 +32,7 @@ public class TeachingCallByInstructorView {
 		setId(instructor.getId());
 		setFirstName(instructor.getFirstName());
 		setLastName(instructor.getLastName());
-		setTeachingPreferences(scheduleTeachingPreferences, year);
+		setTeachingPreferences(teachingAssignments, year);
 		setTeachingCallResponses(scheduleTeachingCallResponses);
 		setTeachingCallReceipt(teachingCallReceipt);
 		setScheduleInstructorNote(scheduleInstructorNote);
@@ -66,24 +62,24 @@ public class TeachingCallByInstructorView {
 		this.id = id;
 	}
 
-	public HashMap<String,List<TeachingCallTeachingPreferenceView>> getTeachingPreferences() {
+	public HashMap<String,List<TeachingCallTeachingAssignmentView>> getTeachingPreferences() {
 		return teachingPreferences;
 	}
 
-	public void setTeachingPreferences(List<TeachingPreference> scheduleTeachingPreferences, long year) {
+	public void setTeachingPreferences(List<TeachingAssignment> teachingAssignments, long year) {
 		// Initialize teachingPreferences for all term of the year
 		for (String termCode: Term.getTermCodesByYear(year)) {
 			// Get the 2 digit termCode
 			String term = Term.getTwoDigitTermCode(termCode);
-			this.teachingPreferences.put(term, new ArrayList<TeachingCallTeachingPreferenceView>());
+			this.teachingPreferences.put(term, new ArrayList<TeachingCallTeachingAssignmentView>());
 		}
-		for (TeachingPreference teachingPreference: scheduleTeachingPreferences) {
+		for (TeachingAssignment teachingAssignment: teachingAssignments) {
 			// Get the 2 digit termCode
-			String term = Term.getTwoDigitTermCode(teachingPreference.getTermCode());
+			String term = Term.getTwoDigitTermCode(teachingAssignment.getTermCode());
 
 			// Append to teachingPreferences of that term
-			List<TeachingCallTeachingPreferenceView> termTeachingPreferences = this.teachingPreferences.get(term);
-			termTeachingPreferences.add(new TeachingCallTeachingPreferenceView(teachingPreference));
+			List<TeachingCallTeachingAssignmentView> termTeachingPreferences = this.teachingPreferences.get(term);
+			termTeachingPreferences.add(new TeachingCallTeachingAssignmentView(teachingAssignment));
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.services.DwScheduleService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 public class SectionGroupController {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject ScheduleService scheduleService;
+	@Inject DwScheduleService dwScheduleService;
 
 	@PreAuthorize("hasPermission(#id, 'schedule', 'academicCoordinator')"
 			+ "or hasPermission(#id, 'schedule', 'senateInstructor') or hasPermission(#id, 'schedule', 'federationInstructor')")
@@ -49,6 +51,6 @@ public class SectionGroupController {
 			@RequestParam(value = "toYear", required = false) String toYear,
 			@RequestParam(value = "term", required = false) String term
 			) {
-		return sectionGroupService.getSectionGroupsByCourseId(id, toYear + term);
+		return dwScheduleService.getSectionGroupsByCourseIdAndTermCode(id, toYear + term);
 	}
 }

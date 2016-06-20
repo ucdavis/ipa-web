@@ -45,7 +45,6 @@ public class UserController {
 	@Inject WorkgroupService workgroupService;
 	@Inject RoleService roleService;
 	@Inject UserRoleService userRoleService;
-	@Inject GraduateStudentService graduateStudentService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject CurrentUser currentUser;
 
@@ -144,9 +143,8 @@ public class UserController {
 		}
 
 		// query new roleList and return
-		List<UserRole> roleList = userService.getOneByLoginId(loginId).getUserRoles();
 
-		return roleList;
+		return userService.getOneByLoginId(loginId).getUserRoles();
 	}
 
 	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
@@ -226,29 +224,6 @@ public class UserController {
 	
 			return users;
 		}
-	}
-
-	// Returns a list of graduate students from the specified workgroup who are
-	// If requiredActive is true it will only return graduate students who have userRoles 
-	// (capable of TAing, as opposed to grad students no longer at the workgroup)
-	// This action will NOT return graduate students who have TA'd for courses for the specified workgroup
-	@PreAuthorize("hasPermission(#id, 'workgroup', 'academicCoordinator')")
-	@RequestMapping(value ="/api/workgroups/{id}/teachingAssistants", method = RequestMethod.GET)
-	@ResponseBody
-	@JsonView(UserViews.Detailed.class)
-	public List<GraduateStudent> getActiveTeachingAssistantsByWorkgroupId(@PathVariable long id, HttpServletResponse httpResponse, @RequestParam(value = "requireActive", required = true) Boolean requireActive) {
-		List<GraduateStudent> teachingAssistants = new ArrayList<GraduateStudent>();
-
-		if(requireActive) {
-			teachingAssistants = graduateStudentService.getAllTeachingAssistantGraduateStudentsByWorkgroupId(id);
-		}
-
-		// Simply get all graduate students, past and present, associated to the workgroup
-		else {
-			Workgroup workgroup = workgroupService.findOneById(id);
-			teachingAssistants = workgroup.getGraduateStudents();
-		}
-		return teachingAssistants;
 	}
 
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")

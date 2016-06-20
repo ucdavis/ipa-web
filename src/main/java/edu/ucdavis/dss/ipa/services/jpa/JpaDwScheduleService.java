@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.*;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,6 +28,7 @@ public class JpaDwScheduleService implements DwScheduleService {
 	@Inject ActivityService activityService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
+	@Inject DataWarehouseRepository dataWarehouseRepository;
 
 	@Override
 	@Transactional
@@ -209,6 +209,17 @@ public class JpaDwScheduleService implements DwScheduleService {
 //		co.setSeatsTotal(seatsTotal);
 //		co = this.courseOfferingService.saveCourseOffering(co);
 //		this.updateSharedActivities(co);
+	}
+
+	@Override
+	public List<DwSectionGroup> getSectionGroupsByCourseIdAndTermCode(long courseId, String termCode) {
+		Course course = this.courseService.getOneById(courseId);
+
+		if (course == null) { return null; }
+
+		return dataWarehouseRepository.getSectionGroupsBySubjectCodeAndCourseNumberAndEffectiveTermCodeAndTermCode(
+				course.getSubjectCode(), course.getCourseNumber(), course.getEffectiveTermCode(), termCode
+		);
 	}
 
 //	@Transactional

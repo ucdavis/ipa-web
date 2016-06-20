@@ -1,124 +1,126 @@
 package edu.ucdavis.dss.ipa.api.controllers.api;
 
-import java.util.ArrayList;
-import java.util.List;
+import edu.ucdavis.dss.ipa.api.components.annual.views.AnnualCourseView;
+import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
+import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Tag;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.services.AuthenticationService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.utilities.UserLogger;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import edu.ucdavis.dss.dw.dto.DwCourse;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import java.util.List;
 
 @RestController
 public class CourseController {
+	@Inject
+	CourseService courseService;
+	@Inject ScheduleService scheduleService;
 	@Inject AuthenticationService authenticationService;
-	@Inject UserService userService;
-	@Inject CourseService courseService;
-	@Inject DataWarehouseRepository dwRepository;
+	@Inject TeachingCallViewFactory teachingCallViewFactory;
+	@Inject CurrentUser currentUser;
 
-	@RequestMapping(value = "/api/courses/search/{query}", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission(#id, 'courseOfferingGroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public List<Course> searchCourses (@PathVariable String query) {
-		List<Course> courses = new ArrayList<Course>();
-		List<DwCourse> dwCourses = new ArrayList<DwCourse>();
+	public Course getCourseOfferingGroupExpandedDetails(@PathVariable Long id, Model model) {
+		return this.courseService.getOneById(id);
+	}
 
-		try {
-			dwCourses = dwRepository.searchCourses(query);
+	@PreAuthorize("hasPermission(#id, 'courseOfferingGroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.PUT)
+	@ResponseBody
+	public AnnualCourseView updateCourseOfferingGroup(
+			@RequestBody Course courseDto,
+			@PathVariable Long id,
+			HttpServletResponse httpResponse) {
+		Course course = this.courseService.getOneById(id);
 
-			for (DwCourse dwCourse : dwCourses) {
-				Course course = new Course();
-				course.setCourseNumber(dwCourse.getCourseNumber());
-				course.setSubjectCode(dwCourse.getSubjectCode());
-				course.setEffectiveTermCode(dwCourse.getEffectiveTermCode());
-				course.setTitle(dwCourse.getTitle());
-				courses.add(course);
+		if (course != null && this.scheduleService.isScheduleClosed(course.getSchedule().getId())) {
+			httpResponse.setStatus(HttpStatus.LOCKED.value());
+		} else {
+			httpResponse.setStatus(HttpStatus.OK.value());
+			UserLogger.log(currentUser, "Renamed courseOfferingGroup with ID " + id + " from " + course.getTitle() + " to " + courseDto.getTitle());
+			course = this.courseService.setCourseSubject(id, courseDto.getTitle());
+		}
 
-				// Limit to 20 results (consider moving this logic to DW, probably by adding another param for limit)
-				int RESULTS_LIMIT = 20;
-				if (courses.size() >= RESULTS_LIMIT) break;
+		return new AnnualCourseView(course);
+	}
+
+	@PreAuthorize("hasPermission(#scheduleId, 'schedule', 'academicCoordinator')")
+	@RequestMapping(value = "/api/schedule/{scheduleId}/courseOfferingGroups", method = RequestMethod.POST)
+	@ResponseBody
+	public AnnualCourseView addSectionGroup(@RequestBody Course course, @PathVariable Long scheduleId, HttpServletResponse httpResponse) {
+		Schedule schedule = scheduleService.findById(scheduleId);
+
+		if (scheduleService.isScheduleClosed(schedule.getId())) {
+			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+			return null;
+		}
+
+		course = this.courseService.save(course);
+
+		httpResponse.setStatus(HttpStatus.OK.value());
+		UserLogger.log(currentUser, "Created new course '" + course.getTitle() + "' schedule with ID " + scheduleId);
+		return new AnnualCourseView(course);
+	}
+
+	@PreAuthorize("hasPermission(#id, 'courseOfferingGroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/courseOfferingGroups/{id}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public void deleteCourseOfferingGroup(@PathVariable Long id, HttpServletResponse httpResponse) {
+		Course course = this.courseService.getOneById(id);
+		if (course != null) {
+			httpResponse.setStatus(HttpStatus.NO_CONTENT.value());
+			UserLogger.log(currentUser, "Deleted course '" + course.getTitle() + "' with ID " + id);
+
+			// TODO: the logic to decide to delete a COG should exist on a public interface
+			// And the actual deletion of the COG should be a private method in the service layer
+			// Workgroup, Schedule, and COGs can all be deleted, but entering from COG deletion
+			// Requires consideration of additional business logic
+			if (this.scheduleService.isScheduleClosed(course.getSchedule().getId())) {
+				httpResponse.setStatus(HttpStatus.LOCKED.value());
+			} else {
+				this.courseService.delete(id);
+				httpResponse.setStatus(HttpStatus.OK.value());
 			}
-		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+		} else {
+			httpResponse.setStatus(HttpStatus.LOCKED.value());
 		}
-
-		return courses;
-	}
-	
-	@RequestMapping(value = "/api/courses/{id}", method = RequestMethod.PUT)
-	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public Course updateCourse(@PathVariable Long id, @RequestBody Course newCourse, HttpServletResponse httpResponse) {
-		Course course = courseService.findOneById(id);
-
-		if (course == null) {
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-			return null;
-		}
-
-		course.setCourseNumber(newCourse.getCourseNumber());
-		course.setEffectiveTermCode(newCourse.getEffectiveTermCode());
-		course.setCourseOverlaps(newCourse.getCourseOverlaps());
-		return this.courseService.saveCourse(course);
 	}
 
-	@RequestMapping(value = "/api/courses/{courseId}/courseOverlaps/{courseOverlapsId}", method = RequestMethod.PUT)
-	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public Course addTeachingOverlap(@PathVariable Long courseId, @PathVariable Long courseOverlapsId, HttpServletResponse httpResponse) {
-		Course course = courseService.findOneById(courseId);
-		Course courseOverlap = courseService.findOneById(courseOverlapsId);
 
-		if (course == null || courseOverlap == null) {
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-			return null;
+	@PreAuthorize("hasPermission(#id, 'courseOfferingGroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/courseOfferingGroups/{id}/tracks", method = RequestMethod.POST)
+	@ResponseBody
+	public AnnualCourseView updateCourseOfferingGroupTracks(@RequestBody List<Tag> tags, @PathVariable Long id,
+															HttpServletResponse httpResponse) {
+		Course course = this.courseService.getOneById(id);
+
+		if (course != null && this.scheduleService.isScheduleClosed(course.getSchedule().getId())) {
+			httpResponse.setStatus(HttpStatus.LOCKED.value());
+		} else {
+			Workgroup workgroup = course.getSchedule().getWorkgroup();
+
+			for(Tag tag : tags) {
+				tag.setWorkgroup(workgroup);
+			}
+			course.setTags(tags);
+
+			httpResponse.setStatus(HttpStatus.OK.value());
+			UserLogger.log(currentUser, "Updated tags for course '" + course.getTitle() + "' with ID " + id);
+			course = this.courseService.save(course);
 		}
 
-		List<Course> courseOverlaps = course.getCourseOverlaps();		
-		courseOverlaps.add(courseOverlap);
-		return this.courseService.saveCourse(course);
-	}
-	
-	@RequestMapping(value = "/api/courses/{courseId}/courseOverlaps/{courseOverlapsId}", method = RequestMethod.DELETE)
-	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public Course removeCourseOverlap(@PathVariable Long courseId, @PathVariable Long courseOverlapsId, HttpServletResponse httpResponse) {
-		Course course = courseService.findOneById(courseId);
-		Course courseOverlap = courseService.findOneById(courseOverlapsId);
-
-		if (course == null || courseOverlap == null) {
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-			return null;
-		}
-
-		List<Course> courseOverlaps = course.getCourseOverlaps();		
-		courseOverlaps.remove(courseOverlap);
-		return this.courseService.saveCourse(course);
-	}
-
-	@RequestMapping(value = "/api/courses", method = RequestMethod.POST)
-	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public Course addCourse(@RequestBody Course newCourse, HttpServletResponse httpResponse) {
-		Course course = courseService.findOrCreateByEffectiveTermAndSubjectCodeAndCourseNumberAndTitle(newCourse.getEffectiveTermCode(), newCourse.getSubjectCode(), newCourse.getCourseNumber(), newCourse.getTitle());
-
-		if (course == null) {
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-			return null;
-		}
-
-		return course;
+		return new AnnualCourseView(course);
 	}
 }

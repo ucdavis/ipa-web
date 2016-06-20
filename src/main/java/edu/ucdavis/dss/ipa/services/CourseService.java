@@ -18,7 +18,7 @@ public interface CourseService {
 
 	Course addTag(Long courseId, Tag tag);
 
-	List<Course> findByTrackId(Long id);
+	List<Course> findByTagId(Long id);
 
 	Course setCourseSubject(Long id, String subject);
 

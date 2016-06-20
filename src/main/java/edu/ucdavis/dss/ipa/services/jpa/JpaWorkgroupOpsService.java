@@ -74,7 +74,7 @@ public class JpaWorkgroupOpsService implements WorkgroupOpsService {
 		if(workgroup != null) {
 			for( Schedule schedule : workgroup.getSchedules() ) {
 				for (Course course : schedule.getCourses()) {
-					courseService.deleteCourseOfferingGroupById(course.getId());
+					courseService.delete(course.getId());
 				}
 				scheduleService.deleteByScheduleId(schedule.getId());
 			}

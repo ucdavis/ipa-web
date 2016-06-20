@@ -79,19 +79,18 @@ public class JpaDwSyncService implements DwSyncService {
 
 		// Get all section groups in all course offerings in all course offering groups in the schedule
 		sectionGroups = new HashSet<DiffSectionGroup>();
-		for (Course cog : schedule.getCourses()) {
-			for (CourseOffering co : cog.getSectionGroups())
-				sectionGroups.addAll(co.getSectionGroups().stream()
-						// Convert JPA SectionGroups to DiffSectionGroups for diffing
-						.map(new JpaSectionGroupMapper())
-						// Remove all null values (probably not necessary, but just to be safe...)
-						.filter(sg -> sg != null)
-						// Sections can be in different DiffSectionGroups even
-						// when they should be grouped together, so put them in
-						// the same DiffSectionGroups
-						.collect(Collectors.groupingBy(DiffSectionGroup::javersId,
-								Collectors.reducing(null, new SectionGroupGrouper())))
-						.values());
+		for (Course course : schedule.getCourses()) {
+			sectionGroups.addAll(course.getSectionGroups().stream()
+					// Convert JPA SectionGroups to DiffSectionGroups for diffing
+					.map(new JpaSectionGroupMapper())
+					// Remove all null values (probably not necessary, but just to be safe...)
+					.filter(sg -> sg != null)
+					// Sections can be in different DiffSectionGroups even
+					// when they should be grouped together, so put them in
+					// the same DiffSectionGroups
+					.collect(Collectors.groupingBy(DiffSectionGroup::javersId,
+							Collectors.reducing(null, new SectionGroupGrouper())))
+					.values());
 		}
 
 		// Set of converted dwSectionGroups
@@ -138,7 +137,7 @@ public class JpaDwSyncService implements DwSyncService {
 	 * ValueChanges if possible (i.e., helps detect course title renames or
 	 * course number changes and such)
 	 * 
-	 * @param diff
+	 * @param changes
 	 * @return Flat list of all detected property changes extracted from potentially
 	 *   paired objects.
 	 * @see #reduceSetChanges(SetChange, Map)
@@ -200,7 +199,7 @@ public class JpaDwSyncService implements DwSyncService {
 	 * similar ones, which should hopefully be the same objects (just renamed),
 	 * and compares them to see what's changed.
 	 * 
-	 * @param diff
+	 * @param change
 	 * @return
 	 */
 	private List<Change> reduceSetChanges(SetChange change, Map<String, Object> newAndRemoved) {

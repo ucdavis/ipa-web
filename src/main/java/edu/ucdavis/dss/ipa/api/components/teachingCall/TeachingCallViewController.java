@@ -19,7 +19,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByCourseView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByInstructorView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallCourseOfferingView;
+import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSectionGroupView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSummaryView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
@@ -33,7 +33,6 @@ public class TeachingCallViewController {
 	@Inject WorkgroupService workgroupService;
 	@Inject ScheduleService scheduleService;
 	@Inject TeachingCallService teachingCallService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject TeachingCallViewFactory teachingCallViewFactory;
 
 	@PreAuthorize("hasPermission(#teachingCallId, 'teachingCall', 'senateInstructor')"
@@ -68,7 +67,7 @@ public class TeachingCallViewController {
 			+ "or hasPermission(#scheduleId, 'schedule', 'senateInstructor') or hasPermission(#scheduleId, 'schedule', 'federationInstructor')")
 	@RequestMapping(value = "/api/schedules/{scheduleId}/teachingCallCourseOfferings", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public List<TeachingCallCourseOfferingView> getTeachingCallCourseOfferingsBySchedule(
+	public List<TeachingCallSectionGroupView> getTeachingCallCourseOfferingsBySchedule(
 			@PathVariable long scheduleId,
 			HttpServletResponse httpResponse)
 	{
@@ -87,7 +86,7 @@ public class TeachingCallViewController {
 			+ "or hasPermission(#teachingCallId, 'teachingCall', 'federationInstructor')")
 	@RequestMapping(value = "/api/teachingCalls/{teachingCallId}/courseOfferings", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public List<TeachingCallCourseOfferingView> getTeachingCallCourseOfferingsByTeachingCall(
+	public List<TeachingCallSectionGroupView> getTeachingCallCourseOfferingsByTeachingCall(
 			@PathVariable long teachingCallId,
 			HttpServletResponse httpResponse)
 	{

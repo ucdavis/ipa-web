@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 
+import edu.ucdavis.dss.ipa.entities.Course;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -9,6 +9,8 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 
+import java.util.List;
+
 @Validated
 public interface TeachingAssignmentService {
 
@@ -20,4 +22,7 @@ public interface TeachingAssignmentService {
 
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
+	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
+
+	List<TeachingAssignment> findByCourseId(long courseId);
 }

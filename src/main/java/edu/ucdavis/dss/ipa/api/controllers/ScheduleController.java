@@ -47,7 +47,6 @@ public class ScheduleController {
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject WorkgroupService workgroupService;
 	@Inject AuthenticationService authenticationService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject InstructorService instructorService;
 	@Inject UserService userService;
 	@Inject ScheduleOpsService scheduleOpsService;
@@ -99,7 +98,7 @@ public class ScheduleController {
 	/**
 	 * Copies the specified years schedule data into a new schedule, copying is modified by parameters
 	 * 
-	 * @param year
+	 * @param scheduleYear
 	 * @param model
 	 * @return
 	 */

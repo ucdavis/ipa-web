@@ -112,7 +112,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	@Override
-	public List<DwSectionGroup> getSectionGroupsByCourseId(String subjectCode, String courseNumber, String effectiveTermCode, String termCode) {
+	public List<DwSectionGroup> getSectionGroupsBySubjectCodeAndCourseNumberAndEffectiveTermCodeAndTermCode(String subjectCode, String courseNumber, String effectiveTermCode, String termCode) {
 		DwClient dwClient = null;
 
 		try {

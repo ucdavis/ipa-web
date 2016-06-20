@@ -1,23 +1,26 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeachingCallCourseOfferingView {
+public class TeachingCallSectionGroupView {
 	private long id, seatsTotal;
 	private String termCode, subjectCode, effectiveTermCode, courseNumber, title;
 	private List<TeachingCallInstructorView> instructors = new ArrayList<TeachingCallInstructorView>();
 
-	public TeachingCallCourseOfferingView(CourseOffering courseOffering) {
-		if (courseOffering == null) return;
-		setId(courseOffering.getId());
-		setSeatsTotal(courseOffering.getSeatsTotal());
-		setTermCode(courseOffering.getTermCode());
-		setSubjectCode(courseOffering.getCourse().getCourse().getSubjectCode());
-		setEffectiveTermCode(courseOffering.getCourse().getCourse().getEffectiveTermCode());
-		setCourseNumber(courseOffering.getCourse().getCourse().getCourseNumber());
-		setTitle(courseOffering.getCourse().getCourse().getTitle());
-		setInstructors(courseOffering);
+	public TeachingCallSectionGroupView(SectionGroup sectionGroup) {
+		if (sectionGroup == null) return;
+		setId(sectionGroup.getId());
+		setSeatsTotal(sectionGroup.getPlannedSeats());
+		setTermCode(sectionGroup.getTermCode());
+		setSubjectCode(sectionGroup.getCourse().getSubjectCode());
+		setEffectiveTermCode(sectionGroup.getCourse().getEffectiveTermCode());
+		setCourseNumber(sectionGroup.getCourse().getCourseNumber());
+		setTitle(sectionGroup.getCourse().getTitle());
+		setInstructors(sectionGroup);
 	}
 
 	public String getTermCode() {
@@ -80,11 +83,11 @@ public class TeachingCallCourseOfferingView {
 		return this.instructors;
 	}
 
-	public void setInstructors(CourseOffering courseOffering) {
+	public void setInstructors(SectionGroup sectionGroup) {
 		List<TeachingCallInstructorView> instructors = new ArrayList<TeachingCallInstructorView>();
 
-		for (TeachingPreference teachingPreference : courseOffering.getTeachingPreferences()) {
-			instructors.add(new TeachingCallInstructorView(teachingPreference.getInstructor()));
+		for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+			instructors.add(new TeachingCallInstructorView(teachingAssignment.getInstructor()));
 		}
 
 		this.instructors = instructors;

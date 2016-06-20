@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.ucdavis.dss.ipa.api.components.term.views.TermSectionView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.api.views.SectionViews;
 
 @RestController
@@ -31,20 +27,18 @@ public class SectionController {
 	@Inject SectionService sectionService;
 	@Inject InstructorService instructorService;
 	@Inject ScheduleService scheduleService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject CourseService courseService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
-	@PreAuthorize("hasPermission(#id, 'courseOfferingGroup', 'academicCoordinator')")
-	@RequestMapping(value = "/api/courseOfferingGroups/{id}/sections", method = RequestMethod.POST)
+	@PreAuthorize("hasPermission(#id, 'sectionGroup', 'academicCoordinator')")
+	@RequestMapping(value = "/api/sectionGroups/{id}/sections", method = RequestMethod.POST)
 	@ResponseBody
 	@JsonView(SectionViews.Summary.class)
 	public Section addSection(@RequestBody Section section,
 			@PathVariable Long id,
-			@RequestParam(value = "termCode", required = true) String termCode,
 			HttpServletResponse httpResponse) {
 
-		Section newSection = this.sectionService.addSection(id, termCode,section);
+		Section newSection = this.sectionGroupService.addSection(id, section);
 
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.OK.value());
@@ -66,8 +60,8 @@ public class SectionController {
 			return;
 		}
 
-		Schedule schedule = section.getSectionGroup().getCourseOffering().getCourse().getSchedule();
-		String termCode = section.getSectionGroup().getCourseOffering().getTermCode();
+		Schedule schedule = section.getSectionGroup().getCourse().getSchedule();
+		String termCode = section.getSectionGroup().getTermCode();
 
 		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, termCode);
 
@@ -77,7 +71,7 @@ public class SectionController {
 			return;
 		}
 
-		SectionGroup sectionGroup = sectionGroupService.findOneById(section.getSectionGroup().getId());
+		SectionGroup sectionGroup = sectionGroupService.getOneById(section.getSectionGroup().getId());
 		int sectionsInSectionGroup = sectionGroup.getSections().size();
 
 		// If this was the last section, delete the sectionGroup as well
@@ -114,7 +108,7 @@ public class SectionController {
 		originalSection.setCrn(section.getCrn());
 		originalSection.setSequenceNumber(section.getSequenceNumber());
 
-		Section savedSection = this.sectionService.updateSection(originalSection);
+		Section savedSection = this.sectionService.save(originalSection);
 		if (savedSection != null) {
 			httpResponse_p.setStatus(HttpStatus.OK.value());
 		}
@@ -148,11 +142,9 @@ public class SectionController {
 		List<Section> sections = new ArrayList<Section>();
 
 		for(Course course : scheduleService.findById(id).getCourses() ) {
-			for (CourseOffering courseOffering : course.getSectionGroups()) {
-				for (SectionGroup sectionGroup : courseOffering.getSectionGroups()) {
-					if ( courseOffering.getTermCode().equals(termCode)) {
-						sections.addAll(sectionGroup.getSections());
-					}
+			for (SectionGroup sectionGroup : course.getSectionGroups()) {
+				if ( sectionGroup.getTermCode().equals(termCode)) {
+					sections.addAll(sectionGroup.getSections());
 				}
 			}
 		}

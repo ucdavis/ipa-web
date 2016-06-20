@@ -12,7 +12,7 @@ public interface TeachingCallViewFactory {
 
 	TeachingCallScheduleView createTeachingCallScheduleView(Schedule schedule);
 
-	List<TeachingCallCourseOfferingView> createTeachingCallCourseOfferingView(Schedule schedule);
+	List<TeachingCallSectionGroupView> createTeachingCallCourseOfferingView(Schedule schedule);
 
 	List<TeachingCallByInstructorView> createTeachingCallByInstructorView(Schedule schedule);
 

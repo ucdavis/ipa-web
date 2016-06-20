@@ -67,7 +67,7 @@ public class TeachingPreferencesExcelView extends AbstractXlsView {
 			int col = 2;
 			for (Object o : instructor.getTeachingPreferences().entrySet()) {
 				Map.Entry pair = (Map.Entry) o;
-				List<TeachingCallTeachingPreferenceView> preferences = (List) pair.getValue();
+				List<TeachingCallTeachingAssignmentView> preferences = (List) pair.getValue();
 				String textPrefs = preferences.stream()
 						.filter(preference -> preference.getApproved() == isApproved)
 						.map(preference -> {

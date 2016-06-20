@@ -49,14 +49,6 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 			section.setSectionGroup(sg);
 		}
 
-		if (node.has("censusSnapshots")) {
-			ObjectMapper mapper = new ObjectMapper();
-			List<CensusSnapshot> censusSnapshots = Arrays.asList(mapper.readValue(node.get("censusSnapshots").traverse(), CensusSnapshot[].class));
-			censusSnapshots.stream().forEach(censusSnapshot -> censusSnapshot.setSection(section));
-			section.setCensusSnapshots(censusSnapshots);
-		}
-
-
 		return section;
 	}
 

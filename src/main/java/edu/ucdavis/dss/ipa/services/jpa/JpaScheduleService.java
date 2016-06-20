@@ -69,34 +69,15 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public List<SectionGroup> getSectionGroupsByScheduleIdAndSectionGroup(
-			long id, SectionGroup sectionGroup) {
-		Schedule schedule = this.findById(id);
-		List<SectionGroup> SGs = new ArrayList<SectionGroup>();
-		for (Course cog : schedule.getCourses()) {
-			for (CourseOffering courseOffering : cog.getSectionGroups()) {
-				for (SectionGroup sg : courseOffering.getSectionGroups()) {
-					if (sg.getSubjectCode().equals(sectionGroup.getSubjectCode())
-							&&	sg.getCourseNumber().equals(sectionGroup.getCourseNumber())
-							&&	sg.getEffectiveTermCode().equals(sectionGroup.getEffectiveTermCode())) {
-						SGs.add(sg);
-					}
-				}
-			}
-		}
-		return SGs;
-	}
-
-	@Override
 	public List<User> getUserInstructorsByScheduleIdAndTermCode(Long scheduleId, String termCode) {
 		List<User> users = new ArrayList<User>();
 		Schedule schedule = this.findById(scheduleId);
 
-		for(TeachingPreference teachingPreference : schedule.getTeachingAssignments() ) {
+		for(TeachingAssignment teachingAssignment : schedule.getTeachingAssignments() ) {
 
-			if( (teachingPreference.isApproved() == true) && teachingPreference.getTermCode().equals(termCode)) {
+			if( teachingAssignment.isApproved() && teachingAssignment.getTermCode().equals(termCode)) {
 
-				String loginId = teachingPreference.getInstructor().getLoginId();
+				String loginId = teachingAssignment.getInstructor().getLoginId();
 				User user = userService.getOneByLoginId(loginId);
 
 				if (user != null) {

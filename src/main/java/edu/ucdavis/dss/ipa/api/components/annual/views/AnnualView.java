@@ -11,15 +11,13 @@ public class AnnualView {
 	private long id, year, workgroupId;
 	private boolean isClosed;
 	private List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
-	private List<AnnualCourseOfferingGroupView> courseOfferingGroups = new ArrayList<AnnualCourseOfferingGroupView>();
-	private List<AnnualInstructorView> instructors = new ArrayList<AnnualInstructorView>();
+	private List<AnnualCourseView> courses = new ArrayList<AnnualCourseView>();
 
 	public AnnualView(Schedule schedule, boolean isClosed, List<ScheduleTermState> scheduleTermStates) {
 		setId(schedule);
 		setYear(schedule);
 		setScheduleTermStates(scheduleTermStates);
-		setCourseOfferingGroups(schedule);
-		setInstructors(schedule);
+		setCourses(schedule);
 		setClosed(isClosed);
 		setWorkgroupId(schedule);
 	}
@@ -36,12 +34,8 @@ public class AnnualView {
 		return this.scheduleTermStates;
 	}
 
-	public List<AnnualCourseOfferingGroupView> getCourseOfferingGroups() {
-		return this.courseOfferingGroups;
-	}
-
-	public List<AnnualInstructorView> getInstructors() {
-		return this.instructors;
+	public List<AnnualCourseView> getCourses() {
+		return this.courses;
 	}
 
 	private void setId(Schedule schedule) {
@@ -56,29 +50,10 @@ public class AnnualView {
 		this.scheduleTermStates = scheduleTermStates;
 	}
 
-	private void setCourseOfferingGroups(Schedule schedule) {
+	private void setCourses(Schedule schedule) {
 		for (Course cog: schedule.getCourses()) {
-			this.courseOfferingGroups.add(new AnnualCourseOfferingGroupView(cog));
+			this.courses.add(new AnnualCourseView(cog));
 		}
-	}
-
-	private void setInstructors(Schedule schedule) {
-//		List<Instructor> scheduleInstructors = new ArrayList<Instructor>();
-//		for(TeachingPreference teachingPreference : schedule.getTeachingAssignments() ) {
-//			if( teachingPreference.isApproved() == true && !scheduleInstructors.contains(teachingPreference.getInstructor())) {
-//				scheduleInstructors.add(teachingPreference.getInstructor());
-//			}
-//		}
-//
-//		// Add the 'No instructor' to list courses with none assigned
-//		Instructor noInstructor = new Instructor();
-//		noInstructor.setFirstName(".");
-//		noInstructor.setLastName("No Instructor");
-//		scheduleInstructors.add(noInstructor);
-//
-//		for (Instructor instructor: scheduleInstructors) {
-//			this.instructors.add(new AnnualInstructorView(instructor, schedule));
-//		}
 	}
 
 	public boolean isClosed() {

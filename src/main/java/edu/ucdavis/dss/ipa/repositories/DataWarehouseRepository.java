@@ -33,5 +33,5 @@ public interface DataWarehouseRepository {
 
 	public List<DwCourse> searchCourses(String query);
 
-	public List<DwSectionGroup> getSectionGroupsByCourseId(String subjectCode, String courseNumber, String effectiveTermCode, String termCode);
+	public List<DwSectionGroup> getSectionGroupsBySubjectCodeAndCourseNumberAndEffectiveTermCodeAndTermCode(String subjectCode, String courseNumber, String effectiveTermCode, String termCode);
 }

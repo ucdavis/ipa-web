@@ -17,11 +17,16 @@ public class JpaSectionGroupMapper implements Function<SectionGroup, DiffSection
 
 	@Override
 	public DiffSectionGroup apply(SectionGroup sg) {
-		DiffSectionGroup.Builder dsgBuilder = new DiffSectionGroup.Builder(sg.getTermCode(), sg.getCourseNumber(), sg.getTitle(), sg.getSequencePattern());
+		DiffSectionGroup.Builder dsgBuilder = new DiffSectionGroup.Builder(
+				sg.getTermCode(),
+				sg.getCourse().getCourseNumber(),
+				sg.getCourse().getTitle(),
+				sg.getCourse().getSequencePattern());
+
 		String sectionGroupId = dsgBuilder.build().javersId();
 
-		return dsgBuilder.unitsHigh((int) sg.getUnitsHigh())
-				.unitsLow((int) sg.getUnitsLow())
+		return dsgBuilder.unitsHigh((int) sg.getCourse().getUnitsHigh())
+				.unitsLow((int) sg.getCourse().getUnitsLow())
 				.sections(sg.getSections().stream()
 						.map(new JpaSectionMapper(sectionGroupId))
 						.filter(s -> s != null)

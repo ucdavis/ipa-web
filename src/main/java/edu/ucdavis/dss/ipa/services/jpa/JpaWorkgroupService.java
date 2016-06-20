@@ -9,12 +9,9 @@ import java.util.stream.LongStream;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallResponseRepository;
 import edu.ucdavis.dss.ipa.repositories.WorkgroupRepository;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
@@ -35,6 +32,11 @@ public class JpaWorkgroupService implements WorkgroupService {
 	public Workgroup findOneByCode(String code) {
 
 		return this.workgroupRepository.findOneByCode(code);
+	}
+
+	@Override
+	public List<Tag> getActiveTags(Workgroup workgroup) {
+		return workgroup.getTags().stream().filter(t -> !t.isArchived()).collect(Collectors.toList());
 	}
 
 	@Override

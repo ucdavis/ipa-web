@@ -32,7 +32,6 @@ public class TermViewController {
 	@Inject SectionService sectionService;
 	@Inject InstructorService instructorService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
-	@Inject CourseOfferingService courseOfferingService;
 
 	// Creates relevant copies of the activity within sections of the sectionGroup
 	@RequestMapping(value = "/api/sectionGroups/{id}/activities", method = RequestMethod.POST)
@@ -40,7 +39,7 @@ public class TermViewController {
 	@PreAuthorize("hasPermission(#id, 'sectionGroup', 'academicCoordinator')")
 	public TermActivityView createSharedActivity(@RequestBody Activity activity, @PathVariable Long id, HttpServletResponse httpResponse) {
 		httpResponse.setStatus(HttpStatus.OK.value());
-		SectionGroup sectionGroup = sectionGroupService.findOneById(id);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(id);
 
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -81,7 +80,7 @@ public class TermViewController {
 	public TermSectionView deleteSharedActivities(@PathVariable Long sectionGroupId,
 			@PathVariable Long activityId, HttpServletResponse httpResponse) {
 
-		SectionGroup sectionGroup = sectionGroupService.findOneById(sectionGroupId);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		Activity activity = activityService.findOneById(activityId);
 		if (sectionGroup == null || activity == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -115,7 +114,7 @@ public class TermViewController {
 	@ResponseBody
 	@PreAuthorize("hasPermission(#id, 'sectionGroup', 'academicCoordinator')")
 	public TermSectionView createSection(@RequestBody Section section, @PathVariable Long id, HttpServletResponse httpResponse) {
-		SectionGroup sectionGroup = sectionGroupService.findOneById(id);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(id);
 
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -167,29 +166,6 @@ public class TermViewController {
 		return new TermSectionView(newSection);
 	}
 
-	// Given a courseOfferingId and a sequenceNumber, this route will create a section and if needed sectionGroup
-	@RequestMapping(value = "/api/courseOfferings/{id}/sections", method = RequestMethod.POST)
-	@ResponseBody
-	@PreAuthorize("hasPermission(#id, 'courseOffering', 'academicCoordinator')")
-	public TermSectionGroupView createCourseOfferingSection(@RequestBody Section section, @PathVariable Long id, HttpServletResponse httpResponse) {
-		CourseOffering courseOffering = courseOfferingService.findCourseOfferingById(id);
-		if (courseOffering == null || section.getSequenceNumber() == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
-		}
-
-		SectionGroup sectionGroup = new SectionGroup();
-		sectionGroup.setCourseOffering(courseOffering);
-		sectionGroup = sectionGroupService.save(sectionGroup);
-
-		section.setSectionGroup(sectionGroup);
-		sectionService.save(section);
-		sectionGroup.addSection(section);
-
-		httpResponse.setStatus(HttpStatus.OK.value());
-		return new TermSectionGroupView(sectionGroup);
-	}
-
 	@PreAuthorize("hasPermission(#sectionGroupId, 'sectionGroup', 'academicCoordinator')")
 	@RequestMapping(value = "/api/sectionGroups/{sectionGroupId}/instructors/{instructorId}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
@@ -197,7 +173,7 @@ public class TermViewController {
 			@PathVariable long sectionGroupId,
 			@PathVariable long instructorId,
 			HttpServletResponse httpResponse) {
-		SectionGroup sectionGroup = this.sectionGroupService.findOneById(sectionGroupId);
+		SectionGroup sectionGroup = this.sectionGroupService.getOneById(sectionGroupId);
 		Instructor instructor = this.instructorService.getOneById(instructorId);
 		if (sectionGroup != null && instructor != null) {
 			TeachingAssignment teachingAssignment = teachingAssignmentService

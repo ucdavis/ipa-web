@@ -10,16 +10,14 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 public class SummaryCourseOfferingView {
 	private String title, subjectCode, termCode, courseNumber, sequencePattern;
 	private long id, enrollment, maxEnrollment;
-	private List<GraduateStudent> teachingAssistants = new ArrayList<GraduateStudent>();
 	private List<Activity> activities = new ArrayList<Activity>();
 
 	public SummaryCourseOfferingView(SectionGroup sectionGroup) {
 		setId(sectionGroup);
-		setTitle(sectionGroup.getCourseOffering());
-		setSubjectCode(sectionGroup.getCourseOffering());
-		setTermCode(sectionGroup.getCourseOffering());
-		setCourseNumber(sectionGroup.getCourseOffering());
-		setTeachingAssistants(sectionGroup);
+		setTitle(sectionGroup.getCourse().getTitle());
+		setSubjectCode(sectionGroup.getCourse().getSubjectCode());
+		setTermCode(sectionGroup.getTermCode());
+		setCourseNumber(sectionGroup.getCourse().getCourseNumber());
 		setActivities(sectionGroup);
 		setEnrollment(sectionGroup);
 		setMaxEnrollment(sectionGroup);
@@ -37,13 +35,14 @@ public class SummaryCourseOfferingView {
 	public void setEnrollment(SectionGroup sectionGroup) {
 		long enrollment = 0;
 
-		for (Section section : sectionGroup.getSections()) {
-			for (CensusSnapshot censusSnapshot : section.getCensusSnapshots()) {
-				if ("CURRENT".equals(censusSnapshot.getSnapshotCode())) {
-					enrollment += censusSnapshot.getCurrentEnrollmentCount();
-				}
-			}
-		}
+		//TODO: Source?
+//		for (Section section : sectionGroup.getSections()) {
+//			for (CensusSnapshot censusSnapshot : section.getCensusSnapshots()) {
+//				if ("CURRENT".equals(censusSnapshot.getSnapshotCode())) {
+//					enrollment += censusSnapshot.getCurrentEnrollmentCount();
+//				}
+//			}
+//		}
 		this.enrollment = enrollment;
 	}
 
@@ -68,47 +67,32 @@ public class SummaryCourseOfferingView {
 		return this.title;
 	}
 	
-	private void setTitle(CourseOffering courseOffering) {
-		this.title = courseOffering.getCourse().getTitle();
+	private void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getTermCode() {
 		return this.termCode;
 	}
 	
-	private void setTermCode(CourseOffering courseOffering) {
-		this.termCode = courseOffering.getTermCode();
+	private void setTermCode(String termCode) {
+		this.termCode = termCode;
 	}
 
 	public String getCourseNumber() {
 		return this.courseNumber;
 	}
 	
-	private void setCourseNumber(CourseOffering courseOffering) {
-		this.courseNumber = courseOffering.getCourse().getCourse().getCourseNumber();
+	private void setCourseNumber(String courseNumber) {
+		this.courseNumber = courseNumber;
 	}
 
 	public String getSubjectCode() {
 		return this.subjectCode;
 	}
 	
-	private void setSubjectCode(CourseOffering courseOffering) {
-		this.subjectCode = courseOffering.getCourse().getCourse().getSubjectCode();
-	}
-
-	public List<GraduateStudent> getTeachingAssistants() {
-		return this.teachingAssistants;
-	}
-
-	private void setTeachingAssistants(SectionGroup sectionGroup) {
-		List<GraduateStudent> teachingAssistants = new ArrayList<GraduateStudent>();
-
-		for (TeachingAssistantPreference teachingAssistantPreference : sectionGroup.getTeachingAssistantPreferences() ) {
-
-			if (teachingAssistantPreference.isApproved() == true) {
-				teachingAssistants.add(teachingAssistantPreference.getGraduateStudent());
-			}
-		}
+	private void setSubjectCode(String subjectCode) {
+		this.subjectCode = subjectCode;
 	}
 
 	public List<Activity> getActivities() {
@@ -153,6 +137,6 @@ public class SummaryCourseOfferingView {
 	}
 
 	private void setSequencePattern(SectionGroup sectionGroup) {
-		this.sequencePattern = sectionGroup.getSequencePattern();
+		this.sequencePattern = sectionGroup.getCourse().getSequencePattern();
 	}
 }

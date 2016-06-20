@@ -6,21 +6,14 @@ import java.util.List;
 import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleInstructorNoteService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
-import edu.ucdavis.dss.ipa.services.TeachingCallResponseService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByCourseView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByInstructorView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallCourseOfferingView;
+import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSectionGroupView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallInstructorView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallScheduleView;
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSummaryView;
@@ -36,6 +29,7 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	@Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
+	@Inject TeachingAssignmentService teachingAssignmentService;
 
 	@Override
 	public TeachingCallScheduleView createTeachingCallScheduleView(Schedule schedule) {
@@ -54,17 +48,17 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	}
 
 	@Override
-	public List<TeachingCallCourseOfferingView> createTeachingCallCourseOfferingView(Schedule schedule) {
-		List<TeachingCallCourseOfferingView> teachingCallCourseOfferingViews = new ArrayList<TeachingCallCourseOfferingView>();
+	public List<TeachingCallSectionGroupView> createTeachingCallCourseOfferingView(Schedule schedule) {
+		List<TeachingCallSectionGroupView> teachingCallSectionGroupViews = new ArrayList<TeachingCallSectionGroupView>();
 
 		for (Course course : schedule.getCourses()) {
-			for (CourseOffering courseOffering : course.getSectionGroups()) {
-				TeachingCallCourseOfferingView teachingCallCourseOfferingView = new TeachingCallCourseOfferingView(courseOffering);
-				teachingCallCourseOfferingViews.add(teachingCallCourseOfferingView);
+			for (SectionGroup sectionGroup : course.getSectionGroups()) {
+				TeachingCallSectionGroupView teachingCallSectionGroupView = new TeachingCallSectionGroupView(sectionGroup);
+				teachingCallSectionGroupViews.add(teachingCallSectionGroupView);
 			}
 		}
 
-		return teachingCallCourseOfferingViews;
+		return teachingCallSectionGroupViews;
 	}
 
 	@Override
@@ -84,13 +78,13 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 				teachingCallReceipt = teachingCallReceiptService.findByTeachingCallIdAndInstructorLoginId(teachingCall.getId(), instructor.getLoginId());
 			}
 
-			List<TeachingPreference> teachingPreferences = teachingPreferenceService.getTeachingPreferencesByScheduleIdAndInstructorId(schedule.getId(), instructor.getId());
+			List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId());
 			ScheduleInstructorNote scheduleInstructorNote = scheduleInstructorNoteService.findOneByInstructorIdAndScheduleId(instructor.getId(), schedule.getId());
 
 			teachingCallByInstructorViews.add(
 					new TeachingCallByInstructorView(
 							instructor,
-							teachingPreferences,
+							teachingAssignments,
 							teachingCallResponses,
 							teachingCallReceipt,
 							scheduleInstructorNote,
@@ -106,9 +100,9 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 	public List<TeachingCallByCourseView> createTeachingCallByCourseView(Schedule schedule) {
 		List<TeachingCallByCourseView> teachingCallByCourseViews = new ArrayList<TeachingCallByCourseView>();
 
-		for (Course cog : schedule.getCourses()) {
-			List<TeachingPreference> teachingPreferences = teachingPreferenceService.getTeachingPreferencesByCourseOfferingGroupId(cog.getId());
-			teachingCallByCourseViews.add(new TeachingCallByCourseView(cog, teachingPreferences));
+		for (Course course : schedule.getCourses()) {
+			List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByCourseId(course.getId());
+			teachingCallByCourseViews.add(new TeachingCallByCourseView(course, teachingAssignments));
 		}
 
 		return teachingCallByCourseViews;

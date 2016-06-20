@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TermActivityView {
-	private long id, sectionId, sectionGroupId, courseOfferingId;
+	private long id, sectionId, sectionGroupId;
 	private Date beginDate, endDate;
 	private Time startTime, endTime;
 	private String bannerLocation, dayIndicator, title, sequenceNumber, codeDescription, termCode, crn, description;
@@ -39,7 +39,6 @@ public class TermActivityView {
 		setCodeDescription(activity);
 		setSectionId(activity);
 		setSectionGroupId(activity);
-		setCourseOfferingId(activity);
 		setTracks(activity);
 		setTermCode(activity);
 		setCrn(activity);
@@ -158,14 +157,6 @@ public class TermActivityView {
 		this.sectionGroupId = activity.getSectionGroupId();
 	}
 
-	public long getCourseOfferingId() {
-		return courseOfferingId;
-	}
-
-	public void setCourseOfferingId(Activity activity) {
-		this.courseOfferingId = activity.getSection().getSectionGroup().getCourseOffering().getId();
-	}
-
 	public String getTitle() {
 		return title;
 	}
@@ -219,7 +210,7 @@ public class TermActivityView {
 	}
 
 	public void setTracks(Activity activity) {
-		for(Tag tag :activity.getSection().getSectionGroup().getCourseOfferingGroup().getTags()) {
+		for(Tag tag :activity.getSection().getSectionGroup().getCourse().getTags()) {
 			this.tracks.add(new TermTrackView(tag));
 		}
 	}

@@ -1,6 +1,9 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 
 /**
  * Used by InstructorController and CourseOfferingGroupsController
@@ -11,26 +14,23 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
  * @author okadri
  * 
  */
-public class TeachingCallTeachingPreferenceView {
+public class TeachingCallTeachingAssignmentView {
 	private long id, priority;
-	private TeachingCallCourseOfferingView courseOffering;
-	private Course course;
-	private String notes, termCode;	
+	private TeachingCallSectionGroupView courseOffering;
+	private String termCode;
 	private Boolean isBuyout = false, isCourseRelease = false, IsSabbatical = false, approved = false;
 	private TeachingCallInstructorView instructor;
 
-	public TeachingCallTeachingPreferenceView(TeachingPreference teachingPreference) {
-		setId(teachingPreference.getId());
-		setPriority(teachingPreference.getPriority());
-		setCourseOffering(teachingPreference.getCourseOffering());
-		setNotes(teachingPreference.getNotes());
-		setTermCode(teachingPreference.getTermCode());
-		setIsBuyout(teachingPreference.getIsBuyout());
-		setIsCourseRelease(teachingPreference.getIsCourseRelease());
-		setIsSabbatical(teachingPreference.getIsSabbatical());
-		setApproved(teachingPreference.isApproved());
-		setInstructor(teachingPreference.getInstructor());
-		setCourse(teachingPreference.getCourse());
+	public TeachingCallTeachingAssignmentView(TeachingAssignment teachingAssignment) {
+		setId(teachingAssignment.getId());
+		setPriority(teachingAssignment.getPriority());
+		setSectionGroup(teachingAssignment.getSectionGroup());
+		setTermCode(teachingAssignment.getTermCode());
+		setIsBuyout(teachingAssignment.isBuyout());
+		setIsCourseRelease(teachingAssignment.isCourseRelease());
+		setIsSabbatical(teachingAssignment.isSabbatical());
+		setApproved(teachingAssignment.isApproved());
+		setInstructor(teachingAssignment.getInstructor());
 	}
 
 	public long getId() {
@@ -49,28 +49,12 @@ public class TeachingCallTeachingPreferenceView {
 		this.priority = priority;
 	}
 
-	public TeachingCallCourseOfferingView getCourseOffering() {
+	public TeachingCallSectionGroupView getCourseOffering() {
 		return courseOffering;
 	}
 
-	public void setCourseOffering(CourseOffering courseOffering) {
-		this.courseOffering = new TeachingCallCourseOfferingView(courseOffering);
-	}
-
-	public Course getCourse() {
-		return course;
-	}
-
-	public void setCourse(Course course) {
-		this.course = course;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
+	public void setSectionGroup(SectionGroup sectionGroup) {
+		this.courseOffering = new TeachingCallSectionGroupView(sectionGroup);
 	}
 
 	public String getTermCode() {

@@ -14,7 +14,7 @@ public class ValidSectionValidator implements ConstraintValidator<ValidSection, 
 	
 	@Override
 	public boolean isValid(Section section, ConstraintValidatorContext context) {
-		for (SectionGroup slotSectionGroup : section.getSectionGroup().getCourseOffering().getSectionGroups()) {
+		for (SectionGroup slotSectionGroup : section.getSectionGroup().getCourse().getSectionGroups()) {
 			for (Section slotSection : slotSectionGroup.getSections()) {
 				if(section.getId() != slotSection.getId() && section.getSequenceNumber().equals(slotSection.getSequenceNumber())) {
 					return false;

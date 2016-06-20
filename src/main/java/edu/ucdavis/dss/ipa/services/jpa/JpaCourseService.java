@@ -107,7 +107,7 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
-	public List<Course> findByTrackId(Long id) {
+	public List<Course> findByTagId(Long id) {
 		Tag tag = tagService.getOneById(id);
 		return tag.getCourses();
 	}

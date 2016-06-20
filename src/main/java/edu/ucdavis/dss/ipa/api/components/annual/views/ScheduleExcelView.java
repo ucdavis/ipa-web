@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -34,18 +35,24 @@ public class ScheduleExcelView extends AbstractXlsView {
 		setExcelHeader(sheet);
 		
 		int row = 1;
-		for(AnnualCourseOfferingGroupView cog : annualViewDTO.getCourseOfferingGroups()) {
+		for(AnnualCourseView course : annualViewDTO.getCourses()) {
 			Row excelHeader = sheet.createRow(row);
 			
-			excelHeader.createCell(0).setCellValue(cog.getDescription());
-			excelHeader.createCell(1).setCellValue(StringUtils.join(cog.getTags(), ','));
+			excelHeader.createCell(0).setCellValue(course.getDescription());
+			excelHeader.createCell(1).setCellValue(StringUtils.join(course.getTags(), ','));
 
 			int col = 2;
 			for(ScheduleTermState state : this.annualViewDTO.getScheduleTermStates()) {
-				Long seatsTotal = cog.getSeatsTotal().get(state.getTermCode().substring(4));
+				Integer plannedSeats = null;
 
-				if (seatsTotal != null) {
-					excelHeader.createCell(col).setCellValue(seatsTotal);
+				for (SectionGroup sectionGroup: course.getSectionGroups()) {
+					if (sectionGroup.getTermCode().equals(state.getTermCode())) {
+						plannedSeats = sectionGroup.getPlannedSeats();
+					}
+				}
+
+				if (plannedSeats != null) {
+					excelHeader.createCell(col).setCellValue(plannedSeats);
 				}
 
 				col++;
