@@ -1,50 +1,21 @@
 package edu.ucdavis.dss.ipa.security;
 
-import java.io.Serializable;
-
-import javax.inject.Inject;
-
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
-import edu.ucdavis.dss.ipa.entities.Tag;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
-import edu.ucdavis.dss.ipa.services.TeachingCallService;
-import edu.ucdavis.dss.ipa.services.TagService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import javax.inject.Inject;
+import java.io.Serializable;
 
 public class IpaPermissionEvaluator implements PermissionEvaluator {
 	@Inject AuthenticationService authenticationService;
 	@Inject ScheduleService scheduleService;
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
-	@Inject
-	TagService tagService;
-	@Inject
-	CourseService courseService;
-	@Inject CourseOfferingService courseOfferingService;
+	@Inject TagService tagService;
+	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
-	@Inject TeachingPreferenceService teachingPreferenceService;
 	@Inject ActivityService activityService;
 	@Inject SectionService sectionService;
 	@Inject SectionGroupService sectionGroupService;
@@ -71,7 +42,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 		}
 
 		// 'item' must be of type Long
-		if((item instanceof Long) == false) {
+		if(!(item instanceof Long)) {
 			if(item instanceof String) {
 				item = Long.valueOf((String) item);
 			} else if (item instanceof Integer) {
@@ -91,76 +62,47 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 		switch(resourceType) {
 			case "*":
 				return userHasRequiredRole(user, role);
-				
+
 			case "schedule":
 				return userHasRequiredRoleAndWorkgroup(user, role, this.scheduleService.getWorkgroupByScheduleId((Long)item));
-			
+
 			case "workgroup":
 				return userHasRequiredRoleAndWorkgroup(user, role, this.workgroupService.findOneById((Long)item));
-			
+
 			case "tag":
 				Tag tag = this.tagService.getOneById((Long)item);
 				if(tag == null) { return false; }
-				
+
 				return userHasRequiredRoleAndWorkgroup(user, role, tag.getWorkgroup());
-				
-			case "courseOfferingGroup":
-				Course cog = this.courseService.getCourseOfferingGroupById((Long)item);
-				if (cog == null) { return false; }
-				
-				return userHasRequiredRoleAndWorkgroup(user, role, cog.getSchedule().getWorkgroup());
-
-			case "courseOffering":
-				CourseOffering courseOffering = this.courseOfferingService.findCourseOfferingById((Long)item);
-				if (courseOffering == null) { return false; }
-
-				return userHasRequiredRoleAndWorkgroup(user, role, courseOffering.getCourse().getSchedule().getWorkgroup());
 
 			case "section":
 				Section section = this.sectionService.getOneById((Long)item);
 				if(section == null) { return false; }
 
-				return userHasRequiredRoleAndWorkgroup(user, role, section.getSectionGroup().getCourseOfferingGroup().getSchedule().getWorkgroup());
-				
+				return userHasRequiredRoleAndWorkgroup(user, role, section.getSectionGroup().getCourse().getSchedule().getWorkgroup());
+
 			case "sectionGroup":
 				SectionGroup sectionGroup = this.sectionGroupService.getOneById((Long)item);
 				if(sectionGroup == null) { return false; }
 
-				return userHasRequiredRoleAndWorkgroup(user, role, sectionGroup.getCourseOfferingGroup().getSchedule().getWorkgroup());
+				return userHasRequiredRoleAndWorkgroup(user, role, sectionGroup.getCourse().getSchedule().getWorkgroup());
 
-			case "teachingPreference":
-				TeachingPreference teachingPreference = teachingPreferenceService.findOneById((Long)item);
-				if(teachingPreference == null) { break; }
-				
-				Workgroup workgroup = teachingPreference.getSchedule().getWorkgroup();
-				if(workgroup == null) { break; }
-				
-				if(role.equals("academicCoordinator")) {
-					return userHasRequiredRoleAndWorkgroup(user, role, workgroup);
-				} else {
-					// Assuming senateInstructor or federationInstructor ...
-					Instructor instructor = instructorService.getOneByLoginId(user.getLoginId());
-					if(instructor == null) { return false; }
-
-					return userHasRequiredRoleAndWorkgroup(user, role, workgroup) && instructor.getTeachingPreferences().contains(teachingPreference);
-				}
-				
 			case "activity":
 				Activity activity = this.activityService.findOneById((Long)item);
 				if(activity == null) { break; }
-				
-				return userHasRequiredRoleAndWorkgroup(user, role, activity.getSection().getSectionGroup().getCourseOfferingGroup().getSchedule().getWorkgroup());
+
+				return userHasRequiredRoleAndWorkgroup(user, role, activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup());
 
 			case "teachingAssignment":
 				TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById((Long)item);
 				if(teachingAssignment == null) { break; }
-				
-				return userHasRequiredRoleAndWorkgroup(user, role, teachingAssignment.getSectionGroup().getCourseOfferingGroup().getSchedule().getWorkgroup());
+
+				return userHasRequiredRoleAndWorkgroup(user, role, teachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup());
 
 			case "teachingCall":
 				TeachingCall teachingCall = this.teachingCallService.findOneById((Long)item);
 				if(teachingCall == null) { return false; }
-				
+
 				// Check if the instructor belongs to the right role
 				if("senateInstructor".equals(role) && teachingCall.isSentToSenate()) {
 					return userHasRequiredRoleAndWorkgroup(user, role, teachingCall.getSchedule().getWorkgroup());
@@ -169,16 +111,16 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 				} else {
 					return false;
 				}
-				
+
 			case "teachingCallReceipt":
 				TeachingCallReceipt teachingCallReceipt = this.teachingCallReceiptService.findOneById((Long)item);
 				if (teachingCallReceipt == null) { return false; }
-				
+
 				return userHasRequiredRoleAndWorkgroup(user, role, teachingCallReceipt.getTeachingCall().getSchedule().getWorkgroup());
-				
+
 			case "":
 				throw new IllegalArgumentException("Use '*' instead of '' for ID-less resource-based permission checking.");
-			
+
 			default:
 				throw new IllegalArgumentException("Invalid permission type passed to hasPermission: " + resourceType);
 		}
