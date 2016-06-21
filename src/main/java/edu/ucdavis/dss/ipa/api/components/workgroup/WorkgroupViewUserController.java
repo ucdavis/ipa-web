@@ -1,12 +1,15 @@
 package edu.ucdavis.dss.ipa.api.components.workgroup;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.api.views.UserViews;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -25,7 +28,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
-public class WorkgroupViewUserRoleController {
+public class WorkgroupViewUserController {
 
     private static final Logger log = LogManager.getLogger();
 
@@ -34,6 +37,7 @@ public class WorkgroupViewUserRoleController {
     @Inject RoleService roleService;
     @Inject UserRoleService userRoleService;
     @Inject CurrentUser currentUser;
+    @Inject DataWarehouseRepository dwRepository;
 
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupCode}/users", method = RequestMethod.GET)
@@ -57,7 +61,13 @@ public class WorkgroupViewUserRoleController {
     @ResponseBody
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable String workgroupCode, @PathVariable String role, HttpServletResponse httpResponse) {
-        User user = userService.findOrCreateByLoginId(loginId);
+        User user = userService.getOneByLoginId(loginId);
+
+        if (user == null) {
+            httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+            return null;
+        }
+
         Role newRole = roleService.findOneByName(role);
 
         //TODO: Ideally this scenario should be handled by a more nuanced hasPermission method
@@ -112,5 +122,66 @@ public class WorkgroupViewUserRoleController {
         }
 
     }
+
+    /**
+     * Accepts a query string,
+     * returns a list of users from data warehouse.
+     * Filters out users with null loginIds or emails,
+     * and users who already have a role in the specified workgroup.
+     * @param workgroupCode
+     * @param query
+     * @param httpResponse
+     * @return
+     */
+    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupCode}/userSearch", method = RequestMethod.GET)
+    @ResponseBody
+    @JsonView(UserViews.Detailed.class)
+    public List<User> searchUsers(
+            @PathVariable String workgroupCode,
+            @RequestParam(value = "query", required = true) String query, HttpServletResponse httpResponse) {
+
+        List<User> users = new ArrayList<User>();
+        List<DwPerson> dwPeople;
+
+        try {
+            dwPeople = dwRepository.searchPeople(query);
+
+            for (DwPerson dwPerson : dwPeople) {
+                // Verify dwPerson has necessary data to make a User
+                if (dwPerson.getLoginId() != null && dwPerson.getEmail() != null) {
+                    boolean userBelongsToWorkgroup = workgroupService.hasUser(workgroupCode, dwPerson.getLoginId());
+
+                    if (userBelongsToWorkgroup == false) {
+                        User user = new User();
+                        user.setLoginId(dwPerson.getLoginId());
+                        user.setEmail(dwPerson.getEmail());
+                        user.setFirstName(dwPerson.getFirst());
+                        user.setLastName(dwPerson.getLast());
+                        users.add(user);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+        }
+
+        return users;
+    }
+
+    @RequestMapping(value = "/api/workgroupView/users", method = RequestMethod.POST)
+    @ResponseBody
+    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
+    public User createUser(@RequestBody User userDTO , HttpServletResponse httpResponse) {
+        User user = userService.findOrCreateByLoginId(userDTO.getLoginId());
+
+        if (user == null) {
+            httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+            return null;
+        }
+
+        return user;
+    }
+
 
 }

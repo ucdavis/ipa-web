@@ -25,4 +25,12 @@ public interface WorkgroupService {
 	Workgroup findOneByCode(String string);
 
 	List<Tag> getActiveTags(Workgroup workgroup);
+
+	/**
+	 * Returns true if workgroup has at least one UserRole for the specified loginId.
+	 * @param workgroupCode
+	 * @param loginId
+     * @return
+     */
+	boolean hasUser(String workgroupCode, String loginId);
 }
