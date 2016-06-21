@@ -23,13 +23,13 @@ public interface UserRoleService {
 
 	List<UserRole> findByWorkgroup(Workgroup workgroup);
 
-	UserRole findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String role);
+	UserRole findOrCreateByLoginIdAndWorkgroupCodeAndRoleToken(String loginId, String workgroupCode, String role);
 
 	List<UserRole> findByWorkgroupIdAndRoleToken(Long workgroupId, String role);
 
-	void deleteByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String role);
+	void deleteByLoginIdAndWorkgroupCodeAndRoleToken(String loginId, String workgroupCode, String role);
 
-	boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId);
+	boolean deleteByLoginIdAndWorkgroupCode(String loginId, String workgroupCode);
 
 	List<Instructor> getInstructorsByWorkgroupId(long workgroupId);
 

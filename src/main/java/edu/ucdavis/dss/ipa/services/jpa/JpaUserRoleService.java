@@ -60,11 +60,11 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public UserRole findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String roleName) {
+	public UserRole findOrCreateByLoginIdAndWorkgroupCodeAndRoleToken(String loginId, String workgroupCode, String roleName) {
 		List<String> EXCLUSIVE_ROLES = Arrays.asList("senateInstructor", "federationInstructor");
 
 		User user = this.userService.findOrCreateByLoginId(loginId);
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
 		Role role = roleService.findOneByName(roleName);
 
 		if( user != null && workgroup != null && role != null) {
@@ -96,7 +96,7 @@ public class JpaUserRoleService implements UserRoleService {
 					}
 				}
 				for (UserRole ur: rolesToBeRemoved) {
-					this.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, ur.getRoleToken());
+					this.deleteByLoginIdAndWorkgroupCodeAndRoleToken(loginId, workgroupCode, ur.getRoleToken());
 				}
 			}
 
@@ -145,9 +145,9 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public void deleteByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String roleName) {
+	public void deleteByLoginIdAndWorkgroupCodeAndRoleToken(String loginId, String workgroupCode, String roleName) {
 		User user = this.userService.getOneByLoginId(loginId);
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
 		Role role = roleService.findOneByName(roleName);
 
 		for (UserRole userRole : this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
@@ -173,18 +173,18 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId) {
+	public boolean deleteByLoginIdAndWorkgroupCode(String loginId, String workgroupCode) {
 		User user = userService.getOneByLoginId(loginId);
 		List<String> userRolesToRemove = new ArrayList<String>();
 
 		for (UserRole userRole : user.getUserRoles()){
-			if(userRole.getWorkgroup() != null && userRole.getWorkgroup().getId() == workgroupId) {
+			if(userRole.getWorkgroup() != null && workgroupCode.equals(userRole.getWorkgroup().getCode()) ) {
 				userRolesToRemove.add(userRole.getRole().getName());
 			}
 		}
 
 		for (String roleName : userRolesToRemove) {
-			this.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, roleName);
+			this.deleteByLoginIdAndWorkgroupCodeAndRoleToken(loginId, workgroupCode, roleName);
 		}
 		return true;
 	}

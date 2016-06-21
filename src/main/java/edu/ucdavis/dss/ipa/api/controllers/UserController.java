@@ -111,78 +111,13 @@ public class UserController {
 		return roleList;
 	}
 
-	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupCode}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-	public List<UserRole> addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-		User user = this.userService.getOneByLoginId(loginId);
-		Role newRole = roleService.findOneByName(role);
-
-		// Has the user been added to IPA already?
-		if (user == null) {
-			user = userService.findOrCreateByLoginId(loginId);
-		}
-
-		//TODO: Ideally this scenario should be handled by a more nuanced hasPermission method
-		// Only Admins can modify the admin role
-		if ("admin".equals(role) && !user.isAdmin()) {
-			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-			return null;
-		}
-
-		// Is the role invalid?
-		if (newRole == null) {
-			log.error("Attempted to add userRole failed: role was invalid.");
-			// Has the user been added to IPA already?
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-		} 
-		else {
-			userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, role);
-			httpResponse.setStatus(HttpStatus.OK.value());
-			UserLogger.log(currentUser, "Added role '" + role + "' to user " + user.getName() + " (" + loginId + ")");
-		}
-
-		// query new roleList and return
-
-		return userService.getOneByLoginId(loginId).getUserRoles();
-	}
-
-	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-	public List<UserRole> removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-		Role newRole = roleService.findOneByName(role);
-		User user = this.userService.getOneByLoginId(loginId);
-
-		//TODO: Ideally this scenario should be handled by a more nuanced hasPermission method
-		// Only Admins can modify the admin role
-		if ("admin".equals(role) && !user.isAdmin()) {
-			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-			return null;
-		}
-
-		// Is the role invalid?
-		if (newRole == null) {
-			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-		} else {
-			userRoleService.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, role);
-
-			// Query new roleList and return
-			user = this.userService.getOneByLoginId(loginId);
-			httpResponse.setStatus(HttpStatus.OK.value());
-			UserLogger.log(currentUser, "Removed role '" + role + "' from user " + user.getName() + " (" + loginId + ")");
-		}
-
-		return user.getUserRoles();
-	}
-
-	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupId}", method = RequestMethod.DELETE)
-	@ResponseBody
-	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-	public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-		if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
+	public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable String workgroupCode, HttpServletResponse httpResponse) {
+		if(userRoleService.deleteByLoginIdAndWorkgroupCode(loginId, workgroupCode)) {
 			User user = this.userService.getOneByLoginId(loginId);
-			UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with ID " + workgroupId);
+			UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with Code " + workgroupCode);
 			httpResponse.setStatus(HttpStatus.OK.value());
 		} else {
 			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
