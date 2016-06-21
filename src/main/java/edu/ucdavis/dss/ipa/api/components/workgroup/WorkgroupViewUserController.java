@@ -184,4 +184,17 @@ public class WorkgroupViewUserController {
     }
 
 
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupCode}/users/{loginId}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
+    public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable String workgroupCode, HttpServletResponse httpResponse) {
+        if(userRoleService.deleteByLoginIdAndWorkgroupCode(loginId, workgroupCode)) {
+            User user = this.userService.getOneByLoginId(loginId);
+            UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with Code " + workgroupCode);
+            httpResponse.setStatus(HttpStatus.OK.value());
+        } else {
+            httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
+        }
+    }
+
 }
