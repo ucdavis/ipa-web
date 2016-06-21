@@ -58,10 +58,12 @@ public class JpaLocationService implements LocationService {
             location.setWorkgroup(workgroup);
             location.setDescription(description);
             location = this.locationRepository.save(location);
+        } else if (location.isArchived()) {
+            location.setArchived(false);
+            location = this.locationRepository.save(location);
         }
 
         return location;
-
     }
 
 
