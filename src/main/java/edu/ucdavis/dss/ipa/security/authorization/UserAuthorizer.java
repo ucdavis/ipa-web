@@ -1,23 +1,23 @@
 package edu.ucdavis.dss.ipa.security.authorization;
 
-import edu.ucdavis.dss.ipa.entities.Tag;
+import edu.ucdavis.dss.ipa.entities.User;
 import org.springframework.stereotype.Service;
 
 /**
  * Created by okadri on 6/22/16.
  */
 @Service
-public class TagAuthorizer implements Authorizer<Tag> {
+public class UserAuthorizer implements Authorizer<User> {
 
     /**
-     * Asserts that a given user has role 'accademicCoordinator' in the same workgroup as the tag
+     * Asserts that a given user has role 'accademicCoordinator' in the same workgroup as the user
      * throws an exception otherwise
-     * @param entity Tag
+     * @param entity User
      * @param args Long (workgroupId)
      * @return
      */
     @Override
-    public void authorize(Tag entity, Object... args) {
+    public void authorize(User entity, Object... args) {
 //        if (args.length != 1) {
 //            throw new AccessDeniedException("Incorrect parameters, expected workgroupId");
 //        }

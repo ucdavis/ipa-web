@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.workgroup;
 import edu.ucdavis.dss.ipa.api.components.workgroup.views.factories.WorkgroupViewFactory;
 import edu.ucdavis.dss.ipa.entities.Location;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.LocationService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,8 @@ public class WorkgroupViewLocationController {
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public Location addLocation(@PathVariable Long workgroupId, @RequestBody Location location, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
         return locationService.findOrCreateByWorkgroupAndDescription(workgroup, location.getDescription());
@@ -33,6 +36,8 @@ public class WorkgroupViewLocationController {
     @ResponseBody
     public Location updateLocation(@PathVariable Long workgroupId, @PathVariable long locationId,
                            @RequestBody Location location, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         Location editedLocation = locationService.findOneById(locationId);
         editedLocation.setDescription(location.getDescription());
         return locationService.save(editedLocation);
@@ -42,6 +47,8 @@ public class WorkgroupViewLocationController {
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations/{locationId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Location archiveLocation(@PathVariable Long workgroupId, @PathVariable long locationId, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         return locationService.archiveById(locationId);
     }
 

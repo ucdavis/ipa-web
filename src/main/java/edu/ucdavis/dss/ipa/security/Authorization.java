@@ -1,11 +1,8 @@
 package edu.ucdavis.dss.ipa.security;
 
-import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import org.apache.http.auth.AUTH;
 
-import javax.naming.Context;
 import java.util.*;
 
 /**

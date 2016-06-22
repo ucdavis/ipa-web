@@ -1,15 +1,14 @@
 package edu.ucdavis.dss.ipa.api.components.workgroup;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
-import edu.ucdavis.dss.ipa.api.views.UserViews;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -18,7 +17,6 @@ import edu.ucdavis.dss.utilities.UserLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -39,11 +37,11 @@ public class WorkgroupViewUserController {
     @Inject CurrentUser currentUser;
     @Inject DataWarehouseRepository dwRepository;
 
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/users", method = RequestMethod.GET)
     @ResponseBody
-    @JsonView(UserViews.Detailed.class)
     public List<User> getUserRolesByWorkgroupCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
         List<User> users = new ArrayList<User>();
@@ -59,8 +57,9 @@ public class WorkgroupViewUserController {
 
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.POST)
     @ResponseBody
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         User user = userService.getOneByLoginId(loginId);
 
         if (user == null) {
@@ -97,8 +96,9 @@ public class WorkgroupViewUserController {
 
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
     @ResponseBody
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     public void removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         Role newRole = roleService.findOneByName(role);
         User user = this.userService.getOneByLoginId(loginId);
 
@@ -133,13 +133,13 @@ public class WorkgroupViewUserController {
      * @param httpResponse
      * @return
      */
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userSearch", method = RequestMethod.GET)
     @ResponseBody
-    @JsonView(UserViews.Detailed.class)
     public List<User> searchUsers(
             @PathVariable Long workgroupId,
             @RequestParam(value = "query", required = true) String query, HttpServletResponse httpResponse) {
+
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
 
         List<User> users = new ArrayList<User>();
         List<DwPerson> dwPeople;
@@ -169,10 +169,11 @@ public class WorkgroupViewUserController {
         return users;
     }
 
-    @RequestMapping(value = "/api/workgroupView/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users", method = RequestMethod.POST)
     @ResponseBody
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    public User createUser(@RequestBody User userDTO , HttpServletResponse httpResponse) {
+    public User createUser(@RequestBody User userDTO, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         User user = userService.findOrCreateByLoginId(userDTO.getLoginId());
 
         if (user == null) {
@@ -186,8 +187,9 @@ public class WorkgroupViewUserController {
 
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users/{loginId}", method = RequestMethod.DELETE)
     @ResponseBody
-    @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+    public void removeUserFromWorkgroup(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+
         if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
             User user = this.userService.getOneByLoginId(loginId);
             UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with ID " + workgroupId);
