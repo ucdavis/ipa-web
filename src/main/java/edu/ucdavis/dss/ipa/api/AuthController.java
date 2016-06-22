@@ -2,10 +2,15 @@ package edu.ucdavis.dss.ipa.api;
 
 import java.util.*;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +23,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
 public class AuthController {
+
+    @Inject UserRoleService userRoleService;
 
     /**
      * Returns successful JWT token if logged into CAS, else
@@ -35,6 +42,7 @@ public class AuthController {
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
 
+        // Check if the token exists, else check for CAS
         if (token.token != null) {
             try {
                 Claims claims = Jwts.parser().setSigningKey("secretkey")
@@ -52,8 +60,9 @@ public class AuthController {
             }
         } else {
             if (request.getUserPrincipal() != null) {
+                List<UserRole> userRoles = userRoleService.findByLoginId(request.getUserPrincipal().getName());
                 response.token = Jwts.builder().setSubject(request.getUserPrincipal().getName())
-                        .claim("roles", Arrays.asList("user"))
+                        .claim("userRoles", userRoles)
                         .claim("loginId", request.getUserPrincipal().getName())
                         .setIssuedAt(new Date())
                         .signWith(SignatureAlgorithm.HS256, "secretkey").compact();

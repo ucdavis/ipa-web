@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.config;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -9,6 +10,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import org.springframework.web.filter.GenericFilterBean;
 
 import io.jsonwebtoken.Claims;
@@ -35,7 +38,9 @@ public class JwtFilter extends GenericFilterBean {
             try {
                 final Claims claims = Jwts.parser().setSigningKey("secretkey")
                         .parseClaimsJws(token).getBody();
-                request.setAttribute("claims", claims);
+
+                Authorization.setLoginId((String) claims.get("loginId"));
+                Authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
             } catch (final SignatureException e) {
                 throw new ServletException("Invalid token.");
             }

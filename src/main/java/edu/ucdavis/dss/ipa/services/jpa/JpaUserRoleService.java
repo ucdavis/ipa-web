@@ -241,5 +241,10 @@ public class JpaUserRoleService implements UserRoleService {
 		return workgroupInstructors;
 	}
 
+	@Override
+	public List<UserRole> findByLoginId(String loginId) {
+		return userRoleRepository.findByLoginId(loginId);
+	}
+
 }
 
