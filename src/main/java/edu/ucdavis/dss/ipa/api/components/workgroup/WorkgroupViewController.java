@@ -18,9 +18,9 @@ public class WorkgroupViewController {
 	@Inject WorkgroupService workgroupService;
 
 	@PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
-	@RequestMapping(value = "/api/workgroupView/{workgroupCode}", method = RequestMethod.GET, produces="application/json")
+	@RequestMapping(value = "/api/workgroupView/{workgroupId}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public WorkgroupView getWorkgroupViewByCode(@PathVariable String workgroupCode, HttpServletResponse httpResponse) {
-		return workgroupViewFactory.createWorkgroupView(workgroupCode);
+	public WorkgroupView getWorkgroupViewByCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+		return workgroupViewFactory.createWorkgroupView(workgroupId);
 	}
 }

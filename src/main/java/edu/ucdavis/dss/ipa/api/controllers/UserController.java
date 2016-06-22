@@ -111,13 +111,13 @@ public class UserController {
 		return roleList;
 	}
 
-	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupCode}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/api/users/{loginId}/workgroups/{workgroupId}", method = RequestMethod.DELETE)
 	@ResponseBody
 	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-	public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable String workgroupCode, HttpServletResponse httpResponse) {
-		if(userRoleService.deleteByLoginIdAndWorkgroupCode(loginId, workgroupCode)) {
+	public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+		if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
 			User user = this.userService.getOneByLoginId(loginId);
-			UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with Code " + workgroupCode);
+			UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with ID " + workgroupId);
 			httpResponse.setStatus(HttpStatus.OK.value());
 		} else {
 			httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());

@@ -7,6 +7,6 @@ import org.springframework.web.servlet.View;
 
 public interface WorkgroupViewFactory {
 
-	WorkgroupView createWorkgroupView(String workgroupCode);
+	WorkgroupView createWorkgroupView(Long workgroupId);
 
 }

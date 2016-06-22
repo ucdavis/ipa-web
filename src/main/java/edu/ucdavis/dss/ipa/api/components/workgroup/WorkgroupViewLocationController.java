@@ -20,18 +20,18 @@ public class WorkgroupViewLocationController {
     @Inject WorkgroupService workgroupService;
 
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
-    @RequestMapping(value = "/api/workgroupView/{workgroupCode}/locations", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public Location addLocation(@PathVariable String workgroupCode, @RequestBody Location location, HttpServletResponse httpResponse) {
-        Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
+    public Location addLocation(@PathVariable Long workgroupId, @RequestBody Location location, HttpServletResponse httpResponse) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
         return locationService.findOrCreateByWorkgroupAndDescription(workgroup, location.getDescription());
     }
 
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
-    @RequestMapping(value = "/api/workgroupView/{workgroupCode}/locations/{locationId}", method = RequestMethod.PUT, produces="application/json")
+    @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations/{locationId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public Location updateLocation(@PathVariable String workgroupCode, @PathVariable long locationId,
+    public Location updateLocation(@PathVariable Long workgroupId, @PathVariable long locationId,
                            @RequestBody Location location, HttpServletResponse httpResponse) {
         Location editedLocation = locationService.findOneById(locationId);
         editedLocation.setDescription(location.getDescription());
@@ -39,9 +39,9 @@ public class WorkgroupViewLocationController {
     }
 
     @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
-    @RequestMapping(value = "/api/workgroupView/{workgroupCode}/locations/{locationId}", method = RequestMethod.DELETE, produces="application/json")
+    @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations/{locationId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
-    public Location archiveLocation(@PathVariable String workgroupCode, @PathVariable long locationId, HttpServletResponse httpResponse) {
+    public Location archiveLocation(@PathVariable Long workgroupId, @PathVariable long locationId, HttpServletResponse httpResponse) {
         return locationService.archiveById(locationId);
     }
 

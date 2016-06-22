@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -12,7 +11,6 @@ import javax.transaction.Transactional;
 import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.repositories.TeachingCallResponseRepository;
 import edu.ucdavis.dss.ipa.repositories.WorkgroupRepository;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
@@ -40,8 +38,8 @@ public class JpaWorkgroupService implements WorkgroupService {
 	}
 
 	@Override
-	public boolean hasUser(String workgroupCode, String loginId) {
-		Workgroup workgroup = this.findOneByCode(workgroupCode);
+	public boolean hasUser(Long workgroupId, String loginId) {
+		Workgroup workgroup = this.findOneById(workgroupId);
 
 		for (UserRole userRole : workgroup.getUserRoles()) {
 			// Verify User does not already have role in workgroup

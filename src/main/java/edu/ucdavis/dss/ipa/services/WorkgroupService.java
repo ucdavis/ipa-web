@@ -28,9 +28,9 @@ public interface WorkgroupService {
 
 	/**
 	 * Returns true if workgroup has at least one UserRole for the specified loginId.
-	 * @param workgroupCode
+	 * @param workgroupId
 	 * @param loginId
      * @return
      */
-	boolean hasUser(String workgroupCode, String loginId);
+	boolean hasUser(Long workgroupId, String loginId);
 }

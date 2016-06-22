@@ -17,8 +17,8 @@ public class JpaWorkgroupViewFactory implements WorkgroupViewFactory {
 	@Inject RoleService roleService;
 
 	@Override
-	public WorkgroupView createWorkgroupView(String workgroupCode) {
-		Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
+	public WorkgroupView createWorkgroupView(Long workgroupId) {
+		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		List<UserRole> userRoles = userRoleService.findByWorkgroup(workgroup);
 		List<Role> roles = roleService.getAllRoles();
 

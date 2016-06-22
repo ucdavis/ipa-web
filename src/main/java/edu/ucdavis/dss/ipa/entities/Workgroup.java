@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "Workgroups")
 @JsonAutoDetect(creatorVisibility = JsonAutoDetect.Visibility.NONE,
@@ -37,7 +36,7 @@ import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 	getterVisibility = JsonAutoDetect.Visibility.NONE,
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Workgroup implements Serializable {
+public class Workgroup {
 	private long id;
 	private String name, code;
 	private Set<Schedule> schedules = new HashSet<Schedule>();

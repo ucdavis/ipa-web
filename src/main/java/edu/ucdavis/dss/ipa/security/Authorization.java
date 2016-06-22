@@ -1,12 +1,12 @@
 package edu.ucdavis.dss.ipa.security;
 
+import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.apache.http.auth.AUTH;
 
 import javax.naming.Context;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Holds the logged in user information extracted from the JWT token.
@@ -30,16 +30,67 @@ public class Authorization {
         return Authorization.loginId.get();
     }
 
-    public static boolean hasRole(String workgroupCode, String roleName) {
-        for (UserRole userRole: Authorization.userRoles.get()) {
-            if (workgroupCode.equals(userRole.getWorkgroup().getCode())
-                && roleName.equals(userRole.getRole().getName())) {
-                return true;
+    public static boolean isAdmin() {
+        Iterator it = Authorization.userRoles.get().iterator();
+
+        // Iterate over userRoles to find a match
+        while (it.hasNext()) {
+            LinkedHashMap<String,Map.Entry> pair = (LinkedHashMap<String,Map.Entry>) it.next();
+
+            for (Map.Entry<String, Map.Entry> entry : pair.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (key.equals("role") && value.equals("admin")) {
+                    return true;
+                }
             }
         }
+
         return false;
     }
 
+    /**
+     * Checks if the user has the given role in the workgroup
+     * @param longWorkgroupId
+     * @param roleName
+     * @return
+     */
+    public static boolean hasRole(Long longWorkgroupId, String roleName) {
+        if (longWorkgroupId == null || roleName == null) { return false; }
+        Integer workgroupId = longWorkgroupId.intValue();
+
+        Iterator it = Authorization.userRoles.get().iterator();
+
+        // Iterate over userRoles to find a match
+        while (it.hasNext()) {
+            LinkedHashMap<String,Map.Entry> pair = (LinkedHashMap<String,Map.Entry>) it.next();
+            Integer userRoleWorkgroupId = null;
+            String userRoleRoleName = null;
+
+            for (Map.Entry<String, Map.Entry> entry : pair.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (key.equals("workgroupId")) {
+                    userRoleWorkgroupId = (Integer) value;
+                }
+                if (key.equals("role")) {
+                    userRoleRoleName = (String) value;
+                }
+            }
+
+            // Return true iff both roleName and workgroupId match
+            if (roleName.equals(userRoleRoleName) && workgroupId.equals(userRoleWorkgroupId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns a list of workgroups that the user has roles in
+     * @return
+     */
     public static List<Workgroup> getWorkgroups() {
         List<Workgroup> workgroups = new ArrayList<>();
         for (UserRole userRole: Authorization.userRoles.get()) {

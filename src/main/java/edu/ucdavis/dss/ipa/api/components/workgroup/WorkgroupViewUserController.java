@@ -40,11 +40,11 @@ public class WorkgroupViewUserController {
     @Inject DataWarehouseRepository dwRepository;
 
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    @RequestMapping(value = "/api/workgroupView/{workgroupCode}/users", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/workgroupView/{workgroupId}/users", method = RequestMethod.GET)
     @ResponseBody
     @JsonView(UserViews.Detailed.class)
-    public List<User> getUserRolesByWorkgroupCode(@PathVariable String workgroupCode, HttpServletResponse httpResponse) {
-        Workgroup workgroup = workgroupService.findOneByCode(workgroupCode);
+    public List<User> getUserRolesByWorkgroupCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
         List<User> users = new ArrayList<User>();
 
@@ -57,10 +57,10 @@ public class WorkgroupViewUserController {
         return users;
     }
 
-    @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupCode}/roles/{role}", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.POST)
     @ResponseBody
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable String workgroupCode, @PathVariable String role, HttpServletResponse httpResponse) {
+    public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
         User user = userService.getOneByLoginId(loginId);
 
         if (user == null) {
@@ -85,7 +85,7 @@ public class WorkgroupViewUserController {
             httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
         }
         else {
-            userRole = userRoleService.findOrCreateByLoginIdAndWorkgroupCodeAndRoleToken(loginId, workgroupCode, role);
+            userRole = userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, role);
             httpResponse.setStatus(HttpStatus.OK.value());
             UserLogger.log(currentUser, "Added role '" + role + "' to user " + user.getName() + " (" + loginId + ")");
         }
@@ -95,10 +95,10 @@ public class WorkgroupViewUserController {
         return userRole;
     }
 
-    @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupCode}/roles/{role}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
     @ResponseBody
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    public void removeUserRoleFromUser(@PathVariable String loginId, @PathVariable String workgroupCode, @PathVariable String role, HttpServletResponse httpResponse) {
+    public void removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
         Role newRole = roleService.findOneByName(role);
         User user = this.userService.getOneByLoginId(loginId);
 
@@ -113,7 +113,7 @@ public class WorkgroupViewUserController {
         if (newRole == null) {
             httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
         } else {
-            userRoleService.deleteByLoginIdAndWorkgroupCodeAndRoleToken(loginId, workgroupCode, role);
+            userRoleService.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, role);
 
             // Query new roleList and return
             user = this.userService.getOneByLoginId(loginId);
@@ -128,17 +128,17 @@ public class WorkgroupViewUserController {
      * returns a list of users from data warehouse.
      * Filters out users with null loginIds or emails,
      * and users who already have a role in the specified workgroup.
-     * @param workgroupCode
+     * @param workgroupId
      * @param query
      * @param httpResponse
      * @return
      */
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupCode}/userSearch", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userSearch", method = RequestMethod.GET)
     @ResponseBody
     @JsonView(UserViews.Detailed.class)
     public List<User> searchUsers(
-            @PathVariable String workgroupCode,
+            @PathVariable Long workgroupId,
             @RequestParam(value = "query", required = true) String query, HttpServletResponse httpResponse) {
 
         List<User> users = new ArrayList<User>();
@@ -150,7 +150,7 @@ public class WorkgroupViewUserController {
             for (DwPerson dwPerson : dwPeople) {
                 // Verify dwPerson has necessary data to make a User
                 if (dwPerson.getLoginId() != null && dwPerson.getEmail() != null) {
-                    boolean userBelongsToWorkgroup = workgroupService.hasUser(workgroupCode, dwPerson.getLoginId());
+                    boolean userBelongsToWorkgroup = workgroupService.hasUser(workgroupId, dwPerson.getLoginId());
 
                     if (userBelongsToWorkgroup == false) {
                         User user = new User();
@@ -184,13 +184,13 @@ public class WorkgroupViewUserController {
     }
 
 
-    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupCode}/users/{loginId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users/{loginId}", method = RequestMethod.DELETE)
     @ResponseBody
     @PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator')")
-    public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable String workgroupCode, HttpServletResponse httpResponse) {
-        if(userRoleService.deleteByLoginIdAndWorkgroupCode(loginId, workgroupCode)) {
+    public void removeUserFromDepartment(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
+        if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
             User user = this.userService.getOneByLoginId(loginId);
-            UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with Code " + workgroupCode);
+            UserLogger.log(currentUser, "Removed user " + user.getName() + " (" + loginId + ") from workgroup with ID " + workgroupId);
             httpResponse.setStatus(HttpStatus.OK.value());
         } else {
             httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());

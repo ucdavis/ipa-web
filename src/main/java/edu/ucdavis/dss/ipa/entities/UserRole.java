@@ -84,10 +84,9 @@ public class UserRole implements Serializable {
 	public String getRoleToken() {
 		return role.getName();
 	}
-	
+
 	@JsonProperty("workgroupId")
 	@Transient
-	@JsonIgnore
 	// Renamed to 'getWorkgroupIdentification()' because
 	// 'UserRoleRepository.findByWorkgroupId(long id)' got confused
 	public long getWorkgroupIdentification() {
