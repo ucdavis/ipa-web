@@ -30,7 +30,7 @@ public class TagAuthorizer implements Authorizer<Tag> {
 
         Long workgroupId = (Long) args[0];
         if (Authorization.isAdmin() == false && Authorization.hasRole(workgroupId, "academicCoordinator") == false) {
-            throw new AccessDeniedException("User not authorized to create tags in " + workgroupId);
+            throw new AccessDeniedException("User not authorized to create tags in workgroup with Id = " + workgroupId);
         }
     }
 

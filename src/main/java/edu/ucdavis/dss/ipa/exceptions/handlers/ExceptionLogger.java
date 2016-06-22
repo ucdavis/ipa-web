@@ -17,6 +17,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ExceptionLogger {
 
+	/**
+	 * Logs the exception and mails the admins
+	 * @param callingClassName
+	 * @param e	exception
+     */
 	static public void logAndMailException(String callingClassName, Exception e) {
 
 		Logger log = LogManager.getLogger("ExceptionLogger");
