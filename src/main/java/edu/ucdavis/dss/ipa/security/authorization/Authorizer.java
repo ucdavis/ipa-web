@@ -21,7 +21,7 @@ public interface Authorizer<T> {
     };
 
     /**
-     * Verifies that the user has at least the role for the workgroup or is an admin
+     * Verifies that the user has at least one of the roles for the workgroup or is an admin
      * @param workgroupId
      * @param roleNames
      */
