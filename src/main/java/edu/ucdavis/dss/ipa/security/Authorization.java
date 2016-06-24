@@ -3,6 +3,8 @@ package edu.ucdavis.dss.ipa.security;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 
+import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 /**
@@ -14,6 +16,7 @@ public class Authorization {
 
     private static final ThreadLocal<List<UserRole>> userRoles = new ThreadLocal();
     private static final ThreadLocal<String> loginId = new ThreadLocal();
+    private static final ThreadLocal<Long> expirationDate = new ThreadLocal();
 
     public static void setUserRoles(List<UserRole> userRoles) {
         Authorization.userRoles.set(userRoles);
@@ -25,6 +28,14 @@ public class Authorization {
 
     public static String getLoginId() {
         return Authorization.loginId.get();
+    }
+
+    public static void setExpirationDate(Long expirationDate) {
+        Authorization.expirationDate.set(expirationDate);
+    }
+
+    public static Long getExpirationDate() {
+        return Authorization.expirationDate.get();
     }
 
     public static boolean isAdmin() {
@@ -97,5 +108,4 @@ public class Authorization {
         }
         return workgroups;
     }
-
 }

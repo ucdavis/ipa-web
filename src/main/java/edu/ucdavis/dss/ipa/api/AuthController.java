@@ -36,17 +36,17 @@ public class AuthController {
      */
     @CrossOrigin // TODO: make CORS more specific depending on profile
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public LoginResponse validate(@RequestBody final LoginResponse token,  final HttpServletRequest request) throws ServletException {
+    public LoginResponse validate(@RequestBody final LoginResponse loginResponse,  final HttpServletRequest request) throws ServletException {
         LoginResponse response = new LoginResponse();
 
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
 
         // Check if the token exists, else check for CAS
-        if (token.token != null) {
+        if (loginResponse.token != null) {
             try {
                 Claims claims = Jwts.parser().setSigningKey("secretkey")
-                        .parseClaimsJws(token.token).getBody();
+                        .parseClaimsJws(loginResponse.token).getBody();
 
                 // This should execute only if parsing claims above
                 // successfully executes, hence token is valid
@@ -54,16 +54,26 @@ public class AuthController {
                 // Not using isSigned() because this method only checks
                 // if the token is signed regardless of the signing key
                 // https://github.com/jwtk/jjwt/blob/master/src/main/java/io/jsonwebtoken/JwtParser.java#L246
-                response.token = token.token;
+                response.token = loginResponse.token;
             } catch (final SignatureException e) {
                 throw new ServletException("Invalid token.");
             }
         } else {
             if (request.getUserPrincipal() != null) {
+
+                int jwtDaysValid = 7;
+                Calendar now = Calendar.getInstance();
+                now.add(Calendar.DATE, jwtDaysValid);
+
+                Date expirationDate = now.getTime();
+
                 List<UserRole> userRoles = userRoleService.findByLoginId(request.getUserPrincipal().getName());
+                System.out.println("generating token and setting new expirationDate value:");
+                System.out.println(expirationDate.toString());
                 response.token = Jwts.builder().setSubject(request.getUserPrincipal().getName())
                         .claim("userRoles", userRoles)
                         .claim("loginId", request.getUserPrincipal().getName())
+                        .claim("expirationDate", expirationDate)
                         .setIssuedAt(new Date())
                         .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
             }
