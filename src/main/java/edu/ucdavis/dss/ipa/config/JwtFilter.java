@@ -1,8 +1,11 @@
 package edu.ucdavis.dss.ipa.config;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.util.List;
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,15 +13,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.exceptions.ExpiredTokenException;
-import edu.ucdavis.dss.ipa.security.Authorization;
-import org.springframework.web.filter.GenericFilterBean;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 public class JwtFilter extends GenericFilterBean {
 
@@ -45,14 +42,20 @@ public class JwtFilter extends GenericFilterBean {
                 Authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
                 Authorization.setExpirationDate((Long) claims.get("expirationDate"));
 
-                java.util.Date now = new java.util.Date();
-                java.util.Date expirationDate = new java.sql.Date(Authorization.getExpirationDate());
+                Date now = new Date();
+                Date expirationDate = new Date(Authorization.getExpirationDate());
 
                 // if now has passed expirationDate, set the token to null, otherwise returnt he token back.
                 if (now.compareTo(expirationDate) > 0) {
                     // Return 'Login Required' status code
                     HttpServletResponse httpServletResponse = (HttpServletResponse) res;
                     httpServletResponse.setStatus(440);
+                    String origin = request.getHeader("Origin");
+                    httpServletResponse.addHeader("Access-Control-Allow-Origin", origin);
+                    httpServletResponse.addHeader("Access-Control-Allow-Credentials", "true");
+                    httpServletResponse.addHeader("Access-Control-Allow-Headers", "accept, authorization");
+                    httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET");
+                    httpServletResponse.addHeader("Allow", "GET");
                     httpServletResponse.getOutputStream().flush();
                     return;
                 }
