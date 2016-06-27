@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserAuthorizer implements Authorizer<User> {
 
     /**
-     * Asserts that a given user has role 'accademicCoordinator' in the same workgroup as the user
+     * Asserts that a given user has role 'academicPlanner' in the same workgroup as the user
      * throws an exception otherwise
      * @param entity User
      * @param args Long (workgroupId)
@@ -27,7 +27,7 @@ public class UserAuthorizer implements Authorizer<User> {
 //        }
 //
 //        Long workgroupId = (Long) args[0];
-//        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+//        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
     }
 
 }

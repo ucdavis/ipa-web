@@ -20,34 +20,31 @@ public class WorkgroupViewLocationController {
     @Inject LocationService locationService;
     @Inject WorkgroupService workgroupService;
 
-    @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public Location addLocation(@PathVariable Long workgroupId, @RequestBody Location location, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
         return locationService.findOrCreateByWorkgroupAndDescription(workgroup, location.getDescription());
     }
 
-    @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations/{locationId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public Location updateLocation(@PathVariable Long workgroupId, @PathVariable long locationId,
                            @RequestBody Location location, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Location editedLocation = locationService.findOneById(locationId);
         editedLocation.setDescription(location.getDescription());
         return locationService.save(editedLocation);
     }
 
-    @PreAuthorize("hasPermission(#workgroupCode, 'workgroup', 'academicCoordinator')")
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/locations/{locationId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Location archiveLocation(@PathVariable Long workgroupId, @PathVariable long locationId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         return locationService.archiveById(locationId);
     }

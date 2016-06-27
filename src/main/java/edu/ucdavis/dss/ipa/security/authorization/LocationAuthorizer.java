@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class LocationAuthorizer implements Authorizer<Location> {
 
     /**
-     * Asserts that a given user has role 'accademicCoordinator' in the same workgroup as the location
+     * Asserts that a given user has role 'academicPlanner' in the same workgroup as the location
      * throws an exception otherwise
      * @param entity Location
      * @param args Long (workgroupId)
@@ -27,7 +27,7 @@ public class LocationAuthorizer implements Authorizer<Location> {
 //        }
 //
 //        Long workgroupId = (Long) args[0];
-//        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+//        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
     }
 
 }

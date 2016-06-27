@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class TagAuthorizer implements Authorizer<Tag> {
 
     /**
-     * Asserts that a given user has role 'accademicCoordinator' in the same workgroup as the tag
+     * Asserts that a given user has role 'academicPlanner' in the same workgroup as the tag
      * throws an exception otherwise
      * @param entity Tag
      * @param args Long (workgroupId)
@@ -27,7 +27,7 @@ public class TagAuthorizer implements Authorizer<Tag> {
 //        }
 //
 //        Long workgroupId = (Long) args[0];
-//        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+//        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
     }
 
 }

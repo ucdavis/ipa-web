@@ -40,7 +40,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/users", method = RequestMethod.GET)
     @ResponseBody
     public List<User> getUserRolesByWorkgroupCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
@@ -58,7 +58,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.POST)
     @ResponseBody
     public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         User user = userService.getOneByLoginId(loginId);
 
@@ -97,7 +97,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
     @ResponseBody
     public void removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Role newRole = roleService.findOneByName(role);
         User user = this.userService.getOneByLoginId(loginId);
@@ -139,7 +139,7 @@ public class WorkgroupViewUserController {
             @PathVariable Long workgroupId,
             @RequestParam(value = "query", required = true) String query, HttpServletResponse httpResponse) {
 
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         List<User> users = new ArrayList<User>();
         List<DwPerson> dwPeople;
@@ -172,7 +172,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users", method = RequestMethod.POST)
     @ResponseBody
     public User createUser(@RequestBody User userDTO, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         User user = userService.findOrCreateByLoginId(userDTO.getLoginId());
 
@@ -188,7 +188,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users/{loginId}", method = RequestMethod.DELETE)
     @ResponseBody
     public void removeUserFromWorkgroup(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicCoordinator");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
             User user = this.userService.getOneByLoginId(loginId);
