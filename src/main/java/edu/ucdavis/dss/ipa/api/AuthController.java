@@ -41,11 +41,12 @@ public class AuthController {
 
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
+        String signingKey = System.getenv("ipa.jwt.signingkey");
 
         // Check if the token exists, else check for CAS
         if (loginResponse.token != null) {
             try {
-                Claims claims = Jwts.parser().setSigningKey("secretkey")
+                Claims claims = Jwts.parser().setSigningKey(signingKey)
                         .parseClaimsJws(loginResponse.token).getBody();
 
                 // This should execute only if parsing claims above
@@ -75,7 +76,7 @@ public class AuthController {
                         .claim("loginId", request.getUserPrincipal().getName())
                         .claim("expirationDate", expirationDate)
                         .setIssuedAt(new Date())
-                        .signWith(SignatureAlgorithm.HS256, "secretkey").compact();
+                        .signWith(SignatureAlgorithm.HS256, signingKey).compact();
             }
         }
 

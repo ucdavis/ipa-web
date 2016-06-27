@@ -92,6 +92,10 @@ public class Application {
             System.err.println("Environment variable 'ipa.ldap.password' must be set");
             errorsFound = true;
         }
+        if(System.getenv("ipa.jwt.signingkey") == null) {
+            System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
+            errorsFound = true;
+        }
 
         return !errorsFound;
     }
