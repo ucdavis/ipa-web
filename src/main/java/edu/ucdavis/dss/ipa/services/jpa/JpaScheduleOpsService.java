@@ -315,7 +315,6 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				if(user.getRoles().contains(instructorRole) == false) {
 					UserRole userRole = new UserRole();
 					
-					userRole.setActive(true);
 					userRole.setUser(user);
 					userRole.setRole(instructorRole);
 					userRole.setWorkgroup(workgroup);

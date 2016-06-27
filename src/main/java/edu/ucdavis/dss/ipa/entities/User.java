@@ -119,7 +119,7 @@ public class User {
 		List<Workgroup> workgroups = new ArrayList<Workgroup>();
 
 		for(UserRole userRole : this.getUserRoles()) {
-			if(userRole.isActive() && userRole.getWorkgroup() != null) {
+			if(userRole.getWorkgroup() != null) {
 				if( !workgroups.contains(userRole.getWorkgroup()) ) {
 					workgroups.add(userRole.getWorkgroup());
 				}

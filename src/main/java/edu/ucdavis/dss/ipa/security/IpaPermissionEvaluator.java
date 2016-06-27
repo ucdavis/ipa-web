@@ -148,7 +148,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 
 		// The generic check: do they have the role, regardless of workgroup?
 		for (UserRole userRole : user.getUserRoles()) {
-			if (userRole.getRoleToken().equals(role) && userRole.isActive() ) {
+			if (userRole.getRoleToken().equals(role) ) {
 				return true;
 			}
 		}

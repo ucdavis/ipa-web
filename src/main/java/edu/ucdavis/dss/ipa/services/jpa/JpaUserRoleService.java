@@ -79,7 +79,6 @@ public class JpaUserRoleService implements UserRoleService {
 			userRole.setWorkgroup(workgroup);
 			userRole.setUser(user);
 			userRole.setRole(role);
-			userRole.setActive(true);
 			log.info("Creating userRole '" + userRole.getRoleToken() + "' for user '" + user.getLoginId() + "' and workgroup '" + workgroup.getName() + "'");
 			userRoleRepository.save(userRole);
 	

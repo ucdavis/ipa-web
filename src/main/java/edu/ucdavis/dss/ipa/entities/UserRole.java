@@ -29,7 +29,6 @@ public class UserRole implements Serializable {
 	private User user;
 	private Workgroup workgroup;
 	private Role role;
-	private Boolean active;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,17 +96,6 @@ public class UserRole implements Serializable {
 		}
 	}
 
-	@Basic
-	@Column(name = "Active", nullable = false)
-	@JsonProperty("active")
-	public Boolean isActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
 	@Override
 	public String toString() {
 		return String.format("UserRole[id=%d,user=%s,role=%s]", this.getId(), this.getUser(), this.getRole());
@@ -116,8 +104,8 @@ public class UserRole implements Serializable {
 	/**
 	 * Returns a boolean whether the role is an instructor
 	 *
-	 * @param termCode e.g. for "201510"
-	 * @return         2 digit string, e.g. "10"
+	 * @param userRole
+	 * @return
 	 */
 	@Transient
 	public static boolean isInstructor(UserRole userRole) {
