@@ -9,13 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import io.jsonwebtoken.Jwts;
@@ -26,6 +29,8 @@ public class AuthController {
 
     @Inject
     UserRoleService userRoleService;
+    @Inject
+    UserService userService;
 
     /**
      * Returns successful JWT token if logged into CAS, else
@@ -67,8 +72,12 @@ public class AuthController {
                 Date expirationDate = now.getTime();
 
                 List<UserRole> userRoles = userRoleService.findByLoginId(request.getUserPrincipal().getName());
-                System.out.println("generating token and setting new expirationDate value:");
-                System.out.println(expirationDate.toString());
+                User user = userService.getOneByLoginId(request.getUserPrincipal().getName());
+
+                if (user == null) {
+                    throw new AccessDeniedException("User not authorized to access IPA, loginId = " + request.getUserPrincipal().getName());
+                }
+
                 securityDTO.token = Jwts.builder().setSubject(request.getUserPrincipal().getName())
                         .claim("userRoles", userRoles)
                         .claim("loginId", request.getUserPrincipal().getName())
@@ -76,6 +85,7 @@ public class AuthController {
                         .setIssuedAt(new Date())
                         .signWith(SignatureAlgorithm.HS256, signingKey).compact();
                 securityDTO.setUserRoles(userRoles);
+                securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             }
         }
 

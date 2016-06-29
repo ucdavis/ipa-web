@@ -9,7 +9,7 @@ import java.util.List;
 
 @JsonDeserialize(using = SecurityDTODeserializer.class)
 public class SecurityDTO {
-    public String token;
+    public String token, displayName;
     public String redirect = "https://cas.ucdavis.edu/cas/login?service=http://localhost:8080/post-login";
     public List<UserRoleDTO> userRoles;
 
@@ -29,5 +29,9 @@ public class SecurityDTO {
                 this.userRoles.add(new UserRoleDTO(userRole));
             }
         }
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

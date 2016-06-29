@@ -31,6 +31,10 @@ public class SecurityDTODeserializer extends JsonDeserializer<Object> {
             securityDTO.token = node.get("token").textValue();
         }
 
+        if (node.has("displayName")) {
+            securityDTO.displayName = node.get("displayName").textValue();
+        }
+
         if (node.has("userRoles")) {
 
             CollectionType collectionType =
