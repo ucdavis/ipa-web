@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
@@ -32,8 +29,8 @@ public class JpaInstructorService implements InstructorService {
 	}
 
 	@Override
-	public Instructor getOneByEmployeeId(String employeeId) {
-		return this.instructorRepository.findByEmployeeId(employeeId);
+	public Instructor getOneByUcdStudentSID(String ucdStudentSID) {
+		return this.instructorRepository.findByUcdStudentSID(ucdStudentSID);
 	}
 
 	@Override
@@ -58,7 +55,7 @@ public class JpaInstructorService implements InstructorService {
 
 		// 2) Attempt to find by employeeId
 		if (instructor == null && employeeId.length() > 0) {
-			instructor = instructorRepository.findByEmployeeId(employeeId);
+			instructor = instructorRepository.findByUcdStudentSID(employeeId);
 		}
 
 		// 3) Create new instructor

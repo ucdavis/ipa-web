@@ -285,7 +285,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				Instructor instructor = this.instructorService.getOneByLoginId(dwInstructor.getLoginId());
 				if(instructor == null) {
 					// Some instructors may be in the DB already without a login ID ...
-					instructor = this.instructorService.getOneByEmployeeId(dwInstructor.getEmployeeId());
+					instructor = this.instructorService.getOneByUcdStudentSID(dwInstructor.getEmployeeId());
 				}
 
 				if(instructor == null) {
@@ -296,8 +296,8 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				if((instructor.getEmail() == null) || (instructor.getEmail().length() == 0)) {
 					instructor.setEmail(dwInstructor.getEmailAddress());
 				}
-				if((instructor.getEmployeeId() == null) || (instructor.getEmployeeId().length() == 0)) {
-					instructor.setEmployeeId(dwInstructor.getEmployeeId());
+				if((instructor.getUcdStudentSID() == null) || (instructor.getUcdStudentSID().length() == 0)) {
+					instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
 				}
 				if((instructor.getFirstName() == null) || (instructor.getFirstName().length() == 0)) {
 					instructor.setFirstName(dwInstructor.getFirstName());

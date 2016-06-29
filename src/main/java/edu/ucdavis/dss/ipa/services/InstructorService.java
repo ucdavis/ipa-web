@@ -13,7 +13,7 @@ public interface InstructorService {
 
 	Instructor getOneById(Long instructorId);
 
-	Instructor getOneByEmployeeId(String employeeId);
+	Instructor getOneByUcdStudentSID(String ucdStudentSID);
 
 	/**
 	 * Finds instructor by case-insensitive 'loginId', if exists.

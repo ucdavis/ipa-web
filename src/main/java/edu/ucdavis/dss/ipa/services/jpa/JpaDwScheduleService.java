@@ -109,13 +109,13 @@ public class JpaDwScheduleService implements DwScheduleService {
 //
 //			// Parse instructors
 //			for(DwInstructor dwInstructor : dwSection.getInstructors()) {
-//				Instructor instructor = this.instructorService.getOneByEmployeeId(dwInstructor.getEmployeeId());
+//				Instructor instructor = this.instructorService.getOneByUcdStudentSID(dwInstructor.getUcdStudentSID());
 //
 //				if (instructor == null) {
 //					instructor = new Instructor();
 //
 //					instructor.setEmail(dwInstructor.getEmailAddress());
-//					instructor.setEmployeeId(dwInstructor.getEmployeeId());
+//					instructor.setUcdStudentSID(dwInstructor.getUcdStudentSID());
 //					instructor.setFirstName(dwInstructor.getFirstName());
 //					instructor.setLastName(dwInstructor.getLastName());
 //					instructor.setLoginId(dwInstructor.getLoginId());

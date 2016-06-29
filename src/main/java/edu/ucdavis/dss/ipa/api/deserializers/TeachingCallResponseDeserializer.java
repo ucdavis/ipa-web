@@ -32,7 +32,7 @@ public class TeachingCallResponseDeserializer extends JsonDeserializer<Object> {
 				instructor.setId(node.get("instructor").get("id").longValue());
 			}
 			if (node.get("instructor").get("employeeId") != null) {
-				instructor.setEmployeeId(node.get("instructor").get("employeeId").textValue());
+				instructor.setUcdStudentSID(node.get("instructor").get("employeeId").textValue());
 			}
 			teachingCallResponse.setInstructor(instructor);
 		}

@@ -20,7 +20,7 @@ public class JpaInstructorMapper implements Function<Instructor, DiffInstructor>
 
 	@Override
 	public DiffInstructor apply(Instructor instructor) {
-		DiffInstructor.Builder diBuilder = new DiffInstructor.Builder(instructor.getEmployeeId());
+		DiffInstructor.Builder diBuilder = new DiffInstructor.Builder(instructor.getUcdStudentSID());
 
 		return diBuilder.loginId(instructor.getLoginId())
 				.firstName(instructor.getFirstName())

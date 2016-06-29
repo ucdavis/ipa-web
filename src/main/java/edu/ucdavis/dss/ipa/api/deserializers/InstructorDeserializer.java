@@ -29,7 +29,7 @@ public class InstructorDeserializer extends JsonDeserializer<Object> {
 		}
 
 		if (node.has("employeeId")) {
-			instructor.setEmployeeId(node.get("employeeId").textValue());
+			instructor.setUcdStudentSID(node.get("employeeId").textValue());
 		}
 
 		if (node.has("firstName")) {

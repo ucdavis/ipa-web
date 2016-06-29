@@ -16,7 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,7 +40,7 @@ public class Instructor implements Serializable {
 	private String lastName;
 	private String email;
 	private String loginId;
-	private String employeeId;
+	private String ucdStudentSID;
 	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
@@ -131,17 +130,17 @@ public class Instructor implements Serializable {
 	}
 
 	@Basic
-	@Column(name = "EmployeeId", nullable = true, length = 9, unique = true)
+	@Column(name = "UcdStudentSID", nullable = true, length = 9, unique = true)
 	@JsonProperty
 	@JsonView({TeachingCallResponseViews.Detailed.class, SectionGroupViews.Detailed.class, InstructorViews.Detailed.class})
-	public String getEmployeeId()
+	public String getUcdStudentSID()
 	{
-		return this.employeeId;
+		return this.ucdStudentSID;
 	}
 
-	public void setEmployeeId(String employeeId)
+	public void setUcdStudentSID(String ucdStudentSID)
 	{
-		this.employeeId = employeeId;
+		this.ucdStudentSID = ucdStudentSID;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor")

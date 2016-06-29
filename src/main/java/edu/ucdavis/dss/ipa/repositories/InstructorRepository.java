@@ -8,7 +8,7 @@ public interface InstructorRepository extends CrudRepository<Instructor, Long> {
 
 	Instructor findById(Long id);
 
-	Instructor findByEmployeeId(String employeeId);
+	Instructor findByUcdStudentSID(String ucdStudentSID);
 
 	Instructor findByLoginIdIgnoreCase(String loginId);
 
