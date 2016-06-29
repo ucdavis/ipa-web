@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
@@ -92,6 +94,16 @@ public class AuthController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", ref);
+
+        return new ResponseEntity<byte[]>(null, headers, HttpStatus.FOUND);
+    }
+
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public ResponseEntity logout(HttpSession session, HttpServletRequest request){
+        session.invalidate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "https://cas.ucdavis.edu/cas/logout");
 
         return new ResponseEntity<byte[]>(null, headers, HttpStatus.FOUND);
     }
