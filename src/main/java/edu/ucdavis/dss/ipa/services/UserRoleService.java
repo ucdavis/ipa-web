@@ -29,7 +29,7 @@ public interface UserRoleService {
 
 	void deleteByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String role);
 
-	boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId);
+	boolean deleteByLoginIdAndWorkgroupId(String loginId, long workgroupId);
 
 	List<Instructor> getInstructorsByWorkgroupId(long workgroupId);
 

@@ -127,7 +127,7 @@ public class JpaUserRoleService implements UserRoleService {
 							dwInstructor.getEmployeeId() != null &&
 							dwInstructor.getLoginId().equals(user.getLoginId())	) {
 
-							instructor.setEmployeeId(dwInstructor.getEmployeeId());
+							instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
 							log.info("Queried Data Warehouse for employeeId on instructor '" + instructor.getLoginId() + "'");
 							instructorService.save(instructor);
 						}
@@ -172,12 +172,12 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public boolean deleteByLoginIdAndWorkgroupId(String loginId, Long workgroupId) {
+	public boolean deleteByLoginIdAndWorkgroupId(String loginId, long workgroupId) {
 		User user = userService.getOneByLoginId(loginId);
-		List<String> userRolesToRemove = new ArrayList<String>();
+		List<String> userRolesToRemove = new ArrayList<>();
 
 		for (UserRole userRole : user.getUserRoles()){
-			if(userRole.getWorkgroup() != null && workgroupId.equals(userRole.getWorkgroup().getCode()) ) {
+			if(userRole.getWorkgroup() != null && workgroupId == userRole.getWorkgroup().getId() ) {
 				userRolesToRemove.add(userRole.getRole().getName());
 			}
 		}
