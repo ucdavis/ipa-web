@@ -117,7 +117,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 						if (instructor != null) {
 							instructors.add(instructor);
 						} else {
-							log.error("User with loginId '" + loginId + "' and role '" + userRole.getRoleToken() + "' should also have an instructor, but none were found.");
+							log.error("User with loginId '" + loginId + "' and role '" + userRole.getRole().getName() + "' should also have an instructor, but none were found.");
 						}
 					}
 

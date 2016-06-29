@@ -79,7 +79,7 @@ public class JpaUserRoleService implements UserRoleService {
 			userRole.setWorkgroup(workgroup);
 			userRole.setUser(user);
 			userRole.setRole(role);
-			log.info("Creating userRole '" + userRole.getRoleToken() + "' for user '" + user.getLoginId() + "' and workgroup '" + workgroup.getName() + "'");
+			log.info("Creating userRole '" + userRole.getRole().getName() + "' for user '" + user.getLoginId() + "' and workgroup '" + workgroup.getName() + "'");
 			userRoleRepository.save(userRole);
 	
 			List<UserRole> userRoles = user.getUserRoles();
@@ -89,13 +89,13 @@ public class JpaUserRoleService implements UserRoleService {
 				List<UserRole> rolesToBeRemoved = new ArrayList<UserRole>();
 				for (String exclusiveRole: EXCLUSIVE_ROLES) {
 					for (UserRole ur: this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
-						if (ur.getRoleToken().equals(exclusiveRole)) {
+						if (ur.getRole().getName().equals(exclusiveRole)) {
 							rolesToBeRemoved.add(ur);
 						}
 					}
 				}
 				for (UserRole ur: rolesToBeRemoved) {
-					this.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, ur.getRoleToken());
+					this.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, ur.getRole().getName());
 				}
 			}
 

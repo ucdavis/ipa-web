@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,8 +72,8 @@ public class User {
 		List<String> roles = new ArrayList<String>();
 
 		for(UserRole userRole : this.getUserRoles()) {
-			if( !roles.contains(userRole.getRoleToken()) ) {
-				roles.add(userRole.getRoleToken());
+			if( !roles.contains(userRole.getRole().getName()) ) {
+				roles.add(userRole.getRole().getName());
 			}
 		}
 		return roles;

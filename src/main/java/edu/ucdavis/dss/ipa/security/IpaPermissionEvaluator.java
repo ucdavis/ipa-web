@@ -36,7 +36,7 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 
 		// Admins have access to everything
 		for(UserRole userRole : user.getUserRoles()) {
-			if(userRole.getRoleToken().equals("admin")) {
+			if(userRole.getRole().getName().equals("admin")) {
 				return true;
 			}
 		}
@@ -141,14 +141,14 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 
 		// Admins have access to everything
 		for(UserRole userRole : user.getUserRoles()) {
-			if(userRole.getRoleToken().equals("admin")) {
+			if(userRole.getRole().getName().equals("admin")) {
 				return true;
 			}
 		}
 
 		// The generic check: do they have the role, regardless of workgroup?
 		for (UserRole userRole : user.getUserRoles()) {
-			if (userRole.getRoleToken().equals(role) ) {
+			if (userRole.getRole().getName().equals(role) ) {
 				return true;
 			}
 		}

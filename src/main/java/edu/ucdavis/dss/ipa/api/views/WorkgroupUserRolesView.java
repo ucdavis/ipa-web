@@ -24,7 +24,7 @@ public class WorkgroupUserRolesView {
 		List<WorkgroupUserView> federationUsers = new ArrayList<WorkgroupUserView>();
 
 		for (UserRole userRole : workgroup.getUserRoles()) {
-			if (userRole.getRoleToken().equals("federationInstructor")) {
+			if (userRole.getRole().getName().equals("federationInstructor")) {
 				federationUsers.add(new WorkgroupUserView(userRole.getUser()));
 			}
 		}
@@ -40,7 +40,7 @@ public class WorkgroupUserRolesView {
 		List<WorkgroupUserView> senateUsers = new ArrayList<WorkgroupUserView>();
 
 		for (UserRole userRole : workgroup.getUserRoles()) {
-			if (userRole.getRoleToken().equals("senateInstructor")) {
+			if (userRole.getRole().getName().equals("senateInstructor")) {
 				senateUsers.add(new WorkgroupUserView(userRole.getUser()));
 			}
 		}
