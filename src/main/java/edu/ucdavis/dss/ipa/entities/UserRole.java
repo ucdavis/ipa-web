@@ -16,11 +16,13 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.api.views.UserViews;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "UserRoles")
