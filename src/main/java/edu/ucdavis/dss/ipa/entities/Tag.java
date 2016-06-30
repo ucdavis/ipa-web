@@ -1,32 +1,18 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Tags")
 public class Tag {
 	private long id;
-	private String name;
+	private String name, color;
 	private boolean archived;
 	private Workgroup workgroup;
 	private List<Course> courses = new ArrayList<Course>(0);
@@ -35,7 +21,6 @@ public class Tag {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	@JsonView(CourseOfferingGroupViews.Detailed.class)
 	public long getId()
 	{
 		return this.id;
@@ -49,7 +34,6 @@ public class Tag {
 	@Basic
 	@Column(name = "Name", nullable = false, length = 100)
 	@JsonProperty
-	@JsonView(CourseOfferingGroupViews.Detailed.class)
 	public String getName()
 	{
 		return this.name;
@@ -92,5 +76,16 @@ public class Tag {
 
 	public void setArchived(boolean archived) {
 		this.archived = archived;
+	}
+
+	@Basic
+	@Column(name = "Color", nullable = false, length = 6)
+	@JsonProperty
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 }
