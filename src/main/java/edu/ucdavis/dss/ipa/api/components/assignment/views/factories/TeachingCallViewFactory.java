@@ -1,9 +1,9 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories;
+package edu.ucdavis.dss.ipa.api.components.assignment.views.factories;
 
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.*;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.*;
 import org.springframework.web.servlet.View;
 
 import java.util.List;

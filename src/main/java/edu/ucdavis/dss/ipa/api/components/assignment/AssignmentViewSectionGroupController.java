@@ -1,32 +1,32 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall;
+package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.TeachingCallService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.UserLogger;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByCourseView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByInstructorView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSectionGroupView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSummaryView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallByCourseView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallByInstructorView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallSectionGroupView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallSummaryView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import org.springframework.web.servlet.View;
 
 @RestController
-public class TeachingCallViewController {
+public class AssignmentViewSectionGroupController {
 	@Inject CurrentUser currentUser;
 	@Inject InstructorService instructorService;
 	@Inject AuthenticationService authenticationService;
@@ -34,9 +34,23 @@ public class TeachingCallViewController {
 	@Inject ScheduleService scheduleService;
 	@Inject TeachingCallService teachingCallService;
 	@Inject TeachingCallViewFactory teachingCallViewFactory;
+	@Inject SectionGroupService sectionGroupService;
 
-	@PreAuthorize("hasPermission(#teachingCallId, 'teachingCall', 'senateInstructor')"
-			+ "or hasPermission(#teachingCallId, 'teachingCall', 'federationInstructor')")
+	@RequestMapping(value = "/api/assignments/{workgroupId}/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	@JsonView(SectionGroupViews.Detailed.class)
+	public List<SectionGroup> getSectionGroupsByWorkgroupIdAndYear(
+			@PathVariable long id,
+			@PathVariable long workgroupId,
+			@PathVariable long year,
+			HttpServletResponse httpResponse) {
+
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "senateInstructor", "federationInstructor");
+		return this.sectionGroupService.findByWorkgroupIdAndYear(id, year);
+	}
+
+
+	/*
 	@RequestMapping(value = "/api/teachingCalls/{teachingCallId}", method = RequestMethod.GET)
 	@ResponseBody
 	public TeachingCallSummaryView getTeachingCallById(@PathVariable long teachingCallId, HttpServletResponse response)
@@ -53,7 +67,6 @@ public class TeachingCallViewController {
 		return this.teachingCallViewFactory.createTeachingCallSummaryView(teachingCall);
 	}
 
-	@PreAuthorize("hasPermission(#scheduleId, 'schedule', 'academicCoordinator')")
 	@RequestMapping(value = "/api/schedules/{scheduleId}/teachingCallByCourse", method = RequestMethod.GET)
 	@ResponseBody
 	public List<TeachingCallByCourseView> getTeachingCallByCourse (
@@ -110,7 +123,7 @@ public class TeachingCallViewController {
 
 		return teachingCallViewFactory.createTeachingCallByInstructorView(schedule);
 	}
-
+*/
 
 	/**
 	 * Exports a teaching preferences view with Schedule ID 'id' as an Excel .xls file
@@ -118,6 +131,7 @@ public class TeachingCallViewController {
 	 * @param scheduleId
 	 * @return
 	 */
+/*
 	@PreAuthorize("hasPermission(#scheduleId, 'schedule', 'academicCoordinator')")
 	@RequestMapping(value = "/api/schedules/{scheduleId}/teachingPreferences/excel")
 	public View teachingPreferencesExcelExport(@PathVariable long scheduleId, HttpServletResponse httpResponse) {
@@ -130,4 +144,5 @@ public class TeachingCallViewController {
 
 		return teachingCallViewFactory.createTeachingPreferencesExcelView(teachingCallViewFactory.createTeachingCallByInstructorView(schedule));
 	}
+	*/
 }

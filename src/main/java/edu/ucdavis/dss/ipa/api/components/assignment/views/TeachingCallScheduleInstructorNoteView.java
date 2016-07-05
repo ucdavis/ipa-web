@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
 import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
 

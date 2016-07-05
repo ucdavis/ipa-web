@@ -1,7 +1,6 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 

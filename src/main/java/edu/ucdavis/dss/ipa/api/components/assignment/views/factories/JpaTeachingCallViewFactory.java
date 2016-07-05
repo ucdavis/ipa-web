@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories;
+package edu.ucdavis.dss.ipa.api.components.assignment.views.factories;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByCourseView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallByInstructorView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSectionGroupView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallInstructorView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallScheduleView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallSummaryView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingPreferencesExcelView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallByCourseView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallByInstructorView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallSectionGroupView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallInstructorView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallScheduleView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallSummaryView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingPreferencesExcelView;
 
 @Service
 public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {

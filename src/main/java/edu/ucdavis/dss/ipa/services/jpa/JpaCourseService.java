@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.CourseRepository;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TagService;
 
 @Service
 public class JpaCourseService implements CourseService {
@@ -32,6 +27,7 @@ public class JpaCourseService implements CourseService {
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject InstructorService instructorService;
 	@Inject TagService tagService;
+	@Inject WorkgroupService workgroupService;
 
 	@Override
 	public Course getOneById(Long id) {
@@ -114,6 +110,15 @@ public class JpaCourseService implements CourseService {
 	public List<Course> findByTagId(Long id) {
 		Tag tag = tagService.getOneById(id);
 		return tag.getCourses();
+	}
+
+	@Override
+	public List<Course> findByWorkgroupIdAndYear(long id, long year) {
+		Workgroup workgroup = workgroupService.findOneById(id);
+		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
+		List<Course> courses = schedule.getCourses();
+
+		return courses;
 	}
 
 }

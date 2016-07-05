@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.teachingCall.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
 import java.util.ArrayList;
 import java.util.List;
