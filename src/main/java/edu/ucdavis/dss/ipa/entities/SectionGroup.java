@@ -50,12 +50,6 @@ public class SectionGroup implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	@JsonView({
-		CourseOfferingGroupViews.Detailed.class,
-		TeachingPreferenceViews.Detailed.class,
-		SectionGroupViews.Detailed.class,
-		ScheduleViews.Detailed.class
-		})
 	public long getId()
 	{
 		return this.id;
@@ -67,12 +61,7 @@ public class SectionGroup implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
-	@JsonProperty
-	@JsonView({
-		CourseOfferingGroupViews.Detailed.class,
-		SectionGroupViews.Detailed.class,
-		ScheduleViews.Detailed.class
-		})
+	@JsonIgnore
 	public List<Section> getSections() {
 		if (sections == null) sections = new ArrayList<Section>();
 		return sections;
@@ -100,7 +89,7 @@ public class SectionGroup implements Serializable {
 		}
 	}
 
-	@JsonProperty
+	@JsonIgnore
 	@OneToMany(mappedBy="sectionGroup", cascade=CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingAssignment> getTeachingAssignments() {
 		return teachingAssignments;
@@ -138,5 +127,15 @@ public class SectionGroup implements Serializable {
 
 	public void setPlannedSeats(int plannedSeats) {
 		PlannedSeats = plannedSeats;
+	}
+
+	@JsonProperty("courseId")
+	@Transient
+	public long getCourseIdentification() {
+		if(course != null) {
+			return course.getId();
+		} else {
+			return 0;
+		}
 	}
 }
