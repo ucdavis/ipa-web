@@ -67,18 +67,20 @@ public class JpaTagService implements TagService {
 	}
 
 	@Override
-	public Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String trackName) {
+	public Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String tagName, String tagColor) {
 		if (workgroup == null) return null;
 
-		Tag tag = this.trackRepository.findOneByWorkgroupIdAndName(workgroup.getId(), trackName);
+		Tag tag = this.trackRepository.findOneByWorkgroupIdAndName(workgroup.getId(), tagName);
 
 		if (tag == null) {
 			tag = new Tag();
 			tag.setWorkgroup(workgroup);
-			tag.setName(trackName);
+			tag.setName(tagName);
+			tag.setColor(tagColor);
 			tag = this.trackRepository.save(tag);
 		} else if (tag.isArchived()) {
 			tag.setArchived(false);
+			tag.setColor(tagColor);
 			tag = this.trackRepository.save(tag);
 		}
 

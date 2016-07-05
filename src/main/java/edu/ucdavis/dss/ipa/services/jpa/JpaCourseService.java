@@ -59,8 +59,13 @@ public class JpaCourseService implements CourseService {
 		course.setUnitsLow(dwCourse.getUnitsMin());
 		course = this.courseRepository.save(course);
 
-		String trackName = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
-		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), trackName);
+		String tagName = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
+
+		String UNDERGRADUATE_COLOR = "9CAF88";
+		String GRADUATE_COLOR = "5B7F95";
+		String tagColor = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? UNDERGRADUATE_COLOR : GRADUATE_COLOR;
+
+		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), tagName, tagColor);
 		this.addTag(course.getId(), tag);
 
 		return this.courseRepository.save(course);

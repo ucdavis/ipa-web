@@ -25,7 +25,7 @@ public class WorkgroupViewTagController {
         Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
-        return tagService.findOrCreateByWorkgroupAndName(workgroup, tag.getName());
+        return tagService.findOrCreateByWorkgroupAndName(workgroup, tag.getName(), tag.getColor());
     }
 
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/tags/{tagId}", method = RequestMethod.PUT, produces = "application/json")
@@ -36,6 +36,7 @@ public class WorkgroupViewTagController {
 
         Tag editedTag = tagService.getOneById(tagId);
         editedTag.setName(tag.getName());
+        editedTag.setColor(tag.getColor());
         return tagService.save(editedTag);
     }
 

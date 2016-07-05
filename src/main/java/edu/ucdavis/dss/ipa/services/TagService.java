@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Tag;
 import org.springframework.validation.annotation.Validated;
 
@@ -25,9 +24,10 @@ public interface TagService {
 	 * Finds or Creates a track based on trackName and workgroup. If found the track will be unarchived
 	 * and then returned.
 	 * @param workgroup
-	 * @param trackName
-     * @return
+	 * @param tagName
+     * @param tagColor
+	 * @return
      */
-	Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String trackName);
+	Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String tagName, String tagColor);
 
 }
