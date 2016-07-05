@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.annual.views.factories;
+package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.api.components.annual.views.AnnualView;
-import edu.ucdavis.dss.ipa.api.components.annual.views.ScheduleExcelView;
+import edu.ucdavis.dss.ipa.api.components.course.views.AnnualView;
+import edu.ucdavis.dss.ipa.api.components.course.views.ScheduleExcelView;
 
 @Service
 public class JpaAnnualViewFactory implements AnnualViewFactory {

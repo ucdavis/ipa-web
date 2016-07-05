@@ -1,9 +1,9 @@
-package edu.ucdavis.dss.ipa.api.components.annual.views.factories;
+package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
 import org.springframework.web.servlet.View;
 
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.api.components.annual.views.AnnualView;
+import edu.ucdavis.dss.ipa.api.components.course.views.AnnualView;
 
 public interface AnnualViewFactory {
 

@@ -1,9 +1,8 @@
-package edu.ucdavis.dss.ipa.api.components.annual.views;
+package edu.ucdavis.dss.ipa.api.components.course.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.IntBinaryOperator;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.Tag;

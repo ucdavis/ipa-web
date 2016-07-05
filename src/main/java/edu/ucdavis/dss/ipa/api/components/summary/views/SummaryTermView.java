@@ -18,7 +18,7 @@ public class SummaryTermView {
 		return isInstructorCallOpen;
 	}
 
-	// Will be true unless schedule term is still in annual draft
+	// Will be true unless schedule term is still in course draft
 	public void setInstructorCallOpen(Boolean isInstructorCallOpen) {
 		this.isInstructorCallOpen = isInstructorCallOpen;
 	}

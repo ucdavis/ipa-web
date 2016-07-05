@@ -57,8 +57,8 @@ public class JpaCourseService implements CourseService {
 
 		String tagName = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
 
-		String UNDERGRADUATE_COLOR = "9CAF88";
-		String GRADUATE_COLOR = "5B7F95";
+		String UNDERGRADUATE_COLOR = "#9CAF88";
+		String GRADUATE_COLOR = "#5B7F95";
 		String tagColor = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? UNDERGRADUATE_COLOR : GRADUATE_COLOR;
 
 		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), tagName, tagColor);

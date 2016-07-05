@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.annual.views;
+package edu.ucdavis.dss.ipa.api.components.course.views;
 
 import java.util.ArrayList;
 import java.util.List;
