@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.CourseOfferingGroupDeserializer;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @SuppressWarnings("serial")
@@ -149,5 +150,15 @@ public class Course implements Serializable {
 
 	public void setSequencePattern(String sequencePattern) {
 		this.sequencePattern = sequencePattern;
+	}
+
+	@JsonProperty("sectionGroupIds")
+	@Transient
+	public HashMap<String,Long> getSectionGroupIds() {
+		HashMap<String,Long> sectionGroupIds = new HashMap<>();
+		for(SectionGroup sectionGroup: this.sectionGroups) {
+			sectionGroupIds.put(sectionGroup.getTermCode(), sectionGroup.getId());
+		}
+		return sectionGroupIds;
 	}
 }
