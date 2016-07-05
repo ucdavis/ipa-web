@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
+	@Inject WorkgroupService workgroupService;
 
 	@Override
 	@Transactional
@@ -71,6 +73,22 @@ public class JpaSectionGroupService implements SectionGroupService {
 		}
 
 		return sectionService.save(section);
+	}
+
+	@Override
+	public List<SectionGroup> findByWorkgroupIdAndYear(long id, long year) {
+		Workgroup workgroup = workgroupService.findOneById(id);
+		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
+		List<Course> courses = schedule.getCourses();
+		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
+
+		for(Course course : courses) {
+			for (SectionGroup sectionGroup : course.getSectionGroups()) {
+				sectionGroups.add(sectionGroup);
+			}
+		}
+
+		return sectionGroups;
 	}
 
 	private boolean isLocked(long sectionGroupId) {

@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.api.controllers.api;
 
 import edu.ucdavis.dss.ipa.api.components.annual.views.AnnualCourseView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;

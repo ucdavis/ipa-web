@@ -45,7 +45,7 @@ public class Schedule implements Serializable {
 	private boolean importing;
 	private String secretToken;
 	private Workgroup workgroup;
-	private Set<Course> courses = new HashSet<Course>();
+	private List<Course> courses = new ArrayList<Course>();
 	private List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
 
@@ -115,11 +115,11 @@ public class Schedule implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
 	@JsonIgnore
-	public Set<Course> getCourses() {
+	public List<Course> getCourses() {
 		return courses;
 	}
 
-	public void setCourses(Set<Course> courses) {
+	public void setCourses(List<Course> courses) {
 		this.courses = courses;
 	}
 

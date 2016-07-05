@@ -35,8 +35,8 @@ import edu.ucdavis.dss.utilities.Email;
 import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.api.components.summary.views.WorkgroupScheduleView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallScheduleView;
-import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallScheduleView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 

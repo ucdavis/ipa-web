@@ -23,4 +23,5 @@ public interface SectionGroupService {
 
 	Section addSection(Long sectionGroupId, Section section);
 
+	List<SectionGroup> findByWorkgroupIdAndYear(long id, long year);
 }
