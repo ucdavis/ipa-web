@@ -26,6 +26,7 @@ import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import org.springframework.web.servlet.View;
 
 @RestController
+@CrossOrigin // TODO: make CORS more specific depending on profile
 public class AssignmentViewSectionGroupController {
 	@Inject CurrentUser currentUser;
 	@Inject InstructorService instructorService;
@@ -36,17 +37,15 @@ public class AssignmentViewSectionGroupController {
 	@Inject TeachingCallViewFactory teachingCallViewFactory;
 	@Inject SectionGroupService sectionGroupService;
 
-	@RequestMapping(value = "/api/assignments/{workgroupId}/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
+	@RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	@JsonView(SectionGroupViews.Detailed.class)
 	public List<SectionGroup> getSectionGroupsByWorkgroupIdAndYear(
-			@PathVariable long id,
 			@PathVariable long workgroupId,
 			@PathVariable long year,
 			HttpServletResponse httpResponse) {
 
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "senateInstructor", "federationInstructor");
-		return this.sectionGroupService.findByWorkgroupIdAndYear(id, year);
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		return this.sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 	}
 
 

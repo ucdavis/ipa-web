@@ -20,7 +20,6 @@ import java.util.List;
 	getterVisibility = JsonAutoDetect.Visibility.NONE,
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
-@JsonDeserialize(using = CourseOfferingGroupDeserializer.class)
 public class Course implements Serializable {
 	private long id;
 	private String title, subjectCode, courseNumber, effectiveTermCode, sequencePattern;
