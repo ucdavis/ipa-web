@@ -151,13 +151,4 @@ public class Course implements Serializable {
 		this.sequencePattern = sequencePattern;
 	}
 
-	@JsonProperty("sectionGroupIds")
-	@Transient
-	public HashMap<String,Long> getSectionGroupIds() {
-		HashMap<String,Long> sectionGroupIds = new HashMap<>();
-		for(SectionGroup sectionGroup: this.sectionGroups) {
-			sectionGroupIds.put(sectionGroup.getTermCode(), sectionGroup.getId());
-		}
-		return sectionGroupIds;
-	}
 }
