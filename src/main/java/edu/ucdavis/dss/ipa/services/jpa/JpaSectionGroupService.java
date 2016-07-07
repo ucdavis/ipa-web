@@ -76,19 +76,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
-	public List<SectionGroup> findByWorkgroupIdAndYear(long id, long year) {
-		Workgroup workgroup = workgroupService.findOneById(id);
-		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
-		List<Course> courses = schedule.getCourses();
-		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
-
-		for(Course course : courses) {
-			for (SectionGroup sectionGroup : course.getSectionGroups()) {
-				sectionGroups.add(sectionGroup);
-			}
-		}
-
-		return sectionGroups;
+	public List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year) {
+		return this.sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYear(workgroupId, year);
 	}
 
 	private boolean isLocked(long sectionGroupId) {

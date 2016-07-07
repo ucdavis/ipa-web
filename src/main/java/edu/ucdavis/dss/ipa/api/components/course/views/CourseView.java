@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseView {
-	List<Course> courses = new ArrayList<>();
-	List<SectionGroup> sectionGroups = new ArrayList<>();
-	List<ScheduleTermState> scheduleTermStates = new ArrayList<>();
+	private List<Course> courses = new ArrayList<>();
+	private List<SectionGroup> sectionGroups = new ArrayList<>();
+	private List<ScheduleTermState> scheduleTermStates = new ArrayList<>();
 
-	public CourseView(Schedule schedule, List<ScheduleTermState> scheduleTermStates) {
-		setCourses(schedule.getCourses());
-		setSectionGroups(schedule.getCourses());
+	public CourseView(List<Course> courses, List<SectionGroup> sectionGroups, List<ScheduleTermState> scheduleTermStates) {
+		setCourses(courses);
+		setSectionGroups(sectionGroups);
 		setScheduleTermStates(scheduleTermStates);
 	}
 
@@ -28,12 +28,8 @@ public class CourseView {
 		return sectionGroups;
 	}
 
-	public void setSectionGroups(List<Course> courses) {
-		for (Course course: courses) {
-			for (SectionGroup sectionGroup: course.getSectionGroups()) {
-				this.sectionGroups.add(sectionGroup);
-			}
-		}
+	public void setSectionGroups(List<SectionGroup> sectionGroups) {
+		this.sectionGroups = sectionGroups;
 	}
 
 	public List<ScheduleTermState> getScheduleTermStates() {

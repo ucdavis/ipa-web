@@ -4,11 +4,8 @@ import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.dw.dto.DwSectionGroup;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-
-import javax.validation.Valid;
 
 @Validated
 public interface SectionGroupService {
@@ -23,5 +20,5 @@ public interface SectionGroupService {
 
 	Section addSection(Long sectionGroupId, Section section);
 
-	List<SectionGroup> findByWorkgroupIdAndYear(long id, long year);
+	List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year);
 }

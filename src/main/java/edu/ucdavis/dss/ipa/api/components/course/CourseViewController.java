@@ -23,25 +23,14 @@ import java.util.List;
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
 public class CourseViewController {
-	@Inject ScheduleService scheduleService;
-	@Inject WorkgroupService workgroupService;
 	@Inject AnnualViewFactory annualViewFactory;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public CourseView showAnnualView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
-		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
-		
-		if (schedule == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
-		}
-
-		return annualViewFactory.createCourseView(schedule);
+		return annualViewFactory.createCourseView(workgroupId, year);
 	}
 
 }
