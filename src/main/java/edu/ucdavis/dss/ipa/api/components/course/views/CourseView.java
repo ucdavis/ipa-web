@@ -9,11 +9,18 @@ public class CourseView {
 	private List<Course> courses = new ArrayList<>();
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<ScheduleTermState> scheduleTermStates = new ArrayList<>();
+	private List<Tag> tags = new ArrayList<>();
 
-	public CourseView(List<Course> courses, List<SectionGroup> sectionGroups, List<ScheduleTermState> scheduleTermStates) {
+	public CourseView(
+			List<Course> courses,
+			List<SectionGroup> sectionGroups,
+			List<ScheduleTermState> scheduleTermStates,
+			List<Tag> tags) {
+
 		setCourses(courses);
 		setSectionGroups(sectionGroups);
 		setScheduleTermStates(scheduleTermStates);
+		setTags(tags);
 	}
 
 	public List<Course> getCourses() {
@@ -38,5 +45,13 @@ public class CourseView {
 
 	public void setScheduleTermStates(List<ScheduleTermState> scheduleTermStates) {
 		this.scheduleTermStates = scheduleTermStates;
+	}
+
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
 	}
 }

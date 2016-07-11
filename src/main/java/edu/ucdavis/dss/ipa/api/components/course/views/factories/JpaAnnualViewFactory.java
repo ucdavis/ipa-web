@@ -29,7 +29,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
-		return new CourseView(schedule.getCourses(), sectionGroups, scheduleTermStates);
+		return new CourseView(schedule.getCourses(), sectionGroups, scheduleTermStates, workgroup.getTags());
 	}
 
 }

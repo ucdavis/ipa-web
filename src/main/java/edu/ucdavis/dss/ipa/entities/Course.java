@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 @Entity
@@ -75,6 +77,15 @@ public class Course implements Serializable {
 
 	public void setTags(List<Tag> tags) {
 		this.tags = tags;
+	}
+
+	// TODO: Find a faster way of loading tagId. Lazy loading them slows down the payload
+	@Transient
+	@JsonProperty
+	public List<Long> getTagIds() {
+		return this.tags.stream()
+				.map(tag -> tag.getId())
+				.collect(Collectors.toList());
 	}
 
 	@Transient
