@@ -6,6 +6,8 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
 
+import java.util.List;
+
 @Validated
 public interface ScheduleInstructorNoteService {
 
@@ -16,4 +18,6 @@ public interface ScheduleInstructorNoteService {
 	ScheduleInstructorNote findOrCreateOneByInstructorAndSchedule(Instructor instructor, Schedule schedule);
 
 	ScheduleInstructorNote findOneByInstructorIdAndScheduleId(long instructorId, long scheduleId);
+
+	List<ScheduleInstructorNote> findByScheduleId(long id);
 }

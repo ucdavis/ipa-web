@@ -35,8 +35,8 @@ import edu.ucdavis.dss.utilities.Email;
 import edu.ucdavis.dss.utilities.UserLogger;
 import edu.ucdavis.dss.ipa.api.components.summary.views.WorkgroupScheduleView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.api.components.assignment.views.TeachingCallScheduleView;
-import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.TeachingCallViewFactory;
+import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallScheduleView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 
@@ -51,7 +51,8 @@ public class ScheduleController {
 	@Inject UserService userService;
 	@Inject ScheduleOpsService scheduleOpsService;
 	@Inject SummaryViewFactory summaryViewFactory;
-	@Inject TeachingCallViewFactory teachingCallViewFactory;
+	@Inject
+	AssignmentViewFactory teachingCallViewFactory;
 	@Inject CurrentUser currentUser;
 	@Inject DwSyncService dwSyncService;
 
@@ -67,7 +68,7 @@ public class ScheduleController {
 	@ResponseBody
 	public TeachingCallScheduleView getScheduleSummary(@PathVariable long id) {
 		Schedule schedule = scheduleService.findById(id);
-		return this.teachingCallViewFactory.createTeachingCallScheduleView(schedule);
+		return null;
 	}
 
 	@PreAuthorize("hasPermission(#id, 'schedule', 'academicCoordinator')")

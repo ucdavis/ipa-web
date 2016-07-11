@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.assignment.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.deprecated;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.assignment.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.deprecated;
 
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 

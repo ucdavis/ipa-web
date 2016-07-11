@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.assignment.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.deprecated;
 
 public class TeachingCallViews {
 	public static class Summary { }
