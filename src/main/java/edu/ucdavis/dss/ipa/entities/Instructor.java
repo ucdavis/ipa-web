@@ -153,7 +153,7 @@ public class Instructor implements Serializable {
 		this.teachingCallResponses = teachingCallResponses;
 	}
 
-	@JsonProperty
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingAssignment> getTeachingAssignments() {
 		return teachingAssignments;
