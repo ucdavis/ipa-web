@@ -121,4 +121,9 @@ public class TeachingAssignment implements Serializable {
 		this.approved = approved;
 	}
 
+	@Transient
+	@JsonProperty("sectionGroupId")
+	public long getsectionGroupIdentification() {
+		return this.sectionGroup.getId();
+	}
 }
