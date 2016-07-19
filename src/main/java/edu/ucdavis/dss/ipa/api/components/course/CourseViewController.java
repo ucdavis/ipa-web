@@ -24,9 +24,17 @@ public class CourseViewController {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject CourseService courseService;
 
+	/**
+	 * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
+	 *
+	 * @param workgroupId
+	 * @param year
+	 * @param httpResponse
+     * @return
+     */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public CourseView showAnnualView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
+	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		return annualViewFactory.createCourseView(workgroupId, year);

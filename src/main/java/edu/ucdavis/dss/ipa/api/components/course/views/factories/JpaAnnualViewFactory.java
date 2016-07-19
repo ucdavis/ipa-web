@@ -26,9 +26,14 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	@Override
 	public CourseView createCourseView(long workgroupId, long year) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		if(workgroup == null) { return null; }
+
 		Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
+		if(schedule == null) { return null; }
+
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
+
 		return new CourseView(schedule.getCourses(), sectionGroups, scheduleTermStates, workgroup.getTags());
 	}
 
