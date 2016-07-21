@@ -126,4 +126,10 @@ public class TeachingAssignment implements Serializable {
 	public long getsectionGroupIdentification() {
 		return this.sectionGroup.getId();
 	}
+
+	@Transient
+	@JsonProperty("instructorId")
+	public long getInstructorIdentification() {
+		return this.instructor.getId();
+	}
 }
