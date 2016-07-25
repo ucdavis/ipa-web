@@ -59,6 +59,12 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		}
 	}
 
+	/**
+	 * Returns a list of people from DW or null on error.
+	 *
+	 * @param query
+	 * @return
+     */
 	public List<DwPerson> searchPeople(String query) {
 		DwClient dwClient = null;
 		
