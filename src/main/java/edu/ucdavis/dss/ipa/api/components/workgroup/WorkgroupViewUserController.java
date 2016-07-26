@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.exceptions.DwResponseException;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
@@ -146,6 +147,10 @@ public class WorkgroupViewUserController {
 
         try {
             dwPeople = dwRepository.searchPeople(query);
+
+            if(dwPeople == null) {
+                throw new DwResponseException();
+            }
 
             for (DwPerson dwPerson : dwPeople) {
                 // Verify dwPerson has necessary data to make a User
