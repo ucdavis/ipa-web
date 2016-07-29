@@ -7,10 +7,13 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.TeachingAssignmentDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "TeachingAssignments")
+@JsonDeserialize(using = TeachingAssignmentDeserializer.class)
 public class TeachingAssignment implements Serializable {
 	private long id;
 	private Instructor instructor;
