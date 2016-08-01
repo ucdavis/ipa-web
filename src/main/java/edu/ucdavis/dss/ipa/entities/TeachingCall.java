@@ -88,6 +88,7 @@ public class TeachingCall implements Serializable {
 		this.dueDate = dueDate;
 	}
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "teachingCall", cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingCallResponse> getTeachingCallResponses() {
 		return teachingCallResponses;
@@ -97,6 +98,7 @@ public class TeachingCall implements Serializable {
 		this.teachingCallResponses = teachingCallResponses;
 	}
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "teachingCall", cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingCallReceipt> getTeachingCallReceipts() {
 		return teachingCallReceipts;
@@ -108,7 +110,6 @@ public class TeachingCall implements Serializable {
 
 	@Column(name = "StartDate", nullable = false)
 	@JsonProperty
-	@JsonView(TeachingCallViews.Detailed.class)
 	public java.sql.Date getStartDate() {
 		return startDate;
 	}
@@ -119,7 +120,6 @@ public class TeachingCall implements Serializable {
 
 	@Column(name = "SentToSenate", nullable = false)
 	@JsonProperty
-	@JsonView({ScheduleViews.Summary.class, TeachingCallViews.Detailed.class})
 	public boolean isSentToSenate() {
 		return sentToSenate;
 	}
@@ -130,7 +130,6 @@ public class TeachingCall implements Serializable {
 
 	@Column(name = "SentToFederation", nullable = false)
 	@JsonProperty
-	@JsonView({ScheduleViews.Summary.class, TeachingCallViews.Detailed.class})
 	public boolean isSentToFederation() {
 		return sentToFederation;
 	}
@@ -161,7 +160,6 @@ public class TeachingCall implements Serializable {
 
 	@Column(name = "ShowUnavailabilities", nullable = false)
 	@JsonProperty
-	@JsonView({ScheduleViews.Summary.class, TeachingCallViews.Detailed.class})
 	public boolean isShowUnavailabilities() {
 		return showUnavailabilities;
 	}
@@ -180,4 +178,16 @@ public class TeachingCall implements Serializable {
 	public void setTermsBlob(String termsBlob) {
 		this.termsBlob = termsBlob;
 	}
+
+	@JsonProperty("scheduleId")
+	@Transient
+	public long getScheduleIdentification() {
+		if(schedule != null) {
+			return schedule.getId();
+		} else {
+			return 0;
+		}
+	}
+
+
 }

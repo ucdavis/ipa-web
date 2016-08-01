@@ -4,6 +4,8 @@ import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 
+import java.util.List;
+
 @Validated
 public interface TeachingCallService {
 
@@ -13,4 +15,5 @@ public interface TeachingCallService {
 
 	public TeachingCall findFirstByScheduleId(long id);
 
+	public List<TeachingCall> findByScheduleId(long id);
 }

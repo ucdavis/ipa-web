@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -70,5 +71,10 @@ public class JpaTeachingCallService implements TeachingCallService {
 	@Override
 	public TeachingCall findFirstByScheduleId(long scheduleId) {
 		return this.teachingCallRepository.findFirstByScheduleId(scheduleId);
+	}
+
+	@Override
+	public List<TeachingCall> findByScheduleId(long scheduleId) {
+		return this.teachingCallRepository.findByScheduleId(scheduleId);
 	}
 }
