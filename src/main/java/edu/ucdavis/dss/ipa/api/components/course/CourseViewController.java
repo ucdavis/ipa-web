@@ -65,4 +65,16 @@ public class CourseViewController {
 
 		return sectionGroupService.save(sectionGroup);
 	}
+
+	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void updateSectionGroup(@PathVariable long courseId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Course course = courseService.getOneById(courseId);
+		Workgroup workgroup = course.getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+
+		sectionGroupService.delete(courseId);
+	}
 }
