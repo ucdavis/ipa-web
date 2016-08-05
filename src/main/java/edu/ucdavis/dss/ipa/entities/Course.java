@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.CourseOfferingGroupDeserializer;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +72,7 @@ public class Course implements Serializable {
 			inverseJoinColumns = { @JoinColumn(name = "TagId",
 			nullable = false, updatable = false) })
 	@JsonIgnore
+	@JsonDeserialize
 	public List<Tag> getTags() {
 		return tags;
 	}
@@ -145,6 +147,8 @@ public class Course implements Serializable {
 		this.courseNumber = courseNumber;
 	}
 
+	@NotNull
+	@JsonProperty
 	public String getEffectiveTermCode() {
 		return effectiveTermCode;
 	}

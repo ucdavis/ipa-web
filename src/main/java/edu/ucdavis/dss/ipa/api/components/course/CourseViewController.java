@@ -1,21 +1,24 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
+import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
+import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
+import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.*;
-import edu.ucdavis.dss.utilities.UserLogger;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.View;
-
-import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -23,6 +26,14 @@ public class CourseViewController {
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject CourseService courseService;
+	@Inject WorkgroupService workgroupService;
+	@Inject	ScheduleService scheduleService;
+	@Inject CourseValidator courseValidator;
+
+	@InitBinder
+	public void initializeBinder(WebDataBinder binder) {
+		binder.addValidators(courseValidator);
+	}
 
 	/**
 	 * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -76,5 +87,22 @@ public class CourseViewController {
 
 
 		courseService.delete(courseId);
+	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Course createCourse(@RequestBody @Validated Course course, @PathVariable Long workgroupId, @PathVariable Long year, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
+		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		if (schedule != null) {
+			course.setSchedule(schedule);
+			return this.courseService.save(course);
+		} else {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
 	}
 }
