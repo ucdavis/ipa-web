@@ -62,7 +62,7 @@ public class JpaCourseService implements CourseService {
 		String tagColor = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? UNDERGRADUATE_COLOR : GRADUATE_COLOR;
 
 		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), tagName, tagColor);
-		this.addTag(course.getId(), tag);
+		this.addTag(course, tag);
 
 		return this.courseRepository.save(course);
 	}
@@ -96,11 +96,24 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
-	public Course addTag(Long id, Tag tag) {
-		Course course = this.getOneById(id);
+	public Course addTag(Course course, Tag tag) {
+		if (course == null) { return null; }
+
 		List<Tag> tags = course.getTags();
 		if(!tags.contains(tag)) {
 			tags.add(tag);
+		}
+		course.setTags(tags);
+		return this.courseRepository.save(course);
+	}
+
+	@Override
+	public Course removeTag(Course course, Tag tag) {
+		if (course == null) { return null; }
+
+		List<Tag> tags = course.getTags();
+		if(tags.contains(tag)) {
+			tags.remove(tag);
 		}
 		course.setTags(tags);
 		return this.courseRepository.save(course);

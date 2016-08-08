@@ -2,16 +2,10 @@ package edu.ucdavis.dss.ipa.api.components.course;
 
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,6 +22,7 @@ public class CourseViewController {
 	@Inject CourseService courseService;
 	@Inject WorkgroupService workgroupService;
 	@Inject	ScheduleService scheduleService;
+	@Inject TagService tagService;
 	@Inject CourseValidator courseValidator;
 
 	@InitBinder
@@ -85,7 +80,6 @@ public class CourseViewController {
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-
 		courseService.delete(courseId);
 	}
 
@@ -104,5 +98,39 @@ public class CourseViewController {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
+	}
+
+	@RequestMapping(value = "/api/courseView/courses/{courseId}/tags/{tagId}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Course addTagToCourse(@PathVariable long courseId, @PathVariable long tagId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Course course = courseService.getOneById(courseId);
+		Workgroup workgroup = course.getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		Tag tag = tagService.getOneById(tagId);
+		if (tag == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		return courseService.addTag(course, tag);
+	}
+
+	@RequestMapping(value = "/api/courseView/courses/{courseId}/tags/{tagId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public Course removeTagFromCourse(@PathVariable long courseId, @PathVariable long tagId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Course course = courseService.getOneById(courseId);
+		Workgroup workgroup = course.getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		Tag tag = tagService.getOneById(tagId);
+		if (tag == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		return courseService.removeTag(course, tag);
 	}
 }

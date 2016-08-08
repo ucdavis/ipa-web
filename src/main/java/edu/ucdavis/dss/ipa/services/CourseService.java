@@ -17,7 +17,9 @@ public interface CourseService {
 
 	boolean delete(Long id);
 
-	Course addTag(Long courseId, Tag tag);
+	Course addTag(Course course, Tag tag);
+
+	Course removeTag(Course course, Tag tag);
 
 	List<Course> findByTagId(Long id);
 
