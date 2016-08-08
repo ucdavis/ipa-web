@@ -83,6 +83,19 @@ public class CourseViewController {
 		courseService.delete(courseId);
 	}
 
+	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public Course updateCourse(@PathVariable long courseId, @RequestBody @Validated Course courseDTO, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Course course = courseService.getOneById(courseId);
+		Workgroup workgroup = course.getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		course.setTitle(courseDTO.getTitle());
+		course.setSequencePattern(courseDTO.getSequencePattern());
+		return courseService.save(course);
+	}
+
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public Course createCourse(@RequestBody @Validated Course course, @PathVariable Long workgroupId, @PathVariable Long year, HttpServletResponse httpResponse) {
