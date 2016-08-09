@@ -4,6 +4,6 @@ import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 
 public interface AnnualViewFactory {
 
-	CourseView createCourseView(long workgroupId, long year);
+	CourseView createCourseView(long workgroupId, long year, Boolean showDoNotPrint);
 
 }

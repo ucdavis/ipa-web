@@ -40,10 +40,12 @@ public class CourseViewController {
      */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
+	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year,
+									 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+									 HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		return annualViewFactory.createCourseView(workgroupId, year);
+		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups", method = RequestMethod.POST, produces="application/json")
@@ -92,6 +94,11 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		course.setTitle(courseDTO.getTitle());
+
+		// TODO: Changing sequence pattern needs more validation and side effects:
+		// - Can only change patterns to the same type: numeric -> numeric, alpha -> alpha
+		// - Needs to be unique for the same course number and subject code
+		// - Needs to change sequence number on all child sections
 		course.setSequencePattern(courseDTO.getSequencePattern());
 		return courseService.save(course);
 	}
@@ -102,7 +109,7 @@ public class CourseViewController {
 		// TODO: Consider how we can improve the authorizer
 		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
 		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		if (schedule != null) {
 			course.setSchedule(schedule);

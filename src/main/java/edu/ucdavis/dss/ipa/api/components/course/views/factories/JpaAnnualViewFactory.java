@@ -1,19 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
-import javax.inject.Inject;
-
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-
+import javax.inject.Inject;
 import java.util.List;
 
 @Service
@@ -22,9 +14,10 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject ScheduleService scheduleService;
 	@Inject WorkgroupService workgroupService;
+	@Inject CourseService courseService;
 
 	@Override
-	public CourseView createCourseView(long workgroupId, long year) {
+	public CourseView createCourseView(long workgroupId, long year, Boolean showDoNotPrint) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		if(workgroup == null) { return null; }
 
@@ -34,7 +27,14 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
-		return new CourseView(schedule.getCourses(), sectionGroups, scheduleTermStates, workgroup.getTags());
+		List<Course> courses;
+		if (showDoNotPrint != null && showDoNotPrint) {
+			courses = schedule.getCourses();
+		} else {
+			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		}
+
+		return new CourseView(courses, sectionGroups, scheduleTermStates, workgroup.getTags());
 	}
 
 }
