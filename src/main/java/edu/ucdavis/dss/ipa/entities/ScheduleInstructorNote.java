@@ -15,6 +15,7 @@ public class ScheduleInstructorNote {
 	private Instructor instructor;
 	private Schedule schedule;
 	private Boolean assignmentsCompleted = false;
+	private String instructorComment;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +65,17 @@ public class ScheduleInstructorNote {
 	@JsonProperty("instructorId")
 	public long getInstructorIdentification() {
 		return this.instructor.getId();
+	}
+
+
+	@Column(name = "InstructorComment", nullable = true)
+	@JsonProperty
+	public String getInstructorComment() {
+		return instructorComment;
+	}
+
+	public void setInstructorComment(String instructorComment) {
+		this.instructorComment = instructorComment;
 	}
 
 }
