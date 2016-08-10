@@ -101,6 +101,11 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	}
 
 	@Override
+	public List<TeachingCallResponse> findByScheduleId(long scheduleId) {
+		return this.teachingCallResponseRepository.findByTeachingCallScheduleId(scheduleId);
+	}
+
+	@Override
 	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
 			Workgroup workgroup, Instructor instructor) {
 		int NUMBER_OF_YEARS = 10;

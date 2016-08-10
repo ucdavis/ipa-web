@@ -2,16 +2,7 @@ package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -42,7 +33,6 @@ public class TeachingCallResponse implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	@JsonView(TeachingCallResponseViews.Detailed.class)
 	public long getId() {
 		return this.id;
 	}
@@ -69,7 +59,7 @@ public class TeachingCallResponse implements Serializable {
 	@Basic(optional = false)
 	@NotNull
 	@Size(min = 149, max = 149)
-	@JsonView(TeachingCallResponseViews.Detailed.class)
+	@JsonProperty
 	public String getAvailabilityBlob() {
 		return availabilityBlob;
 	}
@@ -80,7 +70,7 @@ public class TeachingCallResponse implements Serializable {
 
 	@Basic(optional = false)
 	@NotNull
-	@JsonView(TeachingCallResponseViews.Detailed.class)
+	@JsonProperty
 	public String getTermCode() {
 		return termCode;
 	}
@@ -99,5 +89,15 @@ public class TeachingCallResponse implements Serializable {
 
 	public void setTeachingCall(TeachingCall teachingCall) {
 		this.teachingCall = teachingCall;
+	}
+
+	@JsonProperty("instructorId")
+	@Transient
+	public long getInstructorIdentification() {
+		if(instructor != null) {
+			return instructor.getId();
+		} else {
+			return 0;
+		}
 	}
 }

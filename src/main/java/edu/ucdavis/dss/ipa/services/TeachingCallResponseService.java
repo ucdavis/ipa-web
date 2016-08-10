@@ -46,4 +46,5 @@ public interface TeachingCallResponseService {
 	List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
 			Workgroup workgroup, Instructor instructor, int years);
 
+	public List<TeachingCallResponse> findByScheduleId(long scheduleId);
 }

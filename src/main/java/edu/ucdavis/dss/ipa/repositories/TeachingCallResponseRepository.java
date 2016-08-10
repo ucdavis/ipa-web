@@ -13,4 +13,6 @@ public interface TeachingCallResponseRepository extends CrudRepository<TeachingC
 	List<TeachingCallResponse> findByInstructorIdAndTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearIn(long instructorId, long workgroupId, List<Long> years);
 
 	TeachingCallResponse findOneByTeachingCallIdAndInstructorIdAndTermCode(Long teachingCallId, long instructorId, String termCode);
+
+	List<TeachingCallResponse> findByTeachingCallScheduleId(Long scheduleId);
 }

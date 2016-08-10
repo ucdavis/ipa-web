@@ -61,13 +61,6 @@ public class ScheduleInstructorNote {
 		this.assignmentsCompleted = assignmentsCompleted;
 	}
 
-	@Transient
-	@JsonProperty("instructorId")
-	public long getInstructorIdentification() {
-		return this.instructor.getId();
-	}
-
-
 	@Column(name = "InstructorComment", nullable = true)
 	@JsonProperty
 	public String getInstructorComment() {
@@ -76,6 +69,16 @@ public class ScheduleInstructorNote {
 
 	public void setInstructorComment(String instructorComment) {
 		this.instructorComment = instructorComment;
+	}
+
+	@JsonProperty("instructorId")
+	@Transient
+	public long getInstructorIdentification() {
+		if(instructor != null) {
+			return instructor.getId();
+		} else {
+			return 0;
+		}
 	}
 
 }
