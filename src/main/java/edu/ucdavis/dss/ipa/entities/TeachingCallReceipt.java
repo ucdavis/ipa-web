@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.api.views.TeachingCallReceiptViews;
@@ -40,7 +41,7 @@ public class TeachingCallReceipt implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
-	@JsonView(TeachingCallReceiptViews.Detailed.class)
+	@JsonProperty
 	public long getId() {
 		return this.id;
 	}
@@ -74,7 +75,7 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@Column(name = "isDone", nullable = false)
-	@JsonView(TeachingCallReceiptViews.Detailed.class)
+	@JsonProperty
 	public Boolean getIsDone() {
 		return isDone;
 	}
@@ -83,6 +84,7 @@ public class TeachingCallReceipt implements Serializable {
 		this.isDone = isDone;
 	}
 
+	@JsonProperty
 	public Date getNotifiedAt() {
 		return notifiedAt;
 	}
@@ -91,6 +93,7 @@ public class TeachingCallReceipt implements Serializable {
 		this.notifiedAt = notifiedAt;
 	}
 
+	@JsonProperty
 	public Date getWarnedAt() {
 		return warnedAt;
 	}
@@ -100,7 +103,7 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@Column(name = "Comment", nullable = true)
-	@JsonView(TeachingCallReceiptViews.Detailed.class)
+	@JsonProperty
 	public String getComment() {
 		return comment;
 	}

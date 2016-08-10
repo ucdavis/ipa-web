@@ -9,6 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,6 @@ import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallReceiptRepository;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
-import edu.ucdavis.dss.ipa.services.TeachingCallService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.Email;
 
 @Service
@@ -39,6 +34,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
+	@Inject ScheduleService scheduleService;
 
 	private static final Logger log = LogManager.getLogger();
 
@@ -278,4 +274,21 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		return teachingCallReceipt;
 	}
 
+	@Override
+	public List<TeachingCallReceipt> findByTeachingCallId(long teachingCallId) {
+		return this.teachingCallReceiptRepository.findByTeachingCallId(teachingCallId);
+	}
+
+	// Finds all teachingCalls associated to the schedule, and collects all teachingCallReceipts
+	@Override
+	public List<TeachingCallReceipt> findByScheduleId(long scheduleId) {
+		List<TeachingCall> teachingCalls = scheduleService.findById(scheduleId).getTeachingCalls();
+		List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
+
+		for (TeachingCall teachingCall : teachingCalls) {
+			teachingCallReceipts.addAll(teachingCall.getTeachingCallReceipts());
+		}
+
+		return teachingCallReceipts;
+	}
 }

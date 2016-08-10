@@ -9,6 +9,8 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 
+import java.util.List;
+
 @Validated
 public interface TeachingCallReceiptService {
 
@@ -24,4 +26,7 @@ public interface TeachingCallReceiptService {
 
 	public TeachingCallReceipt findByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId);
 
+	public List<TeachingCallReceipt> findByTeachingCallId(long id);
+
+	List<TeachingCallReceipt> findByScheduleId(long id);
 }

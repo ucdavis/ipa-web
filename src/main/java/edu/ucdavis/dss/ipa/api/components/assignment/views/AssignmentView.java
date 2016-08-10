@@ -12,12 +12,14 @@ public class AssignmentView {
     List<ScheduleInstructorNote> scheduleInstructorNotes = new ArrayList<ScheduleInstructorNote>();
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
     List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
+    List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments, List<Instructor> instructors,
                           List<ScheduleInstructorNote> scheduleInstructorNotes,
                           List<ScheduleTermState> scheduleTermStates,
-                          List<TeachingCall> teachingCalls) {
+                          List<TeachingCall> teachingCalls,
+                          List<TeachingCallReceipt> teachingCallReceipts) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -26,6 +28,7 @@ public class AssignmentView {
         setScheduleInstructorNotes(scheduleInstructorNotes);
         setScheduleTermStates(scheduleTermStates);
         setTeachingCalls(teachingCalls);
+        setTeachingCallReceipts(teachingCallReceipts);
     }
 
     public List<Course> getCourses() {
@@ -82,5 +85,13 @@ public class AssignmentView {
 
     public void setTeachingCalls(List<TeachingCall> teachingCalls) {
         this.teachingCalls = teachingCalls;
+    }
+
+    public List<TeachingCallReceipt> getTeachingCallReceipts() {
+        return teachingCallReceipts;
+    }
+
+    public void setTeachingCallReceipts(List<TeachingCallReceipt> teachingCallReceipts) {
+        this.teachingCallReceipts = teachingCallReceipts;
     }
 }
