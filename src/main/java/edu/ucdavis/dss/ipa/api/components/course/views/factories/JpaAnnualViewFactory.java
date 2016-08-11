@@ -28,11 +28,11 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		List<Course> courses;
-//		if (showDoNotPrint != null && showDoNotPrint) {
+		if (showDoNotPrint != null && showDoNotPrint) {
 			courses = schedule.getCourses();
-//		} else {
-//			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-//		}
+		} else {
+			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		}
 
 		return new CourseView(courses, sectionGroups, scheduleTermStates, workgroup.getTags());
 	}

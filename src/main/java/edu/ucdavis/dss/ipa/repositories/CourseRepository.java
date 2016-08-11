@@ -18,14 +18,24 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
      * @param year
      * @return
      */
-    @Query( "SELECT distinct c " +
-            "FROM Course c, SectionGroup sg, Section s, Schedule sch " +
-            "WHERE sg.course = c " +
-            "AND s.sectionGroup = sg " +
-            "AND c.schedule = sch " +
-            "AND sch.year = :year " +
-            "AND sch.workgroup.id = :workgroupId " +
-            "AND (s.visible = true OR s.visible IS NULL) ")
+    @Query( " SELECT DISTINCT c" +
+            " FROM Course c, Schedule sch" +
+            " WHERE c.schedule = sch" +
+            " AND sch.year = :year " +
+            " AND sch.workgroup.id = :workgroupId " +
+            " AND c.id NOT IN (SELECT sg.course.id FROM SectionGroup sg, Section s WHERE s.sectionGroup = sg)")
+    List<Course> findChildlessByWorkgroupIdAndYear(
+    @Param("workgroupId") long workgroupId,
+    @Param("year") long year);
+
+    @Query( " SELECT DISTINCT c" +
+            " FROM Course c, SectionGroup sg, Section s, Schedule sch" +
+            " WHERE sg.course = c" +
+            " AND s.sectionGroup = sg" +
+            " AND c.schedule = sch" +
+            " AND sch.year = :year" +
+            " AND sch.workgroup.id = :workgroupId" +
+            " AND (s.visible = true OR s.visible IS NULL)")
     List<Course> findVisibleByWorkgroupIdAndYear(
             @Param("workgroupId") long workgroupId,
             @Param("year") long year);

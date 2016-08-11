@@ -134,8 +134,11 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
-	public List<Course> findVisibleByWorkgroupIdAndYear(long id, long year) {
-		return courseRepository.findVisibleByWorkgroupIdAndYear(id, year);
+	public List<Course> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
+		List<Course> visibleCourses = courseRepository.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		List<Course> childlessCourses = courseRepository.findChildlessByWorkgroupIdAndYear(workgroupId, year);
+		visibleCourses.addAll(childlessCourses);
+		return visibleCourses;
 	}
 
 }
