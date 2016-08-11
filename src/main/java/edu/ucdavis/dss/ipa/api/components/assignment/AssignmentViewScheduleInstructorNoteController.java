@@ -54,6 +54,7 @@ public class AssignmentViewScheduleInstructorNoteController {
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         originalScheduleInstructorNote.setInstructorComment(scheduleInstructorNote.getInstructorComment());
+        originalScheduleInstructorNote.setAssignmentsCompleted(scheduleInstructorNote.getAssignmentsCompleted());
 
         return scheduleInstructorNoteService.saveScheduleInstructorNote(originalScheduleInstructorNote);
     }
