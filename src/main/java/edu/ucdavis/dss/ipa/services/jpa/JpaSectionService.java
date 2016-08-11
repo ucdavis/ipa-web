@@ -24,7 +24,7 @@ public class JpaSectionService implements SectionService {
 	public Section save(Section section) {
 		if (isLocked(section)) return null;
 
-		return this.save(section);
+		return sectionRepository.save(section);
 	}
 
 	@Override

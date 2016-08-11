@@ -13,21 +13,26 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
 public class CourseViewController {
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
-	@Inject CourseService courseService;
 	@Inject WorkgroupService workgroupService;
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
+	@Inject SectionService sectionService;
+	@Inject CourseService courseService;
+
 	@Inject CourseValidator courseValidator;
 
 	@InitBinder
 	public void initializeBinder(WebDataBinder binder) {
-		binder.addValidators(courseValidator);
+		// FIXME: This line causes the following exception when calling updateSection():
+		// java.lang.IllegalStateException: Invalid target for Validator [edu.ucdavis.dss.ipa.entities.validation.CourseValidator]: edu.ucdavis.dss.ipa.entities.Section
+		// binder.addValidators(courseValidator);
 	}
 
 	/**
@@ -46,6 +51,22 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+	}
+
+	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}/sections", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public List<Section> getSectionGroupSections(@PathVariable long sectionGroupId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		return sectionGroup.getSections();
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups", method = RequestMethod.POST, produces="application/json")
@@ -71,7 +92,7 @@ public class CourseViewController {
 
 		originalSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
 
-		return sectionGroupService.save(sectionGroup);
+		return sectionGroupService.save(originalSectionGroup);
 	}
 
 	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.DELETE, produces="application/json")
@@ -153,4 +174,23 @@ public class CourseViewController {
 
 		return courseService.removeTag(course, tag);
 	}
+
+	@RequestMapping(value = "/api/courseView/sections/{sectionId}", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public Section updateSection(@PathVariable long sectionId, @RequestBody Section section, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Section originalSection = sectionService.getOneById(sectionId);
+		if (originalSection == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = originalSection.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		originalSection.setSeats(section.getSeats());
+
+		return sectionService.save(originalSection);
+	}
+
 }
