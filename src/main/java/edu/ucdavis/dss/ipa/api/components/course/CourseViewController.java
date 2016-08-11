@@ -193,4 +193,37 @@ public class CourseViewController {
 		return sectionService.save(originalSection);
 	}
 
+	@RequestMapping(value = "/api/courseView/sections/{sectionId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteSection(@PathVariable long sectionId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Section section = sectionService.getOneById(sectionId);
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		sectionService.delete(sectionId);
+	}
+
+	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}/sections", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Section createSection(@RequestBody Section section, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		Section newSection = new Section();
+		newSection.setSectionGroup(sectionGroup);
+		newSection.setSequenceNumber(section.getSequenceNumber());
+
+		return sectionService.save(newSection);
+	}
 }
