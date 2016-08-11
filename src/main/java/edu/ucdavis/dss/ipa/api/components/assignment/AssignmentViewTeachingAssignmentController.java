@@ -38,7 +38,6 @@ public class AssignmentViewTeachingAssignmentController {
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
-        System.out.println("taco");
 
         SectionGroup sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
         Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
