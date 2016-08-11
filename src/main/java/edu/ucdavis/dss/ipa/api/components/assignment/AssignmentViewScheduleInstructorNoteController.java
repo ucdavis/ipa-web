@@ -31,12 +31,19 @@ public class AssignmentViewScheduleInstructorNoteController {
     @Inject InstructorService instructorService;
     @Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
 
-    @RequestMapping(value = "/api/assignmentView/scheduleInstructorNotes", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/assignmentView/scheduleInstructorNotes/{instructorId}/{workgroupId}/{year}", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public TeachingAssignment addTeachingCallReceipt(@PathVariable long workgroupId, @PathVariable long year, @RequestBody ScheduleInstructorNote scheduleInstructorNote, HttpServletResponse httpResponse) {
+    public ScheduleInstructorNote addScheduleInstructorNote(@PathVariable long instructorId, @PathVariable long workgroupId, @PathVariable long year, @RequestBody ScheduleInstructorNote scheduleInstructorNote, HttpServletResponse httpResponse) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-        return null;
+
+        Instructor instructor = instructorService.getOneById(instructorId);
+        Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
+
+        scheduleInstructorNote.setInstructor(instructor);
+        scheduleInstructorNote.setSchedule(schedule);
+
+        return scheduleInstructorNoteService.saveScheduleInstructorNote(scheduleInstructorNote);
     }
 
     @RequestMapping(value = "/api/assignmentView/scheduleInstructorNotes/{scheduleInstructorNoteId}", method = RequestMethod.PUT, produces="application/json")
