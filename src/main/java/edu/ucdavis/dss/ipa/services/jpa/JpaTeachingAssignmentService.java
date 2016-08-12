@@ -40,7 +40,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 		if (teachingAssignment == null) {
 			teachingAssignment = new TeachingAssignment();
-
+			teachingAssignment.setTermCode(sectionGroup.getTermCode());
+			teachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
 			teachingAssignment.setInstructor(instructor);
 			teachingAssignment.setSectionGroup(sectionGroup);
 
