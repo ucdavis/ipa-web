@@ -66,6 +66,12 @@ public class AssignmentViewTeachingAssignmentController {
         Workgroup workgroup = originalTeachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
+        // When an academicCoordinator unapproves a teachingAssignment made by an academicCoordinator, delete instead of updating
+        if (teachingAssignment.isApproved() == false && originalTeachingAssignment.isFromInstructor() == false) {
+            teachingAssignmentService.delete( Long.valueOf(originalTeachingAssignment.getId()) );
+            return null;
+        }
+
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
 
         return teachingAssignmentService.save(originalTeachingAssignment);

@@ -21,7 +21,11 @@ public class TeachingAssignment implements Serializable {
 	private Schedule schedule;
 	private String termCode;
 	private int priority;
-	private boolean buyout, courseRelease, sabbatical, approved;
+	private boolean buyout;
+	private boolean courseRelease;
+	private boolean sabbatical;
+	private boolean approved;
+	private boolean fromInstructor;
 
 
 	@Id
@@ -135,4 +139,15 @@ public class TeachingAssignment implements Serializable {
 	public long getInstructorIdentification() {
 		return this.instructor.getId();
 	}
+
+	@JsonProperty
+	public boolean isFromInstructor() {
+		return fromInstructor;
+	}
+
+	public void setFromInstructor(boolean fromInstructor) {
+		this.fromInstructor = fromInstructor;
+	}
+
+
 }
