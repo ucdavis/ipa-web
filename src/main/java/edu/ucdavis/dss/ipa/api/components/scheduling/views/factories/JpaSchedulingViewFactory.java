@@ -12,6 +12,7 @@ import java.util.List;
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject WorkgroupService workgroupService;
+	@Inject CourseService courseService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
@@ -19,8 +20,10 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		if(workgroup == null) { return null; }
 
 		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<Course> courses;
+		courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 
-		return new SchedulingView(sectionGroups, workgroup.getTags());
+		return new SchedulingView(courses, sectionGroups, workgroup.getTags());
 	}
 
 }
