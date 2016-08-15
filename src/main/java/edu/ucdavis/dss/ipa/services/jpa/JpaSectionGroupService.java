@@ -77,7 +77,12 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 	@Override
 	public List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year) {
-		return this.sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYear(workgroupId, year);
+		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYear(workgroupId, year);
+	}
+
+	@Override
+	public List<SectionGroup> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYearAndTermCode(workgroupId, year, termCode);
 	}
 
 	private boolean isLocked(long sectionGroupId) {
