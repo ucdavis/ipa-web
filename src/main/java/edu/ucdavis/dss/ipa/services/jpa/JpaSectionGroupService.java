@@ -81,6 +81,11 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
+	public List<SectionGroup> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYearAndTermCode(workgroupId, year, termCode);
+	}
+
+	@Override
 	public List<SectionGroup> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
 		List<SectionGroup> visibleSectionGroups = sectionGroupRepository.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<SectionGroup> childlessSectionGroups = sectionGroupRepository.findChildlessByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);

@@ -19,9 +19,15 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		if(workgroup == null) { return null; }
 
-		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<SectionGroup> sectionGroups;
 		List<Course> courses;
-		courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		if (showDoNotPrint != null && showDoNotPrint) {
+			sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+			courses = courseService.findByWorkgroupIdAndYear(workgroupId, year);
+		} else {
+			sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		}
 
 		return new SchedulingView(courses, sectionGroups, workgroup.getTags());
 	}
