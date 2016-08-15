@@ -1,21 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling;
 
-import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
-import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.factories.SchedulingViewFactory;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile

@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling.views;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Tag;
 

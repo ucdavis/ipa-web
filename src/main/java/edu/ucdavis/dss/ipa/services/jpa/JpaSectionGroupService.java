@@ -1,19 +1,19 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
-import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaSectionGroupService implements SectionGroupService {
