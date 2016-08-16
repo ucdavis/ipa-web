@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.workgroup.views.WorkgroupView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
@@ -36,6 +37,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject TeachingCallService teachingCallService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
+	@Inject UserService userService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId) {
@@ -54,6 +56,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
 
 		return new AssignmentView(courses, sectionGroups, teachingAssignments, instructors,
-				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts, teachingCallResponses, activeTeachingCall);
+				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts,
+				teachingCallResponses, activeTeachingCall, userId);
 	}
 }
