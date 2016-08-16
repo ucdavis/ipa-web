@@ -16,4 +16,6 @@ public interface TeachingCallService {
 	public TeachingCall findFirstByScheduleId(long id);
 
 	public List<TeachingCall> findByScheduleId(long id);
+
+	public TeachingCall findOneByUserIdAndScheduleId(long userId, long id);
 }

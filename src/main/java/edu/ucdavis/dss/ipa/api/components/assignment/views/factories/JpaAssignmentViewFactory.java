@@ -38,7 +38,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject TeachingCallResponseService teachingCallResponseService;
 
 	@Override
-	public AssignmentView createAssignmentView(long workgroupId, long year) {
+	public AssignmentView createAssignmentView(long workgroupId, long year, long userId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
 
@@ -51,8 +51,9 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<TeachingCall> teachingCalls = teachingCallService.findByScheduleId(schedule.getId());
 		List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.findByScheduleId(schedule.getId());
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByScheduleId(schedule.getId());
+		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
 
 		return new AssignmentView(courses, sectionGroups, teachingAssignments, instructors,
-				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts, teachingCallResponses);
+				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts, teachingCallResponses, activeTeachingCall);
 	}
 }
