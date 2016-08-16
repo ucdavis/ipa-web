@@ -1,35 +1,18 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
-import java.sql.Time;
-import java.util.Date;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
-import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.sql.Time;
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("serial")
@@ -54,7 +37,6 @@ public class Activity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public long getId() {
 		return this.id;
 	}
@@ -67,7 +49,6 @@ public class Activity implements Serializable {
 	@Column(name = "BeginDate", nullable = true, length = 45)
 	@JsonProperty
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="YYYY-MM-DD", timezone="PST")
-	@JsonView(SectionGroupViews.Detailed.class)
 	public Date getBeginDate() {
 		return beginDate;
 	}
@@ -80,7 +61,6 @@ public class Activity implements Serializable {
 	@Column(name = "EndDate", nullable = true, length = 45)
 	@JsonProperty
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="YYYY-MM-DD", timezone="PST")
-	@JsonView(SectionGroupViews.Detailed.class)
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -92,7 +72,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "StartTime", nullable = true, length = 45)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public Time getStartTime() {
 		return startTime;
 	}
@@ -104,7 +83,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "EndTime", nullable = true, length = 45)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public Time getEndTime() {
 		return endTime;
 	}
@@ -123,7 +101,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "DayIndicator", nullable = false, length = 45)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public String getDayIndicator() {
 		return dayIndicator;
 	}
@@ -135,7 +112,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "ActivityState", unique = false, nullable = false)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public ActivityState getActivityState() {
 		return activityState;
 	}
@@ -156,7 +132,6 @@ public class Activity implements Serializable {
 		this.section = section;
 	}
 	
-	@JsonView(SectionGroupViews.Detailed.class)
 	public String getBannerLocation() {
 		return bannerLocation;
 	}
@@ -170,7 +145,6 @@ public class Activity implements Serializable {
 	@AttributeOverrides({
 		@AttributeOverride(name="ActivityTypeCode", column=@Column(name = "ActivityTypeCode", nullable = true))
 	})
-	@JsonView(SectionGroupViews.Detailed.class)
 	public ActivityType getActivityTypeCode() {
 		return activityTypeCode;
 	}
@@ -186,7 +160,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "Frequency", nullable = true)
 	@JsonProperty
-	@JsonView(SectionGroupViews.Detailed.class)
 	public int getFrequency() {
 		return frequency;
 	}
@@ -196,7 +169,16 @@ public class Activity implements Serializable {
 	}
 
 	@Transient
-	@JsonView(SectionGroupViews.Detailed.class)
+	@JsonProperty("sectionId")
+	public long getSectionIdentification() {
+		if (this.getSection() == null) {
+			return 0L;
+		}
+		return this.getSection().getId();
+	}
+
+	@Transient
+	@JsonProperty
 	public long getSectionGroupId() {
 		if (this.getSection() == null || this.getSection().getSectionGroup() == null) {
 			return 0L;
@@ -207,7 +189,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "IsVirtual", nullable = false)
 	@JsonProperty("virtual")
-	@JsonView(SectionGroupViews.Detailed.class)
 	public boolean isVirtual() {
 		return virtual;
 	}
@@ -275,7 +256,6 @@ public class Activity implements Serializable {
 	@Basic
 	@Column(name = "Shared", nullable = false)
 	@JsonProperty("shared")
-	@JsonView(SectionGroupViews.Detailed.class)
 	public boolean isShared() {
 		return shared;
 	}

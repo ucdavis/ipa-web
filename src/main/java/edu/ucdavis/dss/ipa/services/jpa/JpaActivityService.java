@@ -69,4 +69,9 @@ public class JpaActivityService implements ActivityService {
 	public void deleteAllBySectionId(long sectionId) {
 		this.activityRepository.deleteAllBySectionId(sectionId);
 	}
+
+	@Override
+	public List<Activity> findBySectionGroupId(long sectionGroupId) {
+		return activityRepository.findBySection_SectionGroup_Id(sectionGroupId);
+	}
 }

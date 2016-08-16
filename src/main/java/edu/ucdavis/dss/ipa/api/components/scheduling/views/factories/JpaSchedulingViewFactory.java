@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
+import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 @Service
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
+	@Inject ActivityService activityService;
 	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
 
@@ -30,6 +32,13 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		}
 
 		return new SchedulingView(courses, sectionGroups, workgroup.getTags());
+	}
+
+	@Override
+	public SchedulingViewSectionGroup createSchedulingViewSectionGroup(SectionGroup sectionGroup) {
+		List<Activity> activities = activityService.findBySectionGroupId(sectionGroup.getId());
+		List<Section> sections = sectionGroup.getSections();
+		return new SchedulingViewSectionGroup(sections, activities);
 	}
 
 }

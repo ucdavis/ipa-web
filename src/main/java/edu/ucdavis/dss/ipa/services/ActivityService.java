@@ -30,4 +30,6 @@ public interface ActivityService {
 	 * @param setionId ID of the section whose activities will be deleted
 	 */
 	void deleteAllBySectionId(long sectionId);
+
+	List<Activity> findBySectionGroupId(long sectionGroupId);
 }

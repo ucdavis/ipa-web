@@ -1,39 +1,22 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionDeserializer;
+import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
-import edu.ucdavis.dss.ipa.api.deserializers.SectionDeserializer;
-import edu.ucdavis.dss.ipa.api.views.CourseOfferingGroupViews;
-import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
-import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
-import edu.ucdavis.dss.ipa.api.views.SectionViews;
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "Sections")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = SectionDeserializer.class)
 @ValidSection
 public class Section implements Serializable {
@@ -49,12 +32,6 @@ public class Section implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
 	@JsonProperty
-	@JsonView({
-		CourseOfferingGroupViews.Detailed.class,
-		SectionGroupViews.Detailed.class,
-		SectionViews.Summary.class,
-		ScheduleViews.Detailed.class
-		})
 	public long getId()
 	{
 		return this.id;
@@ -68,7 +45,6 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "Seats", nullable = true)
 	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
 	public long getSeats()
 	{
 		return this.seats;
@@ -82,7 +58,6 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "Crn", nullable = true, length = 5)
 	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
 	public String getCrn()
 	{
 		return this.crn;
@@ -96,12 +71,6 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "SequenceNumber", nullable = true, length = 3)
 	@JsonProperty
-	@JsonView({
-		CourseOfferingGroupViews.Detailed.class,
-		SectionGroupViews.Detailed.class,
-		SectionViews.Summary.class,
-		ScheduleViews.Detailed.class
-		})
 	public String getSequenceNumber()
 	{
 		return this.sequenceNumber;
@@ -115,7 +84,7 @@ public class Section implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SectionGroupId", nullable = false)
 	@NotNull
-	@JsonBackReference
+	@JsonIgnore
 	public SectionGroup getSectionGroup() {
 		return sectionGroup;
 	}
@@ -126,14 +95,12 @@ public class Section implements Serializable {
 
 	@Transient
 	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class, SectionViews.Summary.class})
 	public long getSectionGroupId() {
 		return this.sectionGroup.getId();
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "section", cascade = {CascadeType.ALL})
-	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
+	@JsonIgnore
 	public List<Activity> getActivities() {
 		return activities;
 	}
@@ -145,7 +112,6 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "Visible", nullable = true)
 	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
 	public Boolean isVisible() {
 		return visible;
 	}
@@ -157,7 +123,6 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "CrnRestricted", nullable = true)
 	@JsonProperty
-	@JsonView({CourseOfferingGroupViews.Detailed.class, SectionGroupViews.Detailed.class})
 	public Boolean isCrnRestricted() {
 		return crnRestricted;
 	}
