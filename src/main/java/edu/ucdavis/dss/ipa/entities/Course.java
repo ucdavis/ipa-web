@@ -88,6 +88,12 @@ public class Course implements Serializable {
 	}
 
 	@Transient
+	@JsonIgnore
+	public String getShortDescription() {
+		return this.getSubjectCode() + " " + this.getCourseNumber() + " - " + this.getSequencePattern();
+	}
+
+	@Transient
 	@JsonProperty
 	public long getYear() {
 		return schedule.getYear();

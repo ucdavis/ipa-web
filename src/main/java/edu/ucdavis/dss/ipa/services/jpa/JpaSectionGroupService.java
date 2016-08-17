@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,6 +91,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 		List<SectionGroup> visibleSectionGroups = sectionGroupRepository.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<SectionGroup> childlessSectionGroups = sectionGroupRepository.findChildlessByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		visibleSectionGroups.addAll(childlessSectionGroups);
+		Collections.sort(visibleSectionGroups, (o1, o2) -> o1.getCourse().getShortDescription().compareTo(o2.getCourse().getShortDescription()));
 		return visibleSectionGroups;
 	}
 
