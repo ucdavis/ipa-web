@@ -15,7 +15,7 @@ public class AssignmentView {
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
     TeachingCall activeTeachingCall;
-    long userId;
+    long instructorId, userId;
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments, List<Instructor> instructors,
@@ -25,7 +25,8 @@ public class AssignmentView {
                           List<TeachingCallReceipt> teachingCallReceipts,
                           List<TeachingCallResponse> teachingCallResponses,
                           TeachingCall activeTeachingCall,
-                          long userId) {
+                          long userId,
+                          long instructorId) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -37,6 +38,7 @@ public class AssignmentView {
         setTeachingCallReceipts(teachingCallReceipts);
         setTeachingCallResponses(teachingCallResponses);
         setActiveTeachingCall(activeTeachingCall);
+        setInstructorId(instructorId);
         setUserId(userId);
     }
 
@@ -120,6 +122,14 @@ public class AssignmentView {
         this.activeTeachingCall = activeTeachingCall;
     }
 
+    public long getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(long instructorId) {
+        this.instructorId = instructorId;
+    }
+
     public long getUserId() {
         return userId;
     }
@@ -127,6 +137,4 @@ public class AssignmentView {
     public void setUserId(long userId) {
         this.userId = userId;
     }
-
-
 }
