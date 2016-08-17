@@ -11,11 +11,13 @@ import java.util.List;
  */
 public class SchedulingViewSectionGroup {
     private List<Section> sections = new ArrayList<>();
-    private List<Activity> activities = new ArrayList<>();
+    private List<Activity> sharedActivities = new ArrayList<>();
+    private List<Activity> unSharedActivities = new ArrayList<>();
 
-    public SchedulingViewSectionGroup(List<Section> sections, List<Activity> activities) {
+    public SchedulingViewSectionGroup(List<Section> sections, List<Activity> sharedActivities, List<Activity> unSharedActivities) {
         setSections(sections);
-        setActivities(activities);
+        setSharedActivities(sharedActivities);
+        setUnsharedActivities(unSharedActivities);
     }
 
     public List<Section> getSections() {
@@ -26,11 +28,19 @@ public class SchedulingViewSectionGroup {
         this.sections = sections;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Activity> getSharedActivities() {
+        return sharedActivities;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setSharedActivities(List<Activity> sharedActivities) {
+        this.sharedActivities = sharedActivities;
+    }
+
+    public List<Activity> getUnsharedActivities() {
+        return unSharedActivities;
+    }
+
+    public void setUnsharedActivities(List<Activity> activities) {
+        this.unSharedActivities = activities;
     }
 }

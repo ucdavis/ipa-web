@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.api.components.term.views.TermActivityView;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
@@ -71,7 +72,28 @@ public class JpaActivityService implements ActivityService {
 	}
 
 	@Override
-	public List<Activity> findBySectionGroupId(long sectionGroupId) {
-		return activityRepository.findBySection_SectionGroup_Id(sectionGroupId);
+	public List<Activity> findBySectionGroupId(long sectionGroupId, boolean isShared) {
+		if (isShared) {
+			List<Activity> sharedActivities = activityRepository.findBySharedTrueAndSection_SectionGroup_Id(sectionGroupId);
+			List<Activity> uniqueSharedActivities = new ArrayList<>();
+
+			for (Activity sharedActivity: sharedActivities) {
+				boolean alreadyAdded = false;
+
+				for (Activity uniqueActivityTarget: uniqueSharedActivities) {
+					if (uniqueActivityTarget.isDuplicate(sharedActivity) || uniqueActivityTarget.getId() == sharedActivity.getId()) {
+						alreadyAdded = true;
+						break;
+					}
+				}
+				if (!alreadyAdded) {
+					uniqueSharedActivities.add(sharedActivity);
+				}
+			}
+			return uniqueSharedActivities;
+		} else {
+			return activityRepository.findBySharedFalseAndSection_SectionGroup_Id(sectionGroupId);
+		}
 	}
+
 }

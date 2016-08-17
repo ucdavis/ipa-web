@@ -36,9 +36,12 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 
 	@Override
 	public SchedulingViewSectionGroup createSchedulingViewSectionGroup(SectionGroup sectionGroup) {
-		List<Activity> activities = activityService.findBySectionGroupId(sectionGroup.getId());
+		boolean IS_SHARED = true;
+		boolean IS_NOT_SHARED = false;
+		List<Activity> sharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_SHARED);
+		List<Activity> unSharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_NOT_SHARED);
 		List<Section> sections = sectionGroup.getSections();
-		return new SchedulingViewSectionGroup(sections, activities);
+		return new SchedulingViewSectionGroup(sections, sharedActivities, unSharedActivities);
 	}
 
 }

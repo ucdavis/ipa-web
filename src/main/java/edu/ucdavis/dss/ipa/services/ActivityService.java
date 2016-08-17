@@ -31,5 +31,11 @@ public interface ActivityService {
 	 */
 	void deleteAllBySectionId(long sectionId);
 
-	List<Activity> findBySectionGroupId(long sectionGroupId);
+	/**
+	 * Returns 'Shared' or 'Unshared' for a given sectionGroup. Used in Scheduling View Factory
+	 * @param sectionGroupId
+	 * @param isShared
+	 * @return
+	 */
+	List<Activity> findBySectionGroupId(long sectionGroupId, boolean isShared);
 }
