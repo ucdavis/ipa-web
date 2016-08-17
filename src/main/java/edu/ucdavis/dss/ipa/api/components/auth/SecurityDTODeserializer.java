@@ -45,7 +45,7 @@ public class SecurityDTODeserializer extends JsonDeserializer<Object> {
             // Convert the tree model to the collection (of UserRole-objects)
             ObjectMapper mapper = new ObjectMapper();
 
-            List<UserRoleDTO> userRoleDTOs = mapper.reader(collectionType).readValue(node.get("userRoles"));
+            List<UserRoleDTO> userRoleDTOs = mapper.readerFor(collectionType).readValue(node.get("userRoles"));
             securityDTO.userRoles = userRoleDTOs;
         }
 
