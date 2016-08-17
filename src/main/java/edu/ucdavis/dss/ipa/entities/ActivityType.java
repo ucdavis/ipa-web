@@ -5,7 +5,6 @@ import javax.persistence.Embeddable;
 import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 
@@ -17,7 +16,7 @@ import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
  */
 @Embeddable
 public final class ActivityType {
-	public char activityTypeCode;
+	private char activityTypeCode;
 	
 	public ActivityType(char code) {
 		this.activityTypeCode = Character.toUpperCase(code);
@@ -26,7 +25,6 @@ public final class ActivityType {
 	public ActivityType() {
 	}
 
-	@JsonView(SectionGroupViews.Detailed.class)
 	public char getActivityTypeCode() {
 		return this.activityTypeCode;
 	}

@@ -275,4 +275,13 @@ public class Activity implements Serializable {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
+
+	@Transient
+	@JsonProperty("locationId")
+	public long getLocationIdentification() {
+		if (this.getLocation() == null) {
+			return 0L;
+		}
+		return this.getLocation().getId();
+	}
 }
