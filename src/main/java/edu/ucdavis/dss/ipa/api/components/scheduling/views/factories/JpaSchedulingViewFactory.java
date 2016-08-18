@@ -31,7 +31,7 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		}
 
-		return new SchedulingView(courses, sectionGroups, workgroup.getTags());
+		return new SchedulingView(courses, sectionGroups, workgroup.getTags(), workgroup.getLocations());
 	}
 
 	@Override
