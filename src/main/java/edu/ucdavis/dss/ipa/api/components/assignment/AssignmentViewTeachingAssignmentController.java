@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -77,4 +78,53 @@ public class AssignmentViewTeachingAssignmentController {
         return teachingAssignmentService.save(originalTeachingAssignment);
     }
 
+    /**
+     * Creates a variable number of teachingAssignments for the specified preference parameters
+     * @param teachingAssignment
+     * @param httpResponse
+     * @return
+     */
+    @RequestMapping(value = "/api/assignmentView/preferences/{scheduleId}", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public List<TeachingAssignment> addPreference(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
+        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+
+        SectionGroup DTOsectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
+        Course DTOcourse = courseService.getOneById(DTOsectionGroup.getCourse().getId());
+        Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
+
+        List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
+
+        //  Making a single teaching Preference if its a buyout/sab/release
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout()) {
+            // TODO: make one teachingAssignment
+        } else if (DTOsectionGroup != null && DTOcourse != null) {
+            // Find courses that match this courseNumber, subjectCode, scheduleId
+            List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
+
+            for (Course slotCourse : courses) {
+                String slotSequencePattern = slotCourse.getSequencePattern();
+
+                for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+
+                    // Find associated sectiongroups tied to that course that match the term
+                    if (slotSectionGroup.getTermCode().equals(teachingAssignment.getTermCode()) ) {
+                        TeachingAssignment slotTeachingAssignment = new TeachingAssignment();
+
+                        // Create a teachingAssignment for each sectionGroup
+                        slotTeachingAssignment.setTermCode(teachingAssignment.getTermCode());
+                        slotTeachingAssignment.setSectionGroup(slotSectionGroup);
+                        slotTeachingAssignment.setApproved(false);
+                        slotTeachingAssignment.setSchedule(slotCourse.getSchedule());
+                        slotTeachingAssignment.setInstructor(instructor);
+
+                        teachingAssignments.add(teachingAssignmentService.save(slotTeachingAssignment));
+                    }
+                }
+            }
+        }
+
+        return teachingAssignments;
+    }
 }

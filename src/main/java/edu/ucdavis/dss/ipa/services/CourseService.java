@@ -24,4 +24,6 @@ public interface CourseService {
 	List<Course> findByWorkgroupIdAndYear(long id, long year);
 
 	List<Course> findVisibleByWorkgroupIdAndYear(long id, long year);
+
+	List<Course> findBySubjectCodeAndCourseNumberAndScheduleId(String subjectCode, String courseNumber, long id);
 }

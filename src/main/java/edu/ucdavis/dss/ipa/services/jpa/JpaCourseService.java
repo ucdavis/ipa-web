@@ -141,4 +141,9 @@ public class JpaCourseService implements CourseService {
 		return visibleCourses;
 	}
 
+	@Override
+	public List<Course> findBySubjectCodeAndCourseNumberAndScheduleId(String subjectCode, String courseNumber, long scheduleId) {
+		return courseRepository.findBySubjectCodeAndCourseNumberAndScheduleId(subjectCode, courseNumber, scheduleId);
+	}
+
 }
