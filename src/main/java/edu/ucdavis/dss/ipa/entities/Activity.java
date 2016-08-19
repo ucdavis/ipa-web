@@ -266,7 +266,6 @@ public class Activity implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LocationId", nullable = false)
-	@NotNull
 	@JsonIgnore
 	public Location getLocation() {
 		return location;

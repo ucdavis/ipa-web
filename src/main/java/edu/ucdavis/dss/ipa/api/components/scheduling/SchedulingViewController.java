@@ -3,8 +3,11 @@ package edu.ucdavis.dss.ipa.api.components.scheduling;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.factories.SchedulingViewFactory;
+import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SchedulingViewController {
 
 	@Inject SectionGroupService sectionGroupService;
+	@Inject ActivityService activityService;
 	@Inject SchedulingViewFactory schedulingViewFactory;
 
 	/**
@@ -58,5 +62,26 @@ public class SchedulingViewController {
 
 		return schedulingViewFactory.createSchedulingViewSectionGroup(sectionGroup);
 	}
+
+    @RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
+    	Activity editedActivity = activityService.findOneById(activityId);
+		if (editedActivity == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Workgroup workgroup = editedActivity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		editedActivity.setLocation(activity.getLocation());
+		editedActivity.setActivityState(activity.getActivityState());
+		editedActivity.setFrequency(activity.getFrequency());
+		editedActivity.setDayIndicator(activity.getDayIndicator());
+		editedActivity.setStartTime(activity.getStartTime());
+		editedActivity.setEndTime(activity.getEndTime());
+
+        return activityService.saveActivity(editedActivity);
+    }
 
 }
