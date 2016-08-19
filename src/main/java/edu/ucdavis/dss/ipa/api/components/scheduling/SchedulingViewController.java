@@ -68,22 +68,40 @@ public class SchedulingViewController {
     @RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
-    	Activity editedActivity = activityService.findOneById(activityId);
-		if (editedActivity == null) {
+    	Activity originalActivity = activityService.findOneById(activityId);
+		if (originalActivity == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Workgroup workgroup = editedActivity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Workgroup workgroup = originalActivity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		editedActivity.setLocation(activity.getLocation());
-		editedActivity.setActivityState(activity.getActivityState());
-		editedActivity.setFrequency(activity.getFrequency());
-		editedActivity.setDayIndicator(activity.getDayIndicator());
-		editedActivity.setStartTime(activity.getStartTime());
-		editedActivity.setEndTime(activity.getEndTime());
 
-        return activityService.saveActivity(editedActivity);
+		Activity activityToReturn = null;
+		List<Activity> activitiesToChange = new ArrayList<>();
+
+		if (activity.isShared()) {
+			activitiesToChange = this.activityService.findSharedActivitySet(activityId);
+		} else {
+			activitiesToChange.add(activity);
+		}
+
+		for(Activity activityToChange : activitiesToChange) {
+			activityToChange.setLocation(activity.getLocation());
+			activityToChange.setActivityState(activity.getActivityState());
+			activityToChange.setFrequency(activity.getFrequency());
+			activityToChange.setDayIndicator(activity.getDayIndicator());
+			activityToChange.setStartTime(activity.getStartTime());
+			activityToChange.setEndTime(activity.getEndTime());
+
+			if (activityToChange.getId() == activityId) {
+				activityToReturn = activityToChange;
+			}
+
+			this.activityService.saveActivity(activityToChange);
+		}
+
+		return activityToReturn;
     }
 
 	@RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")
