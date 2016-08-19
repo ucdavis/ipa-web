@@ -10,6 +10,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,8 +26,9 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 	
 	@Override
+	@Transactional
 	public void delete(Long id) {
-		teachingAssignmentRepository.delete(id);
+		teachingAssignmentRepository.deleteById(id);
 	}
 
 	@Override

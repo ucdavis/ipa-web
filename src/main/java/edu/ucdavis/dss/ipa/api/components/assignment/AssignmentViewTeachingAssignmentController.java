@@ -79,6 +79,61 @@ public class AssignmentViewTeachingAssignmentController {
     }
 
     /**
+     * Removes a variable number of teachingAssignments for the specified preference parameters.
+     * @param teachingAssignmentId
+     * @param httpResponse
+     * @return
+     */
+    @RequestMapping(value = "/api/assignmentView/preferences/{teachingAssignmentId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public List<TeachingAssignment> removePreference(@PathVariable long teachingAssignmentId, HttpServletResponse httpResponse) {
+        TeachingAssignment DTOteachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
+        Workgroup workgroup = DTOteachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor");
+
+        SectionGroup DTOsectionGroup = DTOteachingAssignment.getSectionGroup();
+        Course DTOcourse = DTOsectionGroup.getCourse();
+        Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
+
+        // Find any other courses that match this pattern
+        List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
+        List<Long> teachingAssignmentIdsToDelete = new ArrayList<Long>();
+        List<TeachingAssignment> teachingAssignmentsToDelete = new ArrayList<TeachingAssignment>();
+
+        boolean oneIsApproved = false;
+
+        // Find all relevant teachingAssignments
+        // If at least one of the teachingAssignments is approved, do nothing
+        for (Course slotCourse : courses) {
+            for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
+                    // Looking for teachingAssignments from the relevant instructor
+                    if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()) {
+                        teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
+                        teachingAssignmentsToDelete.add((slotTeachingAssignment));
+
+                        if (slotTeachingAssignment.isApproved()) {
+                            oneIsApproved = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Do nothing, the preference UI should not have allowed deletion as an option - this preference has already been approved.
+        if (oneIsApproved == true) {
+            return null;
+        } else {
+            for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
+                teachingAssignmentService.delete(slotTeachingAssignmentId);
+            }
+        }
+
+        return teachingAssignmentsToDelete;
+    }
+
+    /**
      * Creates a variable number of teachingAssignments for the specified preference parameters
      * @param teachingAssignment
      * @param httpResponse

@@ -97,8 +97,6 @@ public class JpaTeachingCallService implements TeachingCallService {
 
 		List<String> rolesFromWorkgroup = new ArrayList<String>();
 
-		System.out.println("out");
-
 		for (UserRole userRole : currentUser.getUserRoles()) {
 			// Identify which roles the user has, for the workgroup of interest
 			if (userRole.getWorkgroup() != null && userRole.getWorkgroup().getId() == workgroup.getId()) {
