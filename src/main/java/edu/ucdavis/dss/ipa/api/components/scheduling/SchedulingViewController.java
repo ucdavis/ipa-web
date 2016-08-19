@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -95,6 +97,16 @@ public class SchedulingViewController {
 		Workgroup workgroup = activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		activityService.deleteActivityById(activityId);
+		List<Activity> activitiesToDelete = new ArrayList<>();
+
+		if (activity.isShared()) {
+			activitiesToDelete = this.activityService.findSharedActivitySet(activityId);
+		} else {
+			activitiesToDelete.add(activity);
+		}
+
+		for(Activity slotActivity : activitiesToDelete) {
+			this.activityService.deleteActivityById(slotActivity.getId());
+		}
 	}
 }
