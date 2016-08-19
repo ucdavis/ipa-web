@@ -4,8 +4,10 @@ import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.factories.SchedulingViewFactory;
 import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
@@ -119,12 +121,42 @@ public class SchedulingViewController {
 
 		if (activity.isShared()) {
 			activitiesToDelete = this.activityService.findSharedActivitySet(activityId);
-		} else {
-			activitiesToDelete.add(activity);
 		}
+
+		activitiesToDelete.add(activity);
 
 		for(Activity slotActivity : activitiesToDelete) {
 			this.activityService.deleteActivityById(slotActivity.getId());
 		}
+	}
+
+	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Activity createSharedActivity(@RequestBody Activity activity, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		Activity slotActivity = null;
+		for (Section section : sectionGroup.getSections() ) {
+			slotActivity = new Activity();
+			slotActivity.setActivityTypeCode(activity.getActivityTypeCode());
+			slotActivity.setActivityState(ActivityState.DRAFT);
+			slotActivity.setDayIndicator("0000000");
+			slotActivity.setShared(true);
+			slotActivity.setSection(section);
+
+			slotActivity = activityService.saveActivity(slotActivity);
+
+			if (slotActivity.getId() == 0) {
+				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+				return null;
+			}
+		}
+
+		return slotActivity;
 	}
 }

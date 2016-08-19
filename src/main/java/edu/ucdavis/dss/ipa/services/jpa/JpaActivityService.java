@@ -57,7 +57,7 @@ public class JpaActivityService implements ActivityService {
 		// Look through other activities within the same SectionGroup
 		for(Section section : sectionGroup.getSections()) {
 			for(Activity slotActivity : section.getActivities() ) {
-				if (slotActivity.isShared() && slotActivity.getActivityTypeCode().getActivityTypeCode() == activity.getActivityTypeCode().getActivityTypeCode()) {
+				if (slotActivity.isShared() && slotActivity.isDuplicate(activity)) {
 					duplicateActivities.add(slotActivity);
 				}
 			}
