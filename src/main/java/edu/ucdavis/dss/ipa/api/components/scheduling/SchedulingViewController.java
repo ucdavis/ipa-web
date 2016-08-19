@@ -11,6 +11,7 @@ import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ import java.util.List;
 public class SchedulingViewController {
 
 	@Inject SectionGroupService sectionGroupService;
+	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
 	@Inject SchedulingViewFactory schedulingViewFactory;
 
@@ -85,7 +87,7 @@ public class SchedulingViewController {
 		if (activity.isShared()) {
 			activitiesToChange = this.activityService.findSharedActivitySet(activityId);
 		} else {
-			activitiesToChange.add(activity);
+			activitiesToChange.add(originalActivity);
 		}
 
 		for(Activity activityToChange : activitiesToChange) {
@@ -158,5 +160,25 @@ public class SchedulingViewController {
 		}
 
 		return slotActivity;
+	}
+
+	@RequestMapping(value = "/api/schedulingView/sections/{sectionId}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Activity createActivity(@RequestBody Activity activity, @PathVariable Long sectionId, HttpServletResponse httpResponse) {
+		Section section = sectionService.getOneById(sectionId);
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		Activity newActivity = new Activity();
+		newActivity.setActivityTypeCode(activity.getActivityTypeCode());
+		newActivity.setActivityState(ActivityState.DRAFT);
+		newActivity.setDayIndicator("0000000");
+		newActivity.setShared(false);
+		newActivity.setSection(section);
+
+		return activityService.saveActivity(newActivity);
 	}
 }
