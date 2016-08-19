@@ -114,4 +114,14 @@ public class TeachingCallReceipt implements Serializable {
 		}
 	}
 
+	@JsonProperty("teachingCallId")
+	@Transient
+	public long getTeachingCallIdentification() {
+		if(teachingCall != null) {
+			return teachingCall.getId();
+		} else {
+			return 0;
+		}
+	}
+
 }
