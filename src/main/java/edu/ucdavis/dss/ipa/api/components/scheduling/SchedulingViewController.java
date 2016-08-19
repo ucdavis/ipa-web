@@ -84,4 +84,17 @@ public class SchedulingViewController {
         return activityService.saveActivity(editedActivity);
     }
 
+	@RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteActivity(@PathVariable long activityId, HttpServletResponse httpResponse) {
+		Activity activity = activityService.findOneById(activityId);
+		if (activity == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+		Workgroup workgroup = activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		activityService.deleteActivityById(activityId);
+	}
 }
