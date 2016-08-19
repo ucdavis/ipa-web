@@ -38,7 +38,8 @@ public class AssignmentViewTeachingCallReceiptController {
         Workgroup workgroup = originalTeachingCallReceipt.getTeachingCall().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        // TODO: update original teachingCallReceipt
+        originalTeachingCallReceipt.setComment(teachingCallReceipt.getComment());
+        originalTeachingCallReceipt.setIsDone(teachingCallReceipt.getIsDone());
 
         return teachingCallReceiptService.save(originalTeachingCallReceipt);
     }
