@@ -54,9 +54,12 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.findByScheduleId(schedule.getId());
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByScheduleId(schedule.getId());
 		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
+		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "senateInstructor");
+		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "federationInstructor");
 
 		return new AssignmentView(courses, sectionGroups, teachingAssignments, instructors,
 				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts,
-				teachingCallResponses, activeTeachingCall, userId, instructorId);
+				teachingCallResponses, activeTeachingCall, userId, instructorId,
+				senateInstructorIds, federationInstructorIds);
 	}
 }

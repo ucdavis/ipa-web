@@ -33,5 +33,7 @@ public interface UserRoleService {
 
 	List<Instructor> getInstructorsByWorkgroupId(long workgroupId);
 
+	List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgropuId, String roleToken);
+
 	List<UserRole> findByLoginId(String loginId);
 }

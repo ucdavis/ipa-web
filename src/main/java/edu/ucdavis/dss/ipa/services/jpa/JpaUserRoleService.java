@@ -241,6 +241,33 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
+	public List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgroupId, String roleToken) {
+		String[] INSTRUCTOR_ROLES = {roleToken};
+
+		List<Long> workgroupInstructorIds = new ArrayList<Long>();
+
+		for (String instructorRole: INSTRUCTOR_ROLES) {
+			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
+			for (UserRole userRole: instructorRoles) {
+				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
+				if (instructor != null) {
+					// Add to list of instructors if not already there. This should never happen since
+					// an instructor should be either Senate OR Federation, but not both.
+					// Prevents getting the AJS dupes error
+					if (!workgroupInstructorIds.contains(instructor.getId())) {
+						workgroupInstructorIds.add(instructor.getId());
+					}
+				} else {
+					Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
+					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+				}
+			}
+		}
+
+		return workgroupInstructorIds;
+	}
+
+	@Override
 	public List<UserRole> findByLoginId(String loginId) {
 		return userRoleRepository.findByLoginId(loginId);
 	}
