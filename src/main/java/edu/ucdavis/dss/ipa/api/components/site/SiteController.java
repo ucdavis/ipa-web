@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.controllers;
+package edu.ucdavis.dss.ipa.api.components.site;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,6 @@ public class SiteController {
 	@Inject AuthenticationService authenticationService;
 	@Inject CurrentUser currentUser;
 
-	@PreAuthorize("permitAll")
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, Object> status(HttpServletResponse httpResponse) {
@@ -40,33 +39,18 @@ public class SiteController {
 		return status;
 	}
 
-	@PreAuthorize("permitAll")
-	@RequestMapping(value = "/help", method = RequestMethod.GET)
-	public String help() {
-		return "help";
-	}
-
-	@PreAuthorize("permitAll")
 	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
 	public String accessDenied(HttpServletResponse httpResponse) {
 		httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 
 		return "../errors/403";
 	}
-	
-	@PreAuthorize("permitAll")
+
 	@RequestMapping(value = "/request-access", method = RequestMethod.GET)
 	public String requestAccess() {
 		return "requestAccess";
 	}
 
-	//@PreAuthorize("permitAll")
-	@RequestMapping(value = "/not-found", method = RequestMethod.GET)
-	public String notFound() {
-		return "notFound";
-	}
-
-	@PreAuthorize("isAuthenticated()")
 	@RequestMapping(value = "/reportJsException", method = RequestMethod.POST)
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
 			throws MessagingException {
@@ -84,7 +68,7 @@ public class SiteController {
 
 		// Construct the email body
 		List<String> body = new ArrayList<String>();
-		
+
 		body.add("URL: " + exception.get("url"));
 		body.add("User: " + authenticationService.getCurrentUser().getDisplayName());
 		body.add("Kerberos: " + authenticationService.getCurrentUser().getLoginid());
