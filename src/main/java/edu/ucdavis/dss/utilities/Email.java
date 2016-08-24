@@ -30,8 +30,6 @@ public class Email {
 	 */
 	public static boolean send(String recipientEmail, String messageBody, String messageSubject) {
 		if (SettingsConfiguration.runningModeIsProduction()) {
-			// TODO: re-enable emailing once Email task testing complete
-
 			if (sendEmail(recipientEmail, messageBody, messageSubject, true) == false) {
 				return false;
 			}

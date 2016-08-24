@@ -2,6 +2,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -19,6 +21,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 	@Inject ScheduleService scheduleService;
 	@Inject TeachingAssignmentRepository teachingAssignmentRepository;
+	@Inject SectionGroupService sectionGroupService;
+	@Inject InstructorService instructorService;
 
 	@Override
 	public TeachingAssignment save(TeachingAssignment teachingAssignment) {
@@ -62,4 +66,28 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	public List<TeachingAssignment> findByCourseId(long courseId) {
 		return teachingAssignmentRepository.findByCourseId(courseId);
 	}
+
+	@Override
+	public TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbatical(
+			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical) {
+
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		Instructor instructor = instructorService.getOneById(instructorId);
+		TeachingAssignment teachingAssignment = null;
+
+		if (sectionGroup != null) {
+			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
+			if (teachingAssignment != null) {
+				return teachingAssignment;
+			}
+		} else {
+			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbatical(instructorId, scheduleId, termCode, buyout, courseRelease, sabbatical);
+			if (teachingAssignment != null) {
+				return teachingAssignment;
+			}
+		}
+
+		return null;
+	}
+
 }
