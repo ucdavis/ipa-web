@@ -61,12 +61,13 @@ public class JpaTeachingCallService implements TeachingCallService {
 			return null;
 		}
 
-		// Create TeachingCall
+		// Create TeachingCall StartDate
 		java.util.Calendar cal = java.util.Calendar.getInstance();
 		java.util.Date utilDate = cal.getTime();
 		java.sql.Date sqlDate = new Date(utilDate.getTime());
 
 		teachingCallDTO.setStartDate(sqlDate);
+
 		teachingCallDTO.setSchedule(schedule);
 
 		return this.teachingCallRepository.save(teachingCallDTO);
