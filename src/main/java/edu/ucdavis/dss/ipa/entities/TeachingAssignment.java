@@ -140,6 +140,12 @@ public class TeachingAssignment implements Serializable {
 		return this.instructor.getId();
 	}
 
+	@Transient
+	@JsonProperty("scheduleId")
+	public long getScheduleIdentification() {
+		return this.schedule.getId();
+	}
+
 	@JsonProperty
 	public boolean isFromInstructor() {
 		return fromInstructor;
@@ -148,6 +154,4 @@ public class TeachingAssignment implements Serializable {
 	public void setFromInstructor(boolean fromInstructor) {
 		this.fromInstructor = fromInstructor;
 	}
-
-
 }

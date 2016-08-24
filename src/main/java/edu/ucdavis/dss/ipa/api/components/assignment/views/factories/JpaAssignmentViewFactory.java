@@ -43,7 +43,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
-
+		long scheduleId = schedule.getId();
 		List<Course> courses = schedule.getCourses();
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 		List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
@@ -59,7 +59,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 
 		return new AssignmentView(courses, sectionGroups, teachingAssignments, instructors,
 				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts,
-				teachingCallResponses, activeTeachingCall, userId, instructorId,
+				teachingCallResponses, activeTeachingCall, userId, instructorId, scheduleId,
 				senateInstructorIds, federationInstructorIds);
 	}
 }
