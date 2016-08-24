@@ -31,13 +31,11 @@ public class Email {
 	public static boolean send(String recipientEmail, String messageBody, String messageSubject) {
 		if (SettingsConfiguration.runningModeIsProduction()) {
 			// TODO: re-enable emailing once Email task testing complete
-			System.out.println("attempted to email, all emails currently suppressed during testing");
-/*
+
 			if (sendEmail(recipientEmail, messageBody, messageSubject, true) == false) {
 				return false;
 			}
 			return true;
-	*/
 		}
 
 		log.info("Suppressed email to '" + recipientEmail + "', subject '" + messageSubject + "' - Server is not in production mode");
