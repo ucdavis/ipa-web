@@ -42,8 +42,6 @@ public class AssignmentViewTeachingCallController {
 
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        System.out.println("debug");
-        /*
         TeachingCall teachingCall = teachingCallService.create(schedule.getId(), teachingCallDTO);
         if (teachingCall != null) {
             httpResponse.setStatus(HttpStatus.OK.value());
@@ -52,7 +50,5 @@ public class AssignmentViewTeachingCallController {
         }
 
         return teachingCall;
-        */
-        return null;
     }
 }

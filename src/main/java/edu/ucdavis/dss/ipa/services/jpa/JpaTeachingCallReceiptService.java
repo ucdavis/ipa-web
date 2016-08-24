@@ -71,6 +71,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	/**
 	 * Will search all TeachingCalls in a workgroupId for emails waiting to be sent based on notifiedAt and warnedAt.
+	 * This is the primary method teachingCallReceipts are created.
 	 */
 	@Override
 	@Transactional
