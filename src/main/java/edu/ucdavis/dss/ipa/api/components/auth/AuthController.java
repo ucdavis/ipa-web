@@ -13,16 +13,12 @@ import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @RestController
 public class AuthController {
@@ -42,7 +38,7 @@ public class AuthController {
      */
     @CrossOrigin // TODO: make CORS more specific depending on profile
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request) throws ServletException {
+    public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
         String signingKey = System.getenv("ipa.jwt.signingkey");
@@ -60,7 +56,9 @@ public class AuthController {
                 // if the token is signed regardless of the signing key
                 // https://github.com/jwtk/jjwt/blob/master/src/main/java/io/jsonwebtoken/JwtParser.java#L246
             } catch (final SignatureException e) {
-                throw new ServletException("Invalid token.");
+                response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+            } catch (final MalformedJwtException e) {
+                response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
             }
         } else {
             if (request.getUserPrincipal() != null) {
