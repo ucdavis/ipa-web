@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -55,7 +57,6 @@ public class SiteController {
 	@CrossOrigin
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
 			throws MessagingException {
-
 		httpResponse.setStatus(HttpStatus.OK.value());
 
 		// Add ellipsis to message if necessary. Ellipsis is 3 characters long.
@@ -70,9 +71,11 @@ public class SiteController {
 		// Construct the email body
 		List<String> body = new ArrayList<String>();
 
+		User user = userService.getOneByLoginId(Authorization.getLoginId());
+
 		body.add("URL: " + exception.get("url"));
-		body.add("User: " + authenticationService.getCurrentUser().getDisplayName());
-		body.add("Kerberos: " + authenticationService.getCurrentUser().getLoginid());
+		body.add("User: " + user.getName());
+		body.add("Kerberos: " + user.getLoginId());
 		body.add("Full Error: " + exception.get("message"));
 		body.add("Stack: " + exception.get("stack"));
 
