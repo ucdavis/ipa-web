@@ -52,6 +52,7 @@ public class SiteController {
 	}
 
 	@RequestMapping(value = "/reportJsException", method = RequestMethod.POST)
+	@CrossOrigin
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
 			throws MessagingException {
 
