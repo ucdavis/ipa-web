@@ -131,7 +131,11 @@ public class TeachingAssignment implements Serializable {
 	@Transient
 	@JsonProperty("sectionGroupId")
 	public long getsectionGroupIdentification() {
-		return this.sectionGroup.getId();
+		if (sectionGroup != null) {
+			return this.sectionGroup.getId();
+		} else {
+			return 0;
+		}
 	}
 
 	@Transient

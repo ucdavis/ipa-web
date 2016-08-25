@@ -36,18 +36,22 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         SectionGroup sectionGroup = null;
+        Long sectionGroupId = -1L;
 
         if (teachingAssignment.getSectionGroup() != null) {
             sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
+            sectionGroupId = sectionGroup.getId();
         }
 
         Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
+        Workgroup workgroup = schedule.getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // If a Teaching Assignment already exists, update it instead.
-        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbatical(
+                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical());
 
         if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
             existingTeachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
@@ -64,7 +68,7 @@ public class AssignmentViewTeachingAssignmentController {
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
-            teachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
+            teachingAssignment.setSchedule(schedule);
         } else {
             teachingAssignment.setSectionGroup(sectionGroup);
             teachingAssignment.setInstructor(instructor);
@@ -78,7 +82,8 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public TeachingAssignment updateTeachingAssignment(@PathVariable long teachingAssignmentId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         TeachingAssignment originalTeachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
-        Workgroup workgroup = originalTeachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Schedule schedule = scheduleService.findById(originalTeachingAssignment.getSchedule().getId());
+        Workgroup workgroup = schedule.getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // When an academicCoordinator unapproves a teachingAssignment made by an academicCoordinator, delete instead of updating
