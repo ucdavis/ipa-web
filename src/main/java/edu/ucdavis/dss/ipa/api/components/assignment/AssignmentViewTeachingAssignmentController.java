@@ -208,4 +208,25 @@ public class AssignmentViewTeachingAssignmentController {
 
         return teachingAssignments;
     }
+
+    @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public List<Long> updatePreferenceOrder(@PathVariable long scheduleId, @RequestBody List<Long> sortedTeachingPreferenceIds, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+        Workgroup workgroup = schedule.getWorkgroup();
+
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+
+        Integer priority = 1;
+
+        for(Long id : sortedTeachingPreferenceIds) {
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(id);
+
+            teachingAssignment.setPriority(priority);
+            teachingAssignmentService.save(teachingAssignment);
+            priority++;
+        }
+
+        return sortedTeachingPreferenceIds;
+    }
 }
