@@ -127,7 +127,8 @@ public class AssignmentViewTeachingAssignmentController {
             for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
                 for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
                     // Looking for teachingAssignments from the relevant instructor
-                    if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()) {
+                    if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()
+                            && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
                         teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
                         teachingAssignmentsToDelete.add((slotTeachingAssignment));
 
