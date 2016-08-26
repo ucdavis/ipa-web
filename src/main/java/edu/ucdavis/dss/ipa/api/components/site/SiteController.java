@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.controllers;
+package edu.ucdavis.dss.ipa.api.components.site;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -28,7 +30,6 @@ public class SiteController {
 	@Inject AuthenticationService authenticationService;
 	@Inject CurrentUser currentUser;
 
-	@PreAuthorize("permitAll")
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, Object> status(HttpServletResponse httpResponse) {
@@ -40,37 +41,22 @@ public class SiteController {
 		return status;
 	}
 
-	@PreAuthorize("permitAll")
-	@RequestMapping(value = "/help", method = RequestMethod.GET)
-	public String help() {
-		return "help";
-	}
-
-	@PreAuthorize("permitAll")
 	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
 	public String accessDenied(HttpServletResponse httpResponse) {
 		httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 
 		return "../errors/403";
 	}
-	
-	@PreAuthorize("permitAll")
+
 	@RequestMapping(value = "/request-access", method = RequestMethod.GET)
 	public String requestAccess() {
 		return "requestAccess";
 	}
 
-	//@PreAuthorize("permitAll")
-	@RequestMapping(value = "/not-found", method = RequestMethod.GET)
-	public String notFound() {
-		return "notFound";
-	}
-
-	@PreAuthorize("isAuthenticated()")
-	@RequestMapping(value = "/reportJsException", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/reportJsException", method = RequestMethod.POST)
+	@CrossOrigin
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
 			throws MessagingException {
-
 		httpResponse.setStatus(HttpStatus.OK.value());
 
 		// Add ellipsis to message if necessary. Ellipsis is 3 characters long.
@@ -84,10 +70,19 @@ public class SiteController {
 
 		// Construct the email body
 		List<String> body = new ArrayList<String>();
-		
+
+		User user = userService.getOneByLoginId(Authorization.getLoginId());
+		String displayName = "N/A";
+		String kerberosName = "N/A";
+
+		if (user != null) {
+			displayName = user.getName();
+			kerberosName = user.getLoginId();
+		}
+
 		body.add("URL: " + exception.get("url"));
-		body.add("User: " + authenticationService.getCurrentUser().getDisplayName());
-		body.add("Kerberos: " + authenticationService.getCurrentUser().getLoginid());
+		body.add("User: " + displayName);
+		body.add("Kerberos: " + kerberosName);
 		body.add("Full Error: " + exception.get("message"));
 		body.add("Stack: " + exception.get("stack"));
 
