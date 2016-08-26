@@ -72,10 +72,17 @@ public class SiteController {
 		List<String> body = new ArrayList<String>();
 
 		User user = userService.getOneByLoginId(Authorization.getLoginId());
+		String displayName = "N/A";
+		String kerberosName = "N/A";
+
+		if (user != null) {
+			displayName = user.getName();
+			kerberosName = user.getLoginId();
+		}
 
 		body.add("URL: " + exception.get("url"));
-		body.add("User: " + user.getName());
-		body.add("Kerberos: " + user.getLoginId());
+		body.add("User: " + displayName);
+		body.add("Kerberos: " + kerberosName);
 		body.add("Full Error: " + exception.get("message"));
 		body.add("Stack: " + exception.get("stack"));
 
