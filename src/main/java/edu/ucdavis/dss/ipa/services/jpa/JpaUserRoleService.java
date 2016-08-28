@@ -1,8 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -245,6 +243,7 @@ public class JpaUserRoleService implements UserRoleService {
 		String[] INSTRUCTOR_ROLES = {roleToken};
 
 		List<Long> workgroupInstructorIds = new ArrayList<Long>();
+		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
 		for (String instructorRole: INSTRUCTOR_ROLES) {
 			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
@@ -256,11 +255,30 @@ public class JpaUserRoleService implements UserRoleService {
 					// Prevents getting the AJS dupes error
 					if (!workgroupInstructorIds.contains(instructor.getId())) {
 						workgroupInstructorIds.add(instructor.getId());
+						workgroupInstructors.add(instructor);
 					}
 				} else {
 					Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
 					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 				}
+			}
+		}
+
+		workgroupInstructorIds = new ArrayList<Long>();
+
+		// Sort by last name
+		Collections.sort(workgroupInstructors, new Comparator<Instructor>() {
+			public int compare(Instructor instructor1,Instructor instructor2){
+				if (instructor1.getLastName().compareTo(instructor2.getLastName() ) > 0 ) {
+					return 1;
+				}
+				return -1;
+			}});
+
+		// Build the Id list
+		for (Instructor instructor : workgroupInstructors) {
+			if (!workgroupInstructorIds.contains(instructor.getId())) {
+				workgroupInstructorIds.add(instructor.getId());
 			}
 		}
 
