@@ -46,20 +46,18 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		long scheduleId = schedule.getId();
 		List<Course> courses = schedule.getCourses();
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
-		List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
-		List<TeachingCall> teachingCalls = teachingCallService.findByScheduleId(schedule.getId());
 		List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.findByScheduleId(schedule.getId());
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByScheduleId(schedule.getId());
 		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
 		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "senateInstructor");
 		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "federationInstructor");
 
-		return new AssignmentView(courses, sectionGroups, teachingAssignments, instructors,
-				scheduleInstructorNotes, scheduleTermStates, teachingCalls, teachingCallReceipts,
+		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
+				scheduleInstructorNotes, scheduleTermStates, schedule.getTeachingCalls(), teachingCallReceipts,
 				teachingCallResponses, activeTeachingCall, userId, instructorId, scheduleId,
-				senateInstructorIds, federationInstructorIds);
+				senateInstructorIds, federationInstructorIds, workgroup.getTags());
 	}
 }

@@ -17,12 +17,14 @@ public class AssignmentView {
     TeachingCall activeTeachingCall;
     List<Long> senateInstructorIds = new ArrayList<Long>();
     List<Long> federationInstructorIds = new ArrayList<Long>();
+    List<Tag> tags = new ArrayList<Tag>();
     long instructorId;
     long userId;
     long scheduleId;
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
-                          List<TeachingAssignment> teachingAssignments, List<Instructor> instructors,
+                          List<TeachingAssignment> teachingAssignments,
+                          List<Instructor> instructors,
                           List<ScheduleInstructorNote> scheduleInstructorNotes,
                           List<ScheduleTermState> scheduleTermStates,
                           List<TeachingCall> teachingCalls,
@@ -33,7 +35,8 @@ public class AssignmentView {
                           long instructorId,
                           long scheduleId,
                           List<Long> senateInstructorIds,
-                          List<Long> federationInstructorIds) {
+                          List<Long> federationInstructorIds,
+                          List<Tag> tags) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -50,6 +53,7 @@ public class AssignmentView {
         setFederationInstructorIds(federationInstructorIds);
         setSenateInstructorIds(senateInstructorIds);
         setScheduleId(scheduleId);
+        setTags(tags);
     }
 
     public List<Course> getCourses() {
@@ -171,4 +175,13 @@ public class AssignmentView {
     public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
     }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
 }
