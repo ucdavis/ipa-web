@@ -100,13 +100,12 @@ public class JpaSectionService implements SectionService {
 		String termCode = sectionGroup.getTermCode();
 
 		if (course == null) { return true; }
-		Schedule schedule = course.getSchedule();
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, termCode);
+		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(termCode);
 
 		if (termState != null && termState.scheduleTermLocked()) {
 			ExceptionLogger.logAndMailException(
 					this.getClass().getName(),
-					new UnsupportedOperationException("Term " + termCode + " is locked in schedule with id " + schedule.getId())
+					new UnsupportedOperationException("Term " + termCode + " is locked")
 					);
 			return true;
 		}

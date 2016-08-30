@@ -60,10 +60,9 @@ public class SectionController {
 			return;
 		}
 
-		Schedule schedule = section.getSectionGroup().getCourse().getSchedule();
 		String termCode = section.getSectionGroup().getTermCode();
 
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(schedule, termCode);
+		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(termCode);
 
 		if (termState != null && termState.scheduleTermLocked()) {
 			log.info("Section with ID " + id + " was not deleted because the term is locked or the section does not exist.");

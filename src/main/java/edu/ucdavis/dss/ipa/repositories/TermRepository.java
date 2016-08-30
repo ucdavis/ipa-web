@@ -21,4 +21,19 @@ public interface TermRepository extends CrudRepository<Term, Long> {
 
 	List<Term> findByStartDateAfter(Date targetDate);
 
+	/**
+	 * Sorry
+	 * @param loginId
+	 * @return
+	 */
+	@Query(value = " SELECT DISTINCT(t.TermCode), t.BannerStartWindow1, t.BannerEndWindow1," +
+			" t.BannerStartWindow2, t.BannerEndWindow2, t.StartDate, t.EndDate" +
+			" FROM Users u, UserRoles ur, Schedules sch, Courses c, SectionGroups sg, Terms t" +
+			" WHERE u.LoginId = :loginId " +
+			" AND ur.UserId = u.Id " +
+			" AND sch.WorkgroupId = ur.WorkgroupId " +
+			" AND c.ScheduleId = sch.Id " +
+			" AND sg.CourseId = c.Id " +
+			" AND sg.TermCode = t.TermCode ", nativeQuery = true)
+	List<Term> findByLoginId(@Param("loginId") String loginId);
 }

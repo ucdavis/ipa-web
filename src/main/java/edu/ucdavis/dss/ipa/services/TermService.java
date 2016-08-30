@@ -27,5 +27,7 @@ public interface TermService {
 
 	List<Term> findByStartDateAfter(Date targetDate);
 
+	List<Term> findByLoginId(String loginId);
+
 	Boolean isHistoricalByTermCode(String termCode);
 }

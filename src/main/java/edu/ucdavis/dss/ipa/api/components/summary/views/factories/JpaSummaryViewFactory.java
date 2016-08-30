@@ -152,7 +152,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
 		for(String activeTermCode : scheduleService.getActiveTermCodesForSchedule(schedule)) {
 			if(activeTermCode.equals(termCode)) {
-				ScheduleTermState scheduleTermState = scheduleTermStateService.createScheduleTermState(schedule, activeTermCode);
+				ScheduleTermState scheduleTermState = scheduleTermStateService.createScheduleTermState(activeTermCode);
 
 				if(scheduleTermState.getState().getDescription().equals("ANNUAL_DRAFT")) {
 					isInstructorCallOpen = false;
@@ -182,7 +182,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
 			List<ScheduleTermState> states = new ArrayList<ScheduleTermState>();
 			for(String termCode : this.scheduleService.getActiveTermCodesForSchedule(schedule)) {
-				states.add(scheduleTermStateService.createScheduleTermState(schedule, termCode));
+				states.add(scheduleTermStateService.createScheduleTermState(termCode));
 			}
 			workgroupScheduleView.setScheduleTermStates(states);
 			

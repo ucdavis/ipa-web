@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.entities;
 
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -9,18 +10,19 @@ import edu.ucdavis.dss.ipa.entities.enums.TermState;
 import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
 import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduleTermState {
 	private String termCode;
 	private TermState state;
 
+	@Transient
 	@JsonProperty("isLocked")
-	@JsonView(ScheduleViews.Summary.class)
 	public boolean scheduleTermLocked() {
 		if (state != null) {
 			switch(state) {
 			case COMPLETED:
 				return true;
-			case ANNUAL_DRAFT: case INSTRUCTOR_CALL: case TA_CALL:
+			case ANNUAL_DRAFT:
 				return false;
 			}
 			return false;
@@ -30,7 +32,6 @@ public class ScheduleTermState {
 	}
 
 	@JsonProperty("termCode")
-	@JsonView({WorkgroupViews.Summary.class,ScheduleViews.Summary.class})
 	public String getTermCode() {
 		return termCode;
 	}
@@ -50,7 +51,6 @@ public class ScheduleTermState {
 
 	@Transient
 	@JsonProperty("stateOrdinal")
-	@JsonView(ScheduleViews.Summary.class)
 	public Integer getStateOrdinal() {
 		if(this.state != null) {
 			return this.state.ordinal();

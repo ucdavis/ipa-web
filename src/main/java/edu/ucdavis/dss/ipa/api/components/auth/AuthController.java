@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import io.jsonwebtoken.*;
@@ -23,10 +25,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AuthController {
 
-    @Inject
-    UserRoleService userRoleService;
-    @Inject
-    UserService userService;
+    @Inject UserRoleService userRoleService;
+    @Inject UserService userService;
+    @Inject ScheduleTermStateService scheduleTermStateService;
 
     /**
      * Returns successful JWT token if logged into CAS, else
@@ -62,6 +63,7 @@ public class AuthController {
             }
         } else {
             if (request.getUserPrincipal() != null) {
+                String loginId = request.getUserPrincipal().getName();
 
                 int jwtDaysValid = 7;
                 Calendar now = Calendar.getInstance();
@@ -69,20 +71,23 @@ public class AuthController {
 
                 Date expirationDate = now.getTime();
 
-                List<UserRole> userRoles = userRoleService.findByLoginId(request.getUserPrincipal().getName());
-                User user = userService.getOneByLoginId(request.getUserPrincipal().getName());
+                List<UserRole> userRoles = userRoleService.findByLoginId(loginId);
+                List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
+                User user = userService.getOneByLoginId(loginId);
 
                 if (user == null) {
-                    throw new AccessDeniedException("User not authorized to access IPA, loginId = " + request.getUserPrincipal().getName());
+                    throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
                 }
 
-                securityDTO.token = Jwts.builder().setSubject(request.getUserPrincipal().getName())
+                securityDTO.token = Jwts.builder().setSubject(loginId)
                         .claim("userRoles", userRoles)
-                        .claim("loginId", request.getUserPrincipal().getName())
+                        .claim("loginId", loginId)
                         .claim("expirationDate", expirationDate)
+                        .claim("termStates", termStates)
                         .setIssuedAt(new Date())
                         .signWith(SignatureAlgorithm.HS256, signingKey).compact();
                 securityDTO.setUserRoles(userRoles);
+                securityDTO.setTermStates(termStates);
                 securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             }
         }

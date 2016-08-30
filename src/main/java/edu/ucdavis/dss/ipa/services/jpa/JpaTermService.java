@@ -77,6 +77,11 @@ public class JpaTermService implements TermService {
 	}
 
 	@Override
+	public List<Term> findByLoginId(String loginId) {
+		return termRepository.findByLoginId(loginId);
+	}
+
+	@Override
 	public Boolean isHistoricalByTermCode(String termCode) {
 		Term term = this.getOneByTermCode(termCode);
 		Date now = Calendar.getInstance().getTime();

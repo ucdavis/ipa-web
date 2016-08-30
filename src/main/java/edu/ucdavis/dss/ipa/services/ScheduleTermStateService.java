@@ -23,11 +23,10 @@ public interface ScheduleTermStateService {
 	/**
 	 * Creates a single ScheduleTermState for the given schedule and term code.
 	 * 
-	 * @param schedule
 	 * @param termCode
 	 * @return
 	 */
-	ScheduleTermState createScheduleTermState(Schedule schedule, String termCode);
+	ScheduleTermState createScheduleTermState(String termCode);
 
 	/**
 	 * Get all ScheduleTermStates for the given schedule. Entities are calculated
@@ -37,4 +36,12 @@ public interface ScheduleTermStateService {
 	 * @return
 	 */
 	List<ScheduleTermState> getScheduleTermStatesBySchedule(Schedule schedule);
+
+	/**
+	 * Get all ScheduleTermStates for the given user. taken from database for performance.
+	 *
+	 * @param loginId
+	 * @return
+	 */
+	List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId);
 }

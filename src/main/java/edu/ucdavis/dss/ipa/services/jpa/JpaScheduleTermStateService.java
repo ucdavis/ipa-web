@@ -22,33 +22,18 @@ import edu.ucdavis.dss.ipa.services.TermService;
 public class JpaScheduleTermStateService implements ScheduleTermStateService {
 	@Inject ScheduleService scheduleService;
 	@Inject TermService termService;
-	@Inject TeachingCallService teachingCallService;
 
-	public ScheduleTermState createScheduleTermState(Schedule schedule, String termCode) {
-		if(schedule == null) return null;
-		
+	public ScheduleTermState createScheduleTermState(String termCode) {
 		ScheduleTermState state = new ScheduleTermState();
 		
 		state.setTermCode(termCode);
 		
 		Term term = this.termService.getOneByTermCode(termCode);
-		if(term != null) {
-			Date endDate = term.getEndDate();
-			
-			if(endDate != null) {
-				if(endDate.before(new Date())) {
-					state.setState(TermState.COMPLETED);
-					return state;
-				}
-			}
-		}
-		
-		TeachingCall teachingCall = this.teachingCallService.findFirstByScheduleId(schedule.getId());
-		if(teachingCall != null) {
-			state.setState(TermState.INSTRUCTOR_CALL);
+		if(term != null && term.getEndDate() != null && term.getEndDate().before(new Date())) {
+			state.setState(TermState.COMPLETED);
 			return state;
 		}
-		
+
 		state.setState(TermState.ANNUAL_DRAFT);
 		
 		return state;
@@ -66,9 +51,21 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 		List<ScheduleTermState> states = new ArrayList<ScheduleTermState>();
 		
 		for(String termCode : termCodes) {
-			states.add(this.createScheduleTermState(schedule, termCode));
+			states.add(this.createScheduleTermState(termCode));
 		}
 		
+		return states;
+	}
+
+	@Override
+	public List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId) {
+		List<Term> terms = termService.findByLoginId(loginId);
+		List<ScheduleTermState> states = new ArrayList<>();
+
+		for(Term term : terms) {
+			states.add(this.createScheduleTermState(term.getTermCode()));
+		}
+
 		return states;
 	}
 }

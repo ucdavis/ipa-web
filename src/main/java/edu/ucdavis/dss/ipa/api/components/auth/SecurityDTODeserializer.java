@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +48,20 @@ public class SecurityDTODeserializer extends JsonDeserializer<Object> {
 
             List<UserRoleDTO> userRoleDTOs = mapper.readerFor(collectionType).readValue(node.get("userRoles"));
             securityDTO.userRoles = userRoleDTOs;
+        }
+
+        if (node.has("userRoles")) {
+
+            CollectionType collectionType =
+                    TypeFactory
+                            .defaultInstance()
+                            .constructCollectionType(List.class, ScheduleTermState.class);
+
+            // Convert the tree model to the collection (of UserRole-objects)
+            ObjectMapper mapper = new ObjectMapper();
+
+            List<ScheduleTermState> scheduleTermStates = mapper.readerFor(collectionType).readValue(node.get("termStates"));
+            securityDTO.termStates = scheduleTermStates;
         }
 
         return securityDTO;
