@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = { ValidActivityValidator.class })
 @Documented
-@interface ValidActivity {
+public @interface ValidActivity {
 
     String message() default "Invalid Activity";
 

@@ -5,18 +5,21 @@ import edu.ucdavis.dss.ipa.entities.Activity;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-class ValidActivityValidator implements ConstraintValidator<ValidActivity, Activity> {
+public class ValidActivityValidator implements ConstraintValidator<ValidActivity, Activity> {
 
 	@Override
 	public void initialize(ValidActivity constraintAnnotation) {
-
 	}
 
 	@Override
 	public boolean isValid(Activity activity, ConstraintValidatorContext context) {
-		if (activity.getStartTime() == null) {
+		boolean sectionIsNull = (activity.getSection() == null);
+		boolean sectionGroupIsNull = (activity.getSectionGroup() == null);
+
+		if (sectionGroupIsNull == sectionIsNull) {
 			return false;
 		}
+
 		return true;
 	}
 }
