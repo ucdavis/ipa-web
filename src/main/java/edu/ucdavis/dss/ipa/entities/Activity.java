@@ -23,13 +23,14 @@ public class Activity implements Serializable {
 	private long id;
 
 	private Section section;
+	private SectionGroup sectionGroup;
 
 	private Date beginDate, endDate;
 	private Time startTime, endTime;
 	private String dayIndicator, bannerLocation;
 	private ActivityState activityState;
 	private int frequency;
-	private boolean virtual, shared;
+	private boolean virtual;
 	private Location location;
 	private ActivityType activityTypeCode;
 	
@@ -251,17 +252,6 @@ public class Activity implements Serializable {
 
 		// TODO: Check also for Location
 		return true;
-	}
-
-	@Basic
-	@Column(name = "Shared", nullable = false)
-	@JsonProperty("shared")
-	public boolean isShared() {
-		return shared;
-	}
-
-	public void setShared(boolean shared) {
-		this.shared = shared;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
