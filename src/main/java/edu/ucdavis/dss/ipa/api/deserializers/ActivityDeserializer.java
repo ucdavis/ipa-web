@@ -91,10 +91,6 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 			activity.setVirtual(node.get("virtual").booleanValue());
 		}
 
-		if (node.has("shared")) {
-			activity.setShared(node.get("shared").booleanValue());
-		}
-
 		if (node.has("frequency")) {
 			activity.setFrequency(node.get("frequency").intValue());
 		}

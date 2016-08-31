@@ -77,7 +77,8 @@ public class SchedulingViewController {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Workgroup workgroup = originalActivity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 
@@ -116,20 +117,11 @@ public class SchedulingViewController {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return;
 		}
-		Workgroup workgroup = activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		SectionGroup sectionGroup = sectionGroupService.getOneById(activity.getSectionGroupIdentification());
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		List<Activity> activitiesToDelete = new ArrayList<>();
-
-		if (activity.isShared()) {
-			activitiesToDelete = this.activityService.findSharedActivitySet(activityId);
-		}
-
-		activitiesToDelete.add(activity);
-
-		for(Activity slotActivity : activitiesToDelete) {
-			this.activityService.deleteActivityById(slotActivity.getId());
-		}
+		this.activityService.deleteActivityById(activity.getId());
 	}
 
 	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}", method = RequestMethod.POST, produces="application/json")
@@ -142,22 +134,13 @@ public class SchedulingViewController {
 		}
 		Authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
-		Activity slotActivity = null;
-		for (Section section : sectionGroup.getSections() ) {
-			slotActivity = new Activity();
-			slotActivity.setActivityTypeCode(activity.getActivityTypeCode());
-			slotActivity.setActivityState(ActivityState.DRAFT);
-			slotActivity.setDayIndicator("0000000");
-			slotActivity.setShared(true);
-			slotActivity.setSection(section);
+		Activity slotActivity = new Activity();
+		slotActivity.setActivityTypeCode(activity.getActivityTypeCode());
+		slotActivity.setActivityState(ActivityState.DRAFT);
+		slotActivity.setDayIndicator("0000000");
+		slotActivity.setSectionGroup(sectionGroup);
 
-			slotActivity = activityService.saveActivity(slotActivity);
-
-			if (slotActivity.getId() == 0) {
-				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-				return null;
-			}
-		}
+		slotActivity = activityService.saveActivity(slotActivity);
 
 		return slotActivity;
 	}
@@ -176,7 +159,6 @@ public class SchedulingViewController {
 		newActivity.setActivityTypeCode(activity.getActivityTypeCode());
 		newActivity.setActivityState(ActivityState.DRAFT);
 		newActivity.setDayIndicator("0000000");
-		newActivity.setShared(false);
 		newActivity.setSection(section);
 
 		return activityService.saveActivity(newActivity);

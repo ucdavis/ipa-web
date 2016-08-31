@@ -1,32 +1,25 @@
 package edu.ucdavis.dss.ipa.api.controllers;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.ucdavis.dss.dw.dto.DwDepartment;
+import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
+import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
+import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.utilities.UserLogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import edu.ucdavis.dss.dw.dto.DwDepartment;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
-import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.utilities.UserLogger;
-import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryActivitiesView;
-import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
-import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
-import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class WorkgroupController {
@@ -42,7 +35,6 @@ public class WorkgroupController {
 	@Inject WorkgroupOpsService workgroupOpsService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject TermService termService;
-	@Inject SummaryViewFactory summaryViewFactory;
 	@Inject CurrentUser currentUser;
 	@Inject TeachingCallResponseService teachingCallResponseService;
 
@@ -138,30 +130,6 @@ public class WorkgroupController {
 
 		httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 		return workgroup;
-	}
-
-	@PreAuthorize("hasPermission(#workgroupId, 'workgroup', 'academicCoordinator') or hasPermission(#workgroupId, 'workgroup', 'senateInstructor') or hasPermission(#workgroupId, 'workgroup', 'federationInstructor')")
-	@RequestMapping(value = "/api/workgroups/{workgroupId}/activityLog", method = RequestMethod.GET, produces="application/json")
-	@ResponseBody
-	public SummaryActivitiesView showActivityLog(@PathVariable long workgroupId, HttpServletResponse httpResponse) {
-		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
-		if (workgroup == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
-		}
-
-		List<Term> termReferences = new ArrayList<Term>();
-		java.util.Calendar cal = java.util.Calendar.getInstance();
-
-		int targetyear = cal.get(java.util.Calendar.YEAR);
-		cal.set(java.util.Calendar.YEAR, (targetyear - 11)); // 11 = grab 11 years of term codes
-
-		java.util.Date utilDate = cal.getTime();
-		java.sql.Date targetDate = new Date(utilDate.getTime());
-
-		termReferences = termService.findByStartDateAfter(targetDate);
-
-		return this.summaryViewFactory.createSummaryActivitiesView(workgroup, termReferences);
 	}
 
 	@PreAuthorize("isAuthenticated()")

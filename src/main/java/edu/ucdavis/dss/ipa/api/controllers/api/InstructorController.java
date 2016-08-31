@@ -1,25 +1,19 @@
 package edu.ucdavis.dss.ipa.api.controllers.api;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import com.fasterxml.jackson.annotation.JsonView;
-
+import edu.ucdavis.dss.ipa.api.views.InstructorViews;
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryInstructorView;
-import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.api.views.InstructorViews;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 public class InstructorController {
@@ -27,7 +21,6 @@ public class InstructorController {
 	@Inject AuthenticationService authenticationService;
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
-	@Inject SummaryViewFactory summaryViewFactory;
 
 	@RequestMapping(value = "/api/workgroups/{id}/instructors", method = RequestMethod.GET)
 	@ResponseBody
@@ -50,14 +43,4 @@ public class InstructorController {
 		return newInstructor;
 	}
 
-	@RequestMapping(value = "/api/workgroups/{workgroupId}/instructors/{instructorId}", method = RequestMethod.GET)
-	@ResponseBody
-	// SECUREME
-	@PreAuthorize("isAuthenticated()")
-	public SummaryInstructorView getInstructor (@PathVariable Long workgroupId, @PathVariable Long instructorId, HttpServletResponse httpResponse) {
-		Instructor instructor = this.instructorService.getOneById(instructorId);
-		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
-		
-		return summaryViewFactory.createSummaryInstructorView(instructor, workgroup);
-	}
 }

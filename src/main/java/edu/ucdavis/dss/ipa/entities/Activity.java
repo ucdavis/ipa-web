@@ -122,8 +122,7 @@ public class Activity implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SectionId", nullable = false)
-	@NotNull
+	@JoinColumn(name = "SectionId", nullable = true)
 	@JsonIgnore
 	public Section getSection() {
 		return section;
@@ -178,13 +177,31 @@ public class Activity implements Serializable {
 		return this.getSection().getId();
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SectionGroupId", nullable = true)
+	@JsonIgnore
+	public SectionGroup getSectionGroup() {
+		if (sectionGroup != null) {
+			return sectionGroup;
+		} else {
+			return section.getSectionGroup();
+		}
+	}
+
+	public void setSectionGroup(SectionGroup sectionGroup) {
+		this.sectionGroup = sectionGroup;
+	}
+
 	@Transient
-	@JsonProperty
-	public long getSectionGroupId() {
-		if (this.getSection() == null || this.getSection().getSectionGroup() == null) {
+	@JsonProperty("sectionGroupId")
+	public long getSectionGroupIdentification() {
+		if (this.getSectionGroup() != null) {
+			return this.getSectionGroup().getId();
+		} else if (this.getSection() != null && this.getSection().getSectionGroup() != null) {
+			return this.getSection().getSectionGroup().getId();
+		} else {
 			return 0L;
 		}
-		return this.getSection().getSectionGroup().getId();
 	}
 
 	@Basic
@@ -252,6 +269,12 @@ public class Activity implements Serializable {
 
 		// TODO: Check also for Location
 		return true;
+	}
+
+	@Transient
+	@JsonProperty("shared")
+	public boolean isShared() {
+		return this.getSectionGroup() != null;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -1,13 +1,11 @@
 package edu.ucdavis.dss.ipa.api.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-
-import edu.ucdavis.dss.ipa.api.components.term.views.TermSectionView;
-import edu.ucdavis.dss.ipa.entities.*;
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.ucdavis.dss.ipa.api.views.SectionViews;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.api.views.SectionViews;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class SectionController {
@@ -94,28 +92,6 @@ public class SectionController {
 			log.info("Some sections with sequence " + sequence + " were not deleted because the term is locked.");
 			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 		}
-	}
-
-	@PreAuthorize("hasPermission(#id, 'section', 'academicCoordinator')")
-	@RequestMapping(value = { "/api/sections/{id}" }, method = { RequestMethod.PUT })
-	@ResponseBody
-	public TermSectionView updateSection(@RequestBody Section section, @PathVariable("id") long id,
-										 HttpServletResponse httpResponse_p) {
-		Section originalSection = sectionService.getOneById(id);
-
-		originalSection.setSeats(section.getSeats());
-		originalSection.setCrn(section.getCrn());
-		originalSection.setSequenceNumber(section.getSequenceNumber());
-
-		Section savedSection = this.sectionService.save(originalSection);
-		if (savedSection != null) {
-			httpResponse_p.setStatus(HttpStatus.OK.value());
-		}
-		else {
-			httpResponse_p.setStatus(HttpStatus.FORBIDDEN.value());
-		}
-
-		return new TermSectionView(savedSection);
 	}
 
 	@PreAuthorize("hasPermission(#courseOfferingGroupId, 'courseOfferingGroup', 'academicCoordinator')")

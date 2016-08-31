@@ -33,8 +33,6 @@ import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.Email;
 import edu.ucdavis.dss.utilities.UserLogger;
-import edu.ucdavis.dss.ipa.api.components.summary.views.WorkgroupScheduleView;
-import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
 import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallScheduleView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
@@ -50,9 +48,7 @@ public class ScheduleController {
 	@Inject InstructorService instructorService;
 	@Inject UserService userService;
 	@Inject ScheduleOpsService scheduleOpsService;
-	@Inject SummaryViewFactory summaryViewFactory;
-	@Inject
-	AssignmentViewFactory teachingCallViewFactory;
+	@Inject AssignmentViewFactory teachingCallViewFactory;
 	@Inject CurrentUser currentUser;
 	@Inject DwSyncService dwSyncService;
 
@@ -202,12 +198,4 @@ public class ScheduleController {
 		return possibleStates;
 	}
 
-	@PreAuthorize("hasPermission(#id, 'workgroup', 'academicCoordinator') or hasPermission(#id, 'workgroup', 'senateInstructor') or hasPermission(#id, 'workgroup', 'federationInstructor')")
-	@RequestMapping(value ="/api/workgroups/{id}/schedules", method = RequestMethod.GET, produces="application/json")
-	@ResponseBody
-	public List<WorkgroupScheduleView> getSchedulesByWorkgroupId(@PathVariable long id, HttpServletResponse httpResponse) {
-		Workgroup workgroup = workgroupService.findOneById(id);
-
-		return this.summaryViewFactory.createWorkgroupScheduleViews(workgroup);
-	}
 }

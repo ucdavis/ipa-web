@@ -10,7 +10,7 @@ public interface ActivityRepository extends CrudRepository<Activity, Long> {
 
 	void deleteAllBySectionId(long sectionId);
 
-    List<Activity> findBySharedTrueAndSection_SectionGroup_Id(long sectionGroupId);
+    List<Activity> findBySection_SectionGroup_Id(long sectionGroupId);
 
-    List<Activity> findBySharedFalseAndSection_SectionGroup_Id(long sectionGroupId);
+    List<Activity> findBySectionGroupId(long sectionGroupId);
 }
