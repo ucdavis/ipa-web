@@ -37,28 +37,6 @@ public class JpaActivityService implements ActivityService {
 	}
 
 	@Override
-	public List<Activity> findSharedActivitySet(Long id) {
-		// Specifies the codes that are considered duplicates
-
-		Activity activity = this.findOneById(id);
-		
-		List<Activity> duplicateActivities = new ArrayList<Activity>();
-		
-		SectionGroup sectionGroup = activity.getSectionGroup();
-
-		// Look through other activities within the same SectionGroup
-		for(Section section : sectionGroup.getSections()) {
-			for(Activity slotActivity : section.getActivities() ) {
-				if (slotActivity.isShared() && slotActivity.isDuplicate(activity)) {
-					duplicateActivities.add(slotActivity);
-				}
-			}
-		}
-
-		return duplicateActivities;
-	}
-
-	@Override
 	public void deleteAllBySectionId(long sectionId) {
 		this.activityRepository.deleteAllBySectionId(sectionId);
 	}

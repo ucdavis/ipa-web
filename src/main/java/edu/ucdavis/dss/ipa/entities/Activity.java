@@ -181,11 +181,7 @@ public class Activity implements Serializable {
 	@JoinColumn(name = "SectionGroupId", nullable = true)
 	@JsonIgnore
 	public SectionGroup getSectionGroup() {
-		if (sectionGroup != null) {
-			return sectionGroup;
-		} else {
-			return section.getSectionGroup();
-		}
+		return sectionGroup;
 	}
 
 	public void setSectionGroup(SectionGroup sectionGroup) {

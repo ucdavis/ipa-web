@@ -81,32 +81,14 @@ public class SchedulingViewController {
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
+		originalActivity.setLocation(activity.getLocation());
+		originalActivity.setActivityState(activity.getActivityState());
+		originalActivity.setFrequency(activity.getFrequency());
+		originalActivity.setDayIndicator(activity.getDayIndicator());
+		originalActivity.setStartTime(activity.getStartTime());
+		originalActivity.setEndTime(activity.getEndTime());
 
-		Activity activityToReturn = null;
-		List<Activity> activitiesToChange = new ArrayList<>();
-
-		if (activity.isShared()) {
-			activitiesToChange = this.activityService.findSharedActivitySet(activityId);
-		} else {
-			activitiesToChange.add(originalActivity);
-		}
-
-		for(Activity activityToChange : activitiesToChange) {
-			activityToChange.setLocation(activity.getLocation());
-			activityToChange.setActivityState(activity.getActivityState());
-			activityToChange.setFrequency(activity.getFrequency());
-			activityToChange.setDayIndicator(activity.getDayIndicator());
-			activityToChange.setStartTime(activity.getStartTime());
-			activityToChange.setEndTime(activity.getEndTime());
-
-			if (activityToChange.getId() == activityId) {
-				activityToReturn = activityToChange;
-			}
-
-			this.activityService.saveActivity(activityToChange);
-		}
-
-		return activityToReturn;
+		return this.activityService.saveActivity(originalActivity);
     }
 
 	@RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")
@@ -161,6 +143,7 @@ public class SchedulingViewController {
 		newActivity.setDayIndicator("0000000");
 		newActivity.setSection(section);
 
-		return activityService.saveActivity(newActivity);
+		newActivity = activityService.saveActivity(newActivity);
+		return newActivity;
 	}
 }

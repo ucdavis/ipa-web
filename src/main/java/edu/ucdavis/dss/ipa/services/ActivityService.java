@@ -19,15 +19,9 @@ public interface ActivityService {
 	void deleteActivityById(Long id);
 
 	/**
-	 * Returns a set of all shared activities within the sectionGroup that hhave the same activityTypeCode.
-	 * The supplied activity is included in the set.
-	 */
-	List<Activity> findSharedActivitySet(Long id);
-
-	/**
 	 * Deletes all activities for the given section
 	 * 
-	 * @param setionId ID of the section whose activities will be deleted
+	 * @param sectionId ID of the section whose activities will be deleted
 	 */
 	void deleteAllBySectionId(long sectionId);
 
