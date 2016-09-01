@@ -1,24 +1,6 @@
 package edu.ucdavis.dss.ipa.tasks;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
-import edu.ucdavis.dss.ipa.services.DwScheduleService;
 
 @Service
 public class EnrollmentUpdateTask {

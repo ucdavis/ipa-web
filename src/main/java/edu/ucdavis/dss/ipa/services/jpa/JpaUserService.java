@@ -80,11 +80,11 @@ public class JpaUserService implements UserService {
 
 		if(dwPeopleResults != null) {
 			for(DwPerson dwPerson : dwPeopleResults) {
-				if((dwPerson.getLoginId() != null) && (dwPerson.getLoginId().equalsIgnoreCase(loginId))) {
+				if((dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
 					user = new User();
 
-					user.setFirstName(dwPerson.getFirst());
-					user.setLastName(dwPerson.getLast() );
+					user.setFirstName(dwPerson.getdFirstName());
+					user.setLastName(dwPerson.getdLastName() );
 					user.setLoginId(loginId);
 					user.setEmail(dwPerson.getEmail());
 

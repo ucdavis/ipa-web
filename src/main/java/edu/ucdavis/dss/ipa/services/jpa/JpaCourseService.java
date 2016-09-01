@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.CourseRepository;
 import edu.ucdavis.dss.ipa.services.*;
@@ -34,39 +33,6 @@ public class JpaCourseService implements CourseService {
 		return this.courseRepository.findOne(id);
 	}
 
-	@Transactional
-	private Course createByDwCourseAndScheduleIdAndSequencePattern(DwCourse dwCourse, Long scheduleId, String sequencePattern) {
-
-		Schedule schedule = this.scheduleService.findById(scheduleId);
-		if (schedule == null) {
-			Exception e = new Exception("Could not find schedule with Id: " + scheduleId);
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-			return null;
-		}
-
-		Course course = new Course();
-		course.setSchedule(schedule);
-		course.setTitle(dwCourse.getTitle());
-		course.setCourseNumber(dwCourse.getCourseNumber());
-		course.setEffectiveTermCode(dwCourse.getEffectiveTermCode());
-		course.setSequencePattern(sequencePattern);
-		course.setSubjectCode(dwCourse.getSubjectCode());
-		course.setUnitsHigh(dwCourse.getUnitsMax());
-		course.setUnitsLow(dwCourse.getUnitsMin());
-		course = this.courseRepository.save(course);
-
-		String tagName = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? "Undergraduate" : "Graduate";
-
-		String UNDERGRADUATE_COLOR = "#9CAF88";
-		String GRADUATE_COLOR = "#5B7F95";
-		String tagColor = Character.getNumericValue(dwCourse.getCourseNumber().charAt(0)) < 2 ? UNDERGRADUATE_COLOR : GRADUATE_COLOR;
-
-		Tag tag = tagService.findOrCreateByWorkgroupAndName(schedule.getWorkgroup(), tagName, tagColor);
-		this.addTag(course, tag);
-
-		return this.courseRepository.save(course);
-	}
-	
 	@Override
 	public Course save(Course course) {
 		return this.courseRepository.save(course);

@@ -154,15 +154,15 @@ public class WorkgroupViewUserController {
 
             for (DwPerson dwPerson : dwPeople) {
                 // Verify dwPerson has necessary data to make a User
-                if (dwPerson.getLoginId() != null && dwPerson.getEmail() != null) {
-                    boolean userBelongsToWorkgroup = workgroupService.hasUser(workgroupId, dwPerson.getLoginId());
+                if (dwPerson.getUserId() != null && dwPerson.getEmail() != null) {
+                    boolean userBelongsToWorkgroup = workgroupService.hasUser(workgroupId, dwPerson.getUserId());
 
                     if (userBelongsToWorkgroup == false) {
                         User user = new User();
-                        user.setLoginId(dwPerson.getLoginId());
+                        user.setLoginId(dwPerson.getUserId());
                         user.setEmail(dwPerson.getEmail());
-                        user.setFirstName(dwPerson.getFirst());
-                        user.setLastName(dwPerson.getLast());
+                        user.setFirstName(dwPerson.getdFirstName());
+                        user.setLastName(dwPerson.getdLastName());
                         users.add(user);
                     }
                 }

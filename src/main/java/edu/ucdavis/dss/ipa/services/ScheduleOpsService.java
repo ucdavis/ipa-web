@@ -26,23 +26,4 @@ public interface ScheduleOpsService {
 	 * @return
 	 */
 	Schedule createScheduleFromExisting(Long workgroupId, Long scheduleYear, Long copyFromYear, Boolean copyInstructors, Boolean copyRooms, Boolean copyTimes);
-
-	/**
-	 * Imports schedules from DW for the given year(s) in a background task.
-	 * 
-	 * @param workgroup the workgroup to own the schedules found in DW
-	 * @param startYear the start of a range of schedules we wish to import
-	 * @param endYear the end of the range of schedules we wish to import
-	 */
-	@Async
-	void importSchedulesFromDataWarehouse(Workgroup workgroup, long startYear, long endYear);
-	
-	/**
-	 * Imports workgroup users from DW in a background task.
-	 * 
-	 * @param workgroup the workgroup to add users to
-	 */
-	@Async
-	@Transactional
-	void importWorkgroupUsersFromDataWarehouse(Workgroup workgroup);
 }

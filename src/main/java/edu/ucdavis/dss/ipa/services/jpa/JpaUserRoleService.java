@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.dw.DwClient;
-import edu.ucdavis.dss.dw.dto.DwInstructor;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
@@ -112,27 +111,27 @@ public class JpaUserRoleService implements UserRoleService {
 					userRole.getWorkgroup().getId());
 
 				// Attempt to get employeeId from DW
-				DwClient dwClient = null;
-				List<DwInstructor> dwInstructors = new ArrayList<DwInstructor	>();
-
-				try {
-					dwClient = new DwClient();
-					dwInstructors = dwClient.searchInstructors(user.getLastName());
-
-					for (DwInstructor dwInstructor : dwInstructors) {
-
-						if (dwInstructor.getLoginId() != null &&
-							dwInstructor.getEmployeeId() != null &&
-							dwInstructor.getLoginId().equals(user.getLoginId())	) {
-
-							instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
-							log.info("Queried Data Warehouse for employeeId on instructor '" + instructor.getLoginId() + "'");
-							instructorService.save(instructor);
-						}
-					}
-				} catch (Exception e) {
-					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-				}
+//				DwClient dwClient = null;
+//				List<DwInstructor> dwInstructors = new ArrayList<DwInstructor>();
+//
+//				try {
+//					dwClient = new DwClient();
+//					dwInstructors = dwClient.searchInstructors(user.getLastName());
+//
+//					for (DwInstructor dwInstructor : dwInstructors) {
+//
+//						if (dwInstructor.getLoginId() != null &&
+//							dwInstructor.getEmployeeId() != null &&
+//							dwInstructor.getLoginId().equals(user.getLoginId())	) {
+//
+//							instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
+//							log.info("Queried Data Warehouse for employeeId on instructor '" + instructor.getLoginId() + "'");
+//							instructorService.save(instructor);
+//						}
+//					}
+//				} catch (Exception e) {
+//					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+//				}
 			}
 			return userRole;
 		} else {

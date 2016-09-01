@@ -1,9 +1,5 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Set;
-
 import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
@@ -11,14 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.dw.dto.DwInstructor;
-import edu.ucdavis.dss.dw.dto.DwSectionGroup;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.DwScheduleService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
@@ -36,7 +28,6 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 
 	@Inject ScheduleRepository scheduleRepository;
 	@Inject ScheduleService scheduleService;
-	@Inject DwScheduleService dwScheduleService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject
 	CourseService courseService;
@@ -181,168 +172,5 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 		String newTermCode = newYear + term;
 
 		return newTermCode;
-	}
-
-	@Override
-	public void importSchedulesFromDataWarehouse(Workgroup workgroup, long startYear, long endYear) {
-		Calendar now = Calendar.getInstance();
-		int currentYear = now.get(Calendar.YEAR);
-		
-		log.debug("importSchedulesFromDataWarehouse starting ...");
-		
-		for(int i = (int) startYear; i >= endYear; i--) {
-			Schedule schedule = scheduleRepository.findOneByWorkgroupCodeAndYear(workgroup.getCode(), (long) i);
-
-			// If schedule doesn't exist, create and import it
-			if(schedule == null) {
-				schedule = scheduleService.createSchedule(workgroup.getId(), (long) i);
-				
-				schedule.setImporting(true);
-				
-				this.scheduleRepository.save(schedule);
-
-				log.info("Importing schedule from DW for schedule ID " + schedule.getId() + " (schedule year: " + schedule.getYear() + ", schedule workgroup code: " + schedule.getWorkgroup().getCode() + ")");
-				
-				Set<DwSectionGroup> dwSectionGroups = null;
-				
-				try {
-					dwSectionGroups = dwRepository.getSectionGroupsByDeptCodeAndYear(schedule.getWorkgroup().getCode(), schedule.getYear());
-					
-					if(dwSectionGroups != null) {
-						log.info("Received " + dwSectionGroups.size() + " section groups from DW.");
-					} else {
-						log.error("dwClient returned NULL section groups!");
-						return; // cannot continue past this point
-					}
-				} catch (Exception e) {
-					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-					continue;
-				}
-				
-				boolean markPublished = true;
-
-				if(i >= currentYear) {
-					markPublished = false;
-				}
-				
-				for(DwSectionGroup dwCo : dwSectionGroups) {
-					this.dwScheduleService.addOrUpdateDwSectionGroupToSchedule(dwCo, schedule, markPublished);
-				}
-
-				schedule.setImporting(false);
-
-				scheduleService.saveSchedule(schedule);
-			}
-		}
-		
-		log.debug("importSchedulesFromDataWarehouse finished.");
-	}
-
-	@Override
-	public void importWorkgroupUsersFromDataWarehouse(Workgroup workgroup) {
-		if(workgroup == null) {
-			throw new IllegalStateException("Workgroup cannot be null.");
-		}
-		
-		log.info("Importing users from DW for workgroup: " + workgroup);
-		
-		List<DwInstructor> dwInstructors = null;
-		
-		try {
-			dwInstructors = dwRepository.getDepartmentInstructorsByDeptCode(workgroup.getCode());
-			
-			log.info("Received " + dwInstructors.size() + " users from DW.");
-		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		}
-		
-		// Grab the instructorRole (we'll need this later ...)
-		Role instructorRole = this.roleService.findOneByName("senateInstructor");
-		if(instructorRole == null) {
-			throw new IllegalStateException("IPA should have an 'instructor' role!");
-		}
-
-		for(DwInstructor dwInstructor : dwInstructors) {
-			if(validDwInstructor(dwInstructor)) {
-				// Find or create a user, instructor, and proper role for this DwInstructor
-				
-				// Create user
-				User user = this.userService.findOrCreateByLoginId(dwInstructor.getLoginId());
-				
-				// Update 'user' if necessary
-				if((user.getEmail() == null) || (user.getEmail().length() == 0)) {
-					user.setEmail(dwInstructor.getEmailAddress());
-				}
-				if((user.getFirstName() == null) || (user.getFirstName().length() == 0)) {
-					user.setFirstName(dwInstructor.getFirstName());
-				}
-				if((user.getLastName() == null) || (user.getLastName().length() == 0)) {
-					user.setLastName(dwInstructor.getLastName() );
-				}
-
-				
-				// Create instructor (not a role nor a user - it is a piece of data)
-				Instructor instructor = this.instructorService.getOneByLoginId(dwInstructor.getLoginId());
-				if(instructor == null) {
-					// Some instructors may be in the DB already without a login ID ...
-					instructor = this.instructorService.getOneByUcdStudentSID(dwInstructor.getEmployeeId());
-				}
-
-				if(instructor == null) {
-					instructor = new Instructor();
-				}
-				
-				// Set or update instructor attributes
-				if((instructor.getEmail() == null) || (instructor.getEmail().length() == 0)) {
-					instructor.setEmail(dwInstructor.getEmailAddress());
-				}
-				if((instructor.getUcdStudentSID() == null) || (instructor.getUcdStudentSID().length() == 0)) {
-					instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
-				}
-				if((instructor.getFirstName() == null) || (instructor.getFirstName().length() == 0)) {
-					instructor.setFirstName(dwInstructor.getFirstName());
-				}
-				if((instructor.getLastName() == null) || (instructor.getLastName().length() == 0)) {
-					instructor.setLastName(dwInstructor.getLastName());
-				}
-				if((instructor.getLoginId() == null) || (instructor.getLoginId().length() == 0)) {
-					instructor.setLoginId(dwInstructor.getLoginId());
-				}
-				
-				this.instructorService.save(instructor);
-
-				// Ensure this user will have the 'instructor' role
-				if(user.getRoles().contains(instructorRole) == false) {
-					UserRole userRole = new UserRole();
-					
-					userRole.setUser(user);
-					userRole.setRole(instructorRole);
-					userRole.setWorkgroup(workgroup);
-					
-					this.userRoleService.save(userRole);
-				}
-			} else {
-				log.warn("Skipping an instructor during import for workgroup (" + workgroup + ") because certain fields are missing (" + dwInstructor + ").");
-			}
-		}
-	}
-	
-	/**
-	 * Returns true if given instructor has non-blank email, loginId, and name.
-	 * 
-	 * @param instructor
-	 * @return
-	 */
-	private boolean validDwInstructor(DwInstructor instructor) {
-		if(instructor.getEmailAddress() == null) return false;
-		if(instructor.getEmailAddress().length() == 0) return false;
-		if(instructor.getLoginId() == null) return false;
-		if(instructor.getLoginId().length() == 0) return false;
-		if(instructor.getFirstName() == null) return false;
-		if(instructor.getFirstName().length() == 0) return false;
-		if(instructor.getLastName() == null) return false;
-		if(instructor.getLastName().length() == 0) return false;
-
-		return true;
 	}
 }

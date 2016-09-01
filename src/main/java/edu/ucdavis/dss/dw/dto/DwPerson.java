@@ -6,47 +6,54 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DwPerson {
-	private String email, first, middle, last, loginId;
-	private List<DwAppointment> appointments;
-	
-	public String getFirst() {
-		return first;
-	}
+	private String iamId, email, dFirstName, dMiddleName, dLastName, userId, oFirstName, oMiddleName, oLastName, dFullName, oFullName;
 
-	public void setFirst(String first) {
-		this.first = first;
-	}
-
-	public String getMiddle() {
-		return middle;
-	}
-
-	public void setMiddle(String middle) {
-		this.middle = middle;
-	}
-
-	public String getLast() {
-		return last;
-	}
-
-	public void setLast(String last) {
-		this.last = last;
+	public String getIamId() {
+		return iamId;
 	}
 
 	public String getEmail() {
 		return email;
 	}
-	
-	public String getLoginId() {
-		return loginId;
+
+	public String getdFirstName() {
+		return dFirstName;
 	}
-	
-	public List<DwAppointment> getAppointments() {
-		return appointments;
+
+	public String getdMiddleName() {
+		return dMiddleName;
 	}
-	
+
+	public String getdLastName() {
+		return dLastName;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public String getoFirstName() {
+		return oFirstName;
+	}
+
+	public String getoMiddleName() {
+		return oMiddleName;
+	}
+
+	public String getoLastName() {
+		return oLastName;
+	}
+
+	public String getdFullName() {
+		return dFullName;
+	}
+
+	public String getoFullName() {
+		return oFullName;
+	}
+
 	@Override
 	public String toString() {
-		return String.format("DwPerson[email=%s,first=%s,last=%s,loginId=%s]", this.getEmail(), this.getFirst(), this.getLast(), this.getLoginId());
+		return String.format("DwPerson[iamId=%s,userId=%s,oFullName=%s]", this.getEmail(), this.getUserId(), this.getoFullName());
 	}
 }
