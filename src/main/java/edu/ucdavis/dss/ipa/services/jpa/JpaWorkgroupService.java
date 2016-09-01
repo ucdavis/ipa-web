@@ -38,19 +38,6 @@ public class JpaWorkgroupService implements WorkgroupService {
 	}
 
 	@Override
-	public boolean hasUser(Long workgroupId, String loginId) {
-		Workgroup workgroup = this.findOneById(workgroupId);
-
-		for (UserRole userRole : workgroup.getUserRoles()) {
-			// Verify User does not already have role in workgroup
-			if (userRole.getUser().getLoginId().equals(loginId)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public Workgroup findOneById(Long id) {
 		return this.workgroupRepository.findOneById(id);
 	}
