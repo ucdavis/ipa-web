@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
+import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
@@ -226,4 +227,42 @@ public class CourseViewController {
 
 		return sectionService.save(newSection);
 	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/sectionGroups", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public CourseView createMultipleCourses(@RequestBody List<SectionGroupImport> sectionGroupImportList,
+											@PathVariable Long workgroupId, @PathVariable Long year,
+											@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+											HttpServletResponse httpResponse) {
+
+		// TODO: Consider how we can improve the authorizer
+		Workgroup workgroup = this.workgroupService.findOneById(workgroupId);
+		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		if (schedule != null) {
+			for (SectionGroupImport sectionGroupImport: sectionGroupImportList) {
+				Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+						sectionGroupImport.getSubjectCode(),
+						sectionGroupImport.getCourseNumber(),
+						sectionGroupImport.getSequencePattern(),
+						sectionGroupImport.getTitle(),
+						sectionGroupImport.getEffectiveTermCode(),
+						schedule
+				);
+
+				SectionGroup sectionGroup = new SectionGroup();
+				sectionGroup.setCourse(course);
+				sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
+				sectionGroup.setTermCode(sectionGroupImport.getTermCode());
+				sectionGroupService.save(sectionGroup);
+			}
+		} else {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+	}
+
 }

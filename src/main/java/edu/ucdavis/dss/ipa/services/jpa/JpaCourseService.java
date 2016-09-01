@@ -146,4 +146,25 @@ public class JpaCourseService implements CourseService {
 		return courseRepository.findBySubjectCodeAndCourseNumberAndScheduleId(subjectCode, courseNumber, scheduleId);
 	}
 
+	@Override
+	public Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule) {
+
+		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
+				subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule);
+
+		if (course == null) {
+			course = new Course();
+			course.setSubjectCode(subjectCode);
+			course.setCourseNumber(courseNumber);
+			course.setSequencePattern(sequencePattern);
+			course.setTitle(title);
+			course.setEffectiveTermCode(effectiveTermCode);
+			course.setSchedule(schedule);
+			courseRepository.save(course);
+		}
+
+		return course;
+	}
+
 }

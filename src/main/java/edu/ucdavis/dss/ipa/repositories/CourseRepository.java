@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +41,7 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
             @Param("year") long year);
 
     List<Course> findBySubjectCodeAndCourseNumberAndScheduleId(String subjectCode, String courseNumber, Long scheduleId);
+
+    Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
+            String subjectCode, String courseNumber, String sequencePattern, String effectiveTermCode, Schedule schedule);
 }
