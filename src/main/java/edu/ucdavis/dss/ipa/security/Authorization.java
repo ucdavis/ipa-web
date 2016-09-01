@@ -108,4 +108,12 @@ public class Authorization {
         }
         return workgroups;
     }
+
+    /**
+     * Returns the number of roles the user has across all workgroups.
+     * @return
+     */
+    public static int roleCount() {
+        return Authorization.userRoles.get().size();
+    }
 }

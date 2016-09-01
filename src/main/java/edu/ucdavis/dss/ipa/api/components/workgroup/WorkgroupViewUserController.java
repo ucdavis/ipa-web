@@ -28,6 +28,10 @@ import java.util.List;
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
 public class WorkgroupViewUserController {
+    /**
+     * Number of results to return when searching for people
+     */
+    private static final int PEOPLE_SEARCH_RESULT_LIMIT = 20;
 
     private static final Logger log = LogManager.getLogger();
 
@@ -125,48 +129,42 @@ public class WorkgroupViewUserController {
     }
 
     /**
-     * Accepts a query string,
-     * returns a list of users from data warehouse.
-     * Filters out users with null loginIds or emails,
-     * and users who already have a role in the specified workgroup.
-     * @param workgroupId
+     * Search DW for people based on 'query'.
+     *
+     * Filters out users with null loginIds or emails.
+     *
      * @param query
-     * @param httpResponse
-     * @return
+     * @return list of users
      */
-    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userSearch", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/people/search", method = RequestMethod.GET)
     @ResponseBody
-    public List<User> searchUsers(
-            @PathVariable Long workgroupId,
-            @RequestParam(value = "query", required = true) String query, HttpServletResponse httpResponse) {
+    public List<User> searchUsers(@RequestParam(value = "query", required = true) String query) {
 
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        Authorizer.isAuthorized();
 
         List<User> users = new ArrayList<User>();
-        List<DwPerson> dwPeople;
 
-        try {
-            dwPeople = dwRepository.searchPeople(query);
+        List<DwPerson> dwPeople = dwRepository.searchPeople(query);
 
-            if(dwPeople == null) {
-                throw new DwResponseException();
+        for (DwPerson dwPerson : dwPeople) {
+            // Verify dwPerson has necessary data to make a User
+            if (dwPerson.getUserId() != null && dwPerson.getEmail() != null) {
+                User user = new User();
+
+                user.setLoginId(dwPerson.getUserId());
+                user.setEmail(dwPerson.getEmail());
+                user.setFirstName(dwPerson.getdFirstName());
+                user.setLastName(dwPerson.getdLastName());
+
+                users.add(user);
             }
+        }
 
-            for (DwPerson dwPerson : dwPeople) {
-                // Verify dwPerson has necessary data to make a User
-                if (dwPerson.getUserId() != null && dwPerson.getEmail() != null) {
-                    User user = new User();
-
-                    user.setLoginId(dwPerson.getUserId());
-                    user.setEmail(dwPerson.getEmail());
-                    user.setFirstName(dwPerson.getdFirstName());
-                    user.setLastName(dwPerson.getdLastName());
-
-                    users.add(user);
-                }
-            }
-        } catch (Exception e) {
-            ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+        /**
+         * Limit search results
+         */
+        if(users.size() > PEOPLE_SEARCH_RESULT_LIMIT) {
+            users = users.subList(0, PEOPLE_SEARCH_RESULT_LIMIT);
         }
 
         return users;
