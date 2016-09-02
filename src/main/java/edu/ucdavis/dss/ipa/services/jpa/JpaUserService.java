@@ -72,6 +72,7 @@ public class JpaUserService implements UserService {
 		User user = null;
 		List<DwPerson> dwPeopleResults = null;
 
+		// TODO: dwRepository should have a findOneByLoginId()
 		try {
 			dwPeopleResults = dwRepository.searchPeople(loginId);
 		} catch (Exception e) {
