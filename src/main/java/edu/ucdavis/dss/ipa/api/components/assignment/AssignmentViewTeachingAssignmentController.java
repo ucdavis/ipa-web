@@ -107,47 +107,59 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public List<TeachingAssignment> removePreference(@PathVariable long teachingAssignmentId, HttpServletResponse httpResponse) {
         TeachingAssignment DTOteachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
-        Workgroup workgroup = DTOteachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor");
 
-        SectionGroup DTOsectionGroup = DTOteachingAssignment.getSectionGroup();
-        Course DTOcourse = DTOsectionGroup.getCourse();
         Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
 
-        // Find any other courses that match this pattern
-        List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
         List<Long> teachingAssignmentIdsToDelete = new ArrayList<Long>();
         List<TeachingAssignment> teachingAssignmentsToDelete = new ArrayList<TeachingAssignment>();
 
-        boolean oneIsApproved = false;
+        // Delete a preference tied to 1 to many sectionGroups
+        if (DTOteachingAssignment.getSectionGroup() != null) {
+            SectionGroup DTOsectionGroup = DTOteachingAssignment.getSectionGroup();
+            Course DTOcourse = DTOsectionGroup.getCourse();
 
-        // Find all relevant teachingAssignments
-        // If at least one of the teachingAssignments is approved, do nothing
-        for (Course slotCourse : courses) {
-            for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
-                for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
-                    // Looking for teachingAssignments from the relevant instructor
-                    if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()
-                            && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
-                        teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
-                        teachingAssignmentsToDelete.add((slotTeachingAssignment));
+            // Find any other courses that match this pattern
+            List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
 
-                        if (slotTeachingAssignment.isApproved()) {
-                            oneIsApproved = true;
-                            break;
+            boolean oneIsApproved = false;
+
+            // Find all relevant teachingAssignments
+            // If at least one of the teachingAssignments is approved, do nothing
+            for (Course slotCourse : courses) {
+                for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                    for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
+                        // Looking for teachingAssignments from the relevant instructor
+                        if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()
+                                && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
+                            teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
+                            teachingAssignmentsToDelete.add((slotTeachingAssignment));
+
+                            if (slotTeachingAssignment.isApproved()) {
+                                oneIsApproved = true;
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
 
-        // Do nothing, the preference UI should not have allowed deletion as an option - this preference has already been approved.
-        if (oneIsApproved == true) {
-            return null;
-        } else {
-            for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
-                teachingAssignmentService.delete(slotTeachingAssignmentId);
+            // Do nothing, the preference UI should not have allowed deletion as an option - this preference has already been approved.
+            if (oneIsApproved == true) {
+                return null;
+            } else {
+                for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
+                    teachingAssignmentService.delete(slotTeachingAssignmentId);
+                }
             }
+
+        }
+        // Delete a course release / sabbatical / buyout
+        else {
+            teachingAssignmentsToDelete.add(DTOteachingAssignment);
+            teachingAssignmentService.delete((teachingAssignmentId));
+
         }
 
         return teachingAssignmentsToDelete;
@@ -167,8 +179,14 @@ public class AssignmentViewTeachingAssignmentController {
 
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
 
-        SectionGroup DTOsectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
-        Course DTOcourse = courseService.getOneById(DTOsectionGroup.getCourse().getId());
+        SectionGroup DTOsectionGroup = null;
+        Course DTOcourse = null;
+
+        if (teachingAssignment.getSectionGroup() != null) {
+            DTOsectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
+            DTOcourse = courseService.getOneById(DTOsectionGroup.getCourse().getId());
+        }
+
         Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
 
         List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
