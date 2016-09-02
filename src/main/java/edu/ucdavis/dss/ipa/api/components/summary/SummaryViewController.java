@@ -32,7 +32,6 @@ public class SummaryViewController {
         Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
-        Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
 
         // TODO: Determine if user is an academic coordinator, and get notices/events/etc data
 
