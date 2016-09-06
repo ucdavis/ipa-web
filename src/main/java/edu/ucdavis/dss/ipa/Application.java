@@ -58,27 +58,27 @@ public class Application {
     private static boolean VerifyEnvironment() {
         boolean errorsFound = false;
 
-        if(System.getenv("ipa.logging.level") == null) {
+        if(System.getProperty("ipa.logging.level") == null) {
             System.err.println("Environment variable 'ipa.logging.level' must be set (e.g. INFO, DEBUG)");
             errorsFound = true;
         }
-        if(System.getenv("ipa.datasource.url") == null) {
+        if(System.getProperty("ipa.datasource.url") == null) {
             System.err.println("Environment variable 'ipa.datasource.url' must be set (e.g. jdbc:mysql://localhost:3306/IPA)");
             errorsFound = true;
         }
-        if(System.getenv("ipa.datasource.username") == null) {
+        if(System.getProperty("ipa.datasource.username") == null) {
             System.err.println("Environment variable 'ipa.datasource.username' must be set");
             errorsFound = true;
         }
-        if(System.getenv("ipa.datasource.password") == null) {
+        if(System.getProperty("ipa.datasource.password") == null) {
             System.err.println("Environment variable 'ipa.datasource.password' must be set");
             errorsFound = true;
         }
-        if(System.getenv("ipa.spring.profile") == null) {
+        if(System.getProperty("ipa.spring.profile") == null) {
             System.err.println("Environment variable 'ipa.spring.profile' must be set (e.g. development)");
             errorsFound = true;
         }
-        if(System.getenv("ipa.jwt.signingkey") == null) {
+        if(System.getProperty("ipa.jwt.signingkey") == null) {
             System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
             errorsFound = true;
         }
