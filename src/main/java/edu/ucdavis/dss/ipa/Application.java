@@ -78,22 +78,6 @@ public class Application {
             System.err.println("Environment variable 'ipa.spring.profile' must be set (e.g. development)");
             errorsFound = true;
         }
-        if(System.getenv("ipa.ldap.url") == null) {
-            System.err.println("Environment variable 'ipa.ldap.url' must be set");
-            errorsFound = true;
-        }
-        if(System.getenv("ipa.ldap.base") == null) {
-            System.err.println("Environment variable 'ipa.ldap.base' must be set");
-            errorsFound = true;
-        }
-        if(System.getenv("ipa.ldap.user") == null) {
-            System.err.println("Environment variable 'ipa.ldap.user' must be set");
-            errorsFound = true;
-        }
-        if(System.getenv("ipa.ldap.password") == null) {
-            System.err.println("Environment variable 'ipa.ldap.password' must be set");
-            errorsFound = true;
-        }
         if(System.getenv("ipa.jwt.signingkey") == null) {
             System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
             errorsFound = true;
