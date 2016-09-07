@@ -22,6 +22,16 @@ public interface Authorizer<T> {
     }
 
     /**
+     * Throws an exception if user is not admin.
+     * Useful if you just want to authorize admins.
+     */
+    public static void isAdmin() {
+        if(Authorization.isAdmin() == false) {
+            throw new AccessDeniedException("User not authorized. Admins only.");
+        }
+    }
+
+    /**
      * Verifies that the user has the role for the workgroup or is an admin
      * @param workgroupId
      * @param roleName
