@@ -1,33 +1,18 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.WorkgroupDeserializer;
+
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
 @Entity
 @Table(name = "Workgroups")
@@ -36,6 +21,7 @@ import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 	getterVisibility = JsonAutoDetect.Visibility.NONE,
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonDeserialize(using = WorkgroupDeserializer.class)
 public class Workgroup {
 	private long id;
 	private String name, code;
@@ -47,7 +33,7 @@ public class Workgroup {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false, length = 250)
-	@JsonView(WorkgroupViews.Summary.class)
+	@JsonProperty
 	public long getId()
 	{
 		return this.id;
@@ -62,7 +48,6 @@ public class Workgroup {
 	@Column(name = "WorkgroupName", nullable = false, length = 30)
 	@NotNull
 	@JsonProperty
-	@JsonView(WorkgroupViews.Summary.class)
 	public String getName()
 	{
 		return this.name;
@@ -76,7 +61,6 @@ public class Workgroup {
 	@Basic
 	@Column(name = "WorkgroupCode", nullable = false, length = 4, unique = true)
 	@JsonProperty
-	@JsonView(WorkgroupViews.Summary.class)
 	@NotNull
 	public String getCode()
 	{
