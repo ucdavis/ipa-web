@@ -29,6 +29,7 @@ public class SectionGroup implements Serializable {
 	private Course course;
 	private List<Section> sections;
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
+	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
 	private int PlannedSeats;
 
@@ -124,4 +125,15 @@ public class SectionGroup implements Serializable {
 			return 0;
 		}
 	}
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
+	public List<Activity> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(List<Activity> activities) {
+		this.activities = activities;
+	}
+
 }

@@ -30,10 +30,17 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         List<Section> sections = new ArrayList<Section>();
         List<Activity> activities = new ArrayList<Activity>();
 
+        List<TeachingAssignment> teachingAssignmentsToAdd = new ArrayList<TeachingAssignment>();
+
         if (instructorId > 0) {
             teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
             for (TeachingAssignment teachingAssignment : teachingAssignments) {
+                if (teachingAssignment.isApproved() == false) {
+                    break;
+                }
+
+                teachingAssignmentsToAdd.add(teachingAssignment);
 
                 if (sectionGroups.contains(teachingAssignment.getSectionGroup()) == false) {
                     sectionGroups.add(teachingAssignment.getSectionGroup());
@@ -43,6 +50,14 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
                     courses.add(teachingAssignment.getSectionGroup().getCourse());
                 }
 
+                // Get activities from SectionGroup (Shared Activities)
+                for (Activity activity: teachingAssignment.getSectionGroup().getActivities()) {
+                    if (activities.contains(activity) == false) {
+                        activities.add(activity);
+                    }
+                }
+
+                // Get activities from Sections
                 for (Section section : teachingAssignment.getSectionGroup().getSections()) {
 
                     if (sections.contains(section) == false) {
@@ -58,6 +73,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             }
         }
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignments);
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd);
     }
 }
