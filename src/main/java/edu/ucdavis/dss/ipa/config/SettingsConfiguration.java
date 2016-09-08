@@ -27,90 +27,6 @@ public class SettingsConfiguration {
 
 	private static final Logger log = LogManager.getLogger();
 
-	public static void loadAndApplySettings(ConfigurableEnvironment environment, ServletContext servletContext) {
-		/* Load running mode (development, testing, production) */
-		String runningModeEnvVar = System.getProperty("edu.ucdavis.dss.ipa.RunningMode");
-		if(runningModeEnvVar != null) {
-			runningMode = RunningMode.valueOf(runningModeEnvVar);
-		}
-
-		log.info("IPA is running in " + runningMode + " mode.");
-
-		switch(runningMode) {
-		case development:
-			environment.setActiveProfiles("development");
-			break;
-		case production:
-			environment.setActiveProfiles("production");
-			break;
-		case testing:
-			environment.setActiveProfiles("testing");
-			break;
-		case staging:
-			environment.setActiveProfiles("staging");
-			break;
-		}
-
-		if(runningMode != RunningMode.testing) {
-			/* Determine site URL (used by CAS redirect, e-mail composer, and some other areas - see
-			 * usage of system property IPA_URL as well as any SettingsConfiguration.getURL() calls.) */
-			String contextPath = servletContext.getContextPath();
-			String virtualServerName = servletContext.getVirtualServerName();
-			
-			if(runningMode == RunningMode.production) {
-				url = "https://" + virtualServerName + contextPath;
-			} else if(runningMode == RunningMode.development) {
-				url = "http://" + virtualServerName + ":8080" + contextPath;
-			} else if(runningMode == RunningMode.staging) {
-				url = "http://" + virtualServerName + ":8080" + contextPath;
-			}
-			
-			System.setProperty("IPA_URL", url);
-			
-			/* Load configuration from ~/.ipa/settings.properties */
-			String filename = System.getProperty("user.home") + File.separator + ".ipa" + File.separator + "settings.properties";
-			File propsFile = new File(filename);
-			Properties prop = new Properties();
-
-			InputStream is;
-
-			try {
-				is = new FileInputStream(propsFile);
-
-				prop.load(is);
-				is.close();
-
-				if(prop.getProperty("resetDatabaseOnStartup") != null) {
-					resetDatabaseOnStartup = Boolean.parseBoolean(prop.getProperty("resetDatabaseOnStartup"));
-				}
-				if (prop.getProperty("EMAIL_PROTOCOL") != null) {
-					emailProtocol = prop.getProperty("EMAIL_PROTOCOL");
-				}
-				if (prop.getProperty("EMAIL_AUTH") != null) {
-					emailAuth = prop.getProperty("EMAIL_AUTH");
-				}
-				if (prop.getProperty("EMAIL_DEBUG") != null) {
-					emailDebug = prop.getProperty("EMAIL_DEBUG");
-				}
-				if (prop.getProperty("EMAIL_HOST") != null) {
-					emailHost = prop.getProperty("EMAIL_HOST");
-				}
-				if (prop.getProperty("EMAIL_PORT") != null) {
-					emailPort = Integer.parseInt(prop.getProperty("EMAIL_PORT"));
-				}
-
-				log.info("Settings file '" + filename + "' found.");
-			} catch (FileNotFoundException e) {
-				log.warn("Could not find " + filename + ".");
-			} catch (IOException e) {
-				log.error("An IOException occurred while loading " + filename);
-				log.error(e.getStackTrace());
-			}
-
-			log.info("Settings are: IPA_URL (" + prop.getProperty("IPA_URL") + ", set as environment variable)");
-		}
-	}
-
 	public static RunningMode getRunningMode() {
 		return runningMode;
 	}
@@ -155,6 +71,10 @@ public class SettingsConfiguration {
 		return emailHost;
 	}
 
+	// Should be in the form: http://website:8080 (no trailing slash, include protocol)
+	public static void setURL(String url) {
+		SettingsConfiguration.url = url;
+	}
 	public static String getURL() {
 		return url;
 	}
