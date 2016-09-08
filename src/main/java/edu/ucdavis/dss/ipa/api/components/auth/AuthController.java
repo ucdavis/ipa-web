@@ -53,10 +53,9 @@ public class AuthController {
         User user = null;
         String loginId = null;
 
-        int jwtDaysValid = 7;
+        int jwtMinutesValid = 60;
         Calendar calendarNow = Calendar.getInstance();
-        //calendarNow.add(Calendar.DATE, jwtDaysValid);
-        calendarNow.add(Calendar.SECOND, 20);
+        calendarNow.add(Calendar.MINUTE, jwtMinutesValid);
 
         Date expirationDate = calendarNow.getTime();
 
