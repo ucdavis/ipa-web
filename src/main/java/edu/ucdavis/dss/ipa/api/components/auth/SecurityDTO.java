@@ -3,8 +3,10 @@ package edu.ucdavis.dss.ipa.api.components.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import org.apache.poi.hssf.record.chart.SeriesChartGroupIndexRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +14,16 @@ import java.util.List;
 @JsonDeserialize(using = SecurityDTODeserializer.class)
 public class SecurityDTO {
     public String token, displayName;
-    public String redirect = "https://cas.ucdavis.edu/cas/login?service=http://localhost:8080/post-login";
+    static public String redirect = null;
     public List<UserRoleDTO> userRoles;
     public List<ScheduleTermState> termStates;
 
-    public SecurityDTO() { }
+    public SecurityDTO() {
+        if(redirect == null) { redirect = "https://cas.ucdavis.edu/cas/login?service=" + SettingsConfiguration.getURL() + "/post-login"; }
+    }
 
     public SecurityDTO(String token) {
+        this(); // to set this.redirect
         this.token = token;
     }
 
@@ -40,4 +45,6 @@ public class SecurityDTO {
     public void setTermStates(List<ScheduleTermState> termStates) {
         this.termStates = termStates;
     }
+
+    public String getRedirect() { return redirect; }
 }
