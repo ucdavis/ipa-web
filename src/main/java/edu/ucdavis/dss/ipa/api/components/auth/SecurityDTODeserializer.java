@@ -50,7 +50,7 @@ public class SecurityDTODeserializer extends JsonDeserializer<Object> {
             securityDTO.userRoles = userRoleDTOs;
         }
 
-        if (node.has("userRoles")) {
+        if (node.has("termStates")) {
 
             CollectionType collectionType =
                     TypeFactory
