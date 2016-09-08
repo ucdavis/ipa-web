@@ -38,7 +38,7 @@ public class Application {
         cas20.setFilter(new Cas20ProxyReceivingTicketValidationFilter());
         cas20.addUrlPatterns("/login", "/post-login");
         cas20.addInitParameter("casServerUrlPrefix", "https://cas.ucdavis.edu/cas");
-        cas20.addInitParameter("serverName", "http://localhost:8080");
+        cas20.addInitParameter("serverName", SettingsConfiguration.getURL());
         cas20.addInitParameter("encoding", "UTF-8");
         return cas20;
     }
