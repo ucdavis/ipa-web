@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
+import edu.ucdavis.dss.ipa.entities.Location;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
@@ -93,6 +94,12 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 
 		if (node.has("frequency")) {
 			activity.setFrequency(node.get("frequency").intValue());
+		}
+
+		if (node.has("locationId")) {
+			Location location = new Location();
+			location.setId(node.get("locationId").longValue());
+			activity.setLocation(location);
 		}
 
 		return activity;
