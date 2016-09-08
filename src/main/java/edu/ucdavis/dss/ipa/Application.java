@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa;
 
 import edu.ucdavis.dss.ipa.config.JwtFilter;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
 import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
@@ -81,6 +82,17 @@ public class Application {
         if((System.getProperty("ipa.jwt.signingkey") == null) && (System.getenv("ipa.jwt.signingkey") == null)) {
             System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
             errorsFound = true;
+        }
+
+        String ipaUrl = System.getProperty("ipa.url");
+        if(ipaUrl == null) {
+            ipaUrl = System.getenv("ipa.url");
+        }
+        if(ipaUrl == null) {
+            System.err.println("Environment variable 'ipa.url' must be set");
+            errorsFound = true;
+        } else {
+            SettingsConfiguration.setURL(ipaUrl);
         }
 
         return !errorsFound;
