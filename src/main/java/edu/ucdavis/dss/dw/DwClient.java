@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
@@ -155,6 +156,45 @@ public class DwClient {
 		}
 		
 		return dwPeople;
+	}
+
+	public List<DwTerm> getTerms() throws IOException {
+		List<DwTerm> dwTerms = null;
+
+		if(connect()) {
+			// https://beta.dw.dss.ucdavis.edu/terms?token=dssit
+			HttpGet httpGet = new HttpGet("/terms?token=" + ApiToken);
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(targetHost, httpGet, context);
+				StatusLine line = response.getStatusLine();
+
+				if(line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+
+				if (arrNode != null) {
+					dwTerms = mapper.readValue(
+							arrNode.toString(),
+							mapper.getTypeFactory().constructCollectionType(List.class, DwTerm.class));
+				} else {
+					log.warn("getTerms Reponse from DW returned null");
+				}
+
+				response.close();
+			} catch (JsonParseException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else {
+			log.warn("Could not connect to DW");
+		}
+
+		return dwTerms;
 	}
 
 }

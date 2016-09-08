@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
+import edu.ucdavis.dss.dw.dto.DwTerm;
 
 /**
  * A wrapper for DwClient usage.
@@ -14,4 +15,6 @@ import edu.ucdavis.dss.dw.dto.DwPerson;
  */
 public interface DataWarehouseRepository {
 	public List<DwPerson> searchPeople(String query);
+
+	public List<DwTerm> getTerms();
 }
