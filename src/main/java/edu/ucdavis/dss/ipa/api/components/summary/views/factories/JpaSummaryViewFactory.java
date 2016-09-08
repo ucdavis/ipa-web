@@ -5,19 +5,22 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JpaSummaryViewFactory implements SummaryViewFactory {
-    @Inject
-    WorkgroupService workgroupService;
+    @Inject WorkgroupService workgroupService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject CourseService courseService;
+    @Inject TeachingCallService teachingCallService;
+    @Inject DataWarehouseRepository dwRepository;
 
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId) {
@@ -73,6 +76,13 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             }
         }
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd);
+        // Grab teaching calls
+        // TODO: What roles can view the teaching calls?
+        List<TeachingCall> teachingCallsToAdd = teachingCallService.findByScheduleId(schedule.getId());
+
+        // Grab terms info from DW
+        List<DwTerm> dwTerms = dwRepository.getTerms();
+
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, dwTerms);
     }
 }

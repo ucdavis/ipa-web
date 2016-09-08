@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.summary.views;
 
+import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.entities.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +12,29 @@ public class SummaryView {
     List<Activity> activities = new ArrayList<Activity>();
 
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
+    List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
+    List<DwTerm> dwTerms = new ArrayList<DwTerm>();
 
     public SummaryView(List<Course> courses,
                        List<SectionGroup> sectionGroups,
                        List<Section> sections,
                        List<Activity> activities,
-                       List<TeachingAssignment> teachingAssignments) {
+                       List<TeachingAssignment> teachingAssignments,
+                       List<TeachingCall> teachingCalls,
+                       List<DwTerm> dwTerms) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
         setActivities(activities);
         setTeachingAssignments(teachingAssignments);
+        setTeachingCalls(teachingCalls);
+        setDwTerms(dwTerms);
     }
+
+    public List<DwTerm> getDwTerm() { return this.dwTerms; }
+
+    public void setDwTerms(List<DwTerm> dwTerms) { this.dwTerms = dwTerms; }
 
     public List<Course> getCourses() {
         return courses;
@@ -48,6 +59,9 @@ public class SummaryView {
     public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
         this.teachingAssignments = teachingAssignments;
     }
+
+    public List<TeachingCall> getTeachingCalls() { return this.teachingCalls; }
+    public void setTeachingCalls(List<TeachingCall> teachingCalls) { this.teachingCalls = teachingCalls; }
 
     public List<Section> getSections() {
         return sections;
