@@ -16,8 +16,7 @@ public class SecurityDTO {
     public List<UserRoleDTO> userRoles;
     public List<ScheduleTermState> termStates;
 
-    public SecurityDTO() {
-    }
+    public SecurityDTO() { }
 
     public SecurityDTO(String token) {
         this.token = token;

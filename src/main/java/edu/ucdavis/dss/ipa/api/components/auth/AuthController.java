@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.api.components.auth;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -12,6 +14,8 @@ import javax.servlet.http.HttpSession;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -44,11 +48,39 @@ public class AuthController {
         Cookie[] cookies = request.getCookies();
         String signingKey = System.getenv("ipa.jwt.signingkey");
 
+        List<UserRole> userRoles = null;
+        List<ScheduleTermState> termStates = null;
+        User user = null;
+        String loginId = null;
+
+        int jwtDaysValid = 7;
+        Calendar calendarNow = Calendar.getInstance();
+        //calendarNow.add(Calendar.DATE, jwtDaysValid);
+        calendarNow.add(Calendar.SECOND, 20);
+
+        Date expirationDate = calendarNow.getTime();
+
         // Check if the token exists, else check for CAS
         if (securityDTO.token != null) {
             try {
                 Claims claims = Jwts.parser().setSigningKey(signingKey)
                         .parseClaimsJws(securityDTO.token).getBody();
+
+                // Ensure token is not expired before we refresh it
+                Date now = new Date();
+                Date tokenExpirationDate = new Date((Long)claims.get("expirationDate"));
+
+                // if 'now' has passed expirationDate, set the token to null, otherwise returnt he token back.
+                if (now.compareTo(tokenExpirationDate) > 0) {
+                    // Instead of a 440, we'll be returning the CAS redirect
+                    securityDTO.token = null;
+                } else {
+                    loginId = (String) claims.get("loginId");
+
+                    userRoles = userRoleService.findByLoginId(loginId);
+                    termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
+                    user = userService.getOneByLoginId(loginId);
+                }
 
                 // This should execute only if parsing claims above
                 // successfully executes, hence token is valid
@@ -63,33 +95,29 @@ public class AuthController {
             }
         } else {
             if (request.getUserPrincipal() != null) {
-                String loginId = request.getUserPrincipal().getName();
+                loginId = request.getUserPrincipal().getName();
 
-                int jwtDaysValid = 7;
-                Calendar now = Calendar.getInstance();
-                now.add(Calendar.DATE, jwtDaysValid);
-
-                Date expirationDate = now.getTime();
-
-                List<UserRole> userRoles = userRoleService.findByLoginId(loginId);
-                List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
-                User user = userService.getOneByLoginId(loginId);
+                userRoles = userRoleService.findByLoginId(loginId);
+                termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
+                user = userService.getOneByLoginId(loginId);
 
                 if (user == null) {
                     throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
                 }
-
-                securityDTO.token = Jwts.builder().setSubject(loginId)
-                        .claim("userRoles", userRoles)
-                        .claim("loginId", loginId)
-                        .claim("expirationDate", expirationDate)
-                        .claim("termStates", termStates)
-                        .setIssuedAt(new Date())
-                        .signWith(SignatureAlgorithm.HS256, signingKey).compact();
-                securityDTO.setUserRoles(userRoles);
-                securityDTO.setTermStates(termStates);
-                securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             }
+        }
+
+        // May not be set if we need to redirect to CAS
+        if(userRoles != null) {
+            securityDTO.token = Jwts.builder().setSubject(loginId)
+                    .claim("userRoles", userRoles)
+                    .claim("loginId", loginId)
+                    .claim("expirationDate", expirationDate)
+                    .setIssuedAt(new Date())
+                    .signWith(SignatureAlgorithm.HS256, signingKey).compact();
+            securityDTO.setUserRoles(userRoles);
+            securityDTO.setTermStates(termStates);
+            securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
         }
 
         return securityDTO;

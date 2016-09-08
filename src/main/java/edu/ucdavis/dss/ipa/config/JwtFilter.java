@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JwtFilter extends GenericFilterBean {
 
@@ -46,9 +47,9 @@ public class JwtFilter extends GenericFilterBean {
                 Date now = new Date();
                 Date expirationDate = new Date(Authorization.getExpirationDate());
 
-                // if now has passed expirationDate, set the token to null, otherwise returnt he token back.
+                // if 'now' has passed expirationDate, set the token to null, otherwise returnt he token back.
                 if (now.compareTo(expirationDate) > 0) {
-                    // Return 'Login Required' status code
+                    // Return 'Login Required' (440) status code
                     HttpServletResponse httpServletResponse = (HttpServletResponse) res;
                     httpServletResponse.setStatus(440);
                     String origin = request.getHeader("Origin");
@@ -57,13 +58,17 @@ public class JwtFilter extends GenericFilterBean {
                     httpServletResponse.addHeader("Access-Control-Allow-Headers", "accept, authorization");
                     httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET");
                     httpServletResponse.addHeader("Allow", "GET");
-                    httpServletResponse.getOutputStream().flush();
+
+                    // In sending a 440 we will echo the request body as the response body,
+                    // this allows the client to re-submit the request after resolving the 440 issue.
+                    httpServletResponse.getWriter().write(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
+                    httpServletResponse.getWriter().flush();
+                    httpServletResponse.getWriter().close();
                     return;
                 }
             } catch (final SignatureException e) {
                 throw new ServletException("Invalid token.");
             }
-
         }
 
         chain.doFilter(req, res);
