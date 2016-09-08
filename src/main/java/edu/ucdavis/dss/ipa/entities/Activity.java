@@ -294,4 +294,14 @@ public class Activity implements Serializable {
 		}
 		return this.getLocation().getId();
 	}
+
+	@Transient
+	@JsonProperty("locationDescription")
+	public String getLocationDescription() {
+		if (this.bannerLocation != null || this.bannerLocation.length() > 0) {
+			return this.bannerLocation;
+		}
+
+		return this.location.getDescription();
+	}
 }
