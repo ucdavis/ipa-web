@@ -146,17 +146,19 @@ public class WorkgroupViewUserController {
 
         List<DwPerson> dwPeople = dwRepository.searchPeople(query);
 
-        for (DwPerson dwPerson : dwPeople) {
-            // Verify dwPerson has necessary data to make a User
-            if (dwPerson.getUserId() != null && dwPerson.getEmail() != null) {
-                User user = new User();
+        if(dwPeople != null) {
+            for (DwPerson dwPerson : dwPeople) {
+                // Verify dwPerson has necessary data to make a User
+                if (dwPerson.getUserId() != null && dwPerson.getEmail() != null) {
+                    User user = new User();
 
-                user.setLoginId(dwPerson.getUserId());
-                user.setEmail(dwPerson.getEmail());
-                user.setFirstName(dwPerson.getdFirstName());
-                user.setLastName(dwPerson.getdLastName());
+                    user.setLoginId(dwPerson.getUserId());
+                    user.setEmail(dwPerson.getEmail());
+                    user.setFirstName(dwPerson.getdFirstName());
+                    user.setLastName(dwPerson.getdLastName());
 
-                users.add(user);
+                    users.add(user);
+                }
             }
         }
 
