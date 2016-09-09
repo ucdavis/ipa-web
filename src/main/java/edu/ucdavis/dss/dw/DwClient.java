@@ -50,38 +50,10 @@ public class DwClient {
 	private String ApiUrl, ApiToken;
 	private int ApiPort;
 
-	public DwClient() throws Exception {
-		String filename = System.getProperty("user.home") + File.separator + ".ipa" + File.separator + "dss-dw.properties";
-		File propsFile = new File(filename);
-
-		try {
-			InputStream input;
-
-			input = new FileInputStream(propsFile);
-
-			Properties prop = new Properties();
-
-			prop.load(input);
-			input.close();
-
-			if (prop.getProperty("URL") == null) {
-				throw new Exception(filename + " is missing required URL property.");
-			}
-			if (prop.getProperty("TOKEN") == null) {
-				throw new Exception(filename + " is missing required TOKEN property.");
-			}
-			if (prop.getProperty("PORT") == null) {
-				throw new Exception(filename + " is missing required PORT property.");
-			}
-			
-			ApiUrl = prop.getProperty("URL");
-			ApiToken = prop.getProperty("TOKEN");
-			ApiPort = Integer.parseInt(prop.getProperty("PORT"));
-		} catch (FileNotFoundException e) {
-			throw new Exception("Could not find " + filename + ".");
-		} catch (IOException e) {
-			throw new Exception("Unhandled IOException in DwClient: " + e);
-		}
+	public DwClient(String url, String token, String port) throws Exception {
+		ApiUrl = url;
+		ApiToken = token;
+		ApiPort = Integer.parseInt(port);
 	}
 
 	private boolean connect() {
