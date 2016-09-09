@@ -7,16 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkgroupView {
-	List<Tag> tags = new ArrayList<Tag>();
-	List<Role> roles = new ArrayList<Role>();
-	List<User> users = new ArrayList<User>();
-	List<Location> locations = new ArrayList<Location>();
+	private List<Tag> tags = new ArrayList<Tag>();
+	private List<Role> roles = new ArrayList<Role>();
+	private List<User> users = new ArrayList<User>();
+	private List<Location> locations = new ArrayList<Location>();
+	private String workgroupName;
+
 
 	public WorkgroupView(Workgroup workgroup, List<UserRole> userRoles, List<Role> roles, List<User> users) {
 		setTags(workgroup.getTags());
 		setRoles(roles);
 		setUsers(users);
 		setLocations(workgroup.getLocations());
+		setWorkgroupName(workgroup.getName());
 	}
 
 	public List<Tag> getTags() {
@@ -49,5 +52,13 @@ public class WorkgroupView {
 
 	public void setLocations(List<Location> locations) {
 		this.locations = locations;
+	}
+
+	public String getWorkgroupName() {
+		return workgroupName;
+	}
+
+	public void setWorkgroupName(String workgroupName) {
+		this.workgroupName = workgroupName;
 	}
 }

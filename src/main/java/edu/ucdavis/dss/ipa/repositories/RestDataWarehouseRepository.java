@@ -21,9 +21,17 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
      */
 	public List<DwPerson> searchPeople(String query) {
 		DwClient dwClient = null;
-		
+		String dwUrl, dwToken, dwPort;
+
+		dwUrl = System.getProperty("dw.url");
+		if(dwUrl == null) { dwUrl = System.getenv("dw.url"); }
+		dwToken = System.getProperty("dw.token");
+		if(dwToken == null) { dwToken = System.getenv("dw.token"); }
+		dwPort = System.getProperty("dw.port");
+		if(dwPort == null) { dwPort = System.getenv("dw.port"); }
+
 		try {
-			dwClient = new DwClient();
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 			
 			return dwClient.searchPeople(query);
 		} catch (Exception e) {

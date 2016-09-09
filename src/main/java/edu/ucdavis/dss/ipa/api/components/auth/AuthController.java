@@ -46,7 +46,8 @@ public class AuthController {
     public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
-        String signingKey = System.getenv("ipa.jwt.signingkey");
+        String signingKey = System.getProperty("ipa.jwt.signingkey");
+        if(signingKey == null) { signingKey = System.getenv("ipa.jwt.signingkey"); }
 
         List<UserRole> userRoles = null;
         List<ScheduleTermState> termStates = null;

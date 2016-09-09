@@ -83,6 +83,18 @@ public class Application {
             System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
             errorsFound = true;
         }
+        if((System.getProperty("dw.url") == null) && (System.getenv("dw.url") == null)) {
+            System.err.println("Environment variable 'dw.url' must be set");
+            errorsFound = true;
+        }
+        if((System.getProperty("dw.token") == null) && (System.getenv("dw.token") == null)) {
+            System.err.println("Environment variable 'dw.token' must be set");
+            errorsFound = true;
+        }
+        if((System.getProperty("dw.port") == null) && (System.getenv("dw.port") == null)) {
+            System.err.println("Environment variable 'dw.port' must be set");
+            errorsFound = true;
+        }
 
         String ipaUrl = System.getProperty("ipa.url");
         if(ipaUrl == null) {
