@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwTerm;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -21,17 +22,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
      */
 	public List<DwPerson> searchPeople(String query) {
 		DwClient dwClient = null;
-		String dwUrl, dwToken, dwPort;
-
-		dwUrl = System.getProperty("dw.url");
-		if(dwUrl == null) { dwUrl = System.getenv("dw.url"); }
-		dwToken = System.getProperty("dw.token");
-		if(dwToken == null) { dwToken = System.getenv("dw.token"); }
-		dwPort = System.getProperty("dw.port");
-		if(dwPort == null) { dwPort = System.getenv("dw.port"); }
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
 			
 			return dwClient.searchPeople(query);
 		} catch (Exception e) {
@@ -46,17 +39,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 */
 	public List<DwTerm> getTerms() {
 		DwClient dwClient = null;
-		String dwUrl, dwToken, dwPort;
-
-		dwUrl = System.getProperty("dw.url");
-		if(dwUrl == null) { dwUrl = System.getenv("dw.url"); }
-		dwToken = System.getProperty("dw.token");
-		if(dwToken == null) { dwToken = System.getenv("dw.token"); }
-		dwPort = System.getProperty("dw.port");
-		if(dwPort == null) { dwPort = System.getenv("dw.port"); }
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
 
 			return dwClient.getTerms();
 		} catch (Exception e) {

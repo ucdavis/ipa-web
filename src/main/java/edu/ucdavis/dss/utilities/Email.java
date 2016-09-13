@@ -29,14 +29,11 @@ public class Email {
 	 * @param messageSubject message subject
 	 */
 	public static boolean send(String recipientEmail, String messageBody, String messageSubject) {
-		if (SettingsConfiguration.runningModeIsProduction()) {
-			if (sendEmail(recipientEmail, messageBody, messageSubject, true) == false) {
-				return false;
-			}
-			return true;
+		if(SettingsConfiguration.runningModeIsProduction()) {
+			return sendEmail(recipientEmail, messageBody, messageSubject, true);
+		} else {
+			log.info("Suppressed e-mail as server is not in production mode. To: '" + recipientEmail + "', Subject: '" + messageSubject + "'.");
 		}
-
-		log.info("Suppressed email to '" + recipientEmail + "', subject '" + messageSubject + "' - Server is not in production mode");
 
 		return true;
 	}
@@ -44,9 +41,8 @@ public class Email {
 	/**
 	 * Sends email if runningMode is production or staging, else email is suppressed.
 	 * 
-	 * Use this to e-mail developers.
+	 * Use this to e-mail the developers.
 	 * 
-	 * @param recipientEmail address to send to
 	 * @param messageBody body of the message
 	 * @param messageSubject message subject
 	 */
@@ -70,9 +66,9 @@ public class Email {
 		
 		try {
 			fromAddress = "no-reply@" + InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
+		} catch(UnknownHostException e) {
 			fromAddress = "no-reply@unknown";
-			log.error("Could not determine local hostname when sending e-mail. Exception:", e);
+			log.error("Could not determine local hostname when sending e-mail. Exception: ", e);
 		}
 		
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
@@ -98,13 +94,14 @@ public class Email {
 				helper.setText(messageBody, true);
 	
 				sender.send(message);
+
 				log.info("Sending email to '" + recipientEmail + "', subject '" + messageSubject + "'");
 			} catch (MailException e) {
 				log.error("A MailException occurred while sending email to '" + recipientEmail + "'", e);
 				return false;
 			} catch (MessagingException e) {
 				log.error("A MessagingException occurred while sending email to '" + recipientEmail + "'", e);
-
+				return false;
 			}
 	
 			return true;

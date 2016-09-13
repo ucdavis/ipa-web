@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
@@ -46,8 +47,6 @@ public class AuthController {
     public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
         Enumeration<String> headers = request.getHeaderNames();
         Cookie[] cookies = request.getCookies();
-        String signingKey = System.getProperty("ipa.jwt.signingkey");
-        if(signingKey == null) { signingKey = System.getenv("ipa.jwt.signingkey"); }
 
         List<UserRole> userRoles = null;
         List<ScheduleTermState> termStates = null;
@@ -63,7 +62,7 @@ public class AuthController {
         // Check if the token exists, else check for CAS
         if (securityDTO.token != null) {
             try {
-                Claims claims = Jwts.parser().setSigningKey(signingKey)
+                Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
                         .parseClaimsJws(securityDTO.token).getBody();
 
                 // Ensure token is not expired before we refresh it
@@ -114,7 +113,7 @@ public class AuthController {
                     .claim("loginId", loginId)
                     .claim("expirationDate", expirationDate)
                     .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, signingKey).compact();
+                    .signWith(SignatureAlgorithm.HS256, SettingsConfiguration.getJwtSigningKey()).compact();
             securityDTO.setUserRoles(userRoles);
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());

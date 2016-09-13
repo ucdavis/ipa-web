@@ -185,7 +185,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		String recipientEmail = user.getEmail();
 		String messageSubject = "";
-		String teachingCallUrl = SettingsConfiguration.getURL() + "/teachingCalls/#/" + teachingCallReceipt.getTeachingCall().getId();
+		String teachingCallUrl = SettingsConfiguration.getIpaURL() + "/teachingCalls/#/" + teachingCallReceipt.getTeachingCall().getId();
 		String messageBody ="";
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 

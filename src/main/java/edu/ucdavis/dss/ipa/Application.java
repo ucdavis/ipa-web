@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa;
 import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
+import org.apache.coyote.http2.Setting;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
 import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.boot.SpringApplication;
@@ -38,7 +39,7 @@ public class Application {
         cas20.setFilter(new Cas20ProxyReceivingTicketValidationFilter());
         cas20.addUrlPatterns("/login", "/post-login");
         cas20.addInitParameter("casServerUrlPrefix", "https://cas.ucdavis.edu/cas");
-        cas20.addInitParameter("serverName", SettingsConfiguration.getURL());
+        cas20.addInitParameter("serverName", SettingsConfiguration.getIpaURL());
         cas20.addInitParameter("encoding", "UTF-8");
         return cas20;
     }
@@ -51,67 +52,10 @@ public class Application {
         return requestWrapper;
     }
 
-    /**
-     * Ensures environment variables required by application.properties are set.
-     *
-     * Returns true if all required environment variables are found.
-     */
-    private static boolean VerifyEnvironment() {
-        boolean errorsFound = false;
-
-        if((System.getProperty("ipa.logging.level") == null) && (System.getenv("ipa.logging.level") == null)) {
-            System.err.println("Environment variable 'ipa.logging.level' must be set (e.g. INFO, DEBUG)");
-            errorsFound = true;
-        }
-        if((System.getProperty("ipa.datasource.url") == null) && (System.getenv("ipa.datasource.url") == null)) {
-            System.err.println("Environment variable 'ipa.datasource.url' must be set (e.g. jdbc:mysql://localhost:3306/IPA)");
-            errorsFound = true;
-        }
-        if((System.getProperty("ipa.datasource.username") == null) && (System.getenv("ipa.datasource.username") == null)) {
-            System.err.println("Environment variable 'ipa.datasource.username' must be set");
-            errorsFound = true;
-        }
-        if((System.getProperty("ipa.datasource.password") == null) && (System.getenv("ipa.datasource.password") == null)) {
-            System.err.println("Environment variable 'ipa.datasource.password' must be set");
-            errorsFound = true;
-        }
-        if((System.getProperty("ipa.spring.profile") == null) && (System.getenv("ipa.spring.profile") == null)) {
-            System.err.println("Environment variable 'ipa.spring.profile' must be set (e.g. development)");
-            errorsFound = true;
-        }
-        if((System.getProperty("ipa.jwt.signingkey") == null) && (System.getenv("ipa.jwt.signingkey") == null)) {
-            System.err.println("Environment variable 'ipa.jwt.signingkey' must be set");
-            errorsFound = true;
-        }
-        if((System.getProperty("dw.url") == null) && (System.getenv("dw.url") == null)) {
-            System.err.println("Environment variable 'dw.url' must be set");
-            errorsFound = true;
-        }
-        if((System.getProperty("dw.token") == null) && (System.getenv("dw.token") == null)) {
-            System.err.println("Environment variable 'dw.token' must be set");
-            errorsFound = true;
-        }
-        if((System.getProperty("dw.port") == null) && (System.getenv("dw.port") == null)) {
-            System.err.println("Environment variable 'dw.port' must be set");
-            errorsFound = true;
-        }
-
-        String ipaUrl = System.getProperty("ipa.url");
-        if(ipaUrl == null) {
-            ipaUrl = System.getenv("ipa.url");
-        }
-        if(ipaUrl == null) {
-            System.err.println("Environment variable 'ipa.url' must be set");
-            errorsFound = true;
-        } else {
-            SettingsConfiguration.setURL(ipaUrl);
-        }
-
-        return !errorsFound;
-    }
-
     public static void main(final String[] args) throws Exception {
-        if(VerifyEnvironment()) {
+        SettingsConfiguration.loadSettings();
+
+        if(SettingsConfiguration.isValid()) {
             SpringApplication.run(Application.class, args);
         } else {
             System.err.println("\nApplication will not run until the above errors are addressed.");

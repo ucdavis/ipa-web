@@ -38,9 +38,7 @@ public class JwtFilter extends GenericFilterBean {
             final String token = authHeader.substring(7); // The part after "Bearer "
 
             try {
-                String signingKey = System.getProperty("ipa.jwt.signingkey");
-                if(signingKey == null) { signingKey = System.getenv("ipa.jwt.signingkey"); }
-                final Claims claims = Jwts.parser().setSigningKey(signingKey)
+                final Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
                         .parseClaimsJws(token).getBody();
 
                 Authorization.setLoginId((String) claims.get("loginId"));
