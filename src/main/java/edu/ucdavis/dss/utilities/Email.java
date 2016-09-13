@@ -51,7 +51,8 @@ public class Email {
 		String recipientEmail = "dssit-devs-exceptions@ucdavis.edu";
 
 		if(SettingsConfiguration.runningModeIsProduction() || SettingsConfiguration.runningModeIsStaging()) {
-			if (sendEmail(recipientEmail, messageBody, messageSubject, false) == false) {
+			log.info("reportException will send e-mail with subject: " + messageSubject);
+			if(sendEmail(recipientEmail, messageBody, messageSubject, false) == false) {
 				return false;
 			}
 			return true;
