@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.coyote.http2.Setting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.mail.MailException;
@@ -62,15 +63,6 @@ public class Email {
 	}
 
 	private static boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode) {
-		String fromAddress = null;
-		
-		try {
-			fromAddress = "no-reply@" + InetAddress.getLocalHost().getHostName();
-		} catch(UnknownHostException e) {
-			fromAddress = "no-reply@unknown";
-			log.error("Could not determine local hostname when sending e-mail. Exception: ", e);
-		}
-		
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 
 		sender.setHost(SettingsConfiguration.getEmailHost());
@@ -89,7 +81,7 @@ public class Email {
 			try {
 				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 				helper.setTo(recipientEmail);
-				helper.setFrom(fromAddress);
+				helper.setFrom(SettingsConfiguration.getEmailFrom());
 				helper.setSubject(messageSubject);
 				helper.setText(messageBody, true);
 	
@@ -109,7 +101,7 @@ public class Email {
 			SimpleMailMessage message = new SimpleMailMessage();
 
 			message.setTo(recipientEmail);
-			message.setFrom(fromAddress);
+			message.setFrom(SettingsConfiguration.getEmailFrom());
 			message.setSubject(messageSubject);
 			message.setText(messageBody);
 		

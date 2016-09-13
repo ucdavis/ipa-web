@@ -23,7 +23,7 @@ public class SettingsConfiguration {
 	private static RunningMode runningMode = RunningMode.development;
 
 	private static String ipaUrl;
-	private static String emailProtocol, emailAuth, emailDebug, emailHost;
+	private static String emailProtocol, emailAuth, emailDebug, emailHost, emailFrom;
 	private static Integer emailPort;
 	private static Boolean errorsFound = null;
 	private static String jwtSigningKey;
@@ -58,6 +58,7 @@ public class SettingsConfiguration {
 		emailAuth = findOrWarnSetting("ipa.email.auth");
 		emailDebug = findOrWarnSetting("ipa.email.debug");
 		emailHost = findOrWarnSetting("ipa.email.host");
+		emailFrom = findOrWarnSetting("ipa.email.from");
 		String sEmailPort = findOrWarnSetting("ipa.email.port");
 		if(sEmailPort != null) { emailPort = Integer.parseInt(sEmailPort); }
 
@@ -121,6 +122,10 @@ public class SettingsConfiguration {
 
 	public static String getEmailDebug() {
 		return emailDebug;
+	}
+
+	public static String getEmailFrom() {
+		return emailFrom;
 	}
 
 	public static Integer getEmailPort() {
