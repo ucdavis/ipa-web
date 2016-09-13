@@ -85,7 +85,7 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		buffer.append("\n\n\tPayload          : ");
 		try {
 			reader = request.getReader();
-			if(reader != null) {
+			if (reader != null) {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					bodyBuffer.append(line);
@@ -95,8 +95,10 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 			}
 			buffer.append(bodyBuffer.toString());
 			buffer.append("\n");
+		} catch (IllegalStateException e) {
+			bodyBuffer.append("(unable to fetch; IllegalStateException occurred)");
 		} catch (IOException e) {
-			e.printStackTrace();
+			bodyBuffer.append("(unable to fetch; IOException occurred)");
 		}
 
 		/* Convert the stack trace into a string */

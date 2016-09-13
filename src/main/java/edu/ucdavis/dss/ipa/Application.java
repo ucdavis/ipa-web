@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa;
 
+import edu.ucdavis.dss.ipa.api.helpers.RequestWrapperFilter;
 import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.exceptions.handlers.MvcExceptionHandler;
@@ -74,6 +75,13 @@ public class Application {
         resolver.setDefaultStatusCode(500);
 
         return resolver;
+    }
+
+    // Configure the request wrapper filter so our exception handler
+    // can read the servlet input stream after it has already been read
+    @Bean
+    public RequestWrapperFilter requestWrapperFilter() {
+        return new RequestWrapperFilter();
     }
 
     public static void main(final String[] args) throws Exception {

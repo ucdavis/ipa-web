@@ -47,7 +47,8 @@ public class SettingsConfiguration {
 		findOrWarnSetting("ipa.datasource.password");
 
 		/* Load running mode (development, testing, production) */
-		runningMode = RunningMode.valueOf(findOrWarnSetting("ipa.spring.profile"));
+		String sRunningMode = findOrWarnSetting("ipa.spring.profile");
+		if(sRunningMode != null) { runningMode = RunningMode.valueOf(sRunningMode); }
 		jwtSigningKey = findOrWarnSetting("ipa.jwt.signingkey");
 		dwUrl = findOrWarnSetting("dw.url");
 		dwToken = findOrWarnSetting("dw.token");
@@ -60,8 +61,14 @@ public class SettingsConfiguration {
 		String sEmailPort = findOrWarnSetting("ipa.email.port");
 		if(sEmailPort != null) { emailPort = Integer.parseInt(sEmailPort); }
 
-		log.info("IPA is running in " + runningMode + " mode.");
-		//log.info("Settings are: IPA_URL (" + prop.getProperty("IPA_URL") + ", set as environment variable)");
+		// Use ipa.spring.profile to set the Spring Profile
+		System.setProperty("spring.profiles.active", sRunningMode);
+
+		log.info("IPA started with the following settings:");
+		log.info("\tRunning Mode: " + runningMode);
+		log.info("\tE-Mail Host : " + emailHost);
+		log.info("\tE-Mail Port : " + emailPort);
+		log.info("\tDW URL      : " + dwUrl);
 	}
 
 	private static String findOrWarnSetting(String variableName) {
