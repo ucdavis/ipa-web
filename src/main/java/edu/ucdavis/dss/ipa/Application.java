@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa;
 
 import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
+import edu.ucdavis.dss.ipa.exceptions.handlers.MvcExceptionHandler;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
 import org.apache.coyote.http2.Setting;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
@@ -11,10 +12,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+
+import java.util.Properties;
 
 @EnableScheduling
 @SpringBootApplication
 public class Application {
+    // Configure JWT
     @Bean
     public FilterRegistrationBean jwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -24,6 +30,7 @@ public class Application {
         return registrationBean;
     }
 
+    // Configure basic security headers
     @Bean
     public FilterRegistrationBean securityHeaders() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -33,6 +40,7 @@ public class Application {
         return registrationBean;
     }
 
+    // Configure CAS
     @Bean
     public FilterRegistrationBean cas20Registration() {
         FilterRegistrationBean cas20 = new FilterRegistrationBean();
@@ -50,6 +58,22 @@ public class Application {
         requestWrapper.setFilter(new HttpServletRequestWrapperFilter());
         requestWrapper.addUrlPatterns("/login", "/post-login");
         return requestWrapper;
+    }
+
+    // Configure exception handlers
+    @Bean
+    public SimpleMappingExceptionResolver webExceptionResolver() {
+        MvcExceptionHandler resolver = new MvcExceptionHandler();
+
+        Properties mappings = new Properties();
+        mappings.setProperty("AccessDeniedException", "../errors/403");
+        resolver.setExceptionMappings(mappings);
+
+        resolver.setExcludedExceptions(AccessDeniedException.class);
+        resolver.setDefaultErrorView("../errors/unhandled-exception");
+        resolver.setDefaultStatusCode(500);
+
+        return resolver;
     }
 
     public static void main(final String[] args) throws Exception {

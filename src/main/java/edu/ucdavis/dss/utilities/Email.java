@@ -95,7 +95,7 @@ public class Email {
 	
 				sender.send(message);
 
-				log.info("Sending email to '" + recipientEmail + "', subject '" + messageSubject + "'");
+				log.info("Sending e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
 			} catch (MailException e) {
 				log.error("A MailException occurred while sending email to '" + recipientEmail + "'", e);
 				return false;
@@ -115,7 +115,7 @@ public class Email {
 		
 			try {
 				sender.send(message);
-				log.info("Sending email to '" + recipientEmail + "', subject '" + messageSubject + "'");
+				log.info("Sending e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
 			} catch (MailException e) {
 				log.error("A MailException occurred while sending email to '" + recipientEmail + "'", e);
 				return false;
