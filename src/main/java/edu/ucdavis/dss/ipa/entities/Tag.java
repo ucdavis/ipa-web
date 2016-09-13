@@ -79,7 +79,7 @@ public class Tag {
 	}
 
 	@Basic
-	@Column(name = "Color", nullable = false, length = 6)
+	@Column(name = "Color")
 	@JsonProperty
 	public String getColor() {
 		return color;

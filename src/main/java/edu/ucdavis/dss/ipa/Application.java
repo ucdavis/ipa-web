@@ -5,7 +5,6 @@ import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.exceptions.handlers.MvcExceptionHandler;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
-import org.apache.coyote.http2.Setting;
 import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
 import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.boot.SpringApplication;
