@@ -30,7 +30,7 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		StringBuffer buffer = new StringBuffer();
 
 		// Basic information
-		buffer.append("Unhandled exception at " + dateFormat.format(new Date().getTime()));
+		buffer.append("Unhandled MVC exception at " + dateFormat.format(new Date().getTime()));
 		buffer.append("\n");
 		buffer.append("\nDetails:");
 		buffer.append("\n\tMessage          : " + ex.getMessage());

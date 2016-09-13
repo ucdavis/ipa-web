@@ -22,7 +22,7 @@ public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
 		StringBuffer buffer = new StringBuffer();
 		
-		buffer.append("Unhandled exception at " + dateFormat.format(new Date().getTime()) + ".\n\nDetails:");
+		buffer.append("Unhandled async exception at " + dateFormat.format(new Date().getTime()) + ".\n\nDetails:");
 		buffer.append("\n\tMessage          : " + ex.getMessage());
 		buffer.append("\n\tCause            : " + ex.getCause());
 		buffer.append("\n\tMethod           : " + method.getName());
