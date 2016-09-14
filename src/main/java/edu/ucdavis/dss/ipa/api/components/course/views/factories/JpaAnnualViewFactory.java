@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.course.views.CourseExcelView;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -36,5 +38,11 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 
 		return new CourseView(courses, sectionGroups, scheduleTermStates, workgroup.getTags());
 	}
+
+    @Override
+    public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
+    	CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
+		return new CourseExcelView(courseView);
+    }
 
 }

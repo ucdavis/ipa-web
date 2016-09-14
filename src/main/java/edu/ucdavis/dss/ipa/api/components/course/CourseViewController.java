@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -263,6 +264,25 @@ public class CourseViewController {
 		}
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+	}
+
+	/**
+	 * Exports a schedule as an Excel .xls file
+	 *
+	 * @param workgroupId
+	 * @param year
+	 * @param showDoNotPrint
+	 * @param httpResponse
+	 * @return
+	 */
+	@RequestMapping(value = "/courseView/workgroups/{workgroupId}/years/{year}/excel")
+	public View excelExport(@PathVariable long workgroupId, @PathVariable long year,
+							@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+							HttpServletResponse httpResponse) {
+		// TODO: How to handle authorization on non-/api requests
+		// Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
 	}
 
 }
