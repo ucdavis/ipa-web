@@ -70,30 +70,25 @@ public class JpaUserService implements UserService {
 	@Override
 	public User createByLoginId(String loginId) {
 		User user = null;
-		List<DwPerson> dwPeopleResults = null;
+		DwPerson dwPerson = null;
 
-		// TODO: dwRepository should have a findOneByLoginId()
 		try {
-			dwPeopleResults = dwRepository.searchPeople(loginId);
+			dwPerson = dwRepository.getPersonByLoginId(loginId);
 		} catch (Exception e) {
 			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 		}
 
-		if(dwPeopleResults != null) {
-			for(DwPerson dwPerson : dwPeopleResults) {
-				if((dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
-					user = new User();
+		if((dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
+			user = new User();
 
-					user.setFirstName(dwPerson.getdFirstName());
-					user.setLastName(dwPerson.getdLastName() );
-					user.setLoginId(loginId);
-					user.setEmail(dwPerson.getEmail());
+			user.setFirstName(dwPerson.getdFirstName());
+			user.setLastName(dwPerson.getdLastName() );
+			user.setLoginId(loginId);
+			user.setEmail(dwPerson.getEmail());
 
-					user = this.userRepository.save(user);
+			user = this.userRepository.save(user);
 
-					return user;
-				}
-			}
+			return user;
 		}
 
 		return null;
@@ -101,9 +96,10 @@ public class JpaUserService implements UserService {
 
 	@Override
 	public void contact(User user, String messageBody, String subject) {
-
 		String email = user.getEmail();
+
 		if (email == null) {
+			// TODO: Report this as an exception maybe?
 			log.error("email for user '" + user.getId() + "' is null.");
 			return;
 		}

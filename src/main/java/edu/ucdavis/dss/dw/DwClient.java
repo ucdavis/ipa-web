@@ -1,10 +1,6 @@
 package edu.ucdavis.dss.dw;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,4 +165,46 @@ public class DwClient {
 		return dwTerms;
 	}
 
+	public DwPerson getPersonByLoginId(String loginId)  {
+		DwPerson dwPerson = null;
+
+		if (connect() && loginId != null) {
+			HttpGet httpget = null;
+			try {
+				httpget = new HttpGet("/people/details?loginid=" + URLEncoder.encode(loginId, "UTF-8") + "&token=" + ApiToken);
+			} catch (UnsupportedEncodingException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(
+						targetHost, httpget, context);
+
+				StatusLine line = response.getStatusLine();
+				if (line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+				if (arrNode != null) {
+					dwPerson = mapper.readValue(
+							arrNode.get(0).toString(),
+							mapper.getTypeFactory().constructType(DwPerson.class));
+				} else {
+					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
+				}
+
+				response.close();
+			} catch (IOException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else if (loginId == null) {
+			log.warn("No login ID given.");
+		}
+
+		return dwPerson;
+	}
 }

@@ -49,4 +49,23 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 			return null;
 		}
 	}
+
+	/**
+	 * Returns a single individual by login ID if they exist.
+	 *
+	 * @param loginId
+	 * @return
+	 */
+	public DwPerson getPersonByLoginId(String loginId) {
+		DwClient dwClient = null;
+
+		try {
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+
+			return dwClient.getPersonByLoginId(loginId);
+		} catch (Exception e) {
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			return null;
+		}
+	}
 }

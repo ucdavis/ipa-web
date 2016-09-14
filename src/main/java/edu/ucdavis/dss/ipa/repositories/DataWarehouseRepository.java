@@ -17,4 +17,6 @@ public interface DataWarehouseRepository {
 	public List<DwPerson> searchPeople(String query);
 
 	public List<DwTerm> getTerms();
+
+	public DwPerson getPersonByLoginId(String loginId);
 }
