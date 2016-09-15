@@ -16,12 +16,14 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
+	@Inject UserRoleService userRoleService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		if(workgroup == null) { return null; }
 
+		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<SectionGroup> sectionGroups;
 		List<Course> courses;
 		if (showDoNotPrint != null && showDoNotPrint) {
@@ -32,7 +34,7 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		}
 
-		return new SchedulingView(courses, sectionGroups, workgroup.getTags(), workgroup.getLocations());
+		return new SchedulingView(courses, sectionGroups, workgroup.getTags(), workgroup.getLocations(), instructors);
 	}
 
 	@Override

@@ -1,9 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling.views;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Location;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Tag;
+import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +9,21 @@ public class SchedulingView {
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Course> courses = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<>();
-	private List<Location> locations = new ArrayList<Location>();
+	private List<Location> locations = new ArrayList<>();
+	private List<Instructor> instructors = new ArrayList<>();
 
 	public SchedulingView(
 			List<Course> courses,
 			List<SectionGroup> sectionGroups,
 			List<Tag> tags,
-			List<Location> locations) {
+			List<Location> locations,
+			List<Instructor> instructors
+	) {
 		setSectionGroups(sectionGroups);
 		setCourses(courses);
 		setTags(tags);
 		setLocations(locations);
+		setInstructors(instructors);
 	}
 
 	public List<SectionGroup> getSectionGroups() {
@@ -55,5 +56,13 @@ public class SchedulingView {
 
 	public void setLocations(List<Location> locations) {
 		this.locations = locations;
+	}
+
+	public List<Instructor> getInstructors() {
+		return instructors;
+	}
+
+	public void setInstructors(List<Instructor> instructors) {
+		this.instructors = instructors;
 	}
 }
