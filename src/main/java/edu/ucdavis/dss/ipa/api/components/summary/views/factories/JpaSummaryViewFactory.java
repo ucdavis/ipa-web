@@ -40,7 +40,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
             for (TeachingAssignment teachingAssignment : teachingAssignments) {
                 if (teachingAssignment.isApproved() == false) {
-                    break;
+                    continue;
                 }
 
                 teachingAssignmentsToAdd.add(teachingAssignment);
