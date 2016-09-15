@@ -15,6 +15,7 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject ActivityService activityService;
 	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
+	@Inject TeachingCallResponseService teachingCallResponseService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
@@ -41,7 +42,8 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		List<Activity> sharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_SHARED);
 		List<Activity> unSharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_NOT_SHARED);
 		List<Section> sections = sectionGroup.getSections();
-		return new SchedulingViewSectionGroup(sections, sharedActivities, unSharedActivities);
+		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findBySectionGroup(sectionGroup);
+		return new SchedulingViewSectionGroup(sections, sharedActivities, unSharedActivities, teachingCallResponses);
 	}
 
 }

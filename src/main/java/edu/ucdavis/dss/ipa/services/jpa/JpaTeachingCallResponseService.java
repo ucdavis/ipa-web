@@ -9,12 +9,9 @@ import java.util.stream.LongStream;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
@@ -103,6 +100,11 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	@Override
 	public List<TeachingCallResponse> findByScheduleId(long scheduleId) {
 		return this.teachingCallResponseRepository.findByTeachingCallScheduleId(scheduleId);
+	}
+
+	@Override
+	public List<TeachingCallResponse> findBySectionGroup(SectionGroup sectionGroup) {
+		return teachingCallResponseRepository.findBySectionGroupIdAndTermCode(sectionGroup.getId(), sectionGroup.getTermCode());
 	}
 
 	@Override

@@ -5,12 +5,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.validation.annotation.Validated;
-
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
 
 // The availabilityBlob on a teachingCallResponse is a comma delimited string
 // It represents availability within a 15 hour window (7am-10pm) over 5 days
@@ -47,4 +43,6 @@ public interface TeachingCallResponseService {
 			Workgroup workgroup, Instructor instructor, int years);
 
 	public List<TeachingCallResponse> findByScheduleId(long scheduleId);
+
+	List<TeachingCallResponse> findBySectionGroup(SectionGroup sectionGroup);
 }

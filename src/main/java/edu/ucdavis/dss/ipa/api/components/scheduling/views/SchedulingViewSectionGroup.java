@@ -2,6 +2,8 @@ package edu.ucdavis.dss.ipa.api.components.scheduling.views;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +15,18 @@ public class SchedulingViewSectionGroup {
     private List<Section> sections = new ArrayList<>();
     private List<Activity> sharedActivities = new ArrayList<>();
     private List<Activity> unSharedActivities = new ArrayList<>();
+    private List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
 
-    public SchedulingViewSectionGroup(List<Section> sections, List<Activity> sharedActivities, List<Activity> unSharedActivities) {
+    public SchedulingViewSectionGroup(
+            List<Section> sections,
+            List<Activity> sharedActivities,
+            List<Activity> unSharedActivities,
+            List<TeachingCallResponse> teachingCallResponses
+    ) {
         setSections(sections);
         setSharedActivities(sharedActivities);
         setUnsharedActivities(unSharedActivities);
+        setTeachingCallResponses(teachingCallResponses);
     }
 
     public List<Section> getSections() {
@@ -40,7 +49,15 @@ public class SchedulingViewSectionGroup {
         return unSharedActivities;
     }
 
-    public void setUnsharedActivities(List<Activity> activities) {
-        this.unSharedActivities = activities;
+    public void setUnsharedActivities(List<Activity> unSharedActivities) {
+        this.unSharedActivities = unSharedActivities;
+    }
+
+    public List<TeachingCallResponse> getTeachingCallResponses() {
+        return teachingCallResponses;
+    }
+
+    public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
+        this.teachingCallResponses = teachingCallResponses;
     }
 }
