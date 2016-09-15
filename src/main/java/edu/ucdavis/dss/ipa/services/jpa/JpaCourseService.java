@@ -92,9 +92,8 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
-	public List<Course> findByWorkgroupIdAndYear(long id, long year) {
-		Workgroup workgroup = workgroupService.findOneById(id);
-		Schedule schedule = this.scheduleService.findByWorkgroupAndYear(workgroup, year);
+	public List<Course> findByWorkgroupIdAndYear(long workgroupId, long year) {
+		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		return schedule.getCourses();
 	}

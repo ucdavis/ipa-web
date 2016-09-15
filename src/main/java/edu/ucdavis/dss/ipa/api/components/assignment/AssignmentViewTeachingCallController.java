@@ -32,15 +32,14 @@ public class AssignmentViewTeachingCallController {
     @ResponseBody
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}/teachingCalls", method = RequestMethod.POST, produces="application/json")
     public TeachingCall createTeachingCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody TeachingCall teachingCallDTO, HttpServletResponse httpResponse) {
-        Workgroup workgroup = workgroupService.findOneById(workgroupId);
-        Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
+        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-        if(workgroup == null || schedule == null) {
+        if(schedule == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
 
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         TeachingCall teachingCall = teachingCallService.create(schedule.getId(), teachingCallDTO);
         if (teachingCall != null) {

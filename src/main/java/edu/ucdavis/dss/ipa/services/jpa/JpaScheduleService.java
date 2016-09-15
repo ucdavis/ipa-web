@@ -90,12 +90,17 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public Schedule findByWorkgroupAndYear(Workgroup workgroup, long year) {
-		if (workgroup != null) {
-			return scheduleRepository.findOneByYearAndWorkgroupWorkgroupId(workgroup.getId(), year);
-		} else {
-			return null;
+	public Schedule findByWorkgroupIdAndYear(long workgroupId, long year) {
+		return scheduleRepository.findOneByYearAndWorkgroupWorkgroupId(workgroupId, year);
+	}
+
+	@Override
+	public Schedule findOrCreateByWorkgroupIdAndYear(long workgroupId, long year) {
+		Schedule schedule = this.findByWorkgroupIdAndYear(workgroupId, year);
+		if (schedule == null) {
+			schedule = this.createSchedule(workgroupId, year);
 		}
+		return schedule;
 	}
 
 	@Override

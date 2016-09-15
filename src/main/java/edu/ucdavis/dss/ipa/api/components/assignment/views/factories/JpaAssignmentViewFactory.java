@@ -42,7 +42,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		Schedule schedule = scheduleService.findByWorkgroupAndYear(workgroup, year);
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 		long scheduleId = schedule.getId();
 		List<Course> courses = schedule.getCourses();
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
@@ -52,8 +52,8 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.findByScheduleId(schedule.getId());
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByScheduleId(schedule.getId());
 		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
-		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "senateInstructor");
-		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroup.getId(), "federationInstructor");
+		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
+		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
 
 		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
 				scheduleInstructorNotes, scheduleTermStates, schedule.getTeachingCalls(), teachingCallReceipts,

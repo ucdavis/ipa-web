@@ -22,7 +22,7 @@ public interface CourseService {
 
 	List<Course> findByTagId(Long id);
 
-	List<Course> findByWorkgroupIdAndYear(long id, long year);
+	List<Course> findByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<Course> findVisibleByWorkgroupIdAndYear(long id, long year);
 

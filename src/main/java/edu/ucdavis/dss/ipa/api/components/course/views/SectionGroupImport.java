@@ -1,18 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.course.views;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Tag;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class SectionGroupImport {
 	private String subjectCode, courseNumber, sequencePattern, termCode, title, effectiveTermCode;
 	private int plannedSeats;
 
-	public String getSubjectCode() {
+	public String getSubjectCode()
+	{
 		return subjectCode;
 	}
 
