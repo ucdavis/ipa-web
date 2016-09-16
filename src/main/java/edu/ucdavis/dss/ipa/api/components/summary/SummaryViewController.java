@@ -44,7 +44,7 @@ public class SummaryViewController {
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public SummaryView getInitialSummaryView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "senateInstructor", "federationInstructor");
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
