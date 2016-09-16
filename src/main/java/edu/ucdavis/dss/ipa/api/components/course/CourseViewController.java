@@ -3,10 +3,13 @@ package edu.ucdavis.dss.ipa.api.components.course;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
+import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -14,7 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -258,23 +265,60 @@ public class CourseViewController {
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
 
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+	public String generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+								@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+								HttpServletRequest httpRequest) {
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		String url = SettingsConfiguration.getIpaURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+		if (ipAddress == null) {
+			ipAddress = httpRequest.getRemoteAddr();
+		}
+
+		String showDoNotPrintParam = showDoNotPrint != null ? "?showDoNotPrint=" + showDoNotPrint : "";
+
+		return url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress) + showDoNotPrintParam;
+	}
+
 	/**
 	 * Exports a schedule as an Excel .xls file
 	 *
 	 * @param workgroupId
 	 * @param year
+	 * @param salt
+	 * @param encrypted
 	 * @param showDoNotPrint
-	 * @param httpResponse
+	 * @param httpRequest
 	 * @return
+	 * @throws ParseException
 	 */
-	@RequestMapping(value = "/courseView/workgroups/{workgroupId}/years/{year}/excel")
-	public View excelExport(@PathVariable long workgroupId, @PathVariable long year,
-							@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-							HttpServletResponse httpResponse) {
-		// TODO: How to handle authorization on non-/api requests
-		// Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+	@RequestMapping(value = "/download/courseView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
+	public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+							  @PathVariable String salt, @PathVariable String encrypted,
+							  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+							  HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+		List<String> decrypted = UrlEncryptor.decrypt(salt, encrypted);
 
-		return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
+		Date reqTime = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(decrypted.get(0));
+		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+		if (ipAddress == null) {
+			ipAddress = httpRequest.getRemoteAddr();
+		}
+
+		Date now = new Date();
+		long TIMEOUT = 30L; // In seconds
+		long timeDiff = Math.abs((now.getTime() - reqTime.getTime())/1000);
+
+		if (timeDiff < TIMEOUT && ipAddress.equals(decrypted.get(1))) {
+			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
+		} else {
+			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+			return null;
+		}
 	}
 
 }
