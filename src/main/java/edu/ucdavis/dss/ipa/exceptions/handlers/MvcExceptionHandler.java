@@ -37,6 +37,7 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		buffer.append("\n\tCause            : " + ex.getCause());
 		buffer.append("\n");
 		buffer.append("\n\tURL              : " + request.getRequestURL());
+		buffer.append("\n\tX-Forwarded-For  : " + request.getHeader("X-Forwarded-For"));
 		buffer.append("\n\tRemote address   : " + request.getRemoteAddr());
 		buffer.append("\n\tRemote user      : " + request.getRemoteUser());
 
