@@ -22,7 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -266,9 +268,10 @@ public class CourseViewController {
 	}
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
-	public String generateExcel(@PathVariable long workgroupId, @PathVariable long year,
-								@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-								HttpServletRequest httpRequest) {
+	@ResponseBody
+	public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+							 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+							 HttpServletRequest httpRequest) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		String url = SettingsConfiguration.getIpaURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
@@ -281,7 +284,9 @@ public class CourseViewController {
 
 		String showDoNotPrintParam = showDoNotPrint != null ? "?showDoNotPrint=" + showDoNotPrint : "";
 
-		return url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress) + showDoNotPrintParam;
+		Map<String, String> map = new HashMap<>();
+		map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress) + showDoNotPrintParam);
+		return map;
 	}
 
 	/**
