@@ -38,7 +38,7 @@ public interface Authorizer<T> {
      */
     public static void hasWorkgroupRole(Long workgroupId, String roleName) {
         if (Authorization.isAdmin() == false && Authorization.hasRole(workgroupId, roleName) == false) {
-            throw new AccessDeniedException("User not authorized to create tags in workgroup with Id = " + workgroupId);
+            throw new AccessDeniedException("User not authorized for workgroup with Id = " + workgroupId);
         }
     };
 
@@ -56,6 +56,6 @@ public interface Authorizer<T> {
             }
         }
 
-        throw new AccessDeniedException("User not authorized to create tags in workgroup with Id = " + workgroupId);
+        throw new AccessDeniedException("User not authorized for workgroup with Id = " + workgroupId);
     };
 }
