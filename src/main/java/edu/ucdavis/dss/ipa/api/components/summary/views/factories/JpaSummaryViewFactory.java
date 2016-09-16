@@ -34,7 +34,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
         List<TeachingAssignment> teachingAssignmentsToAdd = new ArrayList<TeachingAssignment>();
 
-        if (instructorId > 0) {
+        if (schedule != null && instructorId > 0) {
             teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
             for (TeachingAssignment teachingAssignment : teachingAssignments) {
@@ -77,7 +77,10 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
         // Grab teaching calls
         // TODO: What roles can view the teaching calls?
-        List<TeachingCall> teachingCallsToAdd = teachingCallService.findByScheduleId(schedule.getId());
+        List<TeachingCall> teachingCallsToAdd = new ArrayList<TeachingCall>();
+        if (schedule != null) {
+            teachingCallsToAdd = teachingCallService.findByScheduleId(schedule.getId());
+        }
 
         // Grab terms info from DW
         List<DwTerm> dwTerms = dwRepository.getTerms();
