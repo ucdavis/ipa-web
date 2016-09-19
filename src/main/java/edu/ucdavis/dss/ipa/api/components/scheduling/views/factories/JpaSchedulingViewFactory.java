@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,9 +44,26 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		boolean IS_NOT_SHARED = false;
 		List<Activity> sharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_SHARED);
 		List<Activity> unSharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_NOT_SHARED);
-		List<Section> sections = sectionGroup.getSections();
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findBySectionGroup(sectionGroup);
-		return new SchedulingViewSectionGroup(sections, sharedActivities, unSharedActivities, teachingCallResponses);
+		return new SchedulingViewSectionGroup(sectionGroup, sharedActivities, unSharedActivities, teachingCallResponses);
+	}
+
+	@Override
+	public List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
+		List<SchedulingViewSectionGroup> schedulingViewSectionGroups = new ArrayList<>();
+
+		List<SectionGroup> sectionGroups;
+		if (showDoNotPrint != null && showDoNotPrint) {
+			sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		} else {
+			sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		}
+
+		for (SectionGroup sectionGroup: sectionGroups) {
+			schedulingViewSectionGroups.add(this.createSchedulingViewSectionGroup(sectionGroup));
+		}
+
+		return schedulingViewSectionGroups;
 	}
 
 }

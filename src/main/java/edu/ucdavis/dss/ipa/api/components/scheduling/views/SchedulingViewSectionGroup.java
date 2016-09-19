@@ -1,9 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling.views;
 
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
+import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,21 +9,42 @@ import java.util.List;
  * Created by okadri on 8/16/16.
  */
 public class SchedulingViewSectionGroup {
+    private long id, courseId;
     private List<Section> sections = new ArrayList<>();
     private List<Activity> sharedActivities = new ArrayList<>();
     private List<Activity> unSharedActivities = new ArrayList<>();
     private List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
 
     public SchedulingViewSectionGroup(
-            List<Section> sections,
+            SectionGroup sectionGroup,
             List<Activity> sharedActivities,
             List<Activity> unSharedActivities,
             List<TeachingCallResponse> teachingCallResponses
     ) {
-        setSections(sections);
+        if (sectionGroup == null) { return; }
+
+        setId(sectionGroup.getId());
+        setCourseId(sectionGroup.getCourse().getId());
+        setSections(sectionGroup.getSections());
         setSharedActivities(sharedActivities);
         setUnsharedActivities(unSharedActivities);
         setTeachingCallResponses(teachingCallResponses);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(long courseId) {
+        this.courseId = courseId;
     }
 
     public List<Section> getSections() {

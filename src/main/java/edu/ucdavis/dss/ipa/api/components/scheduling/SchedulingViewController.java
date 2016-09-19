@@ -69,6 +69,25 @@ public class SchedulingViewController {
 		return schedulingViewFactory.createSchedulingViewSectionGroup(sectionGroup);
 	}
 
+	/**
+	 * Delivers all sectionGroup details for a given workgroup term, used in when the "Select all" option is toggled
+	 *
+	 * @param workgroupId
+	 * @param year
+	 * @param termCode
+	 * @param httpResponse
+	 * @return
+	 */
+	@RequestMapping(value = "/api/schedulingView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}/sectionGroupDetails", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public List<SchedulingViewSectionGroup> getAllSectionGroupDetails(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
+																	  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+																	  HttpServletResponse httpResponse) {
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		return schedulingViewFactory.createSchedulingViewAllSectionGroups(workgroupId, year, termCode, showDoNotPrint);
+	}
+
     @RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
