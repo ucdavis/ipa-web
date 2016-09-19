@@ -24,7 +24,7 @@ public class UrlEncryptor {
 
             IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
 
-            String secret = SettingsConfiguration.getJwtSigningKey();
+            String secret = SettingsConfiguration.getDownloadSecretKey();
             SecretKeySpec skeySpec = new SecretKeySpec(secret.getBytes("UTF-8"),
                     "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
@@ -42,7 +42,7 @@ public class UrlEncryptor {
         try {
             IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
 
-            String secret = SettingsConfiguration.getJwtSigningKey();
+            String secret = SettingsConfiguration.getDownloadSecretKey();
             SecretKeySpec skeySpec = new SecretKeySpec(secret.getBytes("UTF-8"),
                     "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");

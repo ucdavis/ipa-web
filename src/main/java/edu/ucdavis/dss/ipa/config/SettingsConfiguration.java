@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -26,7 +27,7 @@ public class SettingsConfiguration {
 	private static String emailProtocol, emailAuth, emailDebug, emailHost, emailFrom;
 	private static Integer emailPort;
 	private static Boolean errorsFound = null;
-	private static String jwtSigningKey;
+	private static String jwtSigningKey, downloadSecretKey;
 	private static String dwUrl, dwToken, dwPort;
 
 	//private static HashMap<String,Object> settings;
@@ -64,6 +65,9 @@ public class SettingsConfiguration {
 
 		// Use ipa.spring.profile to set the Spring Profile
 		System.setProperty("spring.profiles.active", sRunningMode);
+
+		// Set a random download secret key
+		downloadSecretKey = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
 		log.info("IPA started with the following settings:");
 		log.info("\tRunning Mode: " + runningMode);
@@ -106,6 +110,10 @@ public class SettingsConfiguration {
 	}
 
 	public static String getJwtSigningKey() { return jwtSigningKey; }
+
+	public static String getDownloadSecretKey() {
+		return downloadSecretKey;
+	}
 
 	// Should be in the form: http://website:8080 (no trailing slash, include protocol)
 	public static String getIpaURL() {
