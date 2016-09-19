@@ -96,7 +96,7 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 			activity.setFrequency(node.get("frequency").intValue());
 		}
 
-		if (node.has("locationId")) {
+		if (node.has("locationId") && node.get("locationId").longValue() > 0) {
 			Location location = new Location();
 			location.setId(node.get("locationId").longValue());
 			activity.setLocation(location);
