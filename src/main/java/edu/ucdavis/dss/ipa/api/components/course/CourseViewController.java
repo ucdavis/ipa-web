@@ -306,19 +306,27 @@ public class CourseViewController {
 							  @PathVariable String salt, @PathVariable String encrypted,
 							  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 							  HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+		Date now = new Date();
+		long TIMEOUT = 30L; // In seconds
 		List<String> decrypted = UrlEncryptor.decrypt(salt, encrypted);
 
-		Date reqTime = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(decrypted.get(0));
+		long reqTime = 0;
+		String reqIpAddress = "";
+		if (decrypted != null) {
+			String reqStrTimeStamp = decrypted.get(0);
+			reqIpAddress = decrypted.get(1);
+			Date reqTimeStamp = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(reqStrTimeStamp);
+			reqTime = reqTimeStamp.getTime();
+		}
+
 		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
 		if (ipAddress == null) {
 			ipAddress = httpRequest.getRemoteAddr();
 		}
 
-		Date now = new Date();
-		long TIMEOUT = 30L; // In seconds
-		long timeDiff = Math.abs((now.getTime() - reqTime.getTime())/1000);
+		long timeDiff = Math.abs((now.getTime() - reqTime)/1000);
 
-		if (timeDiff < TIMEOUT && ipAddress.equals(decrypted.get(1))) {
+		if (timeDiff < TIMEOUT && ipAddress.equals(reqIpAddress)) {
 			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
 		} else {
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
