@@ -189,7 +189,7 @@ public class DwClient {
 
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if (arrNode != null) {
+				if ((arrNode != null) && (arrNode.get(0) != null)) {
 					dwPerson = mapper.readValue(
 							arrNode.get(0).toString(),
 							mapper.getTypeFactory().constructType(DwPerson.class));
