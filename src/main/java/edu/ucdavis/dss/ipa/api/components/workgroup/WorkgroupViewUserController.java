@@ -144,7 +144,21 @@ public class WorkgroupViewUserController {
 
         List<User> users = new ArrayList<User>();
 
+        // Search both the general perosn search and the login ID-specific search.
+        // If the login ID matches, it is placed at the top of the file
         List<DwPerson> dwPeople = dwRepository.searchPeople(query);
+        DwPerson loginIdResult = dwRepository.getPersonByLoginId(query);
+
+        if(loginIdResult != null) {
+            User user = new User();
+
+            user.setLoginId(loginIdResult.getUserId());
+            user.setEmail(loginIdResult.getEmail());
+            user.setFirstName(loginIdResult.getdFirstName());
+            user.setLastName(loginIdResult.getdLastName());
+
+            users.add(user);
+        }
 
         if(dwPeople != null) {
             for (DwPerson dwPerson : dwPeople) {
