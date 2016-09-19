@@ -23,9 +23,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		if(workgroup == null) { return null; }
 
-		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		if(schedule == null) { return null; }
-
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
