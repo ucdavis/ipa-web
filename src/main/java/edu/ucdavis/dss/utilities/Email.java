@@ -1,10 +1,7 @@
 package edu.ucdavis.dss.utilities;
 
-import java.util.Properties;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
@@ -12,7 +9,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
 
 public class Email {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
