@@ -26,12 +26,12 @@ public interface ActivityLogService {
     List<ActivityLog> findByUserId(long uid);
 
     /**
-     * Returns a List of ActivityLogs linked with the specified id
+     * Returns an activity log with the given id
      *
      * @param id - id of ActivityLog
-     * @return - A list of ActivityLogs with the given id
+     * @return - An ActivityLog with the given id
      */
-    List<ActivityLog> findById(long id);
+    ActivityLog findById(long id);
 
     /**
      * Returns a List of ActivityLogs after a given timestamp
