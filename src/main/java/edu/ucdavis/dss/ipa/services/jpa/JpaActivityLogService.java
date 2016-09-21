@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.services.ActivityLogService;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
@@ -12,6 +13,7 @@ import java.util.List;
 /**
  * Created by MarkDiez on 9/21/16.
  */
+@Service
 public class JpaActivityLogService implements ActivityLogService {
     @Inject ActivityLogRepository activityLogRepository;
 
