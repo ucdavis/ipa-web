@@ -28,13 +28,13 @@ public class SiteController {
 
 	@Inject UserService userService;
 	@Inject AuthenticationService authenticationService;
-	@Inject CurrentUser currentUser;
 
+	@CrossOrigin // TODO: make CORS more specific depending on profile
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
-	public HashMap<String, Object> status(HttpServletResponse httpResponse) {
-		HashMap<String,Object> status = new HashMap<String,Object>();
-		status.put("currentUser", currentUser.getLoginId());
+	public HashMap<String, String> status(HttpServletResponse httpResponse) {
+		HashMap<String,String> status = new HashMap<>();
+		status.put("status", "ok");
 
 		httpResponse.setStatus(HttpStatus.OK.value());
 
