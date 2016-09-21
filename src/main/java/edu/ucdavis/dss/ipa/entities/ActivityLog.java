@@ -17,7 +17,7 @@ public class ActivityLog {
     long userId;
     Timestamp timestamp;
     String message;
-    
+
     @Id
     @Column(name = "ActivityLogId", unique = true, nullable = false)
     @JsonProperty
