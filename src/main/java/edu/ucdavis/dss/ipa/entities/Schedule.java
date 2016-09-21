@@ -113,7 +113,7 @@ public class Schedule implements Serializable {
 		this.secretToken = secretToken;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = {CascadeType.ALL})
 	@JsonIgnore
 	public List<Course> getCourses() {
 		return courses;

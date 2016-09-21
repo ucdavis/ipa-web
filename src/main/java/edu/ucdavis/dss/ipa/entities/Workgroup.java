@@ -83,7 +83,7 @@ public class Workgroup {
 		this.userRoles = userRoles;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
 	@JsonIgnore
 	public Set<Schedule> getSchedules() {
 		return schedules;
@@ -121,7 +121,7 @@ public class Workgroup {
 		this.tags = tags;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
 	@JsonIgnore
 	public List<Location> getLocations() {
 		return locations;
