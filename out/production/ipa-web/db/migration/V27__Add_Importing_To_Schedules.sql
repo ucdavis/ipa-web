@@ -1,0 +1,2 @@
+ALTER TABLE `Schedules` 
+ADD COLUMN `Importing` TINYINT(1) NOT NULL DEFAULT 0;

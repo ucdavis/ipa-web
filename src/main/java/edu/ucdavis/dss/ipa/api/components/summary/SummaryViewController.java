@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.jpa.JpaActivityLogService;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,8 @@ public class SummaryViewController {
         if (instructor != null) {
             instructorId = instructor.getId();
         }
+
+        System.out.println("About to use ActivityLogService ");
 
         return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId);
     }

@@ -1,0 +1,1 @@
+ALTER TABLE `ScheduleInstructorNotes` ADD COLUMN `InstructorComment` text NOT NULL;

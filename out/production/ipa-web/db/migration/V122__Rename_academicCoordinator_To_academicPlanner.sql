@@ -1,0 +1,1 @@
+UPDATE `Roles` SET Name = "academicPlanner" WHERE NAME = "academicCoordinator";

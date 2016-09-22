@@ -1,0 +1,2 @@
+ALTER TABLE TeachingCalls
+CHANGE COLUMN `TermsBlob` `TermsBlob` VARCHAR(10) DEFAULT '1010011011';

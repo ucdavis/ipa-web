@@ -13,10 +13,10 @@ import java.sql.Timestamp;
 @Table(name = "ActivityLog")
 @ValidActivity
 public class ActivityLog {
-    long activityLogId;
-    long userId;
-    Timestamp timestamp;
-    String message;
+    private long activityLogId;
+    private long userId;
+    private long timestamp;
+    private String message;
 
     @Id
     @Column(name = "ActivityLogId", unique = true, nullable = false)
@@ -25,7 +25,7 @@ public class ActivityLog {
 
     public void setId(long id) { this.activityLogId = id; }
 
-    @ManyToOne
+    @Basic
     @Column(name = "UsersId")
     @JoinColumn(name= "Id", nullable=false)
     @JsonProperty
@@ -36,9 +36,9 @@ public class ActivityLog {
     @Basic
     @Column(name = "Timestamp", unique = false, nullable = false)
     @JsonProperty
-    public Timestamp getTimestamp() { return this.timestamp; }
+    public long getTimestamp() { return this.timestamp; }
 
-    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
     @Basic
     @Column(name = "Message", unique = false, nullable = false)

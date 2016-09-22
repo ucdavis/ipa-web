@@ -1,0 +1,2 @@
+ALTER TABLE `Activities`
+ADD COLUMN `Shared` BOOL NOT NULL DEFAULT 0;

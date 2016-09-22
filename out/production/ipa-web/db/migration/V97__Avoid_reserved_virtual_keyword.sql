@@ -1,0 +1,1 @@
+ALTER TABLE `Activities` CHANGE COLUMN `Virtual` `IsVirtual` TINYINT(1) NOT NULL DEFAULT '0';

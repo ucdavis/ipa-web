@@ -28,26 +28,31 @@ public class JpaActivityLogService implements ActivityLogService {
 
     @Override
     public List<ActivityLog> findByUserId(long uid) {
-        return activityLogRepository.findByUserId(uid);
+//        return activityLogRepository.findByUserId(uid);
+        return null;
     }
 
     @Override
     public ActivityLog findById(long id) {
-        return activityLogRepository.findByActvityLogId(id);
+//        return activityLogRepository.findByActivityLogId(id);
+        return null;
     }
 
     @Override
     public List<ActivityLog> findAfterTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findAfterTimestamp(timestamp);
+//        return activityLogRepository.findAfterTimestamp(timestamp);
+        return null;
     }
 
     @Override
     public List<ActivityLog> findBeforeTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findBeforeTimestamp(timestamp);
+        //return activityLogRepository.findBeforeTimestamp(timestamp);
+        return null;
     }
 
     @Override
     public List<ActivityLog> findByTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findByTimestamp(timestamp);
+        //return activityLogRepository.findByTimestamp(timestamp);
+        return null;
     }
 }

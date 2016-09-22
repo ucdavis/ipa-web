@@ -1,0 +1,11 @@
+logging.level.org.springframework=INFO
+
+spring.datasource.url=jdbc:mysql://localhost:3306/IPA
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+
+# Avoid Spring Boot's opinions on column naming (ignores @Column(name="") for lovely_camel_case_names)
+spring.jpa.hibernate.naming-strategy=org.hibernate.cfg.DefaultNamingStrategy
+
+spring.profiles.active=development
