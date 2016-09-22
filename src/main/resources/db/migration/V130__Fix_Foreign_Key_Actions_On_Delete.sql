@@ -3,7 +3,7 @@ DROP FOREIGN KEY `fk_Courses_has_Tracks`;
 ALTER TABLE `Courses_has_Tags` 
 ADD CONSTRAINT `fk_Courses_has_Tags`
   FOREIGN KEY (`TagId`)
-  REFERENCES `tags` (`Id`)
+  REFERENCES `Tags` (`Id`)
   ON DELETE CASCADE
   ON UPDATE NO ACTION,
 ADD CONSTRAINT `fk_Tags_has_Courses`
