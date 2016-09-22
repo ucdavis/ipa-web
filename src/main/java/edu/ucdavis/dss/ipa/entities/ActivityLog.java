@@ -13,17 +13,17 @@ import java.sql.Timestamp;
 @Table(name = "ActivityLog")
 @ValidActivity
 public class ActivityLog {
-    private long activityLogId;
+    private long id;
     private long userId;
     private long timestamp;
     private String message;
 
     @Id
-    @Column(name = "ActivityLogId", unique = true, nullable = false)
+    @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
-    public long getId() { return this.activityLogId; }
+    public long getId() { return this.id; }
 
-    public void setId(long id) { this.activityLogId = id; }
+    public void setId(long id) { this.id = id; }
 
     @Basic
     @Column(name = "UsersId")

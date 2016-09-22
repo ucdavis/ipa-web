@@ -39,7 +39,7 @@ public interface ActivityLogService {
      * @param timestamp - Specified time to look after
      * @return - A list of ActivityLogs posted after the given timestamp
      */
-    List<ActivityLog> findAfterTimestamp(Timestamp timestamp);
+    List<ActivityLog> findAfterTimestamp(long timestamp);
 
     /**
      * Returns a List of ActivityLogs before a given timestamp
@@ -47,7 +47,7 @@ public interface ActivityLogService {
      * @param timestamp - Specified time to look before
      * @return - A list of ActivityLogs posted before the given timestamp
      */
-    List<ActivityLog> findBeforeTimestamp(Timestamp timestamp);
+    List<ActivityLog> findBeforeTimestamp(long timestamp);
 
     /**
      * Returns a List of ActivityLogs at a given timestamp
@@ -55,5 +55,5 @@ public interface ActivityLogService {
      * @param timestamp - Specified time to look for
      * @return - A list of ActivityLogs posted at the given timestamp
      */
-    List<ActivityLog> findByTimestamp(Timestamp timestamp);
+    List<ActivityLog> findByTimestamp(long timestamp);
 }
