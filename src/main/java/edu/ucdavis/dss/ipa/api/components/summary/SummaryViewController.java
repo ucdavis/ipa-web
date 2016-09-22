@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentV
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
@@ -41,6 +42,7 @@ public class SummaryViewController {
     @Inject ScheduleService scheduleService;
     @Inject WorkgroupService workgroupService;
     @Inject TeachingCallService teachingCallService;
+    @Inject ActivityLogService activityLogService;
 
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
@@ -59,9 +61,7 @@ public class SummaryViewController {
         if (instructor != null) {
             instructorId = instructor.getId();
         }
-
-        System.out.println("About to use ActivityLogService ");
-
+        
         return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId);
     }
 }
