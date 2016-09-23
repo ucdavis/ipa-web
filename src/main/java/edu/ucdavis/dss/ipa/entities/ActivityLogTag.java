@@ -1,8 +1,12 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.persistence.*;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "ActivityLogTag")
@@ -11,7 +15,7 @@ public class ActivityLogTag {
     private long activityLogId;
     private String tag;
 
-    @Basic
+    @Id
     @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
     public long getId() { return this.id; }
