@@ -74,7 +74,8 @@ public class CourseExcelView extends AbstractXlsView {
     private SectionGroup  getSectionGroupByCourseAndTermCode(Course course, String termCode) {
         Predicate<SectionGroup> predicate = sg-> sg.getTermCode().equals(termCode) && sg.getCourse().equals(course);
         String courseDesc = course.getShortDescription();
-        List<SectionGroup> matchingSectionGroups = courseViewDTO.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
+//        List<SectionGroup> matchingSectionGroups = courseViewDTO.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
+        List<SectionGroup> matchingSectionGroups = course.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
         if (matchingSectionGroups.size() > 0) {
             return matchingSectionGroups.get(0);
         } else {

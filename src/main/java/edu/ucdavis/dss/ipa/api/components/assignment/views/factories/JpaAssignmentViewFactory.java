@@ -1,27 +1,14 @@
 package edu.ucdavis.dss.ipa.api.components.assignment.views.factories;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
-import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
-import edu.ucdavis.dss.ipa.api.components.workgroup.views.WorkgroupView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallByCourseView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallByInstructorView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallSectionGroupView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallInstructorView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallScheduleView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingCallSummaryView;
-import edu.ucdavis.dss.ipa.api.components.assignment.deprecated.TeachingPreferencesExcelView;
+import javax.inject.Inject;
+import java.util.List;
 
 @Service
 public class JpaAssignmentViewFactory implements AssignmentViewFactory {
@@ -59,5 +46,14 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 				scheduleInstructorNotes, scheduleTermStates, schedule.getTeachingCalls(), teachingCallReceipts,
 				teachingCallResponses, activeTeachingCall, userId, instructorId, scheduleId,
 				senateInstructorIds, federationInstructorIds, workgroup.getTags());
+	}
+
+	@Override
+	public View createAssignmentExcelView(long workgroupId, long year) {
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
+
+		return new AssignmentExcelView(schedule, instructors, scheduleTermStates);
 	}
 }

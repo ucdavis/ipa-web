@@ -2,16 +2,25 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
+import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -35,5 +44,57 @@ public class AssignmentViewController {
         }
 
         return assignmentViewFactory.createAssignmentView(workgroupId, year, currentUser.getId(), instructorId);
+    }
+
+    @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+                                             HttpServletRequest httpRequest) {
+        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+        String url = SettingsConfiguration.getIpaURL() + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+        return map;
+    }
+
+    /**
+     * Exports a schedule as an Excel .xls file
+     *
+     * @param workgroupId
+     * @param year
+     * @param salt
+     * @param encrypted
+     * @param httpRequest
+     * @return
+     * @throws ParseException
+     */
+    @RequestMapping(value = "/download/assignmentView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
+    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+                              @PathVariable String salt, @PathVariable String encrypted,
+                              HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        long TIMEOUT = 30L; // In seconds
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
+
+
+        if (isValidUrl) {
+            return assignmentViewFactory.createAssignmentExcelView(workgroupId, year);
+        } else {
+            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return null;
+        }
     }
 }
