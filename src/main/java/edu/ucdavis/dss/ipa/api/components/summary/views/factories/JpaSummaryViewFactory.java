@@ -76,7 +76,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         }
 
         // Grab teaching calls
-        // TODO: What roles can view the teaching calls?
         List<TeachingCall> teachingCallsToAdd = new ArrayList<TeachingCall>();
         if (schedule != null) {
             teachingCallsToAdd = teachingCallService.findByScheduleId(schedule.getId());
