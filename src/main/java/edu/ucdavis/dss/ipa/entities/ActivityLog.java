@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @Table(name = "ActivityLog")
 public class ActivityLog {
     private long id;
-    private long userId;
+    private User user;
     private Timestamp timestamp;
     private String message;
 
@@ -20,13 +20,12 @@ public class ActivityLog {
 
     public void setId(long id) { this.id = id; }
 
-    @Basic
-    @Column(name = "UsersId")
-    @JoinColumn(name= "Id", nullable=false)
+    @ManyToOne
+    @JoinColumn(name= "UsersId", nullable=false)
     @JsonProperty
-    public long getUserId() { return this.userId; }
+    public User getUser() { return this.user; }
 
-    public void setUserId(long userId) { this.userId = userId; }
+    public void setUser(User user) { this.user = user; }
 
     @Basic
     @Column(name = "Timestamp", unique = false, nullable = false)

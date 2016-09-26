@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.ActivityLogTag;
+import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 import edu.ucdavis.dss.ipa.repositories.ActivityLogTagRepository;
 import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
 
@@ -27,10 +29,10 @@ public class JpaActivityLogTagService implements ActivityLogTagService {
     }
 
     @Override
-    public void addActivityLogTag(long activityLogId, String tag) {
+    public void addActivityLogTag(ActivityLog activityLog, Loggable referenceEntity) {
         ActivityLogTag logTag = new ActivityLogTag();
-        logTag.setActivityLogId(activityLogId);
-        logTag.setTag(tag);
+        logTag.setActivityLog(activityLog);
+        logTag.setTag(referenceEntity.getLogTag());
 
         activityLogTagRepository.save(logTag);
     }

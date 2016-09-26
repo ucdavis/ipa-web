@@ -2,8 +2,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.services.ActivityLogService;
+import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -16,19 +18,37 @@ import java.util.List;
 @Service
 public class JpaActivityLogService implements ActivityLogService {
     @Inject ActivityLogRepository activityLogRepository;
+    @Inject ActivityLogTagService activityLogTagService;
 
     @Override
-    public void logEntry(User user, String message) {
+    public ActivityLog logEntry(User user, String message) {
         ActivityLog newLog = new ActivityLog();
         newLog.setMessage(message);
-        newLog.setUserId(user.getId());
+        newLog.setUser(user);
 
-        activityLogRepository.save(newLog);
+        return activityLogRepository.save(newLog);
     }
 
     @Override
-    public List<ActivityLog> findByUserId(long uid) {
-        return activityLogRepository.findByUserId(uid);
+    public void logEntry(User user, Loggable entity, String message) {
+        // Save the log and get an ActivityLog with an id
+        ActivityLog activityLog = logEntry(user, message);
+
+        activityLogTagService.addActivityLogTag(activityLog, entity);
+    }
+
+    @Override
+    public void logEntry(User user, List<Loggable> entity, String message) {
+        ActivityLog activityLog = logEntry(user, message);
+
+        for (Loggable e : entity) {
+            activityLogTagService.addActivityLogTag(activityLog, e);
+        }
+    }
+
+    @Override
+    public List<ActivityLog> findByUser(User user) {
+        return activityLogRepository.findByUser(user);
     }
 
     @Override

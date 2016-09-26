@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
+import edu.ucdavis.dss.ipa.entities.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +24,7 @@ public interface ActivityLogRepository extends CrudRepository<ActivityLog, Long>
 
     List<ActivityLog> findByMessage(String message);
 
-    List<ActivityLog> findByUserId(long userId);
+    List<ActivityLog> findByUser(User user);
 
 }
 

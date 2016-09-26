@@ -1,12 +1,13 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.ActivityLogTag;
+import edu.ucdavis.dss.ipa.entities.validation.Loggable;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-/**
- * Created by MarkDiez on 9/23/16.
- */
+@Validated
 public interface ActivityLogTagService {
     ActivityLogTag findById(long id);
 
@@ -16,8 +17,8 @@ public interface ActivityLogTagService {
 
     /**
      *
-     * @param activityLogId - Should be in the format <entity>_<id>
-     * @param tag
+     * @param activityLog - Should be in the format <entity>_<id>
+     * @param referenceEntity - The entity related to an ActivityLog
      */
-    void addActivityLogTag(long activityLogId, String tag);
+    void addActivityLogTag(ActivityLog activityLog, Loggable referenceEntity);
 }

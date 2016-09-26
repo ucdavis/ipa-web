@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Table(name = "ActivityLogTag")
 public class ActivityLogTag {
     private long id;
-    private long activityLogId;
+    private ActivityLog activityLog;
     private String tag;
 
     @Id
@@ -22,12 +22,12 @@ public class ActivityLogTag {
 
     public void setId(long id) { this.id = id; }
 
-    @Basic
-    @Column(name = "ActivityLogId", unique = true, nullable = false)
+    @ManyToOne
+    @JoinColumn(name="ActivityLogId", nullable = false)
     @JsonProperty
-    public long getActivityLogId() { return this.activityLogId; }
+    public ActivityLog getActivityLog() { return this.activityLog; }
 
-    public void setActivityLogId(long activityLogId) { this.activityLogId = activityLogId; }
+    public void setActivityLog(ActivityLog activityLog) { this.activityLog = activityLog; }
 
     @Basic
     @Column(name = "Tag", unique = true, nullable = false)
