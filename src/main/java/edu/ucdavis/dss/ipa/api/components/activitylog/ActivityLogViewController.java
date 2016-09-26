@@ -5,16 +5,16 @@ import edu.ucdavis.dss.ipa.api.components.activitylog.views.factories.ActivityLo
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin
 public class ActivityLogViewController {
     @Inject ActivityLogViewFactory activityLogViewFactory;
 
-    @RequestMapping(value = "/api/activityLogView?search={tag}&limit={limit}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/activityLog", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public ActivityLogView getActivityLogView(@PathVariable String tag, @PathVariable long limit) {
+    public ActivityLogView getActivityLogView(@RequestParam(value="search") String tag, @RequestParam(value="limit") long limit) {
+        System.out.println("Attempted to create an activity view with tag: " + tag + " and limit " + limit);
         return activityLogViewFactory.createActivityLogView(tag, limit);
     }
 }
