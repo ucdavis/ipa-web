@@ -12,9 +12,7 @@ import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.List;
 
-/**
- * Created by MarkDiez on 9/21/16.
- */
+
 @Service
 public class JpaActivityLogService implements ActivityLogService {
     @Inject ActivityLogRepository activityLogRepository;
