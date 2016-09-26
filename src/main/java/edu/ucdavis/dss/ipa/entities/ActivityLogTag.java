@@ -16,6 +16,7 @@ public class ActivityLogTag {
     private String tag;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
     public long getId() { return this.id; }

@@ -14,6 +14,7 @@ public class ActivityLog {
     private String message;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
     public long getId() { return this.id; }
