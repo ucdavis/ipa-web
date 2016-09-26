@@ -1,2 +1,0 @@
-ALTER TABLE `CourseOfferings` 
-ADD COLUMN `SeatsTotal` INT(11) NULL DEFAULT NULL;

@@ -1,2 +1,0 @@
-ALTER TABLE `UserRoles` 
-ADD COLUMN `Override` BOOL NOT NULL DEFAULT 0;

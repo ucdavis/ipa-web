@@ -1,2 +1,0 @@
-ALTER TABLE `TeachingPreferences`
-ADD COLUMN `Approved` BOOL NOT NULL DEFAULT 0;

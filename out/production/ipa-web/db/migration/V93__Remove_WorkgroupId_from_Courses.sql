@@ -1,1 +1,0 @@
-ALTER TABLE `Courses` DROP COLUMN `Workgroups_WorkgroupId`;

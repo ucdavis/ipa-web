@@ -1,1 +1,0 @@
-ALTER TABLE `TeachingAssignments` ADD COLUMN `FromInstructor` TINYINT(1) NOT NULL DEFAULT '1';

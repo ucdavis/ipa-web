@@ -1,5 +1,0 @@
-ALTER TABLE `Activities` 
-CHANGE COLUMN `Room` `Room` VARCHAR(20) NULL ,
-CHANGE COLUMN `StartTime` `StartTime` TIME NULL ,
-CHANGE COLUMN `EndTime` `EndTime` TIME NULL ,
-CHANGE COLUMN `DayIndicator` `DayIndicator` VARCHAR(7) NOT NULL DEFAULT '0000000' ;

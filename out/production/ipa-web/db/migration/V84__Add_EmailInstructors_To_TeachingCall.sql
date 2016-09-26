@@ -1,1 +1,0 @@
-ALTER TABLE TeachingCalls ADD COLUMN `EmailInstructors` BOOL NOT NULL;

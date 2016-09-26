@@ -1,1 +1,0 @@
-ALTER TABLE Schedules ADD COLUMN `SecretToken` VARCHAR(26) NULL;

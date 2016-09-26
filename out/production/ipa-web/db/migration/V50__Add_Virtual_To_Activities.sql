@@ -1,2 +1,0 @@
-ALTER TABLE `Activities` 
-ADD COLUMN `Virtual` TINYINT(1) NOT NULL DEFAULT '0';
