@@ -9,5 +9,5 @@ public interface Loggable {
      *
      * @return - [entityName]_[entityId]
      */
-    String getLogTag();
+    String logTag();
 }

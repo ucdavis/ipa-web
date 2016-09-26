@@ -196,7 +196,7 @@ public class User implements Loggable {
 	}
 
 	@Override
-	public String getLogTag() {
+	public String logTag() {
 		return "user_" + this.getId();
 	}
 }
