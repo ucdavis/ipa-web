@@ -5,11 +5,12 @@ import edu.ucdavis.dss.ipa.entities.ActivityLogTag;
 import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 import edu.ucdavis.dss.ipa.repositories.ActivityLogTagRepository;
 import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.List;
 
-
+@Service
 public class JpaActivityLogTagService implements ActivityLogTagService {
     @Inject ActivityLogTagRepository activityLogTagRepository;
 
@@ -32,7 +33,7 @@ public class JpaActivityLogTagService implements ActivityLogTagService {
     public void addActivityLogTag(ActivityLog activityLog, Loggable referenceEntity) {
         ActivityLogTag logTag = new ActivityLogTag();
         logTag.setActivityLog(activityLog);
-        logTag.setTag(referenceEntity.getLogTag());
+        logTag.setTag(referenceEntity.logTag());
 
         activityLogTagRepository.save(logTag);
     }
