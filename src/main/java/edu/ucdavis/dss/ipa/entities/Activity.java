@@ -298,10 +298,12 @@ public class Activity implements Serializable {
 	@Transient
 	@JsonProperty("locationDescription")
 	public String getLocationDescription() {
-		if (this.bannerLocation != null || this.bannerLocation.length() > 0) {
+		if (this.bannerLocation != null && this.bannerLocation.length() > 0) {
 			return this.bannerLocation;
+		} else if (this.location != null) {
+			return this.location.getDescription();
 		}
 
-		return this.location.getDescription();
+		return null;
 	}
 }
