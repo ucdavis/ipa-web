@@ -8,6 +8,8 @@ import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Location;
 
+import java.util.List;
+
 @Validated
 public interface LocationService {
 
@@ -18,4 +20,6 @@ public interface LocationService {
     Location findOrCreateByWorkgroupAndDescription(Workgroup workgroup, String description);
 
     Location archiveById(Long locationId);
+
+    List<Location> findByWorkgroupId(long workgroupId);
 }

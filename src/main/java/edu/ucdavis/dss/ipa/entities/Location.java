@@ -15,7 +15,7 @@ public class Location implements Serializable {
 	private long id;
 	private String description;
 	private Workgroup workgroup;
-	private List<Activity> activities = new ArrayList<Activity>();
+	private List<Activity> activities = new ArrayList<>();
 	private boolean archived;
 
 	@Id

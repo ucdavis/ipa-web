@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -48,6 +49,16 @@ public class JpaActivityService implements ActivityService {
 		} else {
 			return activityRepository.findBySection_SectionGroup_Id(sectionGroupId);
 		}
+	}
+
+	@Override
+	public List<Activity> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return activityRepository.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+	}
+
+	@Override
+	public List<Activity> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return activityRepository.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 	}
 
 }

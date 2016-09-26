@@ -3,13 +3,11 @@ package edu.ucdavis.dss.ipa.api.components.scheduling;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.factories.SchedulingViewFactory;
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.ActivityService;
+import edu.ucdavis.dss.ipa.services.LocationService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import org.springframework.http.HttpStatus;
@@ -27,6 +25,7 @@ public class SchedulingViewController {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
+	@Inject LocationService locationService;
 	@Inject SchedulingViewFactory schedulingViewFactory;
 
 	/**
@@ -100,7 +99,11 @@ public class SchedulingViewController {
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		originalActivity.setLocation(activity.getLocation());
+		if (activity.getLocation() != null) {
+			Location location = locationService.findOneById(activity.getLocation().getId());
+			originalActivity.setLocation(location);
+		}
+
 		originalActivity.setActivityState(activity.getActivityState());
 		originalActivity.setFrequency(activity.getFrequency());
 		originalActivity.setDayIndicator(activity.getDayIndicator());

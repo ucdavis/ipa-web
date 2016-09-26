@@ -30,4 +30,5 @@ public interface TagService {
      */
 	Tag findOrCreateByWorkgroupAndName(Workgroup workgroup, String tagName, String tagColor);
 
+    List<Tag> findByWorkgroupId(long workgroupId);
 }

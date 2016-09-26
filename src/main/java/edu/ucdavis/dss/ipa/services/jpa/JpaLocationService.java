@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import edu.ucdavis.dss.ipa.repositories.LocationRepository;
 import edu.ucdavis.dss.ipa.services.LocationService;
 
+import java.util.List;
+
 @Service
 public class JpaLocationService implements LocationService {
     @Inject LocationRepository locationRepository;
@@ -45,6 +47,11 @@ public class JpaLocationService implements LocationService {
 
         location.setArchived(true);
         return this.locationRepository.save(location);
+    }
+
+    @Override
+    public List<Location> findByWorkgroupId(long workgroupId) {
+        return locationRepository.findByWorkgroupId(workgroupId);
     }
 
     @Override

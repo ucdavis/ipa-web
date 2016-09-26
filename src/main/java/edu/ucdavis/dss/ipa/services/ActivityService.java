@@ -32,4 +32,8 @@ public interface ActivityService {
 	 * @return
 	 */
 	List<Activity> findBySectionGroupId(long sectionGroupId, boolean isShared);
+
+    List<Activity> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
+
+	List<Activity> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 }

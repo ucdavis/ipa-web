@@ -14,28 +14,32 @@ import java.util.List;
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject ActivityService activityService;
-	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject UserRoleService userRoleService;
+	@Inject LocationService locationService;
+	@Inject TagService tagService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		if(workgroup == null) { return null; }
+		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
+		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
 
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<SectionGroup> sectionGroups;
 		List<Course> courses;
+		List<Activity> activities;
 		if (showDoNotPrint != null && showDoNotPrint) {
 			sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 			courses = courseService.findByWorkgroupIdAndYear(workgroupId, year);
+			activities = activityService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		} else {
 			sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+			activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		}
 
-		return new SchedulingView(courses, sectionGroups, workgroup.getTags(), workgroup.getLocations(), instructors);
+		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities);
 	}
 
 	@Override

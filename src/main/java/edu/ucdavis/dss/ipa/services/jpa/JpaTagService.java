@@ -87,4 +87,9 @@ public class JpaTagService implements TagService {
 		return tag;
 	}
 
+	@Override
+	public List<Tag> findByWorkgroupId(long workgroupId) {
+		return trackRepository.findByWorkgroupId(workgroupId);
+	}
+
 }
