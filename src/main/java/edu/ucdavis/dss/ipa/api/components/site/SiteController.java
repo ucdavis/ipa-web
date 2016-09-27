@@ -101,4 +101,44 @@ public class SiteController {
 
 		Email.reportException(messageBody, messageSubject);
 	}
+
+	/**
+	 * Takes a standard form POST and sends an e-mail.
+	 *
+	 * Receives 'name', 'email', and 'message'.
+	 *
+	 * May need more advanced protection if it begins to receive spam.
+	 *
+	 * @param name
+	 * @param email
+	 * @param message
+	 * @param httpResponse
+	 * @throws MessagingException
+	 */
+	@RequestMapping(value = "/contactFormSubmission", method = RequestMethod.POST)
+	@CrossOrigin
+	public void contactFormSubmission(@ModelAttribute(value="name") String name,
+									  @ModelAttribute(value="email") String email,
+									  @ModelAttribute(value="message") String message,
+									  HttpServletResponse httpResponse)
+			throws MessagingException {
+
+		if((name == null) || (email == null) || (message == null)) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+
+		httpResponse.setStatus(HttpStatus.OK.value());
+
+		// Construct the email body
+		List<String> body = new ArrayList<String>();
+
+		body.add("Name    : " + name);
+		body.add("Email   : " + email);
+		body.add("Message : " + message);
+
+		String messageBody = String.join("\n\n", body);
+
+		Email.send("dssit-devs@ucdavis.edu", messageBody, "IPA Public Contact Form Submission");
+	}
 }
