@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 
@@ -9,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ActivityLogTag")
 public class ActivityLogTag {
     private long id;
     private ActivityLog activityLog;
@@ -25,7 +25,7 @@ public class ActivityLogTag {
 
     @ManyToOne
     @JoinColumn(name="ActivityLogId", nullable = false)
-    @JsonProperty
+    @JsonIgnore
     public ActivityLog getActivityLog() { return this.activityLog; }
 
     public void setActivityLog(ActivityLog activityLog) { this.activityLog = activityLog; }
