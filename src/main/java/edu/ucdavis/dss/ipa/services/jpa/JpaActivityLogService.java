@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
@@ -40,7 +39,7 @@ public class JpaActivityLogService implements ActivityLogService {
     }
 
     @Override
-    public void logEntry(User user, Loggable entity, String message) {
+    public void logEntry(User user, Object entity, String message) {
         // Save the log and get an ActivityLog with an id
         ActivityLog activityLog = logEntry(user, message);
 
@@ -48,10 +47,10 @@ public class JpaActivityLogService implements ActivityLogService {
     }
 
     @Override
-    public void logEntry(User user, List<Loggable> entity, String message) {
+    public void logEntry(User user, List<Object> entity, String message) {
         ActivityLog activityLog = logEntry(user, message);
 
-        for (Loggable e : entity) {
+        for (Object e : entity) {
             activityLogTagService.addActivityLogTag(activityLog, e);
         }
     }

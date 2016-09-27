@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 import org.springframework.validation.annotation.Validated;
 
 import java.sql.Timestamp;
@@ -34,7 +33,7 @@ public interface ActivityLogService {
      * @param entity  - An entity related to the action but not the author
      * @param message - The activity to log e.g. "Logged in"
      */
-    void logEntry(User user, Loggable entity, String message);
+    void logEntry(User user, Object entity, String message);
 
     /**
      * Log the activity of a user in the database
@@ -43,7 +42,7 @@ public interface ActivityLogService {
      * @param entity  - A list of entities related to the action but not the author
      * @param message - The activity to log e.g. "Logged in"
      */
-    void logEntry(User user, List<Loggable> entity, String message);
+    void logEntry(User user, List<Object> entity, String message);
 
     /**
      * Returns a List of ActivityLogs linked with the specified user
