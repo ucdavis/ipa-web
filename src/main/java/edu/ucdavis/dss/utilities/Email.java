@@ -1,15 +1,12 @@
 package edu.ucdavis.dss.utilities;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.coyote.http2.Setting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -18,7 +15,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 
 public class Email {
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
 	/**
 	 * Sends email if runningMode is production, else email is suppressed.
@@ -33,6 +30,7 @@ public class Email {
 		if(SettingsConfiguration.runningModeIsProduction()) {
 			return sendEmail(recipientEmail, messageBody, messageSubject, true);
 		} else {
+			// TODO: Why does this message not appear even if logging level is set to INFO?
 			log.info("Suppressed e-mail as server is not in production mode. To: '" + recipientEmail + "', Subject: '" + messageSubject + "'.");
 		}
 
