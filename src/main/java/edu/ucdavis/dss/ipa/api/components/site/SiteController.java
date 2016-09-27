@@ -29,6 +29,13 @@ public class SiteController {
 	@Inject UserService userService;
 	@Inject AuthenticationService authenticationService;
 
+	/**
+	 * Provide /status.json for uptime checks. Designed to return
+	 * HTTP 200 OK and the text "ok".
+	 *
+	 * @param httpResponse
+	 * @return
+	 */
 	@CrossOrigin // TODO: make CORS more specific depending on profile
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
@@ -41,18 +48,14 @@ public class SiteController {
 		return status;
 	}
 
-	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
-	public String accessDenied(HttpServletResponse httpResponse) {
-		httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-
-		return "../errors/403";
-	}
-
-	@RequestMapping(value = "/request-access", method = RequestMethod.GET)
-	public String requestAccess() {
-		return "requestAccess";
-	}
-
+	/**
+	 * Used by the JS front-end to report JS errors. This method will then
+	 * e-mail those errors so they can be reported along with backend exceptions.
+	 *
+	 * @param exception
+	 * @param httpResponse
+	 * @throws MessagingException
+	 */
 	@RequestMapping(value = "/api/reportJsException", method = RequestMethod.POST)
 	@CrossOrigin
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
