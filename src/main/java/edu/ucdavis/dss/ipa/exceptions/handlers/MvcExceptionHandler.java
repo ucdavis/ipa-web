@@ -97,9 +97,9 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 			buffer.append(bodyBuffer.toString());
 			buffer.append("\n");
 		} catch (IllegalStateException e) {
-			bodyBuffer.append("(unable to fetch; IllegalStateException occurred)");
+			buffer.append("(unable to fetch; IllegalStateException occurred)\n");
 		} catch (IOException e) {
-			bodyBuffer.append("(unable to fetch; IOException occurred)");
+			buffer.append("(unable to fetch; IOException occurred)\n");
 		}
 
 		/* Convert the stack trace into a string */
