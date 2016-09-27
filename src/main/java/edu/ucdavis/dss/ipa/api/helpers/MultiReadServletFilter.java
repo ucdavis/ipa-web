@@ -19,7 +19,7 @@ import java.io.IOException;
  * we use @RequestBody.
  *
  */
-public class RequestWrapperFilter implements Filter {
+public class MultiReadServletFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 		// Nothing goes here
 	}

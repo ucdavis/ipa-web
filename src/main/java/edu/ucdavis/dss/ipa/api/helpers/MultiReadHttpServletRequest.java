@@ -1,15 +1,15 @@
 package edu.ucdavis.dss.ipa.api.helpers;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.Collection;
 
 import javax.servlet.ReadListener;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.Part;
 
 /**
  * Needed by the MvcExceptionHandler to read JSON requests to log the body for
@@ -23,9 +23,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
 public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
 	private String _body;
 
-	public MultiReadHttpServletRequest(ServletRequest request) throws IOException {
+	public MultiReadHttpServletRequest(ServletRequest request) throws IOException, ServletException {
 		super((HttpServletRequest) request);
-		
+
+		// Allow multi-reads on the body
 		_body = "";
 		
 		BufferedReader bufferedReader = request.getReader();
@@ -61,7 +62,7 @@ public class MultiReadHttpServletRequest extends HttpServletRequestWrapper {
 			}
 		};
 	}
-	
+
 	@Override
 	public BufferedReader getReader() throws IOException {
 		return new BufferedReader(new InputStreamReader(this.getInputStream()));
