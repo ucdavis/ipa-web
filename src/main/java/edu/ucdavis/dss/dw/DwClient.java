@@ -2,10 +2,7 @@ package edu.ucdavis.dss.dw;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.apache.http.HttpEntity;
@@ -26,8 +23,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -39,7 +36,7 @@ import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 @Service("DwClientService")
 public class DwClient {
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.dw.DwClient");
 
 	private CloseableHttpClient httpclient;
 	private HttpHost targetHost;
