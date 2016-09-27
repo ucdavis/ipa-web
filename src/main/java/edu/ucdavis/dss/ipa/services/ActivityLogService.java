@@ -13,7 +13,6 @@ public interface ActivityLogService {
     /**
      * Log the activity of a user in the database
      *
-     * @param user    - The author of the log
      * @param message - The activity to log e.g. "Logged in"
      * @return - returns an ActivityLog with an id
      */
