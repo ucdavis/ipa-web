@@ -5,6 +5,9 @@ import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The object to be serialized as a JSON object when /api/activityLog is called
+ */
 public class ActivityLogView {
     private List<ActivityLog> activityLogs = new ArrayList<>();
 
