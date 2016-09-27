@@ -70,16 +70,16 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	}
 
 	/**
-	 * Will search all TeachingCalls in a workgroupId for emails waiting to be sent based on notifiedAt and warnedAt.
+	 * Searches all TeachingCalls for the given workgroupId for emails waiting to be sent based on notifiedAt and warnedAt.
 	 * This is the primary method teachingCallReceipts are created.
 	 */
 	@Override
 	@Transactional
-	public void sendNotificationsByWorkgroupId(long workgroupId) {
+	public void sendNotificationsByWorkgroupId(Long workgroupId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
 		if (workgroup == null) {
-			log.error("workgroup '" + workgroupId + "' did not exist when attempting to send notifications.");
+			log.error("sendNotificationsByWorkgroup() could not find workgroup with ID " + workgroupId);
 			return;
 		}
 
@@ -186,9 +186,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String recipientEmail = user.getEmail();
 		String messageSubject = "";
 		String teachingCallUrl = SettingsConfiguration.getIpaURL() + "/teachingCalls/#/" + teachingCallReceipt.getTeachingCall().getId();
-		String messageBody ="";
-		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+		String messageBody = "";
 
+		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 
 		// Check for notification emails
 		if (teachingCallReceipt.getNotifiedAt() == null) {
@@ -212,6 +212,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			messageBody += "</td></tr></tbody></table>";
 
 			log.info("Initiating notification email to '" + user.getEmail() + "' for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "'");
+
 			if (Email.send(recipientEmail, messageBody, messageSubject)) {
 				teachingCallReceipt.setNotifiedAt(currentDate);
 				this.save(teachingCallReceipt);

@@ -20,6 +20,8 @@ public interface WorkgroupService {
 
 	List<Workgroup> findAll();
 
+	List<Long> findAllIds();
+
 	void delete(Long workgroupId);
 
 	Workgroup findOneByCode(String string);

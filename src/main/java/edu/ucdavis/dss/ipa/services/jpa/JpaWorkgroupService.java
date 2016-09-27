@@ -71,6 +71,11 @@ public class JpaWorkgroupService implements WorkgroupService {
 	}
 
 	@Override
+	public List<Long> findAllIds() {
+		return (List<Long>) this.workgroupRepository.findAllIds();
+	}
+
+	@Override
 	public void delete(Long workgroupId) {
 		workgroupRepository.delete(workgroupId);
 	}

@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.services;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -20,7 +21,7 @@ public interface TeachingCallReceiptService {
 
 	public TeachingCallReceipt save(@NotNull @Valid TeachingCallReceipt teachingCallReceipt);
 
-	public void sendNotificationsByWorkgroupId(long workgroupId);
+	public void sendNotificationsByWorkgroupId(Long workgroupId);
 
 	public TeachingCallReceipt createByInstructorAndTeachingCall(Instructor instructor, TeachingCall teachingCall);
 

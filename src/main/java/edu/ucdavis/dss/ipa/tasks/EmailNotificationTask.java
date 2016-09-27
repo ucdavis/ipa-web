@@ -14,7 +14,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 /**
  * Periodically (5min) checks all teachingCallReceipts to determine if any notification or warning emails need to be sent.
- * @author Lloyd
+ * @author Lloyd Wheeler
  *
  */
 @Service
@@ -30,10 +30,10 @@ public class EmailNotificationTask {
 		if(runningTask) return; // avoid multiple concurrent jobs
 		runningTask = true;
 
-		List<Workgroup> workgroups = workgroupService.findAll();
+		List<Long> workgroupIds = workgroupService.findAllIds();
 
-		for (Workgroup workgroup : workgroups) {
-			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroup.getId());
+		for (Long workgroupId : workgroupIds) {
+			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
 		}
 
 		runningTask = false;
