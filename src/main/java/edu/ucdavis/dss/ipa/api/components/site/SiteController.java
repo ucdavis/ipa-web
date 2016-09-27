@@ -24,7 +24,7 @@ import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 @RestController
 public class SiteController {
 	private static final Logger log = LogManager.getLogger();
-	private final int MAX_MESSAGE_LENGTH = 75;
+	private final int JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH = 75;
 
 	@Inject UserService userService;
 	@Inject AuthenticationService authenticationService;
@@ -62,12 +62,15 @@ public class SiteController {
 			throws MessagingException {
 		httpResponse.setStatus(HttpStatus.OK.value());
 
-		// Add ellipsis to message if necessary. Ellipsis is 3 characters long.
+		// Generate e-mail subject from exception body itself (we have nothing else).
+		// This tends to be long, so truncate it to character length of
+		// JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH.
 		String messageSubject = exception.get("message");
-		if (messageSubject.length() > MAX_MESSAGE_LENGTH) {
-			int wordBoundaryIndex = messageSubject.lastIndexOf(' ', MAX_MESSAGE_LENGTH - 3);
-			if (wordBoundaryIndex == -1)
-				messageSubject = messageSubject.substring(0, MAX_MESSAGE_LENGTH - 3) + "...";
+		if(messageSubject.length() > JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH) {
+			int wordBoundaryIndex = messageSubject.lastIndexOf(' ', JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH - 3);
+			if(wordBoundaryIndex == -1) {
+				messageSubject = messageSubject.substring(0, JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH - 3) + "...";
+			}
 			messageSubject = messageSubject.substring(0, wordBoundaryIndex) + "...";
 		}
 
