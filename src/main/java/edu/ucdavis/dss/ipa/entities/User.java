@@ -21,11 +21,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.api.views.UserViews;
-import edu.ucdavis.dss.ipa.entities.validation.Loggable;
 
 @Entity
 @Table(name = "Users")
-public class User implements Loggable {
+public class User {
 	private long id;
 	private String loginId, email, firstName, lastName, token;
 	private Date lastAccessed;
@@ -193,10 +192,5 @@ public class User implements Loggable {
 	@Override
 	public String toString() {
 		return String.format("User[id=%d,loginId=%s,email=%s,firstName=%s,lastName=%s]", this.getId(), this.getLoginId(), this.getEmail(), this.getFirstName(), this.getLastName());
-	}
-
-	@Override
-	public String logTag() {
-		return "user_" + this.getId();
 	}
 }
