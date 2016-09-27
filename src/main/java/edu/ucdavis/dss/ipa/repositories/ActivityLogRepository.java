@@ -16,11 +16,9 @@ public interface ActivityLogRepository extends CrudRepository<ActivityLog, Long>
 
     List<ActivityLog> findByTimestamp(Timestamp timestamp);
 
-    @Query("SELECT activityLog FROM ActivityLog activityLog WHERE timestamp > :ts")
-    List<ActivityLog> findAfterTimestamp(@Param("ts") Timestamp ts);
+    List<ActivityLog> findByTimestampGreaterThan(Timestamp timestamp);
 
-    @Query("SELECT activityLog FROM ActivityLog activityLog WHERE timestamp < :ts")
-    List<ActivityLog> findBeforeTimestamp(@Param("ts") Timestamp ts);
+    List<ActivityLog> findByTimestampLessThan(Timestamp timestamp);
 
     List<ActivityLog> findByMessage(String message);
 
