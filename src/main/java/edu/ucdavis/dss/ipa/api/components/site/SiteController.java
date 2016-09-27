@@ -133,7 +133,7 @@ public class SiteController {
 
 		body.add("Name    : " + name);
 		body.add("Email   : " + email);
-		body.add("Message : " + message);
+		body.add("Message : " + message.replaceAll("(\r\n|\n)", "<br />"));
 
 		String messageBody = String.join("\n\n", body);
 
