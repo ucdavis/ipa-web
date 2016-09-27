@@ -55,13 +55,13 @@ public class JpaActivityLogService implements ActivityLogService {
     }
 
     @Override
-    public List<ActivityLog> findAfterTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findAfterTimestamp(timestamp);
+    public List<ActivityLog> findByTimestampAfter(Timestamp timestamp) {
+        return activityLogRepository.findByTimestampGreaterThan(timestamp);
     }
 
     @Override
-    public List<ActivityLog> findBeforeTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findBeforeTimestamp(timestamp);
+    public List<ActivityLog> findByTimestampBefore(Timestamp timestamp) {
+        return activityLogRepository.findByTimestampLessThan(timestamp);
     }
 
     @Override

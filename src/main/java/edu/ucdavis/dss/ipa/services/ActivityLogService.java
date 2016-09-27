@@ -59,7 +59,7 @@ public interface ActivityLogService {
      * @param timestamp - Specified time to look after
      * @return - A list of ActivityLogs posted after the given timestamp
      */
-    List<ActivityLog> findAfterTimestamp(Timestamp timestamp);
+    List<ActivityLog> findByTimestampAfter(Timestamp timestamp);
 
     /**
      * Returns a List of ActivityLogs before a given timestamp
@@ -67,7 +67,7 @@ public interface ActivityLogService {
      * @param timestamp - Specified time to look before
      * @return - A list of ActivityLogs posted before the given timestamp
      */
-    List<ActivityLog> findBeforeTimestamp(Timestamp timestamp);
+    List<ActivityLog> findByTimestampBefore(Timestamp timestamp);
 
     /**
      * Returns a List of ActivityLogs at a given timestamp
