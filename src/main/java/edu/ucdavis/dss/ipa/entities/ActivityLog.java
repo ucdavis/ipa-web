@@ -1,12 +1,12 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "ActivityLog")
 public class ActivityLog {
     private long id;
     private User user;
@@ -22,8 +22,8 @@ public class ActivityLog {
     public void setId(long id) { this.id = id; }
 
     @ManyToOne
-    @JoinColumn(name= "UsersId", nullable=false)
-    @JsonProperty
+    @JoinColumn(name= "UserId", nullable=false)
+    @JsonIgnore
     public User getUser() { return this.user; }
 
     public void setUser(User user) { this.user = user; }
@@ -41,4 +41,10 @@ public class ActivityLog {
     public String getMessage() { return this.message; }
 
     public void setMessage(String message) { this.message = message; }
+
+    @Transient
+    @JsonProperty
+    public String getDisplayName() {
+        return user.getFirstName() + " " + user.getLastName();
+    }
 }
