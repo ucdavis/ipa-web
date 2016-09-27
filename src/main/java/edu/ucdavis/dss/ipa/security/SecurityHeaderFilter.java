@@ -11,21 +11,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Adds a few important browser security headers
+ * Add important browser security headers
  */
-public class SecurityHeaderFilter  extends GenericFilterBean {
-
+public class SecurityHeaderFilter extends GenericFilterBean {
     @Override
     public void doFilter(final ServletRequest req,
                          final ServletResponse res,
                          final FilterChain chain) throws IOException, ServletException {
-        final HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
         response.setHeader("X-Frame-Options", "DENY");
         response.setHeader("X-XSS-Protection", "1; mode=block");
+        response.setHeader("X-Content-Type-Options", "nosniff");
 
         chain.doFilter(req, res);
     }
-
 }
