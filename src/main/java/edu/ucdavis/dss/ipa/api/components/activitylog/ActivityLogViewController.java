@@ -23,7 +23,7 @@ public class ActivityLogViewController {
      * @param limit - maximum number of activity logs to return
      * @return - A JSON object filled with activity logs
      */
-    @RequestMapping(value = "/api/activityLog", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/activityLogs", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public ActivityLogView getActivityLogView(@RequestParam(value="search") String tag, @RequestParam(value="limit") long limit) {
         List<ActivityLog> relevantLogs = new ArrayList<>();
