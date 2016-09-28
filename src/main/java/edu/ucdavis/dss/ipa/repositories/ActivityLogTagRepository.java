@@ -5,11 +5,11 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ActivityLogTagRepository extends CrudRepository<ActivityLogTag, Long> {
-
-    ActivityLogTag findById(long id);
-
-    List<ActivityLogTag> findByActivityLogId(long activityLogId);
-
-    List<ActivityLogTag> findByTag(String tag);
-}
+//public interface ActivityLogTagRepository extends CrudRepository<ActivityLogTag, Long> {
+//
+//    ActivityLogTag findById(long id);
+//
+//    List<ActivityLogTag> findByActivityLogId(long activityLogId);
+//
+//    List<ActivityLogTag> findByTag(String tag);
+//}

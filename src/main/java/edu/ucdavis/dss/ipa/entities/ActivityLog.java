@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+//@Entity
 public class ActivityLog {
     private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 

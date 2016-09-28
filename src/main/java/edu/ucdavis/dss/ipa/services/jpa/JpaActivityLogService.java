@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
+//import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.ActivityLogService;
@@ -13,10 +13,9 @@ import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.List;
 
-
-@Service
+//@Service
 public class JpaActivityLogService implements ActivityLogService {
-    @Inject ActivityLogRepository activityLogRepository;
+    //@Inject ActivityLogRepository activityLogRepository;
     @Inject UserRepository userRepository;
 
     @Override
@@ -51,31 +50,31 @@ public class JpaActivityLogService implements ActivityLogService {
             activityLog.addTag(entity);
         }
 
-        activityLogRepository.save(activityLog);
+        //activityLogRepository.save(activityLog);
     }
 
     @Override
     public List<ActivityLog> findByUser(User user) {
-        return activityLogRepository.findByUser(user);
+        return null; //return activityLogRepository.findByUser(user);
     }
 
     @Override
     public ActivityLog findById(long id) {
-        return activityLogRepository.findById(id);
+        return null; //return activityLogRepository.findById(id);
     }
 
     @Override
     public List<ActivityLog> findByTimestampAfter(Timestamp timestamp) {
-        return activityLogRepository.findByTimestampGreaterThan(timestamp);
+        return null; //return activityLogRepository.findByTimestampGreaterThan(timestamp);
     }
 
     @Override
     public List<ActivityLog> findByTimestampBefore(Timestamp timestamp) {
-        return activityLogRepository.findByTimestampLessThan(timestamp);
+        return null; //return activityLogRepository.findByTimestampLessThan(timestamp);
     }
 
     @Override
     public List<ActivityLog> findByTimestamp(Timestamp timestamp) {
-        return activityLogRepository.findByTimestamp(timestamp);
+        return null; //return activityLogRepository.findByTimestamp(timestamp);
     }
 }
