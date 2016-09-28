@@ -22,11 +22,9 @@ public class JpaActivityLogService implements ActivityLogService {
 
     @Override
     public ActivityLog logEntry(String message) {
-        ActivityLog newLog = new ActivityLog();
-        newLog.setMessage(message);
-        newLog.setUser(userRepository.findByLoginId(Authorization.getLoginId()));
+        User currentUser = userRepository.findByLoginId(Authorization.getLoginId());
 
-        return activityLogRepository.save(newLog);
+        return this.logEntry(currentUser, message);
     }
 
     @Override
