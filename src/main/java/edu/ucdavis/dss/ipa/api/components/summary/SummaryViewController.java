@@ -1,33 +1,19 @@
 package edu.ucdavis.dss.ipa.api.components.summary;
 
-import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
-import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-// For HTTP GET
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -58,7 +44,7 @@ public class SummaryViewController {
         if (instructor != null) {
             instructorId = instructor.getId();
         }
-
+        
         return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId);
     }
 }
