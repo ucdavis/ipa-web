@@ -17,7 +17,6 @@ import java.util.List;
 @Service
 public class JpaActivityLogService implements ActivityLogService {
     @Inject ActivityLogRepository activityLogRepository;
-    @Inject ActivityLogTagService activityLogTagService;
     @Inject UserRepository userRepository;
 
     @Override
@@ -41,16 +40,17 @@ public class JpaActivityLogService implements ActivityLogService {
         // Save the log and get an ActivityLog with an id
         ActivityLog activityLog = logEntry(user, message);
 
-        activityLogTagService.addActivityLogTag(activityLog, entity);
-    }
-
-    @Override
-    public void logEntry(User user, List<Object> entity, String message) {
-        ActivityLog activityLog = logEntry(user, message);
-
-        for (Object e : entity) {
-            activityLogTagService.addActivityLogTag(activityLog, e);
+        // This if statement is necessary because a List<Object> is an Object
+        // Attempting to call an overloaded function with Object<List> would navigate here instead.
+        if (entity instanceof List<?>) {
+            for (Object e : (List<Object>)entity) {
+                activityLog.addTag(e);
+            }
+        } else {
+            activityLog.addTag(entity);
         }
+
+        activityLogRepository.save(activityLog);
     }
 
     @Override

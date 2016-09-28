@@ -30,19 +30,10 @@ public interface ActivityLogService {
      * Log the activity of a user in the database
      *
      * @param user    - The author of the log
-     * @param entity  - An entity related to the action but not the author
+     * @param entity  - An entity or a List of entities related to the action but not the author
      * @param message - The activity to log e.g. "Logged in"
      */
     void logEntry(User user, Object entity, String message);
-
-    /**
-     * Log the activity of a user in the database
-     *
-     * @param user    - The author of the log
-     * @param entity  - A list of entities related to the action but not the author
-     * @param message - The activity to log e.g. "Logged in"
-     */
-    void logEntry(User user, List<Object> entity, String message);
 
     /**
      * Returns a List of ActivityLogs linked with the specified user

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -24,6 +26,7 @@ public class SummaryViewController {
     @Inject ScheduleService scheduleService;
     @Inject WorkgroupService workgroupService;
     @Inject TeachingCallService teachingCallService;
+    @Inject ActivityLogService activityLogService;
 
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
@@ -42,6 +45,14 @@ public class SummaryViewController {
         if (instructor != null) {
             instructorId = instructor.getId();
         }
+
+        List<User> testList = new ArrayList<>();
+        testList.add(currentUser);
+        testList.add(userService.getOneById(1L));
+        activityLogService.logEntry("This is a test entry param1");
+        activityLogService.logEntry(currentUser, "This is a test entry param2");
+        activityLogService.logEntry(currentUser, currentUser, "This is a test entry param3");
+        activityLogService.logEntry(currentUser, testList, "This is a test entry param4");
         
         return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId);
     }
