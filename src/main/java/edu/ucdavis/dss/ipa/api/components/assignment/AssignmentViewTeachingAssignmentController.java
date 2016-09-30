@@ -198,6 +198,9 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setSchedule(schedule);
             teachingAssignment.setInstructor(instructor);
 
+            Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+            teachingAssignment.setPriority(priority);
+
             teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
         } else if (DTOsectionGroup != null && DTOcourse != null) {
             // Find courses that match this courseNumber, subjectCode, scheduleId
@@ -219,6 +222,8 @@ public class AssignmentViewTeachingAssignmentController {
                         slotTeachingAssignment.setSchedule(slotCourse.getSchedule());
                         slotTeachingAssignment.setInstructor(instructor);
 
+                        Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+                        slotTeachingAssignment.setPriority(priority);
                         teachingAssignments.add(teachingAssignmentService.save(slotTeachingAssignment));
                     }
                 }
