@@ -1,5 +1,18 @@
 package edu.ucdavis.dss.ipa.api.components.site;
 
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import edu.ucdavis.dss.ipa.services.AuthenticationService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.utilities.Email;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,23 +20,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletResponse;
-
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.security.Authorization;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.utilities.Email;
-
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 
 @RestController
 public class SiteController {
@@ -45,16 +41,15 @@ public class SiteController {
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {
 		HashMap<String,String> status = new HashMap<>();
-		SettingsConfiguration
 		Connection connection = null;
 		Statement statement = null;
-		
+
 		try {
 			connection = DriverManager
 					.getConnection(
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.url"),
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.username"),
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.password")
+						findOrWarnSetting("ipa.datasource.url"),
+						findOrWarnSetting("ipa.datasource.username"),
+						findOrWarnSetting("ipa.datasource.password")
 					);
 			statement = connection.createStatement();
 			statement.execute("SELECT 1 = 1");
@@ -73,6 +68,19 @@ public class SiteController {
 		}
 
 		return status;
+	}
+
+	// Replicated from SettingsConfiguration.findOrWarnSetting
+	private String findOrWarnSetting(String variableName) {
+		String value = System.getProperty(variableName);
+		if(value == null) {
+			value = System.getenv(variableName);
+		}
+		if(value == null) {
+			log.warn("Environment variable '" + variableName + "' must be set");
+		}
+
+		return value;
 	}
 
 	/**

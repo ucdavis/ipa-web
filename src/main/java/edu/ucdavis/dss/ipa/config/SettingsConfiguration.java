@@ -76,7 +76,7 @@ public class SettingsConfiguration {
 		log.info("\tDW URL      : " + dwUrl);
 	}
 
-	public static String findOrWarnSetting(String variableName) {
+	private static String findOrWarnSetting(String variableName) {
 		String value = System.getProperty(variableName);
 		if(value == null) {
 			value = System.getenv(variableName);
