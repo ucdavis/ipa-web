@@ -48,7 +48,6 @@ public class SiteController {
 		Statement statement = null;
 
 		try {
-
 			connection = DriverManager
 					.getConnection(
 						System.getenv("ipa.datasource.url"),
@@ -61,14 +60,12 @@ public class SiteController {
 			// Set status
 			status.put("status", "ok");
 			httpResponse.setStatus(HttpStatus.OK.value());
-
 		} catch (SQLException e) {
 			log.warn("MySQL connection failed.");
 			status.put("status", "fail");
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			e.printStackTrace();
 		}
-
 
 		return status;
 	}
