@@ -23,6 +23,8 @@ import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.utilities.Email;
 
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
+
 @RestController
 public class SiteController {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
@@ -43,16 +45,16 @@ public class SiteController {
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {
 		HashMap<String,String> status = new HashMap<>();
-
+		SettingsConfiguration
 		Connection connection = null;
 		Statement statement = null;
-
+		
 		try {
 			connection = DriverManager
 					.getConnection(
-						System.getenv("ipa.datasource.url"),
-						System.getenv("ipa.datasource.username"),
-						System.getenv("ipa.datasource.password")
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.url"),
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.username"),
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.password")
 					);
 			statement = connection.createStatement();
 			statement.execute("SELECT 1 = 1");
