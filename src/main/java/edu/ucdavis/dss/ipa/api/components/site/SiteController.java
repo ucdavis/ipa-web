@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.site;
 
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
@@ -47,9 +48,9 @@ public class SiteController {
 		try {
 			connection = DriverManager
 					.getConnection(
-						findOrWarnSetting("ipa.datasource.url"),
-						findOrWarnSetting("ipa.datasource.username"),
-						findOrWarnSetting("ipa.datasource.password")
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.url"),
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.username"),
+						SettingsConfiguration.findOrWarnSetting("ipa.datasource.password")
 					);
 			statement = connection.createStatement();
 			statement.execute("SELECT 1 = 1");
@@ -68,19 +69,6 @@ public class SiteController {
 		}
 
 		return status;
-	}
-
-	// Replicated from SettingsConfiguration.findOrWarnSetting
-	private String findOrWarnSetting(String variableName) {
-		String value = System.getProperty(variableName);
-		if(value == null) {
-			value = System.getenv(variableName);
-		}
-		if(value == null) {
-			log.warn("Environment variable '" + variableName + "' must be set");
-		}
-
-		return value;
 	}
 
 	/**
