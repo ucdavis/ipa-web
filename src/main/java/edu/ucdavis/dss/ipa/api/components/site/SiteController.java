@@ -1,5 +1,9 @@
 package edu.ucdavis.dss.ipa.api.components.site;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +43,32 @@ public class SiteController {
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {
 		HashMap<String,String> status = new HashMap<>();
-		status.put("status", "ok");
 
-		httpResponse.setStatus(HttpStatus.OK.value());
+		Connection connection = null;
+		Statement statement = null;
+
+		try {
+
+			connection = DriverManager
+					.getConnection(
+						System.getenv("ipa.datasource.url"),
+						System.getenv("ipa.datasource.username"),
+						System.getenv("ipa.datasource.password")
+					);
+			statement = connection.createStatement();
+			statement.execute("SELECT 1 = 1");
+
+			// Set status
+			status.put("status", "ok");
+			httpResponse.setStatus(HttpStatus.OK.value());
+
+		} catch (SQLException e) {
+			log.warn("MySQL connection failed.");
+			status.put("status", "fail");
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			e.printStackTrace();
+		}
+
 
 		return status;
 	}
