@@ -32,7 +32,7 @@ public class SummaryView {
         setDwTerms(dwTerms);
     }
 
-    public List<DwTerm> getDwTerm() { return this.dwTerms; }
+    public List<DwTerm> getDwTerms() { return this.dwTerms; }
 
     public void setDwTerms(List<DwTerm> dwTerms) { this.dwTerms = dwTerms; }
 
