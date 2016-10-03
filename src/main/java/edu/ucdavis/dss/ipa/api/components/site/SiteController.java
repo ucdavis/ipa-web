@@ -60,6 +60,9 @@ public class SiteController {
 			// Set status
 			status.put("status", "ok");
 			httpResponse.setStatus(HttpStatus.OK.value());
+
+			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			log.warn("MySQL connection failed.");
 			status.put("status", "fail");
