@@ -8,6 +8,8 @@ public class DwCourse {
     String effectiveTermCode;
     String title;
     String courseNumber;
+    long creditHoursLow;
+    long creditHoursHigh;
 
     public String getCourseNumber() {
         return courseNumber;
@@ -39,6 +41,22 @@ public class DwCourse {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public long getCreditHoursLow() {
+        return creditHoursLow;
+    }
+
+    public void setCreditHoursLow(long creditHoursLow) {
+        this.creditHoursLow = creditHoursLow;
+    }
+
+    public long getCreditHoursHigh() {
+        return creditHoursHigh;
+    }
+
+    public void setCreditHoursHigh(long creditHoursHigh) {
+        this.creditHoursHigh = creditHoursHigh;
     }
 }
 
