@@ -2,9 +2,12 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
+
+import edu.ucdavis.dss.dw.dto.DwCourse;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +25,7 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
+    @Inject DataWarehouseRepository dwRepository;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
@@ -128,9 +132,16 @@ public class AssignmentViewTeachingAssignmentController {
                 course.setSubjectCode(teachingAssignment.getSuggestedSubjectCode());
                 course.setSequencePattern("001");
 
-                // TODO: pull this information from data warehouse
-                course.setTitle("title goes here");
-                course.setUnitsHigh(4);
+                DwCourse dwCourse = dwRepository.searchCourses(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), teachingAssignment.getSuggestedEffectiveTermCode());
+                if (dwCourse != null && dwCourse.getTitle() != null) {
+                    course.setTitle(dwCourse.getTitle());
+                } else {
+                    course.setTitle(teachingAssignment.getSuggestedSubjectCode() + " " + teachingAssignment.getSuggestedCourseNumber());
+                }
+
+                // TODO: pull this information from data warehouse when it becomes available
+                // Current the Data Warehouse course search doesn't return the units
+                course.setUnitsHigh(0);
                 course.setUnitsLow(4);
 
                 course = courseService.save(course);
