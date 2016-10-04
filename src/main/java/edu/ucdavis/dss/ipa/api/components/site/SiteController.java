@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.site;
 
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -65,7 +66,7 @@ public class SiteController {
 			log.warn("MySQL connection failed.");
 			status.put("status", "fail");
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			e.printStackTrace();
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 		}
 
 		return status;

@@ -141,8 +141,8 @@ public class AssignmentViewTeachingAssignmentController {
 
                 // TODO: pull this information from data warehouse when it becomes available
                 // Current the Data Warehouse course search doesn't return the units
-                course.setUnitsHigh(0);
-                course.setUnitsLow(4);
+                course.setUnitsHigh(dwCourse.getCreditHoursHigh());
+                course.setUnitsLow(dwCourse.getCreditHoursLow());
 
                 course = courseService.save(course);
 
