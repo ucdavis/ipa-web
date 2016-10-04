@@ -26,9 +26,9 @@ public class TeachingAssignment implements Serializable {
 	private boolean sabbatical;
 	private boolean approved;
 	private boolean fromInstructor;
-	private String subjectCode;
-	private String courseNumber;
-	private String effectiveTermCode;
+	private String suggestedSubjectCode;
+	private String suggestedCourseNumber;
+	private String suggestedEffectiveTermCode;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,29 +162,29 @@ public class TeachingAssignment implements Serializable {
 	}
 
 	@JsonProperty
-	public String getSubjectCode() {
-		return subjectCode;
+	public String getSuggestedSubjectCode() {
+		return suggestedSubjectCode;
 	}
 
-	public void setSubjectCode(String subjectCode) {
-		this.subjectCode = subjectCode;
-	}
-
-	@JsonProperty
-	public String getCourseNumber() {
-		return courseNumber;
-	}
-
-	public void setCourseNumber(String courseNumber) {
-		this.courseNumber = courseNumber;
+	public void setSuggestedSubjectCode(String suggestedSubjectCode) {
+		this.suggestedSubjectCode = suggestedSubjectCode;
 	}
 
 	@JsonProperty
-	public String getEffectiveTermCode() {
-		return effectiveTermCode;
+	public String getSuggestedCourseNumber() {
+		return suggestedCourseNumber;
 	}
 
-	public void setEffectiveTermCode(String effectiveTermCode) {
-		this.effectiveTermCode = effectiveTermCode;
+	public void setSuggestedCourseNumber(String suggestedCourseNumber) {
+		this.suggestedCourseNumber = suggestedCourseNumber;
+	}
+
+	@JsonProperty
+	public String getSuggestedEffectiveTermCode() {
+		return suggestedEffectiveTermCode;
+	}
+
+	public void setSuggestedEffectiveTermCode(String suggestedEffectiveTermCode) {
+		this.suggestedEffectiveTermCode = suggestedEffectiveTermCode;
 	}
 }
