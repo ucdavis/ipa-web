@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.exceptions.handlers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import edu.ucdavis.dss.ipa.entities.AuthenticationPrincipal;
@@ -17,12 +18,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ExceptionLogger {
 
+	private static final String[] IGNORED_EXCEPTIONS = {
+			"org.apache.catalina.connector.ClientAbortException"
+	};
+
 	/**
 	 * Logs the exception and mails the admins
 	 * @param callingClassName
 	 * @param e	exception
      */
 	static public void logAndMailException(String callingClassName, Exception e) {
+
+		if (isIgnored(e)) {
+			return;
+		}
 
 		Logger log = LogManager.getLogger("ExceptionLogger");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -66,4 +75,16 @@ public class ExceptionLogger {
 			System.err.print(buffer);
 		}
 	}
+
+	static private boolean isIgnored(Exception e) {
+		String canonicalName = e.getClass().getCanonicalName();
+		boolean isIgnored = Arrays.asList(IGNORED_EXCEPTIONS).contains(canonicalName);
+
+		if(isIgnored) {
+			System.out.println("Ignoring exception " + canonicalName + " as it is on the ignore list.");
+		}
+
+		return isIgnored;
+	}
+
 }
