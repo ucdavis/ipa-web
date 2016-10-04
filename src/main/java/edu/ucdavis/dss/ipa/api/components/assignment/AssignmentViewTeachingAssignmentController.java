@@ -171,6 +171,7 @@ public class AssignmentViewTeachingAssignmentController {
      * @param httpResponse
      * @return
      */
+
     @RequestMapping(value = "/api/assignmentView/preferences/{scheduleId}", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public List<TeachingAssignment> addPreference(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
@@ -191,7 +192,59 @@ public class AssignmentViewTeachingAssignmentController {
 
         List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 
-        //  Making a single teaching Preference if its a buyout/sab/release
+        // Make a single teaching Assignment if its based on a suggested course
+        if (teachingAssignment.getSuggestedCourseNumber() != null
+            && teachingAssignment.getSuggestedEffectiveTermCode() != null
+            && teachingAssignment.getSuggestedSubjectCode() != null) {
+
+            // Make sure suggested teaching Assignment doesn't already exist
+            TeachingAssignment existingSuggestedTeachingAssignment = teachingAssignmentService.findByInstructorIdAndScheduleIdAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
+                    instructor.getId(),
+                    schedule.getId(),
+                    teachingAssignment.getTermCode(),
+                    teachingAssignment.getSuggestedCourseNumber(),
+                    teachingAssignment.getSuggestedSubjectCode(),
+                    teachingAssignment.getSuggestedEffectiveTermCode());
+
+            if (existingSuggestedTeachingAssignment != null) {
+                teachingAssignments.add(existingSuggestedTeachingAssignment);
+                return teachingAssignments;
+            }
+
+            // Does this course already exist in the schedule? if so, treat this as a normal teachingAssignment creation
+            List<Course> existingSuggestedCourses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(
+                    teachingAssignment.getSuggestedSubjectCode(),
+                    teachingAssignment.getSuggestedCourseNumber(),
+                    schedule.getId());
+
+            if (existingSuggestedCourses.size() > 0) {
+                // Set the sectionGroup and course so teachingAssignment(s) can be made
+                for (Course slotCourse : existingSuggestedCourses) {
+                    for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                        if (slotSectionGroup.getTermCode().equals(teachingAssignment.getTermCode())) {
+                            DTOsectionGroup = slotSectionGroup;
+                            DTOcourse = slotCourse;
+                        }
+                    }
+                }
+
+
+            }
+
+            // If attempts to match the suggested teachingAssignment to an existing sectionGroup failed, we should create a suggested teachingAssignment.
+            if (DTOsectionGroup == null || DTOcourse == null){
+                // Make a single suggested teaching Assignment
+                teachingAssignment.setSchedule(schedule);
+                teachingAssignment.setInstructor(instructor);
+                Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+                teachingAssignment.setPriority(priority);
+                teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
+                return teachingAssignments;
+            }
+
+        }
+
+        // Make a single teaching Preference if its a buyout/sab/release
         if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout()) {
 
             teachingAssignment.setApproved(false);
