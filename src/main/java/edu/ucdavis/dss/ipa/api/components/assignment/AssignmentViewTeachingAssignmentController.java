@@ -92,6 +92,65 @@ public class AssignmentViewTeachingAssignmentController {
             return null;
         }
 
+        // A teachingAssignment that suggested a new course (and/or sectionGroup) has been approved.
+        if (teachingAssignment.isApproved() == true
+                && teachingAssignment.getSuggestedEffectiveTermCode() != null
+                && teachingAssignment.getSuggestedSubjectCode() != null
+                && teachingAssignment.getSuggestedCourseNumber() != null) {
+
+
+            SectionGroup sectionGroup = null;
+            List<Course> coursesMatchingSuggestedCourse = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), schedule.getId());
+
+            // Check if the course exists already, if not create it
+            if (coursesMatchingSuggestedCourse.size() > 0) {
+                for (Course slotCourse : coursesMatchingSuggestedCourse) {
+
+                    // Check if the sectionGroup exists already
+                    for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                        if (slotSectionGroup.getTermCode().equals(teachingAssignment.getTermCode())) {
+                            sectionGroup = slotSectionGroup;
+                        }
+                    }
+
+                    // Necessary sectionGroup did not exist, need to create it
+                    if (sectionGroup == null) {
+                        sectionGroup = new SectionGroup();
+
+                    }
+                }
+            } else {
+                // Necessary course was not found, need to create it
+                Course course = new Course();
+                course.setCourseNumber(teachingAssignment.getSuggestedCourseNumber());
+                course.setSchedule(schedule);
+                course.setEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
+                course.setSubjectCode(teachingAssignment.getSuggestedSubjectCode());
+                course.setSequencePattern("001");
+
+                // TODO: pull this information from data warehouse
+                course.setTitle("title goes here");
+                course.setUnitsHigh(4);
+                course.setUnitsLow(4);
+
+                course = courseService.save(course);
+
+                // Create a sectionGroup for the teachingAssignment
+
+                sectionGroup = new SectionGroup();
+                sectionGroup.setCourse(course);
+                sectionGroup.setTermCode(teachingAssignment.getTermCode());
+
+                sectionGroup = sectionGroupService.save(sectionGroup);
+            }
+
+            // Associate teachingAssignment to the newly created sectionGroup and remove the suggested course metadata
+            originalTeachingAssignment.setSectionGroup(sectionGroup);
+            originalTeachingAssignment.setSuggestedEffectiveTermCode(null);
+            originalTeachingAssignment.setSuggestedSubjectCode(null);
+            originalTeachingAssignment.setSuggestedCourseNumber(null);
+        }
+
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
 
         return teachingAssignmentService.save(originalTeachingAssignment);
