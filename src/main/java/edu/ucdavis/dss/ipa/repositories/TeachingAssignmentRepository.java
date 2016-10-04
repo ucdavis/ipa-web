@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+import edu.ucdavis.dss.ipa.entities.Schedule;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -30,4 +31,7 @@ public interface TeachingAssignmentRepository extends CrudRepository<TeachingAss
 	@Transactional
 	@Query(value="delete from TeachingAssignment ta WHERE ta.id = ?1")
 	void deleteById(long teachingAssignmentId);
+
+	TeachingAssignment findOneByScheduleAndInstructorAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
+			Schedule schedule, Instructor instructor, String termCode, String suggestedCourseNumber, String suggestedSubjectCode, String suggestedEffectiveTermCode);
 }

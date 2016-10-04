@@ -2,9 +2,12 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
+
+import edu.ucdavis.dss.dw.dto.DwCourse;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +25,7 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
+    @Inject DataWarehouseRepository dwRepository;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
@@ -90,6 +94,80 @@ public class AssignmentViewTeachingAssignmentController {
         if (teachingAssignment.isApproved() == false && originalTeachingAssignment.isFromInstructor() == false) {
             teachingAssignmentService.delete( Long.valueOf(originalTeachingAssignment.getId()) );
             return null;
+        }
+
+        // A teachingAssignment that suggested a new course (and/or sectionGroup) has been approved.
+        if (teachingAssignment.isApproved() == true
+                && teachingAssignment.getSuggestedEffectiveTermCode() != null
+                && teachingAssignment.getSuggestedSubjectCode() != null
+                && teachingAssignment.getSuggestedCourseNumber() != null) {
+
+
+            SectionGroup sectionGroup = null;
+            List<Course> coursesMatchingSuggestedCourse = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), schedule.getId());
+
+            // Check if the course exists already, if not create it
+            if (coursesMatchingSuggestedCourse.size() > 0) {
+                for (Course slotCourse : coursesMatchingSuggestedCourse) {
+
+                    // Check if the sectionGroup exists already
+                    for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                        if (slotSectionGroup.getTermCode().equals(teachingAssignment.getTermCode())) {
+                            sectionGroup = slotSectionGroup;
+                        }
+                    }
+
+                    // Necessary sectionGroup did not exist, need to create it
+                    if (sectionGroup == null) {
+                        sectionGroup = new SectionGroup();
+
+                    }
+                }
+            } else {
+                // Necessary course was not found, need to create it
+                Course course = new Course();
+                course.setCourseNumber(teachingAssignment.getSuggestedCourseNumber());
+                course.setSchedule(schedule);
+                course.setEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
+                course.setSubjectCode(teachingAssignment.getSuggestedSubjectCode());
+                course.setSequencePattern("001");
+
+                DwCourse dwCourse = dwRepository.searchCourses(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), teachingAssignment.getSuggestedEffectiveTermCode());
+                if (dwCourse != null && dwCourse.getTitle() != null) {
+                    course.setTitle(dwCourse.getTitle());
+                } else {
+                    course.setTitle(teachingAssignment.getSuggestedSubjectCode() + " " + teachingAssignment.getSuggestedCourseNumber());
+                }
+
+                // TODO: pull this information from data warehouse when it becomes available
+                // Current the Data Warehouse course search doesn't return the units
+                course.setUnitsHigh(0);
+                course.setUnitsLow(4);
+
+                course = courseService.save(course);
+
+                // Create a sectionGroup for the teachingAssignment
+
+                sectionGroup = new SectionGroup();
+                sectionGroup.setCourse(course);
+                sectionGroup.setTermCode(teachingAssignment.getTermCode());
+
+                sectionGroup = sectionGroupService.save(sectionGroup);
+            }
+
+            // Associate teachingAssignment to the newly created sectionGroup and remove the suggested course metadata
+            originalTeachingAssignment.setSectionGroup(sectionGroup);
+            originalTeachingAssignment.setSuggestedEffectiveTermCode(null);
+            originalTeachingAssignment.setSuggestedSubjectCode(null);
+            originalTeachingAssignment.setSuggestedCourseNumber(null);
+            originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
+            teachingAssignmentService.save(originalTeachingAssignment);
+
+            originalTeachingAssignment.setSuggestedCourseNumber(teachingAssignment.getSuggestedCourseNumber());
+            originalTeachingAssignment.setSuggestedSubjectCode(teachingAssignment.getSuggestedSubjectCode());
+            originalTeachingAssignment.setSuggestedEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
+
+            return originalTeachingAssignment;
         }
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
@@ -171,6 +249,7 @@ public class AssignmentViewTeachingAssignmentController {
      * @param httpResponse
      * @return
      */
+
     @RequestMapping(value = "/api/assignmentView/preferences/{scheduleId}", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public List<TeachingAssignment> addPreference(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
@@ -191,7 +270,59 @@ public class AssignmentViewTeachingAssignmentController {
 
         List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 
-        //  Making a single teaching Preference if its a buyout/sab/release
+        // Make a single teaching Assignment if its based on a suggested course
+        if (teachingAssignment.getSuggestedCourseNumber() != null
+            && teachingAssignment.getSuggestedEffectiveTermCode() != null
+            && teachingAssignment.getSuggestedSubjectCode() != null) {
+
+            // Make sure suggested teaching Assignment doesn't already exist
+            TeachingAssignment existingSuggestedTeachingAssignment = teachingAssignmentService.findByInstructorIdAndScheduleIdAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
+                    instructor.getId(),
+                    schedule.getId(),
+                    teachingAssignment.getTermCode(),
+                    teachingAssignment.getSuggestedCourseNumber(),
+                    teachingAssignment.getSuggestedSubjectCode(),
+                    teachingAssignment.getSuggestedEffectiveTermCode());
+
+            if (existingSuggestedTeachingAssignment != null) {
+                teachingAssignments.add(existingSuggestedTeachingAssignment);
+                return teachingAssignments;
+            }
+
+            // Does this course already exist in the schedule? if so, treat this as a normal teachingAssignment creation
+            List<Course> existingSuggestedCourses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(
+                    teachingAssignment.getSuggestedSubjectCode(),
+                    teachingAssignment.getSuggestedCourseNumber(),
+                    schedule.getId());
+
+            if (existingSuggestedCourses.size() > 0) {
+                // Set the sectionGroup and course so teachingAssignment(s) can be made
+                for (Course slotCourse : existingSuggestedCourses) {
+                    for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
+                        if (slotSectionGroup.getTermCode().equals(teachingAssignment.getTermCode())) {
+                            DTOsectionGroup = slotSectionGroup;
+                            DTOcourse = slotCourse;
+                        }
+                    }
+                }
+
+
+            }
+
+            // If attempts to match the suggested teachingAssignment to an existing sectionGroup failed, we should create a suggested teachingAssignment.
+            if (DTOsectionGroup == null || DTOcourse == null){
+                // Make a single suggested teaching Assignment
+                teachingAssignment.setSchedule(schedule);
+                teachingAssignment.setInstructor(instructor);
+                Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+                teachingAssignment.setPriority(priority);
+                teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
+                return teachingAssignments;
+            }
+
+        }
+
+        // Make a single teaching Preference if its a buyout/sab/release
         if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout()) {
 
             teachingAssignment.setApproved(false);

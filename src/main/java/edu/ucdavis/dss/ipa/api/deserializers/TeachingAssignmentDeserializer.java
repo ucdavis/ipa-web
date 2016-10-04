@@ -64,6 +64,19 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             teachingAssignment.setTermCode(node.get("termCode").textValue());
         }
 
+        if (node.has("suggestedEffectiveTermCode")) {
+            teachingAssignment.setSuggestedEffectiveTermCode(node.get("suggestedEffectiveTermCode").textValue());
+        }
+
+        if (node.has("suggestedSubjectCode")) {
+            teachingAssignment.setSuggestedSubjectCode(node.get("suggestedSubjectCode").textValue());
+        }
+
+        if (node.has("suggestedCourseNumber")) {
+            teachingAssignment.setSuggestedCourseNumber(node.get("suggestedCourseNumber").textValue());
+        }
+
+
         return teachingAssignment;
     }
 

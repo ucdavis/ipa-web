@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.List;
 
+import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -203,5 +204,55 @@ public class DwClient {
 		}
 
 		return dwPerson;
+	}
+
+	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) throws ClientProtocolException, IOException {
+		String query = subjectCode + " " + courseNumber;
+
+		DwCourse dwCourse = new DwCourse();
+		List<DwCourse> dwCourses = null;
+
+		if (connect() && query != null) {
+			HttpGet httpget = new HttpGet("/courses/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(
+						targetHost, httpget, context);
+
+				StatusLine line = response.getStatusLine();
+				if(line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+				if (arrNode != null) {
+					dwCourses = mapper.readValue(
+							arrNode.toString(),
+							mapper.getTypeFactory().constructCollectionType(
+									List.class, DwCourse.class));
+				} else {
+					log.warn("searchUsers Response from DW returned null, for criterion = " + query);
+				}
+
+				response.close();
+			} catch (JsonParseException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else if (query == null) {
+			log.warn("No query given.");
+		}
+
+		for ( DwCourse slotDwCourse : dwCourses) {
+			if (slotDwCourse.getCourseNumber().equals(courseNumber)
+					&& slotDwCourse.getSubjectCode().equals(subjectCode)
+					&& slotDwCourse.getEffectiveTermCode().equals(effectiveTermCode)) {
+				return slotDwCourse;
+			}
+		}
+		return dwCourse;
+
 	}
 }

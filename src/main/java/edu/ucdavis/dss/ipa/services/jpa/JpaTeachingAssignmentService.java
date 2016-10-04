@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
@@ -65,6 +66,25 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	@Override
 	public List<TeachingAssignment> findByCourseId(long courseId) {
 		return teachingAssignmentRepository.findByCourseId(courseId);
+	}
+
+	@Override
+	public TeachingAssignment findByInstructorIdAndScheduleIdAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
+			long instructorId, long scheduleId, String termCode, String suggestedCourseNumber, String suggestedSubjectCode, String suggestedEffectiveTermCode) {
+
+		Schedule schedule = scheduleService.findById(scheduleId);
+		Instructor instructor = instructorService.getOneById(instructorId);
+		TeachingAssignment teachingAssignment = null;
+
+		if (schedule != null && instructor != null) {
+			teachingAssignment = teachingAssignmentRepository.findOneByScheduleAndInstructorAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
+					schedule, instructor, termCode, suggestedCourseNumber, suggestedSubjectCode, suggestedEffectiveTermCode);
+			if (teachingAssignment != null) {
+				return teachingAssignment;
+			}
+		}
+
+		return null;
 	}
 
 	@Override

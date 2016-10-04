@@ -26,7 +26,9 @@ public class TeachingAssignment implements Serializable {
 	private boolean sabbatical;
 	private boolean approved;
 	private boolean fromInstructor;
-
+	private String suggestedSubjectCode;
+	private String suggestedCourseNumber;
+	private String suggestedEffectiveTermCode;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -157,5 +159,32 @@ public class TeachingAssignment implements Serializable {
 
 	public void setFromInstructor(boolean fromInstructor) {
 		this.fromInstructor = fromInstructor;
+	}
+
+	@JsonProperty
+	public String getSuggestedSubjectCode() {
+		return suggestedSubjectCode;
+	}
+
+	public void setSuggestedSubjectCode(String suggestedSubjectCode) {
+		this.suggestedSubjectCode = suggestedSubjectCode;
+	}
+
+	@JsonProperty
+	public String getSuggestedCourseNumber() {
+		return suggestedCourseNumber;
+	}
+
+	public void setSuggestedCourseNumber(String suggestedCourseNumber) {
+		this.suggestedCourseNumber = suggestedCourseNumber;
+	}
+
+	@JsonProperty
+	public String getSuggestedEffectiveTermCode() {
+		return suggestedEffectiveTermCode;
+	}
+
+	public void setSuggestedEffectiveTermCode(String suggestedEffectiveTermCode) {
+		this.suggestedEffectiveTermCode = suggestedEffectiveTermCode;
 	}
 }
