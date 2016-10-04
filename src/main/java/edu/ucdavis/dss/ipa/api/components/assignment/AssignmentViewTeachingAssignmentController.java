@@ -149,6 +149,14 @@ public class AssignmentViewTeachingAssignmentController {
             originalTeachingAssignment.setSuggestedEffectiveTermCode(null);
             originalTeachingAssignment.setSuggestedSubjectCode(null);
             originalTeachingAssignment.setSuggestedCourseNumber(null);
+            originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
+            teachingAssignmentService.save(originalTeachingAssignment);
+
+            originalTeachingAssignment.setSuggestedCourseNumber(teachingAssignment.getSuggestedCourseNumber());
+            originalTeachingAssignment.setSuggestedSubjectCode(teachingAssignment.getSuggestedSubjectCode());
+            originalTeachingAssignment.setSuggestedEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
+
+            return originalTeachingAssignment;
         }
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
