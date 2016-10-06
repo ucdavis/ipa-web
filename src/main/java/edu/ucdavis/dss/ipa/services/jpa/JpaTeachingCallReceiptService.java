@@ -196,7 +196,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			academicYear--;
 		}
 
-		String teachingCallUrl = "https://ipa.ucdavis.edu" + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
+		String teachingCallUrl = SettingsConfiguration.getIpaURL() + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
