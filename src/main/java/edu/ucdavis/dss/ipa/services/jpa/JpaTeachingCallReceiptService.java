@@ -196,7 +196,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			academicYear--;
 		}
 
-		String teachingCallUrl = SettingsConfiguration.getIpaURL() + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
+		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
+		//       at all -- it breaks out frontend / backend separation.
+		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");

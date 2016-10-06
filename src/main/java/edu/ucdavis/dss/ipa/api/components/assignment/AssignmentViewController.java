@@ -53,7 +53,7 @@ public class AssignmentViewController {
                                              HttpServletRequest httpRequest) {
         Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-        String url = SettingsConfiguration.getIpaURL() + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+        String url = SettingsConfiguration.getIpaApiURL() + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");

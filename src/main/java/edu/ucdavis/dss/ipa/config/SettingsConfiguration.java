@@ -23,7 +23,7 @@ public class SettingsConfiguration {
 	/* Declarations with their defaults */
 	private static RunningMode runningMode = RunningMode.development;
 
-	private static String ipaUrl;
+	private static String ipaApiUrl, ipaFrontendUrl;
 	private static String emailProtocol, emailAuth, emailDebug, emailHost, emailFrom;
 	private static Integer emailPort;
 	private static Boolean errorsFound = null;
@@ -54,7 +54,8 @@ public class SettingsConfiguration {
 		dwUrl = findOrWarnSetting("dw.url");
 		dwToken = findOrWarnSetting("dw.token");
 		dwPort = findOrWarnSetting("dw.port");
-		ipaUrl = findOrWarnSetting("ipa.url");
+		ipaApiUrl = findOrWarnSetting("ipa.url.api");
+		ipaFrontendUrl = findOrWarnSetting("ipa.url.frontend");
 		emailProtocol = findOrWarnSetting("ipa.email.protocol");
 		emailAuth = findOrWarnSetting("ipa.email.auth");
 		emailDebug = findOrWarnSetting("ipa.email.debug");
@@ -116,8 +117,13 @@ public class SettingsConfiguration {
 	}
 
 	// Should be in the form: http://website:8080 (no trailing slash, include protocol)
-	public static String getIpaURL() {
-		return ipaUrl;
+	public static String getIpaApiURL() {
+		return ipaApiUrl;
+	}
+
+	// Should be in the form: http://ipa.ucdavis.edu (no trailing slash, include protocol)
+	public static String getIpaFrontendURL() {
+		return ipaFrontendUrl;
 	}
 
 	public static String getEmailProtocol() {

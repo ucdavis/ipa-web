@@ -274,7 +274,7 @@ public class CourseViewController {
 							 HttpServletRequest httpRequest) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		String url = SettingsConfiguration.getIpaURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+		String url = SettingsConfiguration.getIpaApiURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
 		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");

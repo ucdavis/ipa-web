@@ -19,7 +19,7 @@ public class SecurityDTO {
     public List<ScheduleTermState> termStates;
 
     public SecurityDTO() {
-        if(redirect == null) { redirect = "https://cas.ucdavis.edu/cas/login?service=" + SettingsConfiguration.getIpaURL() + "/post-login"; }
+        if(redirect == null) { redirect = "https://cas.ucdavis.edu/cas/login?service=" + SettingsConfiguration.getIpaApiURL() + "/post-login"; }
     }
 
     public SecurityDTO(String token) {
