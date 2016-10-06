@@ -40,7 +40,6 @@ public class JpaTermService implements TermService {
 			term = new Term();
 			term.setTermCode(termCode);
 			term = this.termRepository.save(term);
-
 		}
 
 		return term;
