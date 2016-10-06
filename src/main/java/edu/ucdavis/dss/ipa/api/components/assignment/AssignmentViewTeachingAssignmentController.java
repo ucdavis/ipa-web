@@ -139,8 +139,6 @@ public class AssignmentViewTeachingAssignmentController {
                     course.setTitle(teachingAssignment.getSuggestedSubjectCode() + " " + teachingAssignment.getSuggestedCourseNumber());
                 }
 
-                // TODO: pull this information from data warehouse when it becomes available
-                // Current the Data Warehouse course search doesn't return the units
                 course.setUnitsHigh(dwCourse.getCreditHoursHigh());
                 course.setUnitsLow(dwCourse.getCreditHoursLow());
 
