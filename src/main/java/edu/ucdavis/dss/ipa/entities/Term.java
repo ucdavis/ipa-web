@@ -133,6 +133,24 @@ public class Term implements Serializable {
 	}
 	
 	/**
+	 * Returns the equivalent termCode for the provided year
+	 *
+	 * @param year e.g. 2016
+	 * @param termCode e.g. "201301"
+	 * @return         "201701"
+	 */
+	@Transient
+	public static String getTermCodeByYearAndTermCode(long year, String termCode) {
+		String twoDigitTermCode =  Term.getTwoDigitTermCode(termCode);
+
+		if (Integer.parseInt(twoDigitTermCode) < 5) {
+			year++;
+		}
+
+		return year + twoDigitTermCode;
+	}
+
+	/**
 	 * Returns the term name based solely on the code, ignoring the
 	 * 'name' field in the database.
 	 * <p>

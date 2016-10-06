@@ -260,7 +260,9 @@ public class CourseViewController {
 			SectionGroup sectionGroup = new SectionGroup();
 			sectionGroup.setCourse(course);
 			sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
-			sectionGroup.setTermCode(sectionGroupImport.getTermCode());
+			sectionGroup.setTermCode(
+					Term.getTermCodeByYearAndTermCode(year, sectionGroupImport.getTermCode())
+			);
 			sectionGroupService.save(sectionGroup);
 		}
 
