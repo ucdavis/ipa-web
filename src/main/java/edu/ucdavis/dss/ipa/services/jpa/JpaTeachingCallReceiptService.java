@@ -185,7 +185,18 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		String recipientEmail = user.getEmail();
 		String messageSubject = "";
-		String teachingCallUrl = SettingsConfiguration.getIpaURL() + "/teachingCalls/#/" + teachingCallReceipt.getTeachingCall().getId();
+
+		long workgroupId = teachingCallReceipt.getTeachingCall().getSchedule().getWorkgroup().getId();
+
+		Calendar now = Calendar.getInstance();
+		int academicYear = now.get(Calendar.YEAR);
+
+		// example: February 2017 is for the academic year 2016, so currentYear would need to be decremented
+		if (now.get(Calendar.MONTH) < 7) {
+			academicYear--;
+		}
+
+		String teachingCallUrl = "https://ipa.ucdavis.edu" + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
