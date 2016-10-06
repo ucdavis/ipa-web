@@ -77,8 +77,8 @@ public class ActivityLog {
         String loggableTag = referenceEntity.getClass().getSimpleName().toLowerCase();
 
         try {
-            Method getEntityId = referenceEntity.getClass().getMethod("getId", null);
-            long entityId = (long) getEntityId.invoke(referenceEntity, null);
+            Method getEntityId = referenceEntity.getClass().getMethod("getId", (java.lang.Class<?>[])null);
+            long entityId = (long) getEntityId.invoke(referenceEntity, (java.lang.Object[])null);
 
             loggableTag += "_" + entityId;
         } catch (InvocationTargetException e) {
