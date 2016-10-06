@@ -186,19 +186,12 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String recipientEmail = user.getEmail();
 		String messageSubject = "";
 
-		long workgroupId = teachingCallReceipt.getTeachingCall().getSchedule().getWorkgroup().getId();
-
-		Calendar now = Calendar.getInstance();
-		int academicYear = now.get(Calendar.YEAR);
-
-		// example: February 2017 is for the academic year 2016, so currentYear would need to be decremented
-		if (now.get(Calendar.MONTH) < 7) {
-			academicYear--;
-		}
+		Schedule schedule = teachingCallReceipt.getTeachingCall().getSchedule();
+		long workgroupId = schedule.getWorkgroup().getId();
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + academicYear + "/teachingCall";
+		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
