@@ -37,7 +37,7 @@ public class TermUpdateTask {
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-DD", Locale.ENGLISH);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
         List<DwTerm> dwTerms = restDataWarehouseRepository.getTerms();
 
