@@ -201,7 +201,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			Long year = teachingCallReceipt.getTeachingCall().getSchedule().getYear();
 
 			// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
-			messageSubject = "IPA - Teaching Call has started";
+			messageSubject = "IPA: Teaching Call has started";
 			messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
 			messageBody = "Faculty,";
 			messageBody += "<br />";
