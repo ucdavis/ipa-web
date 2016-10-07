@@ -29,7 +29,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		long scheduleId = schedule.getId();
 		List<Course> courses = schedule.getCourses();
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
