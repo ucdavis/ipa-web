@@ -9,8 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TermUpdateTask {
@@ -32,6 +36,8 @@ public class TermUpdateTask {
     public void updateTermsFromDW() {
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-DD", Locale.ENGLISH);
 
         List<DwTerm> dwTerms = restDataWarehouseRepository.getTerms();
 
@@ -57,11 +63,15 @@ public class TermUpdateTask {
             if(dwTerm.getMaintenanceDate2End() != null) {
                 localTerm.setBannerEndWindow2(new Date(Long.parseLong(dwTerm.getMaintenanceDate2End())));
             }
-            if(dwTerm.getBeginDate() != null) {
-                localTerm.setStartDate(new Date(Long.parseLong(dwTerm.getBeginDate())));
-            }
-            if(dwTerm.getEndDate() != null) {
-                localTerm.setEndDate(new Date(Long.parseLong(dwTerm.getEndDate())));
+            try {
+                if(dwTerm.getBeginDate() != null) {
+                    localTerm.setStartDate(df.parse(dwTerm.getBeginDate()));
+                }
+                if(dwTerm.getEndDate() != null) {
+                    localTerm.setEndDate(df.parse(dwTerm.getEndDate()));
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
 
             this.termService.save(localTerm);
