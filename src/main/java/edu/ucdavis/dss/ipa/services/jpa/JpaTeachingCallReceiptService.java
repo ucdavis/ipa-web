@@ -204,8 +204,8 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			messageSubject = "IPA: Teaching Call has started";
 			messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
 			messageBody = "Faculty,";
-			messageBody += "<br />";
-			messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>";
+			messageBody += "<br /><br />";
+			messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>.";
 			messageBody += "<br />";
 			messageBody += "<br />";
 			messageBody += teachingCallReceipt.getTeachingCall().getMessage();
@@ -214,7 +214,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			messageBody += "Please submit your teaching preferences by <b>" + format.format(teachingCallReceipt.getTeachingCall().getDueDate()) + "</b>.";
 			messageBody += "<br />";
 			messageBody += "<br />";
-			messageBody += "<h3><a href='" + teachingCallUrl + "'>View Teaching Call</a></h3>";
+			messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
 			messageBody += "</td></tr></tbody></table>";
 
 			log.info("Initiating notification email to '" + user.getEmail() + "' for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "'");
