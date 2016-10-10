@@ -18,4 +18,6 @@ public interface TeachingCallService {
 	public List<TeachingCall> findByScheduleId(long id);
 
 	public TeachingCall findOneByUserIdAndScheduleId(long userId, long id);
+
+	void deleteById(long teachingCallId);
 }

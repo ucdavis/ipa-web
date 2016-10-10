@@ -115,4 +115,9 @@ public class JpaTeachingCallService implements TeachingCallService {
 		// No teachingCall found for this user/schedule combination
 		return null;
 	}
+
+	@Override
+	public void deleteById(long teachingCallId) {
+		teachingCallRepository.delete(teachingCallId);
+	}
 }

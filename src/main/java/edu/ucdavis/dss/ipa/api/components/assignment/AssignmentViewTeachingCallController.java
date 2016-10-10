@@ -50,4 +50,18 @@ public class AssignmentViewTeachingCallController {
 
         return teachingCall;
     }
+
+    @RequestMapping(value = "/api/assignmentView/teachingCalls/{teachingCallId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public TeachingCall removeTeachingCall(@PathVariable long teachingCallId, HttpServletResponse httpResponse) {
+        TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
+        Workgroup workgroup = teachingCall.getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner");
+
+        if (teachingCall != null) {
+            teachingCallService.deleteById(teachingCallId);
+        }
+
+        return teachingCall;
+    }
 }
