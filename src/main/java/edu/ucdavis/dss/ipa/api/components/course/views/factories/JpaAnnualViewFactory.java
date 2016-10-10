@@ -17,6 +17,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	@Inject ScheduleService scheduleService;
 	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
+	@Inject TermService termService;
 
 	@Override
 	public CourseView createCourseView(long workgroupId, long year, Boolean showDoNotPrint) {
@@ -27,6 +28,9 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
+		// TODO: make sure banner has terms after 2099, not urgent, just fix before 2099
+		List<Term> terms = termService.findByYear(year);
+
 		List<Course> courses;
 		if (showDoNotPrint != null && showDoNotPrint) {
 			courses = schedule.getCourses();
@@ -34,7 +38,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		}
 
-		return new CourseView(courses, sectionGroups, scheduleTermStates, workgroup.getTags());
+		return new CourseView(courses, sectionGroups, workgroup.getTags(), terms);
 	}
 
     @Override

@@ -44,8 +44,8 @@ public class CourseExcelView extends AbstractXlsView {
             excelHeader.createCell(1).setCellValue(StringUtils.join(tagNameList, ','));
 
             int col = 2;
-            for(ScheduleTermState state : courseViewDTO.getScheduleTermStates()) {
-                SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, state.getTermCode());
+            for(Term term : courseViewDTO.getTerms()) {
+                SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, term.getTermCode());
 
                 if (sectionGroup != null) {
                     excelHeader.createCell(col).setCellValue(sectionGroup.getPlannedSeats());
@@ -65,8 +65,8 @@ public class CourseExcelView extends AbstractXlsView {
         excelHeader.createCell(1).setCellValue("Tracks");
 
         int col = 2;
-        for(ScheduleTermState state : courseViewDTO.getScheduleTermStates()) {
-            excelHeader.createCell(col).setCellValue(Term.getRegistrarName(state.getTermCode()));
+        for(Term term : courseViewDTO.getTerms()) {
+            excelHeader.createCell(col).setCellValue(Term.getRegistrarName(term.getTermCode()));
             col++;
         }
     }

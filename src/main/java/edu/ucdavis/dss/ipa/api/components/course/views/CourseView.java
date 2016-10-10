@@ -8,19 +8,19 @@ import java.util.List;
 public class CourseView {
 	private List<Course> courses = new ArrayList<>();
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
-	private List<ScheduleTermState> scheduleTermStates = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<>();
+	private List<Term> terms = new ArrayList<>();
 
 	public CourseView(
 			List<Course> courses,
 			List<SectionGroup> sectionGroups,
-			List<ScheduleTermState> scheduleTermStates,
-			List<Tag> tags) {
+			List<Tag> tags,
+			List<Term> terms) {
 
 		setCourses(courses);
 		setSectionGroups(sectionGroups);
-		setScheduleTermStates(scheduleTermStates);
 		setTags(tags);
+		setTerms(terms);
 	}
 
 	public List<Course> getCourses() {
@@ -39,19 +39,19 @@ public class CourseView {
 		this.sectionGroups = sectionGroups;
 	}
 
-	public List<ScheduleTermState> getScheduleTermStates() {
-		return scheduleTermStates;
-	}
-
-	public void setScheduleTermStates(List<ScheduleTermState> scheduleTermStates) {
-		this.scheduleTermStates = scheduleTermStates;
-	}
-
 	public List<Tag> getTags() {
 		return tags;
 	}
 
 	public void setTags(List<Tag> tags) {
 		this.tags = tags;
+	}
+
+	public List<Term> getTerms() {
+		return terms;
+	}
+
+	public void setTerms(List<Term> terms) {
+		this.terms = terms;
 	}
 }

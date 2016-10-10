@@ -47,7 +47,8 @@ public class JpaTermService implements TermService {
 
 	@Override
 	public List<Term> findByYear(long year) {
-		return this.termRepository.findByYear(year);
+		Set<String> termCodes = Term.getTermCodesByYear(year);
+		return this.termRepository.findByTermCodeIn(termCodes);
 	}
 
 	@Override
