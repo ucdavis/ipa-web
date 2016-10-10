@@ -14,7 +14,7 @@ public interface TermRepository extends CrudRepository<Term, Long> {
 	Term findOneByTermCode(String termCode);
 
 	@Query("SELECT t FROM Term t WHERE t.termCode LIKE :year%")
-	List<Term> findByYear(@Param("year") String year);
+	List<Term> findByYear(@Param("year") long year);
 
 	@Query("SELECT t FROM Term t WHERE t.termCode IN :termCodes AND (t.endDate > current_date() OR t.endDate IS NULL)")
 	List<Term> findByTermCodeInAndExistingEndDateAfterNow(@Param("termCodes") Set<String> termCodes);
@@ -26,14 +26,13 @@ public interface TermRepository extends CrudRepository<Term, Long> {
 	 * @param loginId
 	 * @return
 	 */
-	@Query(value = " SELECT DISTINCT(t.TermCode), t.BannerStartWindow1, t.BannerEndWindow1," +
-			" t.BannerStartWindow2, t.BannerEndWindow2, t.StartDate, t.EndDate" +
-			" FROM Users u, UserRoles ur, Schedules sch, Courses c, SectionGroups sg, Terms t" +
-			" WHERE u.LoginId = :loginId " +
-			" AND ur.UserId = u.Id " +
-			" AND sch.WorkgroupId = ur.WorkgroupId " +
-			" AND c.ScheduleId = sch.Id " +
-			" AND sg.CourseId = c.Id " +
-			" AND sg.TermCode = t.TermCode ", nativeQuery = true)
+	@Query(value = " SELECT DISTINCT t" +
+			" FROM User u, UserRole ur, Schedule sch, Course c, SectionGroup sg, Term t" +
+			" WHERE u.loginId = :loginId " +
+			" AND ur.user = u " +
+			" AND sch.workgroup = ur.workgroup " +
+			" AND c.schedule = sch " +
+			" AND sg.course = c " +
+			" AND sg.termCode = t.termCode ")
 	List<Term> findByLoginId(@Param("loginId") String loginId);
 }

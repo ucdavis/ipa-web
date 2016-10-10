@@ -19,7 +19,7 @@ public interface TermService {
 
 	Term findOrCreateByTermCode(String termCode);
 
-	List<Term> findByYear(String year);
+	List<Term> findByYear(long year);
 	
 	Term updateOrCreate(Term term);
 
