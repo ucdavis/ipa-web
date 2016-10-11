@@ -1,19 +1,19 @@
 package edu.ucdavis.dss.ipa.api.components.summary.views;
 
-import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.entities.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SummaryView {
-    List<Course> courses = new ArrayList<Course>();
-    List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
-    List<Section> sections = new ArrayList<Section>();
-    List<Activity> activities = new ArrayList<Activity>();
+    List<Course> courses = new ArrayList<>();
+    List<SectionGroup> sectionGroups = new ArrayList<>();
+    List<Section> sections = new ArrayList<>();
+    List<Activity> activities = new ArrayList<>();
 
-    List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
-    List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
-    List<DwTerm> dwTerms = new ArrayList<DwTerm>();
+    List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+    List<TeachingCall> teachingCalls = new ArrayList<>();
+    List<Term> terms = new ArrayList<>();
 
     public SummaryView(List<Course> courses,
                        List<SectionGroup> sectionGroups,
@@ -21,7 +21,7 @@ public class SummaryView {
                        List<Activity> activities,
                        List<TeachingAssignment> teachingAssignments,
                        List<TeachingCall> teachingCalls,
-                       List<DwTerm> dwTerms) {
+                       List<Term> terms) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -29,12 +29,12 @@ public class SummaryView {
         setActivities(activities);
         setTeachingAssignments(teachingAssignments);
         setTeachingCalls(teachingCalls);
-        setDwTerms(dwTerms);
+        setTerms(terms);
     }
 
-    public List<DwTerm> getDwTerms() { return this.dwTerms; }
+    public List<Term> getTerms() { return this.terms; }
 
-    public void setDwTerms(List<DwTerm> dwTerms) { this.dwTerms = dwTerms; }
+    public void setTerms(List<Term> terms) { this.terms = terms; }
 
     public List<Course> getCourses() {
         return courses;

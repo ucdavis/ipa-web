@@ -1,17 +1,14 @@
 package edu.ucdavis.dss.ipa.api.components.summary.views.factories;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import edu.ucdavis.dss.dw.dto.DwTerm;
-import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class JpaSummaryViewFactory implements SummaryViewFactory {
@@ -20,7 +17,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject ScheduleService scheduleService;
     @Inject CourseService courseService;
     @Inject TeachingCallService teachingCallService;
-    @Inject DataWarehouseRepository dwRepository;
+    @Inject TermService termService;
 
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId) {
@@ -82,8 +79,9 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         }
 
         // Grab terms info from DW
-        List<DwTerm> dwTerms = dwRepository.getTerms();
+        long currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        List<Term> terms = termService.findByYear(currentYear);
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, dwTerms);
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, terms);
     }
 }
