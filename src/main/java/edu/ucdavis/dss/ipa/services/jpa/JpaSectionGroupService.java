@@ -83,14 +83,16 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 	@Override
 	public List<SectionGroup> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
-		return sectionGroupRepository.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYearAndTermCode(workgroupId, year, termCode);
 	}
 
 	@Override
 	public List<SectionGroup> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
-		List<SectionGroup> visibleSectionGroups = sectionGroupRepository.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-		Collections.sort(visibleSectionGroups, (o1, o2) -> o1.getCourse().getShortDescription().compareTo(o2.getCourse().getShortDescription()));
-		return visibleSectionGroups;
+		List<SectionGroup> occupiedVisibleSectionGroups = sectionGroupRepository.findOccupiedVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<SectionGroup> emptySectionGroups = sectionGroupRepository.findEmptyByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		occupiedVisibleSectionGroups.addAll(emptySectionGroups);
+		Collections.sort(occupiedVisibleSectionGroups, (o1, o2) -> o1.getCourse().getShortDescription().compareTo(o2.getCourse().getShortDescription()));
+		return occupiedVisibleSectionGroups;
 	}
 
 	private boolean isLocked(long sectionGroupId) {
