@@ -128,9 +128,9 @@ public class SchedulingViewController {
 		this.activityService.deleteActivityById(activity.getId());
 	}
 
-	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}/activities/{activityCode}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public Activity createSharedActivity(@RequestBody Activity activity, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
+	public Activity createSharedActivity(@PathVariable char activityCode, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -138,8 +138,9 @@ public class SchedulingViewController {
 		}
 		Authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
+		ActivityType activityType = new ActivityType(activityCode);
 		Activity slotActivity = new Activity();
-		slotActivity.setActivityTypeCode(activity.getActivityTypeCode());
+		slotActivity.setActivityTypeCode(activityType);
 		slotActivity.setActivityState(ActivityState.DRAFT);
 		slotActivity.setDayIndicator("0000000");
 		slotActivity.setSectionGroup(sectionGroup);
@@ -149,9 +150,9 @@ public class SchedulingViewController {
 		return slotActivity;
 	}
 
-	@RequestMapping(value = "/api/schedulingView/sections/{sectionId}", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value = "/api/schedulingView/sections/{sectionId}/activities/{activityCode}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public Activity createActivity(@RequestBody Activity activity, @PathVariable Long sectionId, HttpServletResponse httpResponse) {
+	public Activity createActivity(@PathVariable char activityCode, @PathVariable Long sectionId, HttpServletResponse httpResponse) {
 		Section section = sectionService.getOneById(sectionId);
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -159,8 +160,9 @@ public class SchedulingViewController {
 		}
 		Authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
+		ActivityType activityType = new ActivityType(activityCode);
 		Activity newActivity = new Activity();
-		newActivity.setActivityTypeCode(activity.getActivityTypeCode());
+		newActivity.setActivityTypeCode(activityType);
 		newActivity.setActivityState(ActivityState.DRAFT);
 		newActivity.setDayIndicator("0000000");
 		newActivity.setSection(section);
