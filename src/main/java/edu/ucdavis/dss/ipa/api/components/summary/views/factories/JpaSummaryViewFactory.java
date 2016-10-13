@@ -18,6 +18,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject CourseService courseService;
     @Inject TeachingCallService teachingCallService;
     @Inject TermService termService;
+    @Inject InstructorService instructorService;
 
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId) {
@@ -82,6 +83,9 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         long currentYear = Calendar.getInstance().get(Calendar.YEAR);
         List<Term> terms = termService.findByYear(currentYear);
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, terms);
+        // Grab teachingCallReceipts
+        List<TeachingCallReceipt> teachingCallReceipts = instructorService.getOneById(instructorId).getTeachingCallReceipts();
+
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, teachingCallReceipts, terms);
     }
 }
