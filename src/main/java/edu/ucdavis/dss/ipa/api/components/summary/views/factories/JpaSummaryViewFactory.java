@@ -84,7 +84,11 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         List<Term> terms = termService.findByYear(currentYear);
 
         // Grab teachingCallReceipts
-        List<TeachingCallReceipt> teachingCallReceipts = instructorService.getOneById(instructorId).getTeachingCallReceipts();
+        List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
+        Instructor instructor = instructorService.getOneById(instructorId);
+        if (instructor != null) {
+            teachingCallReceipts = instructor.getTeachingCallReceipts();
+        }
 
         return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, teachingCallReceipts, terms);
     }
