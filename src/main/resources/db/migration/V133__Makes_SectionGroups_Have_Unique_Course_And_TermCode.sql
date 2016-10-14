@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroups` ADD UNIQUE `sectionGroup_unique_courseId_termCode` (`CourseId`, `TermCode`);
