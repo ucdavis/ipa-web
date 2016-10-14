@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.entities.Term;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +22,10 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
 
 	List<Schedule> findByYear(long year);
 
-	@Query("SELECT DISTINCT sg.termCode FROM SectionGroup sg, Course c WHERE sg.course = c and c.schedule.id = :scheduleId")
-	List<String> getActiveTermCodesForScheduleId(@Param("scheduleId") long scheduleId);
+	@Query("SELECT DISTINCT t " +
+			" FROM SectionGroup sg, Course c, Term t " +
+			" WHERE sg.course = c " +
+			" AND sg.termCode = t.termCode" +
+			" AND c.schedule.id = :scheduleId")
+	List<Term> getActiveTermsForScheduleId(@Param("scheduleId") long scheduleId);
 }

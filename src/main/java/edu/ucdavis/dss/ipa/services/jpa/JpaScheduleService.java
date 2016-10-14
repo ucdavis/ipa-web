@@ -128,8 +128,8 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public List<String> getActiveTermCodesForSchedule(Schedule schedule) {
-		return this.scheduleRepository.getActiveTermCodesForScheduleId(schedule.getId());
+	public List<Term> getActiveTermCodesForSchedule(Schedule schedule) {
+		return this.scheduleRepository.getActiveTermsForScheduleId(schedule.getId());
 	}
 
 	@Override

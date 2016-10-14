@@ -2,12 +2,8 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.validation.annotation.Validated;
-
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 
 /**
  * Provides various operations to perform on schedules in the local database.
@@ -41,5 +37,5 @@ public interface ScheduleService {
 	 * @param schedule
 	 * @return
 	 */
-	List<String> getActiveTermCodesForSchedule(Schedule schedule);
+	List<Term> getActiveTermCodesForSchedule(Schedule schedule);
 }

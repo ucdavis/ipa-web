@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.entities.Term;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Schedule;
@@ -23,10 +24,10 @@ public interface ScheduleTermStateService {
 	/**
 	 * Creates a single ScheduleTermState for the given schedule and term code.
 	 * 
-	 * @param termCode
+	 * @param term
 	 * @return
 	 */
-	ScheduleTermState createScheduleTermState(String termCode);
+	ScheduleTermState createScheduleTermState(Term term);
 
 	/**
 	 * Get all ScheduleTermStates for the given schedule. Entities are calculated

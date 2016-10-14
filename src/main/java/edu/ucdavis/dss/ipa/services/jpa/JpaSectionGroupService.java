@@ -1,9 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import edu.ucdavis.dss.ipa.services.*;
@@ -25,6 +22,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
 	@Inject WorkgroupService workgroupService;
+	@Inject TermService termService;
 
 	@Override
 	@Transactional
@@ -99,7 +97,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
 		if (sectionGroup == null) { return false; }
 
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(sectionGroup.getTermCode());
+		Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
 
 		if (termState != null && termState.scheduleTermLocked()) {
 			ExceptionLogger.logAndMailException(

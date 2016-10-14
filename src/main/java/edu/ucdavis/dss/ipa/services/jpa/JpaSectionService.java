@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.TermService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -19,6 +20,7 @@ public class JpaSectionService implements SectionService {
 	@Inject SectionRepository sectionRepository;
 	@Inject CourseService courseService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
+	@Inject TermService termService;
 
 	@Override
 	public Section save(Section section) {
@@ -97,15 +99,15 @@ public class JpaSectionService implements SectionService {
 		if (sectionGroup == null) { return true; }
 
 		Course course = sectionGroup.getCourse();
-		String termCode = sectionGroup.getTermCode();
+		Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
 
 		if (course == null) { return true; }
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(termCode);
+		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
 
 		if (termState != null && termState.scheduleTermLocked()) {
 			ExceptionLogger.logAndMailException(
 					this.getClass().getName(),
-					new UnsupportedOperationException("Term " + termCode + " is locked")
+					new UnsupportedOperationException("Term " + term.getTermCode() + " is locked")
 					);
 			return true;
 		}

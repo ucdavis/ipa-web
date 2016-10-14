@@ -23,12 +23,11 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 	@Inject ScheduleService scheduleService;
 	@Inject TermService termService;
 
-	public ScheduleTermState createScheduleTermState(String termCode) {
+	public ScheduleTermState createScheduleTermState(Term term) {
 		ScheduleTermState state = new ScheduleTermState();
 		
-		state.setTermCode(termCode);
+		state.setTermCode(term.getTermCode());
 		
-		Term term = this.termService.getOneByTermCode(termCode);
 		if(term != null && term.getEndDate() != null && term.getEndDate().before(new Date())) {
 			state.setState(TermState.COMPLETED);
 			return state;
@@ -41,17 +40,15 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 
 	@Override
 	public List<ScheduleTermState> getScheduleTermStatesBySchedule(Schedule schedule) {
-		List<String> termCodes = null;
-		
 		if(schedule == null) return null;
 		
-		termCodes = this.scheduleService.getActiveTermCodesForSchedule(schedule);
-		if(termCodes == null) return null;
+		List<Term> terms = this.scheduleService.getActiveTermCodesForSchedule(schedule);
+		if(terms == null) return null;
 		
-		List<ScheduleTermState> states = new ArrayList<ScheduleTermState>();
+		List<ScheduleTermState> states = new ArrayList<>();
 		
-		for(String termCode : termCodes) {
-			states.add(this.createScheduleTermState(termCode));
+		for(Term term : terms) {
+			states.add(this.createScheduleTermState(term));
 		}
 		
 		return states;
@@ -63,7 +60,7 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 		List<ScheduleTermState> states = new ArrayList<>();
 
 		for(Term term : terms) {
-			states.add(this.createScheduleTermState(term.getTermCode()));
+			states.add(this.createScheduleTermState(term));
 		}
 
 		return states;
