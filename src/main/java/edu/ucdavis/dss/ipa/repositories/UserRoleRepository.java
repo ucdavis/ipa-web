@@ -14,4 +14,6 @@ public interface UserRoleRepository extends CrudRepository<UserRole, Long> {
 
 	@Query("FROM UserRole ur WHERE ur.user.loginId = :loginId")
 	List<UserRole> findByLoginId(@Param("loginId") String loginId);
+
+	List<UserRole> findByUserLoginId(String loginId);
 }
