@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.api.views.UserViews;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "Users")
@@ -129,6 +130,7 @@ public class User {
 
 	// Used by Spring Security for hasPermission calculations
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+	@BatchSize(size=25)
 	public List<UserRole> getUserRoles() {
 		return userRoles;
 	}
