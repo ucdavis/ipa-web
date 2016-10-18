@@ -286,7 +286,8 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public List<UserRole> findByLoginId(String loginId) {
-		return userRoleRepository.findByLoginId(loginId);
+		return userRoleRepository.findByUserLoginId(loginId);
+		//return userRoleRepository.findByLoginId(loginId);
 	}
 
 }
