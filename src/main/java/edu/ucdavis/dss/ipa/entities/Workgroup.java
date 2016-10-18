@@ -73,7 +73,7 @@ public class Workgroup {
 	}
 
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "workgroup", orphanRemoval = true, cascade = {CascadeType.ALL})
 	@JsonIgnore
 	public List<UserRole> getUserRoles() {
 		return userRoles;
