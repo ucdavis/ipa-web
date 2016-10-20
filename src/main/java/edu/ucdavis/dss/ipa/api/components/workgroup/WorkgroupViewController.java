@@ -20,7 +20,7 @@ public class WorkgroupViewController {
 	@RequestMapping(value = "/api/workgroupView/{workgroupId}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public WorkgroupView getWorkgroupViewByCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return workgroupViewFactory.createWorkgroupView(workgroupId);
 	}

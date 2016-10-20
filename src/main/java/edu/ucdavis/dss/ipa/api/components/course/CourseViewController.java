@@ -39,13 +39,6 @@ public class CourseViewController {
 
 	@Inject CourseValidator courseValidator;
 
-	@InitBinder
-	public void initializeBinder(WebDataBinder binder) {
-		// FIXME: This line causes the following exception when calling updateSection():
-		// java.lang.IllegalStateException: Invalid target for Validator [edu.ucdavis.dss.ipa.entities.validation.CourseValidator]: edu.ucdavis.dss.ipa.entities.Section
-		// binder.addValidators(courseValidator);
-	}
-
 	/**
 	 * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
 	 *
@@ -59,7 +52,7 @@ public class CourseViewController {
 	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year,
 									 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 									 HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
@@ -75,7 +68,7 @@ public class CourseViewController {
 		}
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
 
 		return sectionGroup.getSections();
 	}
@@ -274,7 +267,7 @@ public class CourseViewController {
 	public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
 							 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 							 HttpServletRequest httpRequest) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		String url = SettingsConfiguration.getIpaApiURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();

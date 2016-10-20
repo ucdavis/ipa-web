@@ -19,11 +19,13 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject UserRoleService userRoleService;
 	@Inject LocationService locationService;
 	@Inject TagService tagService;
+	@Inject TermService termService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
 		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
+		Term term = termService.getOneByTermCode(termCode);
 
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<SectionGroup> sectionGroups;
@@ -39,7 +41,7 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 			activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		}
 
-		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities);
+		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term);
 	}
 
 	@Override

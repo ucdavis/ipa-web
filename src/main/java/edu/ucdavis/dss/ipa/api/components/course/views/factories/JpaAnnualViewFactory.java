@@ -28,7 +28,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
-		// TODO: make sure banner has terms after 2099, not urgent, just fix before 2099
+		// TODO: make sure banner has terms after 2099, not urgent, just fix before 2099!
 		List<Term> terms = termService.findByYear(year);
 
 		List<Course> courses;

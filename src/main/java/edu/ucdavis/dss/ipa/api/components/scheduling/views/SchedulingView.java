@@ -12,6 +12,7 @@ public class SchedulingView {
 	private List<Location> locations = new ArrayList<>();
 	private List<Instructor> instructors = new ArrayList<>();
 	private List<Activity> activities = new ArrayList<>();
+	private Term term;
 
 	public SchedulingView(
 			List<Course> courses,
@@ -19,7 +20,8 @@ public class SchedulingView {
 			List<Tag> tags,
 			List<Location> locations,
 			List<Instructor> instructors,
-			List<Activity> activities
+			List<Activity> activities,
+			Term term
 	) {
 		setSectionGroups(sectionGroups);
 		setCourses(courses);
@@ -27,6 +29,7 @@ public class SchedulingView {
 		setLocations(locations);
 		setInstructors(instructors);
 		setActivities(activities);
+		setTerm(term);
 	}
 
 	public List<SectionGroup> getSectionGroups() {
@@ -75,5 +78,13 @@ public class SchedulingView {
 
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
+	}
+
+	public Term getTerm() {
+		return term;
+	}
+
+	public void setTerm(Term term) {
+		this.term = term;
 	}
 }

@@ -42,7 +42,7 @@ public class SchedulingViewController {
 	public SchedulingView showSchedulingView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
 										 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 										 HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return schedulingViewFactory.createSchedulingView(workgroupId, year, termCode, showDoNotPrint);
 	}
@@ -63,7 +63,7 @@ public class SchedulingViewController {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+		Authorizer.hasWorkgroupRoles(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner", "reviewer");
 
 		return schedulingViewFactory.createSchedulingViewSectionGroup(sectionGroup);
 	}
@@ -82,7 +82,7 @@ public class SchedulingViewController {
 	public List<SchedulingViewSectionGroup> getAllSectionGroupDetails(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
 																	  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 																	  HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return schedulingViewFactory.createSchedulingViewAllSectionGroups(workgroupId, year, termCode, showDoNotPrint);
 	}

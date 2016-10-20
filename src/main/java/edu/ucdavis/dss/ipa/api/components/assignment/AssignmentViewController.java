@@ -33,7 +33,7 @@ public class AssignmentViewController {
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
@@ -51,7 +51,7 @@ public class AssignmentViewController {
     @ResponseBody
     public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
                                              HttpServletRequest httpRequest) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = SettingsConfiguration.getIpaApiURL() + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
