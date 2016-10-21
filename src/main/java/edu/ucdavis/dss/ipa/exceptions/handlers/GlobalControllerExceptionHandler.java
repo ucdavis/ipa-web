@@ -17,7 +17,10 @@ public class GlobalControllerExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public void handleConflict(HttpServletRequest request, Exception e) {
+        // Ignore the access denied exception. We don't need e-mails about it.
+        if(e instanceof org.springframework.security.access.AccessDeniedException) {
+            return;
+        }
         ExceptionLogger.logAndMailException(this.getClass().getName(), e);
     }
-
 }
