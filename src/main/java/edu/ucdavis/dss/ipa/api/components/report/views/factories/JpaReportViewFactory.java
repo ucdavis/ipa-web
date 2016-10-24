@@ -1,8 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.report.views.factories;
 
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.exceptions.DwResponseException;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
@@ -17,6 +20,7 @@ import java.util.List;
 public class JpaReportViewFactory implements ReportViewFactory {
 
 	@Inject SectionGroupService sectionGroupService;
+	@Inject DataWarehouseRepository dwRepository;
 
 	@Override
 	public List<Diff> createDiffView(long workgroupId, long year, String termCode) {
@@ -34,14 +38,22 @@ public class JpaReportViewFactory implements ReportViewFactory {
 						section.getSeats()
 				);
 
-				Section otherSection = sectionGroup.getSections().get(0);
-				SectionDiffDto dwSectionDiffDto = new SectionDiffDto(
-						otherSection.getCrn(),
+				SectionDiffDto dwSectionDiffDto = null;
+				DwSection dwSection = dwRepository.getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(
 						sectionGroup.getCourse().getSubjectCode(),
 						sectionGroup.getCourse().getCourseNumber(),
-						otherSection.getSequenceNumber(),
-						otherSection.getSeats()
+						section.getSequenceNumber()
 				);
+
+				if(dwSection != null){
+					dwSectionDiffDto = new SectionDiffDto(
+							dwSection.getCrn(),
+							sectionGroup.getCourse().getSubjectCode(),
+							sectionGroup.getCourse().getCourseNumber(),
+							dwSection.getSequenceNumber(),
+							dwSection.getSeats()
+					);
+				}
 
 				diffList.add(javers.compare(ipaSectionDiffDto, dwSectionDiffDto));
 			}

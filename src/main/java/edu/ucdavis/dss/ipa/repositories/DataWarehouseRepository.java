@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 
@@ -15,11 +16,13 @@ import edu.ucdavis.dss.dw.dto.DwCourse;
  *
  */
 public interface DataWarehouseRepository {
-	public List<DwPerson> searchPeople(String query);
+	List<DwPerson> searchPeople(String query);
 
-	public List<DwTerm> getTerms();
+	List<DwTerm> getTerms();
 
-	public DwPerson getPersonByLoginId(String loginId);
+	DwPerson getPersonByLoginId(String loginId);
 
-	public DwCourse searchCourses(String suggestedSubjectCode, String suggestedCourseNumber, String suggestedEffectiveTermCode);
+	DwCourse searchCourses(String suggestedSubjectCode, String suggestedCourseNumber, String suggestedEffectiveTermCode);
+
+	DwSection getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(String subjectCode, String courseNumber, String sequenceNumber);
 }

@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -255,4 +256,54 @@ public class DwClient {
 		return dwCourse;
 
 	}
+
+    public DwSection getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(String subjectCode, String courseNumber, String sequenceNumber) {
+		DwSection dwSection = null;
+
+		if (connect() && subjectCode != null && courseNumber != null && sequenceNumber != null) {
+			HttpGet httpget = null;
+			try {
+				httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+						"&courseNumber=" + URLEncoder.encode(courseNumber, "UTF-8") +
+						"&sequenceNumber=" + URLEncoder.encode(sequenceNumber, "UTF-8") +
+						"&token=" + ApiToken);
+			} catch (UnsupportedEncodingException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(
+						targetHost, httpget, context);
+
+				StatusLine line = response.getStatusLine();
+				if (line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+				if ((arrNode != null) && (arrNode.get(0) != null)) {
+					dwSection = mapper.readValue(
+							arrNode.get(0).toString(),
+							mapper.getTypeFactory().constructType(DwSection.class));
+				} else {
+					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + courseNumber + ", " + sequenceNumber);
+				}
+
+				response.close();
+			} catch (IOException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else if (subjectCode == null) {
+			log.warn("No subjectCode given.");
+		} else if (courseNumber == null) {
+			log.warn("No courseNumber given.");
+		} else if (sequenceNumber == null) {
+			log.warn("No sequenceNumber given.");
+		}
+
+		return dwSection;
+    }
 }

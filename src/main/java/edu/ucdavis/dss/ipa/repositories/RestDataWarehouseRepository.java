@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.springframework.context.annotation.Profile;
@@ -77,6 +78,19 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
 
 			return dwClient.searchCourses(subjectCode, courseNumber, effectiveTermCode);
+		} catch (Exception e) {
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			return null;
+		}
+	}
+
+	@Override
+	public DwSection getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(String subjectCode, String courseNumber, String sequenceNumber) {
+		DwClient dwClient = null;
+		try {
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+
+			return dwClient.getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(subjectCode, courseNumber, sequenceNumber);
 		} catch (Exception e) {
 			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 			return null;
