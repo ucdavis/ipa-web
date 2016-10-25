@@ -1,20 +1,51 @@
 package edu.ucdavis.dss.ipa.api.components.report.views;
 
+
+import org.javers.core.metamodel.annotation.DiffIgnore;
+
+import javax.persistence.Id;
+
 public class SectionDiffDto {
+
+	@DiffIgnore
+	private long id;
+
+	@Id
+	private String uniqueKey;
+
 	private String crn, subjectCode, courseNumber, sequenceNumber;
 	private long seats;
 
 	public SectionDiffDto(
+			long sectionId,
 			String crn,
 			String subjectCode,
 			String courseNumber,
 			String sequenceNumber,
 			long seats) {
+		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
+		setId(sectionId);
 		setCrn(crn);
 		setSubjectCode(subjectCode);
 		setCourseNumber(courseNumber);
 		setSequenceNumber(sequenceNumber);
 		setSeats(seats);
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
 	}
 
 	public String getCrn() {

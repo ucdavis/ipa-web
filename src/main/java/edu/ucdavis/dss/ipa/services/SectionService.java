@@ -21,4 +21,5 @@ public interface SectionService {
 
 	boolean updateSequencesByCourseId(Long courseOfferingGroupId, String oldSequence, String newSequence);
 
+	List<Section> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 }

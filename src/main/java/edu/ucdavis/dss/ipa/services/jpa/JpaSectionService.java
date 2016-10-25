@@ -94,6 +94,11 @@ public class JpaSectionService implements SectionService {
 		return renamedAll;
 	}
 
+	@Override
+	public List<Section> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return sectionRepository.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+	}
+
 	private boolean isLocked(Section section) {
 		SectionGroup sectionGroup = section.getSectionGroup();
 		if (sectionGroup == null) { return true; }

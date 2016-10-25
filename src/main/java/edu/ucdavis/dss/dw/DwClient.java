@@ -2,6 +2,7 @@ package edu.ucdavis.dss.dw;
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
@@ -257,15 +258,14 @@ public class DwClient {
 
 	}
 
-    public DwSection getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(String subjectCode, String courseNumber, String sequenceNumber) {
-		DwSection dwSection = null;
+    public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) {
+		List<DwSection> dwSections = new ArrayList<>();
 
-		if (connect() && subjectCode != null && courseNumber != null && sequenceNumber != null) {
+		if (connect() && termCode != null && sectionUniqueKeys != null) {
 			HttpGet httpget = null;
 			try {
-				httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
-						"&courseNumber=" + URLEncoder.encode(courseNumber, "UTF-8") +
-						"&sequenceNumber=" + URLEncoder.encode(sequenceNumber, "UTF-8") +
+				httpget = new HttpGet("/sections/details?termCode=" + URLEncoder.encode(termCode, "UTF-8") +
+						"&sections=" + URLEncoder.encode(sectionUniqueKeys, "UTF-8") +
 						"&token=" + ApiToken);
 			} catch (UnsupportedEncodingException e) {
 				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
@@ -285,25 +285,23 @@ public class DwClient {
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
 				if ((arrNode != null) && (arrNode.get(0) != null)) {
-					dwSection = mapper.readValue(
+					dwSections = mapper.readValue(
 							arrNode.get(0).toString(),
 							mapper.getTypeFactory().constructType(DwSection.class));
 				} else {
-					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + courseNumber + ", " + sequenceNumber);
+					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + termCode + ", " + sectionUniqueKeys);
 				}
 
 				response.close();
 			} catch (IOException e) {
 				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 			}
-		} else if (subjectCode == null) {
-			log.warn("No subjectCode given.");
-		} else if (courseNumber == null) {
-			log.warn("No courseNumber given.");
-		} else if (sequenceNumber == null) {
-			log.warn("No sequenceNumber given.");
+		} else if (termCode == null) {
+			log.warn("No termCode given.");
+		} else if (sectionUniqueKeys == null) {
+			log.warn("No sectionUniqueKeys given.");
 		}
 
-		return dwSection;
+		return dwSections;
     }
 }

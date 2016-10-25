@@ -1,10 +1,10 @@
 package edu.ucdavis.dss.ipa.api.components.report;
 
+import edu.ucdavis.dss.ipa.api.components.report.views.DiffView;
 import edu.ucdavis.dss.ipa.api.components.report.views.factories.ReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.TermService;
-import org.javers.core.diff.Diff;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -42,10 +42,10 @@ public class ReportViewController {
 	 * @param httpResponse
      * @return
      */
-	@RequestMapping(value = "/api/diffView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
+	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public List<Diff> showDiffView(@PathVariable long workgroupId, @PathVariable long year,
-								   @PathVariable String termCode, HttpServletResponse httpResponse) {
+	public DiffView showDiffView(@PathVariable long workgroupId, @PathVariable long year,
+								 @PathVariable String termCode, HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return reportViewFactory.createDiffView(workgroupId, year, termCode);

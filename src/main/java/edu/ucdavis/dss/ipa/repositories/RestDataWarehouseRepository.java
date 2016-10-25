@@ -1,17 +1,18 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import java.util.List;
-
+import edu.ucdavis.dss.dw.DwClient;
 import edu.ucdavis.dss.dw.dto.DwCourse;
+import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
+import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import edu.ucdavis.dss.dw.DwClient;
-import edu.ucdavis.dss.dw.dto.DwPerson;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 @Profile({"development", "production", "staging"})
@@ -85,15 +86,41 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	@Override
-	public DwSection getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(String subjectCode, String courseNumber, String sequenceNumber) {
+	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
 		DwClient dwClient = null;
 		try {
 			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
 
-			return dwClient.getSectionBySubjectCodeAndCourseNumberAndSequenceNumber(subjectCode, courseNumber, sequenceNumber);
+			List<DwSection> dwSections = new ArrayList<>();
+
+			// Split calls to DW to control the GET param length
+			int UNIQUE_KEY_CHUNK_SIZE = 25;
+			List<List<String>> uniqueKeysChunks = splitListIntoChunksOfSize(
+					uniqueKeys, UNIQUE_KEY_CHUNK_SIZE);
+
+			for (List<String> uniqueKeysChunk: uniqueKeysChunks) {
+				dwSections.addAll(
+					dwClient.getSectionsByTermCodeAndUniqueKeys(
+						termCode, StringUtils.join(uniqueKeysChunk, ","))
+				);
+			}
+
+			return dwSections;
 		} catch (Exception e) {
 			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 			return null;
 		}
+	}
+
+	private List<List<String>> splitListIntoChunksOfSize(List<String> arr, int chunkSize) {
+		List<List<String>> chunks = new ArrayList<>();
+		int len = arr.size();
+
+		for (int i = 0; i < len; i += chunkSize) {
+			int endIndex = Math.min(i + chunkSize, len);
+			chunks.add(arr.subList(i, endIndex));
+		}
+
+		return chunks;
 	}
 }
