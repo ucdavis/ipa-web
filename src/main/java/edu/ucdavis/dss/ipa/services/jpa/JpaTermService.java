@@ -95,4 +95,9 @@ public class JpaTermService implements TermService {
 		// Positive if 'now' comes before 'endDate'
 		return now.compareTo(term.getEndDate()) > 0;
 	}
+
+	@Override
+	public List<Term> findActiveTermCodesByWorkgroupId(long workgroupId) {
+		return termRepository.findActiveTermCodesByWorkgroupId(workgroupId);
+	}
 }

@@ -34,4 +34,12 @@ public interface TermRepository extends CrudRepository<Term, Long> {
 	List<Term> findByLoginId(@Param("loginId") String loginId);
 
 	List<Term> findByTermCodeIn(Set<String> termCodes);
+
+	@Query("SELECT DISTINCT t " +
+			" FROM SectionGroup sg, Course c, Schedule sch, Term t " +
+			" WHERE sg.course = c " +
+			" AND sg.termCode = t.termCode" +
+			" AND c.schedule.id = sch.id" +
+			" AND sch.workgroup.id = :workgroupId ")
+	List<Term> findActiveTermCodesByWorkgroupId(@Param("workgroupId") long workgroupId);
 }

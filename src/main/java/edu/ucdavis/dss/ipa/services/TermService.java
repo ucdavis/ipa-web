@@ -30,4 +30,6 @@ public interface TermService {
 	List<Term> findByLoginId(String loginId);
 
 	Boolean isHistoricalByTermCode(String termCode);
+
+    List<Term> findActiveTermCodesByWorkgroupId(long workgroupId);
 }

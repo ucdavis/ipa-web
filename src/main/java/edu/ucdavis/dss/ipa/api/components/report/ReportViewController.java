@@ -1,7 +1,9 @@
 package edu.ucdavis.dss.ipa.api.components.report;
 
 import edu.ucdavis.dss.ipa.api.components.report.views.factories.ReportViewFactory;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.services.TermService;
 import org.javers.core.diff.Diff;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,11 +15,26 @@ import java.util.List;
 @CrossOrigin // TODO: make CORS more specific depending on profile
 public class ReportViewController {
 
-	@Inject
-	ReportViewFactory reportViewFactory;
+	@Inject ReportViewFactory reportViewFactory;
+	@Inject TermService termService;
 
 	/**
-	 * Delivers the JSON payload for the Diff View, used on page load.
+	 * Delivers the available termStates for the initial report form.
+	 *
+	 * @param workgroupId
+	 * @param httpResponse
+     * @return
+     */
+	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public List<Term> getTermsToCompare(@PathVariable long workgroupId, HttpServletResponse httpResponse) {
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+		return termService.findActiveTermCodesByWorkgroupId(workgroupId);
+	}
+
+	/**
+	 * Delivers the JSON payload for the Diff View.
 	 *
 	 * @param workgroupId
 	 * @param year
