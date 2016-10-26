@@ -34,6 +34,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 					new SectionDiffDto(
 							section.getId(),
 							section.getCrn(),
+							section.getSectionGroup().getCourse().getTitle(),
 							section.getSectionGroup().getCourse().getSubjectCode(),
 							section.getSectionGroup().getCourse().getCourseNumber(),
 							section.getSequenceNumber(),
@@ -47,19 +48,19 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			);
 		}
 
-		// TODO: change this loop to go over dwSections once DW is ready
-		// List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
+		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
 		List<SectionDiffDto> dwSectionDiffList = new ArrayList<>();
 
-		for (Section section: sections) {
+		for (DwSection dwSection: dwSections) {
 			dwSectionDiffList.add(
 					new SectionDiffDto(
 							0,
-							Integer.toString(100000 + (int) (Math.random() * 900000)),
-							section.getSectionGroup().getCourse().getSubjectCode(),
-							section.getSectionGroup().getCourse().getCourseNumber(),
-							section.getSequenceNumber(),
-							(int) (Math.random() * 999)
+							dwSection.getCrn(),
+							dwSection.getTitle(),
+							dwSection.getSubjectCode(),
+							dwSection.getCourseNumber(),
+							dwSection.getSequenceNumber(),
+							dwSection.getMaximumEnrollment()
 					)
 			);
 		}

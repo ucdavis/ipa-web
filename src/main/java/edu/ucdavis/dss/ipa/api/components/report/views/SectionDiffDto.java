@@ -13,12 +13,16 @@ public class SectionDiffDto {
 	@Id
 	private String uniqueKey;
 
+	@DiffIgnore
+	private String title;
+
 	private String crn, subjectCode, courseNumber, sequenceNumber;
 	private long seats;
 
 	public SectionDiffDto(
 			long sectionId,
 			String crn,
+			String title,
 			String subjectCode,
 			String courseNumber,
 			String sequenceNumber,
@@ -26,6 +30,7 @@ public class SectionDiffDto {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
 		setId(sectionId);
 		setCrn(crn);
+		setTitle(title);
 		setSubjectCode(subjectCode);
 		setCourseNumber(courseNumber);
 		setSequenceNumber(sequenceNumber);
@@ -54,6 +59,14 @@ public class SectionDiffDto {
 
 	public void setCrn(String crn) {
 		this.crn = crn;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getSubjectCode() {

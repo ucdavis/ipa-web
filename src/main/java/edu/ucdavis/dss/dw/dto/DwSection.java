@@ -1,11 +1,14 @@
 package edu.ucdavis.dss.dw.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by Obada on 10/23/16.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DwSection {
-    private String crn, subjectCode, courseNumber, sequenceNumber;
-    private long seats;
+    private String crn, title, subjectCode, courseNumber, sequenceNumber;
+    private long maximumEnrollment;
 
     public String getCrn() {
         return crn;
@@ -13,6 +16,14 @@ public class DwSection {
 
     public void setCrn(String crn) {
         this.crn = crn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getSubjectCode() {
@@ -39,12 +50,12 @@ public class DwSection {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public long getSeats() {
-        return seats;
+    public long getMaximumEnrollment() {
+        return maximumEnrollment;
     }
 
-    public void setSeats(long seats) {
-        this.seats = seats;
+    public void setMaximumEnrollment(long maximumEnrollment) {
+        this.maximumEnrollment = maximumEnrollment;
     }
 }
 

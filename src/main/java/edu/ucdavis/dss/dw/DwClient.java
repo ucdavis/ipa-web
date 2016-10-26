@@ -286,8 +286,9 @@ public class DwClient {
 				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
 				if ((arrNode != null) && (arrNode.get(0) != null)) {
 					dwSections = mapper.readValue(
-							arrNode.get(0).toString(),
-							mapper.getTypeFactory().constructType(DwSection.class));
+							arrNode.toString(),
+							mapper.getTypeFactory().constructCollectionType(
+									List.class, DwSection.class));
 				} else {
 					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + termCode + ", " + sectionUniqueKeys);
 				}
