@@ -4,6 +4,8 @@ package edu.ucdavis.dss.ipa.api.components.report.views;
 import org.javers.core.metamodel.annotation.DiffIgnore;
 
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SectionDiffDto {
 
@@ -18,6 +20,7 @@ public class SectionDiffDto {
 
 	private String crn, subjectCode, courseNumber, sequenceNumber;
 	private long seats;
+	private List<InstructorDiffDto> instructors = new ArrayList<>();
 
 	public SectionDiffDto(
 			long sectionId,
@@ -26,7 +29,8 @@ public class SectionDiffDto {
 			String subjectCode,
 			String courseNumber,
 			String sequenceNumber,
-			long seats) {
+			long seats,
+			List<InstructorDiffDto> instructors) {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
 		setId(sectionId);
 		setCrn(crn);
@@ -35,6 +39,7 @@ public class SectionDiffDto {
 		setCourseNumber(courseNumber);
 		setSequenceNumber(sequenceNumber);
 		setSeats(seats);
+		setInstructors(instructors);
 	}
 
 	public long getId() {
@@ -99,5 +104,13 @@ public class SectionDiffDto {
 
 	public void setSeats(long seats) {
 		this.seats = seats;
+	}
+
+	public List<InstructorDiffDto> getInstructors() {
+		return instructors;
+	}
+
+	public void setInstructors(List<InstructorDiffDto> instructors) {
+		this.instructors = instructors;
 	}
 }

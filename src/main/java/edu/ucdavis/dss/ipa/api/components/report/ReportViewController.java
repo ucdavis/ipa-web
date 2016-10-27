@@ -44,7 +44,7 @@ public class ReportViewController {
      */
 	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public DiffView showDiffView(@PathVariable long workgroupId, @PathVariable long year,
+	public List<DiffView> showDiffView(@PathVariable long workgroupId, @PathVariable long year,
 								 @PathVariable String termCode, HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 

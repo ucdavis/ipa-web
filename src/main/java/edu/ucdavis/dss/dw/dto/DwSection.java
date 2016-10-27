@@ -2,6 +2,9 @@ package edu.ucdavis.dss.dw.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Obada on 10/23/16.
  */
@@ -9,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class DwSection {
     private String crn, title, subjectCode, courseNumber, sequenceNumber;
     private long maximumEnrollment;
+    private List<DwInstructor> instructors = new ArrayList<>();
 
     public String getCrn() {
         return crn;
@@ -56,6 +60,14 @@ public class DwSection {
 
     public void setMaximumEnrollment(long maximumEnrollment) {
         this.maximumEnrollment = maximumEnrollment;
+    }
+
+    public List<DwInstructor> getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(List<DwInstructor> instructors) {
+        this.instructors = instructors;
     }
 }
 
