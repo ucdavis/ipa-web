@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,10 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
 
 		for (Section section: sections) {
-			List<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
+			if (section.getSectionGroup().getCourse().getCourseNumber().equals("030") && section.getSequenceNumber().equals("A03")) {
+				System.out.print("sfasdf");
+			}
+			Set<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
 					.getTeachingAssignments().stream()
 					.filter(TeachingAssignment::isApproved)
 					.map(ta -> new InstructorDiffDto(
@@ -51,7 +55,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 							ta.getInstructor().getUcdStudentSID()
 						)
 					)
-					.collect(Collectors.toList());
+					.collect(Collectors.toSet());
 
 			SectionDiffDto ipaSectionDiff = new SectionDiffDto(
 							section.getId(),
@@ -74,7 +78,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			SectionDiffDto dwSectionDiff = null;
 
 			if (dwSection.isPresent()) {
-				List<InstructorDiffDto> dwInstructors = dwSection.get().getInstructors().stream()
+				Set<InstructorDiffDto> dwInstructors = dwSection.get().getInstructors().stream()
 						.map(instructor -> new InstructorDiffDto(
 										instructor.getFirstName(),
 										instructor.getLastName(),
@@ -82,7 +86,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 										instructor.getEmployeeId()
 								)
 						)
-						.collect(Collectors.toList());
+						.collect(Collectors.toSet());
 
 				dwSectionDiff = new SectionDiffDto(
 						0,
