@@ -13,6 +13,7 @@ public class DwSection {
     private String crn, title, subjectCode, courseNumber, sequenceNumber;
     private long maximumEnrollment;
     private List<DwInstructor> instructors = new ArrayList<>();
+    private List<DwActivity> activities = new ArrayList<>();
 
     public String getCrn() {
         return crn;
@@ -68,6 +69,14 @@ public class DwSection {
 
     public void setInstructors(List<DwInstructor> instructors) {
         this.instructors = instructors;
+    }
+
+    public List<DwActivity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<DwActivity> activities) {
+        this.activities = activities;
     }
 }
 

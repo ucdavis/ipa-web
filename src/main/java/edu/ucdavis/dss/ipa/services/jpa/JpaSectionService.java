@@ -95,7 +95,7 @@ public class JpaSectionService implements SectionService {
 	}
 
 	@Override
-	public List<Section> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+	public List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
 		return sectionRepository.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 	}
 

@@ -26,7 +26,8 @@ public interface SectionRepository extends CrudRepository<Section, Long> {
             " AND c.schedule = sch" +
             " AND sch.year = :year" +
             " AND sch.workgroup.id = :workgroupId" +
-            " AND sg.termCode = :termCode")
+            " AND sg.termCode = :termCode" +
+            " AND (s.visible = true OR s.visible IS NULL)")
     List<Section> findByWorkgroupIdAndYearAndTermCode(
             @Param("workgroupId") long workgroupId,
             @Param("year") long year,

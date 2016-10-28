@@ -21,6 +21,7 @@ public class SectionDiffDto {
 	private String crn, subjectCode, courseNumber, sequenceNumber;
 	private long seats;
 	private Set<InstructorDiffDto> instructors = new HashSet<>();
+	private Set<ActivityDiffDto> activities = new HashSet<>();
 
 	public SectionDiffDto(
 			long sectionId,
@@ -30,7 +31,8 @@ public class SectionDiffDto {
 			String courseNumber,
 			String sequenceNumber,
 			long seats,
-			Set<InstructorDiffDto> instructors) {
+			Set<InstructorDiffDto> instructors,
+			Set<ActivityDiffDto> activities) {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
 		setId(sectionId);
 		setCrn(crn);
@@ -40,6 +42,7 @@ public class SectionDiffDto {
 		setSequenceNumber(sequenceNumber);
 		setSeats(seats);
 		setInstructors(instructors);
+		setActivities(activities);
 	}
 
 	public long getId() {
@@ -112,5 +115,13 @@ public class SectionDiffDto {
 
 	public void setInstructors(Set<InstructorDiffDto> instructors) {
 		this.instructors = instructors;
+	}
+
+	public Set<ActivityDiffDto> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(Set<ActivityDiffDto> activities) {
+		this.activities = activities;
 	}
 }
