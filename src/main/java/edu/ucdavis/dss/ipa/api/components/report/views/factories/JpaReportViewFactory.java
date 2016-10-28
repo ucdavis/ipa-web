@@ -100,9 +100,9 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				);
 
 				Diff diff = javers.compare(ipaSectionDiff, dwSectionDiff);
-				diffViews.add(new DiffView(ipaSectionDiff, diff.getChanges()));
+				diffViews.add(new DiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges()));
 			} else {
-				diffViews.add(new DiffView(ipaSectionDiff, null));
+				diffViews.add(new DiffView(ipaSectionDiff, null, null));
 			}
 
 		}

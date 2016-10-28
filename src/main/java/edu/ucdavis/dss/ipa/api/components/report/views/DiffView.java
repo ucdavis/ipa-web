@@ -5,20 +5,29 @@ import org.javers.core.diff.Change;
 import java.util.List;
 
 public class DiffView {
-	private SectionDiffDto section;
+	private SectionDiffDto ipaSection, dwSection;
 	private List<Change> changes;
 
-	public DiffView(SectionDiffDto section, List<Change> changes) {
-		setSection(section);
+	public DiffView(SectionDiffDto ipaSection, SectionDiffDto dwSection, List<Change> changes) {
+		setIpaSection(ipaSection);
+		setDwSection(dwSection);
 		setChanges(changes);
 	}
 
-	public SectionDiffDto getSection() {
-		return section;
+	public SectionDiffDto getIpaSection() {
+		return ipaSection;
 	}
 
-	public void setSection(SectionDiffDto section) {
-		this.section = section;
+	public void setIpaSection(SectionDiffDto ipaSection) {
+		this.ipaSection = ipaSection;
+	}
+
+	public SectionDiffDto getDwSection() {
+		return dwSection;
+	}
+
+	public void setDwSection(SectionDiffDto dwSection) {
+		this.dwSection = dwSection;
 	}
 
 	public List<Change> getChanges() {
