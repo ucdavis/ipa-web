@@ -1,12 +1,17 @@
 package edu.ucdavis.dss.ipa.api.components.report.views;
 
 
+import org.javers.core.metamodel.annotation.DiffIgnore;
+
 import javax.persistence.Id;
 
 public class ActivityDiffDto {
 
-	@Id
+	@DiffIgnore
 	private long id;
+
+	@Id
+	private String uniqueKey;
 
 	private char typeCode;
 	private String location, dayIndicator, startTime, endTime;
@@ -17,8 +22,12 @@ public class ActivityDiffDto {
 			String location,
 			String dayIndicator,
 			String startTime,
-			String endTime) {
+			String endTime,
+			String subjectCode,
+			String courseNumber,
+			String sequenceNumber) {
 		setId(activityId);
+		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode);
 		setTypeCode(typeCode);
 		setLocation(location);
 		setDayIndicator(dayIndicator);
@@ -32,6 +41,14 @@ public class ActivityDiffDto {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
 	}
 
 	public char getTypeCode() {

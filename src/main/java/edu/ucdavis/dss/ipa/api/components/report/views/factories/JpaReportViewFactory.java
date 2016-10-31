@@ -7,7 +7,6 @@ import edu.ucdavis.dss.ipa.api.components.report.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import org.javers.core.Javers;
@@ -16,17 +15,12 @@ import org.javers.core.diff.Diff;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.apache.coyote.http11.Constants.a;
 
 @Service
 public class JpaReportViewFactory implements ReportViewFactory {
@@ -63,18 +57,43 @@ public class JpaReportViewFactory implements ReportViewFactory {
 					)
 					.collect(Collectors.toSet());
 
-			Set<ActivityDiffDto> ipaActivities = section
+			// Unshared activities
+			List<ActivityDiffDto> ipaActivities = section
 					.getActivities().stream()
 					.map(a -> new ActivityDiffDto(
 							a.getId(),
 							a.getActivityTypeCode().getActivityTypeCode(),
 							a.getBannerLocation(),
 							a.getDayIndicator(),
-							new SimpleDateFormat("HHmm").format(a.getStartTime()),
-							new SimpleDateFormat("HHmm").format(a.getEndTime())
+							a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
+							a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+							section.getSectionGroup().getCourse().getSubjectCode(),
+							section.getSectionGroup().getCourse().getCourseNumber(),
+							section.getSequenceNumber()
 						)
 					)
-					.collect(Collectors.toSet());
+					.collect(Collectors.toList());
+
+			// Shared activities
+			ipaActivities.addAll(section.getSectionGroup().getActivities()
+					.stream()
+					.map(a -> new ActivityDiffDto(
+							a.getId(),
+							a.getActivityTypeCode().getActivityTypeCode(),
+							a.getBannerLocation(),
+							a.getDayIndicator(),
+							a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
+							a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+							section.getSectionGroup().getCourse().getSubjectCode(),
+							section.getSectionGroup().getCourse().getCourseNumber(),
+							section.getSequenceNumber()
+							)
+					)
+					.collect(Collectors.toSet())
+			);
+
+			// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
+			ipaActivities.sort((a1, a2) -> a1.getUniqueKey().compareTo(a2.getUniqueKey()));
 
 			SectionDiffDto ipaSectionDiff = new SectionDiffDto(
 							section.getId(),
@@ -107,18 +126,24 @@ public class JpaReportViewFactory implements ReportViewFactory {
 								)
 						)
 						.collect(Collectors.toSet());
-				
-				Set<ActivityDiffDto> dwActivities = dwSection.get()
+
+				List<ActivityDiffDto> dwActivities = dwSection.get()
 						.getActivities().stream()
 						.map(a -> new ActivityDiffDto(
-							0,
-							a.getSsrmeet_schd_code(),
-							a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
-							a.getDay_indicator(),
-							a.getSsrmeet_begin_time(),
-							a.getSsrmeet_end_time()
+								0,
+								a.getSsrmeet_schd_code(),
+								a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
+								a.getDay_indicator(),
+								a.getSsrmeet_begin_time(),
+								a.getSsrmeet_end_time(),
+								dwSection.get().getSubjectCode(),
+								dwSection.get().getCourseNumber(),
+								dwSection.get().getSequenceNumber()
                         ))
-						.collect(Collectors.toSet());
+						.collect(Collectors.toList());
+
+				// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
+				dwActivities.sort((a1, a2) -> a1.getUniqueKey().compareTo(a2.getUniqueKey()));
 
 				dwSectionDiff = new SectionDiffDto(
 						0,
