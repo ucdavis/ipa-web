@@ -10,7 +10,6 @@ public class JpaInstructionalSupportStaffService implements InstructionalSupport
 
     @Inject InstructionalSupportStaffRepository instructionalSupportStaffRepository;
 
-    @Override
     public InstructionalSupportStaff save(InstructionalSupportStaff instructionalSupportStaff) {
         return this.instructionalSupportStaffRepository.save(instructionalSupportStaff);
     }

@@ -22,7 +22,7 @@ public class StudentInstructionalSupportPreference implements Serializable {
     private SectionGroup sectionGroup;
     private InstructionalSupportStaff instructionalSupportStaff;
     private String type, comment;
-    private long order;
+    private long priority;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,12 +69,12 @@ public class StudentInstructionalSupportPreference implements Serializable {
         this.type = type;
     }
 
-    public long getOrder() {
-        return order;
+    public long getPriority() {
+        return priority;
     }
 
-    public void setOrder(long order) {
-        this.order = order;
+    public void setPriority(long priority) {
+        this.priority = priority;
     }
 
     public String getComment() {
