@@ -50,23 +50,24 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
                     courses.add(teachingAssignment.getSectionGroup().getCourse());
                 }
 
-                // Get activities from SectionGroup (Shared Activities)
-                for (Activity activity: teachingAssignment.getSectionGroup().getActivities()) {
-                    if (activities.contains(activity) == false) {
-                        activities.add(activity);
-                    }
-                }
-
-                // Get activities from Sections
-                for (Section section : teachingAssignment.getSectionGroup().getSections()) {
-
-                    if (sections.contains(section) == false) {
-                        sections.add(section);
-                    }
-
-                    for (Activity activity : section.getActivities()) {
+                if (teachingAssignment.getSectionGroup() != null) {
+                    // Get activities from SectionGroup (Shared Activities)
+                    for (Activity activity: teachingAssignment.getSectionGroup().getActivities()) {
                         if (activities.contains(activity) == false) {
                             activities.add(activity);
+                        }
+                    }
+                    // Get activities from Sections
+                    for (Section section : teachingAssignment.getSectionGroup().getSections()) {
+
+                        if (sections.contains(section) == false) {
+                            sections.add(section);
+                        }
+
+                        for (Activity activity : section.getActivities()) {
+                            if (activities.contains(activity) == false) {
+                                activities.add(activity);
+                            }
                         }
                     }
                 }
