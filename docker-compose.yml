@@ -1,15 +1,15 @@
 version: '2'
 services:
-	db:
-		image: mysql:5.7
-	web:
-		build: .
-		command: 
-		depends_on:
-			- db
-	proxy:
-		image: nginx:1.11
-		ports:
-			- 443:443
-		depends_on:
-			- web
+  db:
+    image: mysql:5.7
+  web:
+    build: .
+    # command: 
+    depends_on:
+      - db
+  proxy:
+    image: nginx:1.11
+    ports:
+      - 443:443
+    depends_on:
+      - web
