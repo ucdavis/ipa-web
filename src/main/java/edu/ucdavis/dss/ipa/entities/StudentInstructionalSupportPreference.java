@@ -10,20 +10,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * InstructionalSupportAssignment is used to record the desire to fill this support 'position'.
- * When an instructionalSupportStaffId is set, that records the assignment into this position.
+ * StudentInstructionalSupportPreference records an instructionalSupportStaff's desire to fill a position of this type and sectionGroup.
  */
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructionalSupportAssignments")
+@Table(name = "StudentInstructionalSupportPreferences")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class InstructionalSupportAssignment implements Serializable {
+public class StudentInstructionalSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
     private InstructionalSupportStaff instructionalSupportStaff;
-    private long appointmentPercentage;
-    private String type;
+    private String type, comment;
+    private long order;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,20 +61,28 @@ public class InstructionalSupportAssignment implements Serializable {
         this.instructionalSupportStaff = instructionalSupportStaff;
     }
 
-    public long getAppointmentPercentage() {
-        return appointmentPercentage;
-    }
-
-    public void setAppointmentPercentage(long appointmentPercentage) {
-        this.appointmentPercentage = appointmentPercentage;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public long getOrder() {
+        return order;
+    }
+
+    public void setOrder(long order) {
+        this.order = order;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @JsonProperty("instructionalSupportStaffId")

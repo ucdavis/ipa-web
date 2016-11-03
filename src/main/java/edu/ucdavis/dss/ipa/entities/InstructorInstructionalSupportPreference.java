@@ -10,20 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * InstructionalSupportAssignment is used to record the desire to fill this support 'position'.
- * When an instructionalSupportStaffId is set, that records the assignment into this position.
+ * InstructorInstructionalSupportPreference records an instructor's preferences for who fills TA positions for courses they are teaching.
  */
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructionalSupportAssignments")
+@Table(name = "InstructorInstructionalSupportPreferences")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class InstructionalSupportAssignment implements Serializable {
+public class InstructorInstructionalSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
     private InstructionalSupportStaff instructionalSupportStaff;
-    private long appointmentPercentage;
-    private String type;
+    private Instructor instructor;
+    private String type, comment;
+    private long order;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,12 +62,15 @@ public class InstructionalSupportAssignment implements Serializable {
         this.instructionalSupportStaff = instructionalSupportStaff;
     }
 
-    public long getAppointmentPercentage() {
-        return appointmentPercentage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorId", nullable = false)
+    @JsonIgnore
+    public Instructor getInstructor() {
+        return instructor;
     }
 
-    public void setAppointmentPercentage(long appointmentPercentage) {
-        this.appointmentPercentage = appointmentPercentage;
+    public void setInstructor(Instructor instructor) {
+        this.instructor = instructor;
     }
 
     public String getType() {
@@ -76,6 +79,22 @@ public class InstructionalSupportAssignment implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public long getOrder() {
+        return order;
+    }
+
+    public void setOrder(long order) {
+        this.order = order;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @JsonProperty("instructionalSupportStaffId")
@@ -93,6 +112,16 @@ public class InstructionalSupportAssignment implements Serializable {
     public long getSectionGroupIdentification() {
         if(sectionGroup != null) {
             return sectionGroup.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorId")
+    @Transient
+    public long getInstructorIdentification() {
+        if(instructor != null) {
+            return instructor.getId();
         } else {
             return 0;
         }
