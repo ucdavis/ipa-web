@@ -6,7 +6,7 @@ VOLUME /tmp
 ADD ./build/libs/ipa-api-0.1.0.jar app.jar
 RUN sh -c 'touch /app.jar'
 
-ADD ./ipa-web.env
+ADD ./ipa-web.env ./ipa-web.env
 RUN /bin/bash -c 'source ipa-web.env'
 
 # -javaagent:/home/dssadmin/srv/newrelic/newrelic.jar
