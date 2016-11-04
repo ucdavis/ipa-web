@@ -4,5 +4,5 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 
 public interface InstructionalSupportViewFactory {
 
-    InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, long userId);
+    InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode);
 }

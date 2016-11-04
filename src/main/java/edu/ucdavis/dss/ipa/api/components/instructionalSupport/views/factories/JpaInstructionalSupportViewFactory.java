@@ -33,11 +33,21 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject UserService userService;
 
     @Override
-    public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, long userId) {
+    public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
-        long scheduleId = schedule.getId();
 
-        return new InstructionalSupportAssignmentView(userId, scheduleId);
+        // Calculate termcode from shortTermCode
+        String termCode = "";
+
+        if (Long.valueOf(shortTermCode) >= 5) {
+            termCode = String.valueOf(year) + shortTermCode;
+        } else {
+            termCode = String.valueOf(year + 1) + shortTermCode;
+        }
+
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+        return new InstructionalSupportAssignmentView(sectionGroups, courses);
     }
 }

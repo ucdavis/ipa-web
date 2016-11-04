@@ -20,13 +20,13 @@ public class InstructionalSupportAssignmentsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
 
-    @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public InstructionalSupportAssignmentView getInstructionalSupportAssignmentView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public InstructionalSupportAssignmentView getInstructionalSupportAssignmentView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode, HttpServletResponse httpResponse) {
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, currentUser.getId());
+        return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, shortTermCode);
     }
 }

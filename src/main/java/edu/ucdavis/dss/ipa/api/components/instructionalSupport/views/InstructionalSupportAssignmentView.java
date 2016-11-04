@@ -5,29 +5,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InstructionalSupportAssignmentView {
-    long userId;
-    long scheduleId;
+    List<SectionGroup> sectionGroups;
+    List<Course> courses;
 
-    public InstructionalSupportAssignmentView(long userId,
-                                              long scheduleId) {
-        setUserId(userId);
-        setScheduleId(scheduleId);
+    public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
+                                              List<Course> courses) {
+        setSectionGroups(sectionGroups);
+        setCourses(courses);
     }
 
-    public long getUserId() {
-        return userId;
+    public List<SectionGroup> getSectionGroups() {
+        return sectionGroups;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setSectionGroups(List<SectionGroup> sectionGroups) {
+        this.sectionGroups = sectionGroups;
     }
 
-    public long getScheduleId() {
-        return scheduleId;
+    public List<Course> getCourses() {
+        return courses;
     }
 
-    public void setScheduleId(long scheduleId) {
-        this.scheduleId = scheduleId;
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
-
 }
