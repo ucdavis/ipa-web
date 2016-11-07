@@ -4,11 +4,11 @@ import org.javers.core.diff.Change;
 
 import java.util.List;
 
-public class DiffView {
+public class SectionDiffView {
 	private SectionDiffDto ipaSection, dwSection;
 	private List<Change> changes;
 
-	public DiffView(SectionDiffDto ipaSection, SectionDiffDto dwSection, List<Change> changes) {
+	public SectionDiffView(SectionDiffDto ipaSection, SectionDiffDto dwSection, List<Change> changes) {
 		setIpaSection(ipaSection);
 		setDwSection(dwSection);
 		setChanges(changes);

@@ -2,12 +2,13 @@ package edu.ucdavis.dss.ipa.api.components.report.views.factories;
 
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.report.views.ActivityDiffDto;
-import edu.ucdavis.dss.ipa.api.components.report.views.DiffView;
 import edu.ucdavis.dss.ipa.api.components.report.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffDto;
+import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
@@ -26,12 +27,13 @@ import java.util.stream.Collectors;
 public class JpaReportViewFactory implements ReportViewFactory {
 
 	@Inject SectionService sectionService;
+	@Inject SectionGroupService sectionGroupService;
 	@Inject DataWarehouseRepository dwRepository;
 
 	@Override
-	public List<DiffView> createDiffView(long workgroupId, long year, String termCode) {
+	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
 		Javers javers = JaversBuilder.javers().build();
-		List<DiffView> diffViews = new ArrayList<>();
+		List<SectionDiffView> diffView = new ArrayList<>();
 
 		List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
@@ -158,14 +160,14 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				);
 
 				Diff diff = javers.compare(ipaSectionDiff, dwSectionDiff);
-				diffViews.add(new DiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges()));
+				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges()));
 			} else {
-				diffViews.add(new DiffView(ipaSectionDiff, null, null));
+				diffView.add(new SectionDiffView(ipaSectionDiff, null, null));
 			}
 
 		}
 
-		return diffViews;
+		return diffView;
 	}
 
 }

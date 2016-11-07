@@ -21,7 +21,7 @@ import java.util.List;
 @ValidSection
 public class Section implements Serializable {
 	private long id;
-	private long seats;
+	private Long seats;
 	private String crn;
 	private String sequenceNumber;
 	private SectionGroup sectionGroup;
@@ -45,12 +45,12 @@ public class Section implements Serializable {
 	@Basic
 	@Column(name = "Seats", nullable = true)
 	@JsonProperty
-	public long getSeats()
+	public Long getSeats()
 	{
 		return this.seats;
 	}
 
-	public void setSeats(long seats)
+	public void setSeats(Long seats)
 	{
 		this.seats = seats;
 	}
