@@ -5,23 +5,15 @@ import java.util.*;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.dw.DwClient;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.Role;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.UserRoleRepository;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.RoleService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaUserRoleService implements UserRoleService {
@@ -32,6 +24,7 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject WorkgroupService workgroupService;
 	@Inject RoleService roleService;
 	@Inject InstructorService instructorService;
+	@Inject InstructionalSupportStaffService instructionalSupportStaffService;
 
 	@Override
 	@Transactional
@@ -101,7 +94,16 @@ public class JpaUserRoleService implements UserRoleService {
 			user.setUserRoles(userRoles);
 			userService.save(user);
 
-			if(roleName.equals("senateInstructor") || roleName.equals("federationInstructor")) {
+			if (roleName.equals("instructionalSupport")) {
+				log.info("Creating Instructional Support Staff for user '" + user.getLoginId() + "'");
+				InstructionalSupportStaff InstructionalSupportStaff = instructionalSupportStaffService.findOrCreate(
+						user.getFirstName(),
+						user.getLastName(),
+						user.getEmail(),
+						user.getLoginId());
+			}
+
+			if (roleName.equals("senateInstructor") || roleName.equals("federationInstructor")) {
 				log.info("Creating instructor for user '" + user.getLoginId() + "'");
 				Instructor instructor = instructorService.findOrCreate(
 					user.getFirstName(),
@@ -133,6 +135,7 @@ public class JpaUserRoleService implements UserRoleService {
 //					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 //				}
 			}
+
 			return userRole;
 		} else {
 			log.warn("userRole could not be found or created, null data submitted.");

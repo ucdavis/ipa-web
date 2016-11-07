@@ -30,6 +30,8 @@ public class JpaInstructionalSupportStaffService implements InstructionalSupport
             return instructionalSupportStaff;
         }
 
+        instructionalSupportStaff = new InstructionalSupportStaff();
+
         // Create an instructionalSupportStaff
         instructionalSupportStaff.setFirstName(firstName);
         instructionalSupportStaff.setLastName(lastName);
