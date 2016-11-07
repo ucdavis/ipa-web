@@ -21,17 +21,11 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     ScheduleInstructorNoteService scheduleInstructorNoteService;
     @Inject
     TeachingAssignmentService teachingAssignmentService;
-    @Inject
-    ScheduleService scheduleService;
-    @Inject ScheduleTermStateService scheduleTermStateService;
+    @Inject ScheduleService scheduleService;
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
-    @Inject UserRoleService userRoleService;
-    @Inject TeachingCallService teachingCallService;
-    @Inject TeachingCallReceiptService teachingCallReceiptService;
-    @Inject TeachingCallResponseService teachingCallResponseService;
     @Inject UserService userService;
-
+    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
@@ -48,6 +42,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-        return new InstructionalSupportAssignmentView(sectionGroups, courses);
+        List<InstructionalSupportAssignment> instructionalSupportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments);
     }
 }

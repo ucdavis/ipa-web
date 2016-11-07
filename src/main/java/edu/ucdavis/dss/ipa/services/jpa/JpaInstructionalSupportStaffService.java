@@ -3,9 +3,11 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
 import edu.ucdavis.dss.ipa.repositories.InstructionalSupportStaffRepository;
 import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
+@Service
 public class JpaInstructionalSupportStaffService implements InstructionalSupportStaffService {
 
     @Inject InstructionalSupportStaffRepository instructionalSupportStaffRepository;

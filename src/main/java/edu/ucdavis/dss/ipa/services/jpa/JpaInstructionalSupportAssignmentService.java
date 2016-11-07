@@ -2,22 +2,29 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.InstructionalSupportAssignment;
 import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.repositories.InstructionalSupportAssignmentRepository;
 import edu.ucdavis.dss.ipa.services.InstructionalSupportAssignmentService;
 import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import sun.tools.asm.Instruction;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Collections;
 
+@Service
 public class JpaInstructionalSupportAssignmentService implements InstructionalSupportAssignmentService {
 
     @Inject InstructionalSupportAssignmentRepository instructionalSupportAssignmentRepository;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject ScheduleService scheduleService;
 
     public InstructionalSupportAssignment save(InstructionalSupportAssignment instructionalSupportAssignment) {
         return this.instructionalSupportAssignmentRepository.save(instructionalSupportAssignment);
@@ -34,28 +41,26 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     }
 
     @Override
-    public InstructionalSupportAssignment create(long sectionGroupId, long instructionalSupportStaffId, String type, long appointmentPercentage) {
+    public InstructionalSupportAssignment create(long sectionGroupId, String type, long appointmentPercentage) {
 
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
 
         InstructionalSupportAssignment instructionalSupportAssignment = new InstructionalSupportAssignment();
 
-        instructionalSupportAssignment.setInstructionalSupportStaff(instructionalSupportStaff);
         instructionalSupportAssignment.setSectionGroup(sectionGroup);
         instructionalSupportAssignment.setAppointmentPercentage(appointmentPercentage);
-        instructionalSupportAssignment.setType(type);
+        instructionalSupportAssignment.setAppointmentType(type);
 
         return this.save(instructionalSupportAssignment);
     }
 
     @Override
-    public List<InstructionalSupportAssignment> createMultiple(long sectionGroupId, long instructionalSupportStaffId, String type, long appointmentPercentage, long numberToCreate) {
+    public List<InstructionalSupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate) {
 
         List<InstructionalSupportAssignment> instructionalSupportAssignments = new ArrayList<InstructionalSupportAssignment>();
 
         for (int i = 0; i < numberToCreate; i++) {
-            InstructionalSupportAssignment instructionalSupportAssignment = this.create(sectionGroupId, instructionalSupportStaffId, type, appointmentPercentage);
+            InstructionalSupportAssignment instructionalSupportAssignment = this.create(sectionGroupId, type, appointmentPercentage);
             instructionalSupportAssignments.add(instructionalSupportAssignment);
         }
 
@@ -80,5 +85,27 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
         instructionalSupportAssignment.setInstructionalSupportStaff(null);
 
         return this.save(instructionalSupportAssignment);
+    }
+
+    @Override
+    public List<InstructionalSupportAssignment> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
+        Schedule schedule = this.scheduleService.findById(scheduleId);
+        List<InstructionalSupportAssignment> instructionalSupportAssignments = new ArrayList<InstructionalSupportAssignment>();
+
+        // Find all sectionGroups for the specified schedule and termCode
+        List<SectionGroup> sectionGroups = schedule.getCourses()
+                .stream()
+                .map(course -> course.getSectionGroups().stream()
+                        .filter(sectionGroup -> termCode == null || termCode.trim().isEmpty() || sectionGroup.getTermCode().equals(termCode.trim()))
+                        .collect(Collectors.toList()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        // Find all instructionalSupportAssignments associated to the sectionGroups.
+        for (SectionGroup sectionGroup : sectionGroups) {
+            instructionalSupportAssignments.addAll(sectionGroup.getInstructionalSupportAssignments());
+        }
+
+        return instructionalSupportAssignments;
     }
 }

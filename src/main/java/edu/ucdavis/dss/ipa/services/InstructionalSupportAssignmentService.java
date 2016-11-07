@@ -13,11 +13,13 @@ public interface InstructionalSupportAssignmentService {
 
     void delete(Long instructionalSupportAssignmentId);
 
-    InstructionalSupportAssignment create(long sectionGroupId, long instructionalSupportStaffId, String type, long appointmentPercentage);
+    InstructionalSupportAssignment create(long sectionGroupId, String type, long appointmentPercentage);
 
-    List<InstructionalSupportAssignment> createMultiple(long sectionGroupId, long instructionalSupportStaffId, String type, long appointmentPercentage, long numberToCreate);
+    List<InstructionalSupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate);
 
     InstructionalSupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId);
 
     InstructionalSupportAssignment unassignInstructionalSupportStaff(long instructionalSupportAssignmentId);
+
+    List<InstructionalSupportAssignment> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 }

@@ -28,6 +28,7 @@ public class SectionGroup implements Serializable {
 	private long id;
 	private Course course;
 	private List<Section> sections;
+	private List<InstructionalSupportAssignment> instructionalSupportAssignments;
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
@@ -119,4 +120,14 @@ public class SectionGroup implements Serializable {
 		this.activities = activities;
 	}
 
+
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<InstructionalSupportAssignment> getInstructionalSupportAssignments() {
+		return instructionalSupportAssignments;
+	}
+
+	public void setInstructionalSupportAssignments(List<InstructionalSupportAssignment> instructionalSupportAssignments) {
+		this.instructionalSupportAssignments = instructionalSupportAssignments;
+	}
 }

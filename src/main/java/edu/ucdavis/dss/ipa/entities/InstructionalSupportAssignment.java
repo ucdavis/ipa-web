@@ -23,7 +23,7 @@ public class InstructionalSupportAssignment implements Serializable {
     private SectionGroup sectionGroup;
     private InstructionalSupportStaff instructionalSupportStaff;
     private long appointmentPercentage;
-    private String type;
+    private String appointmentType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,12 +70,12 @@ public class InstructionalSupportAssignment implements Serializable {
         this.appointmentPercentage = appointmentPercentage;
     }
 
-    public String getType() {
-        return type;
+    public String getAppointmentType() {
+        return appointmentType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAppointmentType(String appointmentType) {
+        this.appointmentType = appointmentType;
     }
 
     @JsonProperty("instructionalSupportStaffId")
