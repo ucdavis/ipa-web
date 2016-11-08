@@ -2,12 +2,9 @@ package edu.ucdavis.dss.ipa.api.components.report;
 
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.report.views.factories.ReportViewFactory;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TermService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +19,9 @@ public class ReportViewController {
 	@Inject ReportViewFactory reportViewFactory;
 	@Inject TermService termService;
 	@Inject SectionService sectionService;
+	@Inject SectionGroupService sectionGroupService;
+	@Inject TeachingAssignmentService teachingAssignmentService;
+	@Inject InstructorService instructorService;
 
 	/**
 	 * Delivers the available termStates for the initial report form.
@@ -82,5 +82,28 @@ public class ReportViewController {
         return sectionService.save(originalSection);
     }
 
+	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/instructors", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public TeachingAssignment addTeachingAssignment(@PathVariable long sectionGroupId, @RequestBody Instructor instructor, HttpServletResponse httpResponse) {
+
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		Instructor instructorToAssign = instructorService.getOneByLoginId(instructor.getLoginId());
+		if (instructorToAssign == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		TeachingAssignment assignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);
+		assignment.setApproved(true);
+		return teachingAssignmentService.save(assignment);
+	}
 
 }

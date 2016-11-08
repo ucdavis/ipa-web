@@ -12,7 +12,7 @@ import java.util.Set;
 public class SectionDiffDto {
 
 	@DiffIgnore
-	private long id;
+	private long id, sectionGroupId;
 
 	@Id
 	private String uniqueKey;
@@ -27,6 +27,7 @@ public class SectionDiffDto {
 
 	public SectionDiffDto(
 			long sectionId,
+			long sectionGroupId,
 			String crn,
 			String title,
 			String subjectCode,
@@ -37,6 +38,7 @@ public class SectionDiffDto {
 			List<ActivityDiffDto> activities) {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
 		setId(sectionId);
+		setSectionGroupId(sectionGroupId);
 		setCrn(crn);
 		setTitle(title);
 		setSubjectCode(subjectCode);
@@ -53,6 +55,14 @@ public class SectionDiffDto {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getSectionGroupId() {
+		return sectionGroupId;
+	}
+
+	public void setSectionGroupId(long sectionGroupId) {
+		this.sectionGroupId = sectionGroupId;
 	}
 
 	public String getUniqueKey() {

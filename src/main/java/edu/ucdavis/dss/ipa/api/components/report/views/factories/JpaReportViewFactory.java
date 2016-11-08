@@ -99,6 +99,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 			SectionDiffDto ipaSectionDiff = new SectionDiffDto(
 							section.getId(),
+							section.getSectionGroupId(),
 							section.getCrn(),
 							section.getSectionGroup().getCourse().getTitle(),
 							section.getSectionGroup().getCourse().getSubjectCode(),
@@ -148,7 +149,8 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				dwActivities.sort((a1, a2) -> a1.getUniqueKey().compareTo(a2.getUniqueKey()));
 
 				dwSectionDiff = new SectionDiffDto(
-						0,
+						0, // No sectionId in DW
+						0, // No sectionGroupId in DW
 						dwSection.get().getCrn(),
 						dwSection.get().getTitle(),
 						dwSection.get().getSubjectCode(),
