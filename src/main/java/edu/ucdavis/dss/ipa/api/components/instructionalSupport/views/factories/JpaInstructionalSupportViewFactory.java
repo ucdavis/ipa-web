@@ -26,6 +26,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject CourseService courseService;
     @Inject UserService userService;
     @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
+    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
@@ -43,6 +45,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<InstructionalSupportAssignment> instructionalSupportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments);
+
+
+        List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
+
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList);
     }
 }
