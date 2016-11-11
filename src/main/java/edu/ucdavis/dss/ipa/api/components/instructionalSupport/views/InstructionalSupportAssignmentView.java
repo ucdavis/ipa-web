@@ -9,15 +9,18 @@ public class InstructionalSupportAssignmentView {
     List<Course> courses;
     List<InstructionalSupportAssignment> instructionalSupportAssignments;
     List<InstructionalSupportStaff> instructionalSupportStaffList;
+    List<UserRole> userRoles;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
                                               List<InstructionalSupportAssignment> instructionalSupportAssignments,
-                                              List<InstructionalSupportStaff> instructionalSupportStaffList) {
+                                              List<InstructionalSupportStaff> instructionalSupportStaffList,
+                                              List<UserRole> userRoles) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
         setInstructionalSupportStaffList(instructionalSupportStaffList);
+        setUserRoles(userRoles);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -50,5 +53,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setInstructionalSupportStaffList(List<InstructionalSupportStaff> instructionalSupportStaffList) {
         this.instructionalSupportStaffList = instructionalSupportStaffList;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 }

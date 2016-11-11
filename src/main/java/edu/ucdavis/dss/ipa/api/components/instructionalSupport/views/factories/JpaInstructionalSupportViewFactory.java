@@ -45,10 +45,9 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<InstructionalSupportAssignment> instructionalSupportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-
-
+        List<UserRole> userRoles = workgroup.getUserRoles();
         List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
 
-        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList);
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList, userRoles);
     }
 }
