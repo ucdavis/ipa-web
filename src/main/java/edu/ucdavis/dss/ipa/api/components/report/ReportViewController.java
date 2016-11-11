@@ -28,9 +28,9 @@ public class ReportViewController {
 	 *
 	 * @param workgroupId
 	 * @param httpResponse
-     * @return
-     */
-	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}", method = RequestMethod.GET, produces="application/json")
+	 * @return
+	 */
+	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<Term> getTermsToCompare(@PathVariable long workgroupId, HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
@@ -45,9 +45,9 @@ public class ReportViewController {
 	 * @param year
 	 * @param termCode
 	 * @param httpResponse
-     * @return
-     */
-	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
+	 * @return
+	 */
+	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<SectionDiffView> showDiffView(@PathVariable long workgroupId, @PathVariable long year,
 											  @PathVariable String termCode, HttpServletResponse httpResponse) {
@@ -64,27 +64,31 @@ public class ReportViewController {
 	 * @param httpResponse
 	 * @return
 	 */
-    @RequestMapping(value = "/api/reportView/sections/{sectionId}", method = RequestMethod.PUT, produces="application/json")
-    @ResponseBody
-    public Section updateSection(@PathVariable long sectionId, @RequestBody Section section, HttpServletResponse httpResponse) {
-        Section originalSection = sectionService.getOneById(sectionId);
-        if (originalSection == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
-        }
-
-        Workgroup workgroup = originalSection.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        if (section.getCrn() != null) { originalSection.setCrn(section.getCrn()); }
-        if (section.getSeats() != null) { originalSection.setSeats(section.getSeats()); }
-
-        return sectionService.save(originalSection);
-    }
-
-	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/instructors", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value = "/api/reportView/sections/{sectionId}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public TeachingAssignment addTeachingAssignment(@PathVariable long sectionGroupId, @RequestBody Instructor instructor, HttpServletResponse httpResponse) {
+	public Section updateSection(@PathVariable long sectionId, @RequestBody Section section, HttpServletResponse httpResponse) {
+		Section originalSection = sectionService.getOneById(sectionId);
+		if (originalSection == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = originalSection.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		if (section.getCrn() != null) {
+			originalSection.setCrn(section.getCrn());
+		}
+		if (section.getSeats() != null) {
+			originalSection.setSeats(section.getSeats());
+		}
+
+		return sectionService.save(originalSection);
+	}
+
+	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/instructors", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public TeachingAssignment assignInstructor(@PathVariable long sectionGroupId, @RequestBody Instructor instructor, HttpServletResponse httpResponse) {
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		if (sectionGroup == null) {
@@ -104,6 +108,38 @@ public class ReportViewController {
 		TeachingAssignment assignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);
 		assignment.setApproved(true);
 		return teachingAssignmentService.save(assignment);
+	}
+
+
+	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/instructors/{loginId}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public TeachingAssignment unAssignInstructor(@PathVariable long sectionGroupId, @PathVariable String loginId, HttpServletResponse httpResponse) {
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		Instructor instructorToAssign = instructorService.getOneByLoginId(loginId);
+		if (instructorToAssign == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		TeachingAssignment teachingAssignment = teachingAssignmentService.findOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);
+
+		// When an academicCoordinator unapproves a teachingAssignment made by an academicCoordinator, delete instead of updating
+		if (!teachingAssignment.isFromInstructor()) {
+			teachingAssignmentService.delete(teachingAssignment.getId());
+			return null;
+		}
+
+		teachingAssignment.setApproved(false);
+
+		return teachingAssignmentService.save(teachingAssignment);
 	}
 
 }

@@ -37,13 +37,18 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
+	public TeachingAssignment findOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor) {
+		return teachingAssignmentRepository.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
+	}
+
+	@Override
 	public TeachingAssignment findOneById(Long id) {
 		return teachingAssignmentRepository.findById(id);
 	}
 
 	@Override
 	public TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor) {
-		TeachingAssignment teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
+		TeachingAssignment teachingAssignment = this.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
 
 		if (teachingAssignment == null) {
 			teachingAssignment = new TeachingAssignment();
