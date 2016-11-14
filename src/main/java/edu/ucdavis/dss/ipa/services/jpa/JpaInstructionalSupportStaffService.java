@@ -76,4 +76,18 @@ public class JpaInstructionalSupportStaffService implements InstructionalSupport
 
         return activeInstructionalSupportStaffList;
     }
+
+    @Override
+    public List<InstructionalSupportStaff> findActiveByWorkgroupIdAndRoleToken(long workgroupId, String roleToken) {
+        List<UserRole> instructionalSupportStaffUserRoles = userRoleService.findByWorkgroupIdAndRoleToken(workgroupId, roleToken);
+
+        List<InstructionalSupportStaff> activeInstructionalSupportStaffList = new ArrayList<InstructionalSupportStaff>();
+
+        for (UserRole userRole : instructionalSupportStaffUserRoles) {
+            InstructionalSupportStaff instructionalSupportStaff = this.findOrCreate(userRole.getUser().getFirstName(), userRole.getUser().getLastName(), userRole.getUser().getEmail(), userRole.getUser().getLoginId());
+            activeInstructionalSupportStaffList.add(instructionalSupportStaff);
+        }
+
+        return activeInstructionalSupportStaffList;
+    }
 }

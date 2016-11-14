@@ -9,18 +9,24 @@ public class InstructionalSupportAssignmentView {
     List<Course> courses;
     List<InstructionalSupportAssignment> instructionalSupportAssignments;
     List<InstructionalSupportStaff> instructionalSupportStaffList;
-    List<UserRole> userRoles;
+    List<Long> mastersStudentIds;
+    List<Long> phdStudentIds;
+    List<Long> instructionalSupportIds;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
                                               List<InstructionalSupportAssignment> instructionalSupportAssignments,
                                               List<InstructionalSupportStaff> instructionalSupportStaffList,
-                                              List<UserRole> userRoles) {
+                                              List<Long> mastersStudentsIds,
+                                              List<Long> phdStudentsIds,
+                                              List<Long> instructionalSupportIds) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
         setInstructionalSupportStaffList(instructionalSupportStaffList);
-        setUserRoles(userRoles);
+        setMastersStudentIds(mastersStudentsIds);
+        setPhdStudentIds(phdStudentsIds);
+        setInstructionalSupportIds(instructionalSupportIds);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -55,11 +61,27 @@ public class InstructionalSupportAssignmentView {
         this.instructionalSupportStaffList = instructionalSupportStaffList;
     }
 
-    public List<UserRole> getUserRoles() {
-        return userRoles;
+    public List<Long> getMastersStudentIds() {
+        return mastersStudentIds;
     }
 
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
+    public void setMastersStudentIds(List<Long> mastersStudentIds) {
+        this.mastersStudentIds = mastersStudentIds;
+    }
+
+    public List<Long> getPhdStudentIds() {
+        return phdStudentIds;
+    }
+
+    public void setPhdStudentIds(List<Long> phdStudentIds) {
+        this.phdStudentIds = phdStudentIds;
+    }
+
+    public List<Long> getInstructionalSupportIds() {
+        return instructionalSupportIds;
+    }
+
+    public void setInstructionalSupportIds(List<Long> instructionalSupportIds) {
+        this.instructionalSupportIds = instructionalSupportIds;
     }
 }

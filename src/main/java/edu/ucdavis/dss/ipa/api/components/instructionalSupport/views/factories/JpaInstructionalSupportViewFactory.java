@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject UserService userService;
     @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -48,6 +50,25 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<UserRole> userRoles = workgroup.getUserRoles();
         List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
 
-        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList, userRoles);
+        List<InstructionalSupportStaff> mastersStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<Long> mastersStudentIds = new ArrayList<>();
+        List<InstructionalSupportStaff> phdStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<Long> phdStudentIds = new ArrayList<>();
+        List<InstructionalSupportStaff> instructionalSupport = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<Long> instructionalSupportIds = new ArrayList<>();
+
+        for (InstructionalSupportStaff supportStaff : mastersStudents) {
+            mastersStudentIds.add(supportStaff.getId());
+        }
+
+        for (InstructionalSupportStaff supportStaff : phdStudents) {
+            phdStudentIds.add(supportStaff.getId());
+        }
+
+        for (InstructionalSupportStaff supportStaff : instructionalSupport) {
+            instructionalSupportIds.add(supportStaff.getId());
+        }
+
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds);
     }
 }
