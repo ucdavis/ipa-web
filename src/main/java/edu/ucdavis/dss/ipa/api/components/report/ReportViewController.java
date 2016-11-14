@@ -22,6 +22,7 @@ public class ReportViewController {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject InstructorService instructorService;
+	@Inject ActivityService activityService;
 
 	/**
 	 * Delivers the available termStates for the initial report form.
@@ -140,6 +141,34 @@ public class ReportViewController {
 		teachingAssignment.setApproved(false);
 
 		return teachingAssignmentService.save(teachingAssignment);
+	}
+
+	@RequestMapping(value = "/api/reportView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
+		Activity originalActivity = activityService.findOneById(activityId);
+		if (originalActivity == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		if (activity.getDayIndicator() != null) {
+			originalActivity.setDayIndicator(activity.getDayIndicator());
+		}
+		if (activity.getStartTime() != null) {
+			originalActivity.setStartTime(activity.getStartTime());
+		}
+		if (activity.getEndTime() != null) {
+			originalActivity.setEndTime(activity.getEndTime());
+		}
+		if (activity.getBannerLocation() != null) {
+			originalActivity.setBannerLocation(activity.getBannerLocation());
+		}
+
+		return this.activityService.saveActivity(originalActivity);
 	}
 
 }

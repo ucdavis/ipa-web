@@ -14,12 +14,12 @@ public class ActivityDiffDto {
 	private String uniqueKey;
 
 	private char typeCode;
-	private String location, dayIndicator, startTime, endTime;
+	private String bannerLocation, dayIndicator, startTime, endTime;
 
 	public ActivityDiffDto(
 			long activityId,
 			char typeCode,
-			String location,
+			String bannerLocation,
 			String dayIndicator,
 			String startTime,
 			String endTime,
@@ -29,7 +29,7 @@ public class ActivityDiffDto {
 		setId(activityId);
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode);
 		setTypeCode(typeCode);
-		setLocation(location);
+		setBannerLocation(bannerLocation);
 		setDayIndicator(dayIndicator);
 		setStartTime(startTime);
 		setEndTime(endTime);
@@ -59,12 +59,12 @@ public class ActivityDiffDto {
 		this.typeCode = typeCode;
 	}
 
-	public String getLocation() {
-		return location;
+	public String getBannerLocation() {
+		return bannerLocation;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setBannerLocation(String bannerLocation) {
+		this.bannerLocation = bannerLocation;
 	}
 
 	public String getDayIndicator() {
