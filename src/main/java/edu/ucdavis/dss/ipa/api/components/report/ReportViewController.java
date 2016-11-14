@@ -171,4 +171,19 @@ public class ReportViewController {
 		return this.activityService.saveActivity(originalActivity);
 	}
 
+	@RequestMapping(value = "/api/reportView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteActivity(@PathVariable long activityId, HttpServletResponse httpResponse) {
+		Activity activity = activityService.findOneById(activityId);
+		if (activity == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+		SectionGroup sectionGroup = sectionGroupService.getOneById(activity.getSectionGroupIdentification());
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		this.activityService.deleteActivityById(activity.getId());
+	}
+
 }
