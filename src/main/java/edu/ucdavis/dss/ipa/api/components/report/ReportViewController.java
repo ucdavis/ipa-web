@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.report;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.report.views.factories.ReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
@@ -184,6 +185,28 @@ public class ReportViewController {
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		this.activityService.deleteActivityById(activity.getId());
+	}
+
+	@RequestMapping(value = "/api/reportView/sections/{sectionId}/activities/{activityCode}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Activity createActivity(@PathVariable char activityCode,
+								   @PathVariable Long sectionId,
+								   @RequestBody Activity activity,
+								   HttpServletResponse httpResponse) {
+		Section section = sectionService.getOneById(sectionId);
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		ActivityType activityType = new ActivityType(activityCode);
+		activity.setActivityTypeCode(activityType);
+		activity.setActivityState(ActivityState.DRAFT);
+		activity.setSection(section);
+
+		return activityService.saveActivity(activity);
 	}
 
 }
