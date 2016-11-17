@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.services.InstructionalSupportAssignmentService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -57,4 +58,23 @@ public class InstructionalSupportAssignmentsController {
         return instructionalSupportAssignments;
     }
 
+    @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public Long deleteAssignment(@PathVariable long instructionalSupportAssignmentId, HttpServletResponse httpResponse) {
+
+        InstructionalSupportAssignment instructionalSupportAssignment = instructionalSupportAssignmentService.findOneById(instructionalSupportAssignmentId);
+
+        Workgroup workgroup = instructionalSupportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        // Ensure the assignment is unassigned.
+        if (instructionalSupportAssignment.getInstructionalSupportStaff() != null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        instructionalSupportAssignmentService.delete(instructionalSupportAssignmentId);
+
+        return instructionalSupportAssignmentId;
+    }
 }
