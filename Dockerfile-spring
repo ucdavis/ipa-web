@@ -9,8 +9,6 @@ RUN sh -c 'touch /app.jar'
 ADD ./ipa-web.env ./ipa-web.env
 RUN /bin/bash -c 'source ipa-web.env'
 
-# -javaagent:/home/dssadmin/srv/newrelic/newrelic.jar
-
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", \
                     "-Djava.security.egd=file:/dev/./urandom", \
                     "-Dipa.datasource.url=${DATASOURCE_URL}", \
