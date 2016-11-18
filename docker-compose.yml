@@ -4,7 +4,8 @@ services:
     image: mysql:5.7
   web:
     build: Dockerfile.web
-    # command: 
+    env_file:
+      - ipa-web.env
     depends_on:
       - db
   proxy:
