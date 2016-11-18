@@ -8,8 +8,6 @@ RUN sh -c 'touch /app.jar'
 
 ADD ./start.sh start.sh
 
-ADD ./wait-for-it.sh wait-for-it.sh
-
 # Needed for start.sh's MySQL readiness check
 RUN apt-get update
 RUN apt-get install -y mysql-client
