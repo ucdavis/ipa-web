@@ -7,4 +7,5 @@ target/
 build/
 .gradle
 ipa-web.env
-
+certs/api_ipa_nginx.cer
+certs/api_ipa_nginx.key
