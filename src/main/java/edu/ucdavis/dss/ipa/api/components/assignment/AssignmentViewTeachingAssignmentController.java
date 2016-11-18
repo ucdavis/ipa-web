@@ -312,6 +312,8 @@ public class AssignmentViewTeachingAssignmentController {
                 // Make a single suggested teaching Assignment
                 teachingAssignment.setSchedule(schedule);
                 teachingAssignment.setInstructor(instructor);
+                teachingAssignment.setFromInstructor(true);
+
                 Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
                 teachingAssignment.setPriority(priority);
                 teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
@@ -326,6 +328,7 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);
             teachingAssignment.setInstructor(instructor);
+            teachingAssignment.setFromInstructor(true);
 
             Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
             teachingAssignment.setPriority(priority);
@@ -350,6 +353,7 @@ public class AssignmentViewTeachingAssignmentController {
                         slotTeachingAssignment.setApproved(false);
                         slotTeachingAssignment.setSchedule(slotCourse.getSchedule());
                         slotTeachingAssignment.setInstructor(instructor);
+                        slotTeachingAssignment.setFromInstructor(true);
 
                         Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
                         slotTeachingAssignment.setPriority(priority);
