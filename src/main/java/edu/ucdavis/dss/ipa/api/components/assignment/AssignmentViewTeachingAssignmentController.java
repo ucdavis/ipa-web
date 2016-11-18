@@ -324,7 +324,6 @@ public class AssignmentViewTeachingAssignmentController {
                 teachingAssignment.setSchedule(schedule);
                 teachingAssignment.setInstructor(instructor);
                 teachingAssignment.setFromInstructor(true);
-
                 Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
                 teachingAssignment.setPriority(priority);
                 teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
