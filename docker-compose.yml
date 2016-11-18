@@ -2,6 +2,8 @@ version: '2'
 services:
   db:
     image: mysql:5.7
+    env_file:
+      - ipa-web.env
   spring:
     build:
       context: ./
@@ -14,6 +16,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-nginx
+    volumes:
+        - ./certs:/etc/private/ssl
     ports:
       - 443:443
     depends_on:
