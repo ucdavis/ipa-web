@@ -8,6 +8,8 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-spring
+    volumes:
+        - ./certs/dw.dss.ucdavis.edu.cer:/dw.dss.ucdavis.edu.cer
     env_file:
       - ipa-web.env
     depends_on:
@@ -17,7 +19,8 @@ services:
       context: ./
       dockerfile: Dockerfile-nginx
     volumes:
-        - ./certs:/etc/private/ssl
+        - ./certs/api_ipa_nginx.cer:/etc/ssl/private/api_ipa_nginx.cer
+        - ./certs/api_ipa_nginx.key:/etc/ssl/private/api_ipa_nginx.key
     ports:
       - 443:443
     depends_on:

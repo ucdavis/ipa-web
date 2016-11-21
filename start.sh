@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Import the dw.dss.ucdavis.edu cert into the container JVM keystore
+keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.edu.cer -storepass changeit # -keystore "$JAVAHOME/jre/lib/security/cacerts"
+
 # Ensure MySQL is ready -- it may not be when the container first starts up
 # Solution credit: http://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
 while ! mysqladmin ping -h "db" --silent; do
