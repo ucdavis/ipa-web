@@ -209,4 +209,19 @@ public class ReportViewController {
 		return activityService.saveActivity(activity);
 	}
 
+	@RequestMapping(value = "/api/reportView/sections/{sectionId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteSection(@PathVariable long sectionId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		Section section = sectionService.getOneById(sectionId);
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		sectionService.delete(sectionId);
+	}
+
 }
