@@ -21,7 +21,7 @@ public class SectionDiffDto {
 	private String title;
 
 	private String crn, subjectCode, courseNumber, sequenceNumber;
-	private long seats;
+	private Long seats;
 	private Set<InstructorDiffDto> instructors = new HashSet<>();
 	private List<ActivityDiffDto> activities = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class SectionDiffDto {
 			String subjectCode,
 			String courseNumber,
 			String sequenceNumber,
-			long seats,
+			Long seats,
 			Set<InstructorDiffDto> instructors,
 			List<ActivityDiffDto> activities) {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber);
@@ -113,11 +113,11 @@ public class SectionDiffDto {
 		this.sequenceNumber = sequenceNumber;
 	}
 
-	public long getSeats() {
+	public Long getSeats() {
 		return seats;
 	}
 
-	public void setSeats(long seats) {
+	public void setSeats(Long seats) {
 		this.seats = seats;
 	}
 
