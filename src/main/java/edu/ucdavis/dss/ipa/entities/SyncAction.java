@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Decisions made by the user to apply to Banner in the DiffView
+ *
+ * @author Obada Kadri
+ */
+
 @Entity
 @Table(name = "SyncActions")
 public class SyncAction {
