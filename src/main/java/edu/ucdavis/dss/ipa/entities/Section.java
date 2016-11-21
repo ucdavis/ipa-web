@@ -25,7 +25,8 @@ public class Section implements Serializable {
 	private String crn;
 	private String sequenceNumber;
 	private SectionGroup sectionGroup;
-	private List<Activity> activities = new ArrayList<Activity>();
+	private List<Activity> activities = new ArrayList<>();
+	private List<SyncAction> syncActions = new ArrayList<>();
 	private Boolean visible, crnRestricted;
 
 	@Id
@@ -107,6 +108,16 @@ public class Section implements Serializable {
 
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "section", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<SyncAction> getSyncActions() {
+		return syncActions;
+	}
+
+	public void setSyncActions(List<SyncAction> syncActions) {
+		this.syncActions = syncActions;
 	}
 
 	@Basic
