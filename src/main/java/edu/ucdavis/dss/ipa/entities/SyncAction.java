@@ -1,7 +1,10 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SyncActionDeserializer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +16,8 @@ import javax.validation.constraints.NotNull;
  */
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = SyncActionDeserializer.class)
 @Table(name = "SyncActions")
 public class SyncAction {
 	private long id;
@@ -76,6 +81,15 @@ public class SyncAction {
 
 	public void setSection(Section section) {
 		this.section = section;
+	}
+
+	@Transient
+	@JsonProperty("sectionId")
+	public long getSectionIdentification() {
+		if (this.getSection() == null) {
+			return 0L;
+		}
+		return this.getSection().getId();
 	}
 
 }

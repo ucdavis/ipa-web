@@ -24,6 +24,7 @@ public class ReportViewController {
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject InstructorService instructorService;
 	@Inject ActivityService activityService;
+	@Inject SyncActionService syncActionService;
 
 	/**
 	 * Delivers the available termStates for the initial report form.
@@ -224,4 +225,18 @@ public class ReportViewController {
 		sectionService.delete(sectionId);
 	}
 
+	@RequestMapping(value = "/api/reportView/syncActions", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public SyncAction createSyncAction(@RequestBody SyncAction syncAction,
+									   HttpServletResponse httpResponse) {
+		Section section = sectionService.getOneById(syncAction.getSectionIdentification());
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		return syncActionService.save(syncAction);
+	}
 }
