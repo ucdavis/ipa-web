@@ -239,4 +239,18 @@ public class ReportViewController {
 
 		return syncActionService.save(syncAction);
 	}
+
+	@RequestMapping(value = "/api/reportView/syncActions/{syncActionId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteSyncAction(@PathVariable long syncActionId, HttpServletResponse httpResponse) {
+		SyncAction syncAction = syncActionService.getOneById(syncActionId);
+		if (syncAction == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+		Workgroup workgroup = syncAction.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		syncActionService.delete(syncActionId);
+	}
 }

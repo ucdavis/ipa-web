@@ -14,4 +14,6 @@ public interface SyncActionService {
 
 	SyncAction getOneById(Long id);
 
+	void delete(Long id);
+
 }
