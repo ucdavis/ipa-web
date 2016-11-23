@@ -18,6 +18,7 @@ public class SectionDiffView {
 		setIpaSection(ipaSection);
 		setDwSection(dwSection);
 		setChanges(changes);
+		setSyncActions(syncActions);
 	}
 
 	public SectionDiffDto getIpaSection() {
