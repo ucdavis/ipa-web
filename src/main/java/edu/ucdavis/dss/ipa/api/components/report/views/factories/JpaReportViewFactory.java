@@ -6,21 +6,24 @@ import edu.ucdavis.dss.ipa.api.components.report.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SyncAction;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.SyncActionService;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
+import org.javers.core.diff.ListCompareAlgorithm;
+import org.javers.core.diff.changetype.NewObject;
+import org.javers.core.diff.changetype.ObjectRemoved;
+import org.javers.core.diff.changetype.ValueChange;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +32,14 @@ public class JpaReportViewFactory implements ReportViewFactory {
 	@Inject SectionService sectionService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject DataWarehouseRepository dwRepository;
+	@Inject SyncActionService syncActionService;
 
 	@Override
 	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
-		Javers javers = JaversBuilder.javers().build();
+		Javers javers = JaversBuilder
+				.javers()
+				.withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+				.build();
 		List<SectionDiffView> diffView = new ArrayList<>();
 
 		List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
@@ -95,7 +102,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			);
 
 			// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
-			ipaActivities.sort((a1, a2) -> a1.getUniqueKey().compareTo(a2.getUniqueKey()));
+			ipaActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
 
 			SectionDiffDto ipaSectionDiff = new SectionDiffDto(
 							section.getId(),
@@ -146,7 +153,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 						.collect(Collectors.toList());
 
 				// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
-				dwActivities.sort((a1, a2) -> a1.getUniqueKey().compareTo(a2.getUniqueKey()));
+				dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
 
 				dwSectionDiff = new SectionDiffDto(
 						0, // No sectionId in DW
@@ -162,6 +169,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				);
 
 				Diff diff = javers.compare(ipaSectionDiff, dwSectionDiff);
+				deleteObsoleteSyncActions(section, diff);
 				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions()));
 			} else {
 				diffView.add(new SectionDiffView(ipaSectionDiff, null, null, section.getSyncActions()));
@@ -171,5 +179,58 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 		return diffView;
 	}
+
+    private String getSectionUniqueKey(Section section) {
+	    return section.getSectionGroup().getCourse().getSubjectCode() + "-" +
+                section.getSectionGroup().getCourse().getCourseNumber() + "-" +
+                section.getSequenceNumber();
+    }
+
+    private void deleteObsoleteSyncActions(Section section, Diff diff) {
+        Iterator<SyncAction> it = section.getSyncActions().iterator();
+        while (it.hasNext()) {
+            SyncAction syncAction = it.next();
+            if (syncAction.getChildProperty() != null) {
+                // Examples: dayIndicator, startTime...
+                Optional<ValueChange> matchingChange = diff.getChangesByType(ValueChange.class).stream().filter(
+                        change -> syncAction.getChildUniqueKey().equals(change.getAffectedLocalId()) &&
+                                change.getPropertyName().equals(syncAction.getChildProperty())
+                ).findFirst();
+                // If no matchingChange found, delete the syncAction
+                if (!matchingChange.isPresent()){
+                    it.remove();
+                    syncActionService.delete(syncAction.getId());
+                }
+            } else if (syncAction.getChildUniqueKey() != null) {
+                // Examples: Instructors, Activities
+                Optional<NewObject> newObject = diff.getChangesByType(NewObject.class).stream().filter(
+                        change -> syncAction.getChildUniqueKey().equals(change.getAffectedLocalId())
+                ).findFirst();
+                Optional<ObjectRemoved> objectRemoved = diff.getChangesByType(ObjectRemoved.class).stream().filter(
+                        change -> syncAction.getChildUniqueKey().equals(change.getAffectedLocalId())
+                ).findFirst();
+                // If no matchingChange found, delete the syncAction
+                if (!(newObject.isPresent() || objectRemoved.isPresent())) {
+                    it.remove();
+                    syncActionService.delete(syncAction.getId());
+                }
+            } else if (syncAction.getSectionProperty() != null) {
+                // Examples: seats, crn
+				Optional<ValueChange> matchingChange = diff.getChangesByType(ValueChange.class).stream().filter(
+						change -> getSectionUniqueKey(syncAction.getSection()).equals(change.getAffectedLocalId()) &&
+								change.getPropertyName().equals(syncAction.getSectionProperty())
+				).findFirst();
+				// If no matchingChange found, delete the syncAction
+				if (!matchingChange.isPresent()){
+					it.remove();
+					syncActionService.delete(syncAction.getId());
+				}
+            } else {
+                // Entire section to-do: When a whole section was missing from DW, but not anymore
+                it.remove();
+                syncActionService.delete(syncAction.getId());
+            }
+        }
+    }
 
 }
