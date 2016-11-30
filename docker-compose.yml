@@ -22,6 +22,6 @@ services:
         - ./certs/api_ipa_nginx.cer:/etc/ssl/private/api_ipa_nginx.cer
         - ./certs/api_ipa_nginx.key:/etc/ssl/private/api_ipa_nginx.key
     ports:
-      - 443:443
+      - 443
     depends_on:
       - spring
