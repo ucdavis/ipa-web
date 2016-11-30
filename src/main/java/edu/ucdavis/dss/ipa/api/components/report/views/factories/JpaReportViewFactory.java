@@ -54,133 +54,149 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
 
 		for (Section section: sections) {
-			Set<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
-					.getTeachingAssignments().stream()
-					.filter(TeachingAssignment::isApproved)
-					.map(ta -> new InstructorDiffDto(
-							ta.getInstructor().getFirstName(),
-							ta.getInstructor().getLastName(),
-							ta.getInstructor().getLoginId(),
-							ta.getInstructor().getUcdStudentSID()
-						)
-					)
-					.collect(Collectors.toSet());
+			SectionDiffDto ipaSectionDiff = getIpaSectionDiff(section);
+			SectionDiffDto dwSectionDiff = getDwSectionDiff(section, dwSections);
 
-			// Unshared activities
-			List<ActivityDiffDto> ipaActivities = section
-					.getActivities().stream()
-					.map(a -> new ActivityDiffDto(
-							a.getId(),
-							a.getActivityTypeCode().getActivityTypeCode(),
-							a.getBannerLocation(),
-							a.getDayIndicator(),
-							a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
-							a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
-							section.getSectionGroup().getCourse().getSubjectCode(),
-							section.getSectionGroup().getCourse().getCourseNumber(),
-							section.getSequenceNumber()
-						)
-					)
-					.collect(Collectors.toList());
-
-			// Shared activities
-			ipaActivities.addAll(section.getSectionGroup().getActivities()
-					.stream()
-					.map(a -> new ActivityDiffDto(
-							a.getId(),
-							a.getActivityTypeCode().getActivityTypeCode(),
-							a.getBannerLocation(),
-							a.getDayIndicator(),
-							a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
-							a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
-							section.getSectionGroup().getCourse().getSubjectCode(),
-							section.getSectionGroup().getCourse().getCourseNumber(),
-							section.getSequenceNumber()
-							)
-					)
-					.collect(Collectors.toSet())
-			);
-
-			// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
-			ipaActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
-
-			SectionDiffDto ipaSectionDiff = new SectionDiffDto(
-							section.getId(),
-							section.getSectionGroupId(),
-							section.getCrn(),
-							section.getSectionGroup().getCourse().getTitle(),
-							section.getSectionGroup().getCourse().getSubjectCode(),
-							section.getSectionGroup().getCourse().getCourseNumber(),
-							section.getSequenceNumber(),
-							section.getSeats(),
-							ipaInstructors,
-							ipaActivities
-					);
-
-			Optional<DwSection> dwSection = dwSections.stream()
-					.filter(dws -> dws.getSequenceNumber().equals(section.getSequenceNumber()) &&
-							dws.getSubjectCode().equals(section.getSectionGroup().getCourse().getSubjectCode()) &&
-							dws.getCourseNumber().equals(section.getSectionGroup().getCourse().getCourseNumber())
-					)
-					.findFirst();
-
-			SectionDiffDto dwSectionDiff = null;
-
-			if (dwSection.isPresent()) {
-				Set<InstructorDiffDto> dwInstructors = dwSection.get().getInstructors().stream()
-						.map(instructor -> new InstructorDiffDto(
-										instructor.getFirstName(),
-										instructor.getLastName(),
-										instructor.getLoginId(),
-										instructor.getEmployeeId()
-								)
-						)
-						.collect(Collectors.toSet());
-
-				List<ActivityDiffDto> dwActivities = dwSection.get()
-						.getActivities().stream()
-						.map(a -> new ActivityDiffDto(
-								0,
-								a.getSsrmeet_schd_code(),
-								a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
-								a.getDay_indicator(),
-								a.getSsrmeet_begin_time(),
-								a.getSsrmeet_end_time(),
-								dwSection.get().getSubjectCode(),
-								dwSection.get().getCourseNumber(),
-								dwSection.get().getSequenceNumber()
-                        ))
-						.collect(Collectors.toList());
-
-				// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
-				dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
-
-				dwSectionDiff = new SectionDiffDto(
-						0, // No sectionId in DW
-						0, // No sectionGroupId in DW
-						dwSection.get().getCrn(),
-						dwSection.get().getTitle(),
-						dwSection.get().getSubjectCode(),
-						dwSection.get().getCourseNumber(),
-						dwSection.get().getSequenceNumber(),
-						dwSection.get().getMaximumEnrollment(),
-						dwInstructors,
-						dwActivities
-				);
-
+			if (dwSectionDiff == null) {
+				// Section does not exist in DataWarehouse
+				diffView.add(new SectionDiffView(ipaSectionDiff, null, null, section.getSyncActions()));
+			} else {
+				// Section exists on both ends, calculate the differences
 				Diff diff = javers.compare(ipaSectionDiff, dwSectionDiff);
+				// Delete the sync actions that don't make sense anymore
 				deleteObsoleteSyncActions(section, diff);
 				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions()));
-			} else {
-				diffView.add(new SectionDiffView(ipaSectionDiff, null, null, section.getSyncActions()));
 			}
-
 		}
 
 		return diffView;
 	}
 
-    private String getSectionUniqueKey(Section section) {
+	private SectionDiffDto getIpaSectionDiff(Section section) {
+		// Section instructors
+		Set<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
+				.getTeachingAssignments().stream()
+				.filter(TeachingAssignment::isApproved)
+				.map(ta -> new InstructorDiffDto(
+								ta.getInstructor().getFirstName(),
+								ta.getInstructor().getLastName(),
+								ta.getInstructor().getLoginId(),
+								ta.getInstructor().getUcdStudentSID()
+						)
+				)
+				.collect(Collectors.toSet());
+
+		// Unshared activities
+		List<ActivityDiffDto> ipaActivities = section
+				.getActivities().stream()
+				.map(a -> new ActivityDiffDto(
+								a.getId(),
+								a.getActivityTypeCode().getActivityTypeCode(),
+								a.getBannerLocation(),
+								a.getDayIndicator(),
+								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
+								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+								section.getSectionGroup().getCourse().getSubjectCode(),
+								section.getSectionGroup().getCourse().getCourseNumber(),
+								section.getSequenceNumber()
+						)
+				)
+				.collect(Collectors.toList());
+
+		// Shared activities
+		ipaActivities.addAll(section.getSectionGroup().getActivities()
+				.stream()
+				.map(a -> new ActivityDiffDto(
+								a.getId(),
+								a.getActivityTypeCode().getActivityTypeCode(),
+								a.getBannerLocation(),
+								a.getDayIndicator(),
+								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
+								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+								section.getSectionGroup().getCourse().getSubjectCode(),
+								section.getSectionGroup().getCourse().getCourseNumber(),
+								section.getSequenceNumber()
+						)
+				)
+				.collect(Collectors.toSet())
+		);
+
+		// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
+		ipaActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
+
+		return new SectionDiffDto(
+				section.getId(),
+				section.getSectionGroupId(),
+				section.getCrn(),
+				section.getSectionGroup().getCourse().getTitle(),
+				section.getSectionGroup().getCourse().getSubjectCode(),
+				section.getSectionGroup().getCourse().getCourseNumber(),
+				section.getSequenceNumber(),
+				section.getSeats(),
+				ipaInstructors,
+				ipaActivities
+		);
+	}
+
+	private SectionDiffDto getDwSectionDiff(Section section, List<DwSection> dwSections) {
+		Optional<DwSection> dwSection = dwSections.stream()
+				.filter(dws -> dws.getSequenceNumber().equals(section.getSequenceNumber()) &&
+						dws.getSubjectCode().equals(section.getSectionGroup().getCourse().getSubjectCode()) &&
+						dws.getCourseNumber().equals(section.getSectionGroup().getCourse().getCourseNumber())
+				)
+				.findFirst();
+
+		SectionDiffDto dwSectionDiff = null;
+
+		if (dwSection.isPresent()) {
+			// DW Section instructors
+			Set<InstructorDiffDto> dwInstructors = dwSection.get().getInstructors().stream()
+					.map(instructor -> new InstructorDiffDto(
+									instructor.getFirstName(),
+									instructor.getLastName(),
+									instructor.getLoginId(),
+									instructor.getEmployeeId()
+							)
+					)
+					.collect(Collectors.toSet());
+
+			// DW Section activities
+			List<ActivityDiffDto> dwActivities = dwSection.get()
+					.getActivities().stream()
+					.map(a -> new ActivityDiffDto(
+							0,
+							a.getSsrmeet_schd_code(),
+							a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
+							a.getDay_indicator(),
+							a.getSsrmeet_begin_time(),
+							a.getSsrmeet_end_time(),
+							dwSection.get().getSubjectCode(),
+							dwSection.get().getCourseNumber(),
+							dwSection.get().getSequenceNumber()
+					))
+					.collect(Collectors.toList());
+
+			// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
+			dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
+
+			dwSectionDiff = new SectionDiffDto(
+					0, // No sectionId in DW
+					0, // No sectionGroupId in DW
+					dwSection.get().getCrn(),
+					dwSection.get().getTitle(),
+					dwSection.get().getSubjectCode(),
+					dwSection.get().getCourseNumber(),
+					dwSection.get().getSequenceNumber(),
+					dwSection.get().getMaximumEnrollment(),
+					dwInstructors,
+					dwActivities
+			);
+		}
+
+		return dwSectionDiff;
+	}
+
+	private String getSectionUniqueKey(Section section) {
 	    return section.getSectionGroup().getCourse().getSubjectCode() + "-" +
                 section.getSectionGroup().getCourse().getCourseNumber() + "-" +
                 section.getSequenceNumber();
