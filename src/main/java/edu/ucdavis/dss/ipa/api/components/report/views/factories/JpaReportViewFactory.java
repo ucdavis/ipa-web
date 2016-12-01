@@ -151,6 +151,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		if (dwSection.isPresent()) {
 			// DW Section instructors
 			Set<InstructorDiffDto> dwInstructors = dwSection.get().getInstructors().stream()
+					.filter(dwInstructor -> dwInstructor.getLoginId() != null)
 					.map(instructor -> new InstructorDiffDto(
 									instructor.getFirstName(),
 									instructor.getLastName(),

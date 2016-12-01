@@ -6,7 +6,7 @@ import javax.persistence.Id;
 public class InstructorDiffDto {
 
 	@Id
-	private String uniqueKey;
+	private String uniqueKey;	// Can be customized to any unique key we end up using (currently loginId)
 
 	private String firstName, lastName, loginId, ucdStudentSID;
 
@@ -16,7 +16,7 @@ public class InstructorDiffDto {
 			String loginId,
 			String ucdStudentSID
 	) {
-		setUniqueKey(loginId + "-" +ucdStudentSID);
+		setUniqueKey(loginId.toLowerCase());
 		setFirstName(firstName);
 		setLastName(lastName);
 		setLoginId(loginId);
