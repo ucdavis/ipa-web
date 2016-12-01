@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -73,15 +74,19 @@ public class JpaSectionGroupService implements SectionGroupService {
 		return occupiedVisibleSectionGroups;
 	}
 
+	@Override
 	public List<SectionGroup> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
-		List<SectionGroup> occupiedVisibleSectionGroups = sectionGroupRepository.findOccupiedVisibleByWorkgroupIdAndYear(workgroupId, year);
-		List<SectionGroup> emptySectionGroups = sectionGroupRepository.findEmptyByWorkgroupIdAndYear(workgroupId, year);
-		occupiedVisibleSectionGroups.addAll(emptySectionGroups);
-		Collections.sort(occupiedVisibleSectionGroups, (o1, o2) -> o1.getCourse().getShortDescription().compareTo(o2.getCourse().getShortDescription()));
-		return occupiedVisibleSectionGroups;
+		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
+
+		for (Course course : courses) {
+			sectionGroups.addAll(course.getSectionGroups());
+		}
+
+		return sectionGroups;
 	}
 
-		private boolean isLocked(long sectionGroupId) {
+	private boolean isLocked(long sectionGroupId) {
 		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
 		if (sectionGroup == null) { return false; }
 
