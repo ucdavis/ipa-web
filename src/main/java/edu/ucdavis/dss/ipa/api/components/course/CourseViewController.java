@@ -99,6 +99,22 @@ public class CourseViewController {
 		return sectionGroupService.save(originalSectionGroup);
 	}
 
+	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteSectionGroup(@PathVariable long sectionGroupId, HttpServletResponse httpResponse) {
+		// TODO: Consider how we can improve the authorizer
+		SectionGroup originalSectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+		if (originalSectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		}
+
+		Workgroup workgroup = originalSectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		sectionGroupService.delete(sectionGroupId);
+	}
+
 	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public void deleteCourse(@PathVariable long courseId, HttpServletResponse httpResponse) {
