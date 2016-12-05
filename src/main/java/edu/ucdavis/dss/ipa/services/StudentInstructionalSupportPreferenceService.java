@@ -18,4 +18,6 @@ public interface StudentInstructionalSupportPreferenceService {
     void delete(Long studentInstructionalSupportPreferenceId);
 
     List<StudentInstructionalSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId);
+
+    List<StudentInstructionalSupportPreference> findByScheduleIdAndTermCode(long id, String termCode);
 }

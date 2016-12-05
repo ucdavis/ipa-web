@@ -24,4 +24,6 @@ public interface InstructionalSupportAssignmentService {
     List<InstructionalSupportAssignment> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 
     List<InstructionalSupportAssignment> findByScheduleIdAndTermCodeAndSupportStaffId(long id, String termCode, long supportStaffId);
+
+    InstructionalSupportAssignment save(InstructionalSupportAssignment instructionalSupportAssignment);
 }

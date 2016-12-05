@@ -30,6 +30,7 @@ public class StudentInstructionalSupportCall implements Serializable {
     private boolean CollectEligibilityConfirmation, CollectTeachingAssistantPreferences, CollectReaderPreferences;
     private boolean CollectAssociateInstructorPreferences;
     private List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = new ArrayList<>();
+    private List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -202,6 +203,16 @@ public class StudentInstructionalSupportCall implements Serializable {
 
     public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
         this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
+        return studentInstructionalSupportPreferences;
+    }
+
+    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
+        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
     }
 
     @JsonProperty("scheduleId")

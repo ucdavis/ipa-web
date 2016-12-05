@@ -5,10 +5,7 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.I
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportAssignmentService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +23,7 @@ public class InstructionalSupportAssignmentsController {
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
+    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -76,5 +74,32 @@ public class InstructionalSupportAssignmentsController {
         instructionalSupportAssignmentService.delete(instructionalSupportAssignmentId);
 
         return instructionalSupportAssignmentId;
+    }
+
+    @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{assignmentId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public InstructionalSupportAssignment assignStaffToSlot(@PathVariable long assignmentId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+        InstructionalSupportAssignment instructionalSupportAssignment = instructionalSupportAssignmentService.findOneById(assignmentId);
+        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
+
+        Workgroup workgroup = instructionalSupportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        instructionalSupportAssignment.setInstructionalSupportStaff(instructionalSupportStaff);
+
+        return instructionalSupportAssignmentService.save(instructionalSupportAssignment);
+    }
+
+    @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}/unassign", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public InstructionalSupportAssignment removeStaffFromSlot(@PathVariable long instructionalSupportAssignmentId, HttpServletResponse httpResponse) {
+        InstructionalSupportAssignment instructionalSupportAssignment = instructionalSupportAssignmentService.findOneById(instructionalSupportAssignmentId);
+
+        Workgroup workgroup = instructionalSupportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        instructionalSupportAssignment.setInstructionalSupportStaff(null);
+
+        return instructionalSupportAssignmentService.save(instructionalSupportAssignment);
     }
 }

@@ -1,17 +1,12 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportPreference;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportPreferenceRepository;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallService;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportPreferenceService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +16,7 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+
 
     public StudentInstructionalSupportPreference save(StudentInstructionalSupportPreference studentInstructionalSupportPreference) {
         return this.studentInstructionalSupportPreferenceRepository.save(studentInstructionalSupportPreference);
@@ -57,5 +53,19 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
     @Override
     public List<StudentInstructionalSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId) {
         return this.studentInstructionalSupportPreferenceRepository.findByInstructionalSupportStaffIdAndStudentInstructionalSupportCallId(supportStaffId, studentSupportCallId);
+    }
+
+    @Override
+    public List<StudentInstructionalSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
+        List<StudentInstructionalSupportCall> supportCalls = studentInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<StudentInstructionalSupportPreference> preferences = new ArrayList<>();
+
+        for (StudentInstructionalSupportCall supportCall : supportCalls) {
+            if (supportCall.getTermCode().equals(termCode)) {
+                preferences.addAll(supportCall.getStudentInstructionalSupportPreferences());
+            }
+        }
+
+        return preferences;
     }
 }

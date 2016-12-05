@@ -12,6 +12,7 @@ public class InstructionalSupportAssignmentView {
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
+    List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -19,7 +20,8 @@ public class InstructionalSupportAssignmentView {
                                               List<InstructionalSupportStaff> instructionalSupportStaffList,
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
-                                              List<Long> instructionalSupportIds) {
+                                              List<Long> instructionalSupportIds,
+                                              List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
@@ -27,6 +29,7 @@ public class InstructionalSupportAssignmentView {
         setMastersStudentIds(mastersStudentsIds);
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
+        setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -83,5 +86,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setInstructionalSupportIds(List<Long> instructionalSupportIds) {
         this.instructionalSupportIds = instructionalSupportIds;
+    }
+
+    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
+        return studentInstructionalSupportPreferences;
+    }
+
+    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
+        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
     }
 }

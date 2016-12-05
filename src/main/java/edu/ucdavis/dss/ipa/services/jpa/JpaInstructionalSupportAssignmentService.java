@@ -26,6 +26,7 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @Inject ScheduleService scheduleService;
 
+    @Override
     public InstructionalSupportAssignment save(InstructionalSupportAssignment instructionalSupportAssignment) {
         return this.instructionalSupportAssignmentRepository.save(instructionalSupportAssignment);
     }
