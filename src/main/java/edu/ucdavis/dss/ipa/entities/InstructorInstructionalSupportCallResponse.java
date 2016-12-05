@@ -14,10 +14,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Table(name = "InstructorInstructionalSupportCallResponses")
 public class InstructorInstructionalSupportCallResponse implements Serializable {
     private long id;
-    private TeachingCall teachingCall;
+    private InstructorInstructionalSupportCall instructorInstructionalSupportCall;
     private Instructor instructor;
     private Date notifiedAt, warnedAt;
-    private boolean isSubmitted;
+    private boolean submitted;
     private String generalComments;
 
     @Id
@@ -45,15 +45,15 @@ public class InstructorInstructionalSupportCallResponse implements Serializable 
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TeachingCallId", nullable = false)
+    @JoinColumn(name = "InstructorInstructionalSupportCallId", nullable = false)
     @NotNull
     @JsonIgnore
-    public TeachingCall getTeachingCall() {
-        return teachingCall;
+    public InstructorInstructionalSupportCall getInstructorInstructionalSupportCall() {
+        return instructorInstructionalSupportCall;
     }
 
-    public void setTeachingCall(TeachingCall teachingCall) {
-        this.teachingCall = teachingCall;
+    public void setInstructorInstructionalSupportCall(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
+        this.instructorInstructionalSupportCall = instructorInstructionalSupportCall;
     }
 
     @Column (nullable = false)
@@ -76,11 +76,11 @@ public class InstructorInstructionalSupportCallResponse implements Serializable 
 
     @Column (nullable = false)
     public boolean isSubmitted() {
-        return isSubmitted;
+        return submitted;
     }
 
     public void setSubmitted(boolean submitted) {
-        isSubmitted = submitted;
+        submitted = submitted;
     }
 
     @Column (nullable = false)

@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport;
 
-import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
+import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.InstructionalSupportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
@@ -27,22 +27,26 @@ public class InstructionalSupportCallsController {
     @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
     @Inject ScheduleService scheduleService;
 
-    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public InstructionalSupportAssignmentView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
+    public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, null);
+        return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/studentInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public StudentInstructionalSupportCall addStudentSupportCall(@PathVariable long scheduleId, @RequestBody StudentInstructionalSupportCall studentInstructionalSupportCall, HttpServletResponse httpResponse) {
 
+
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+        studentInstructionalSupportCall.setSchedule(schedule);
 
         return studentInstructionalSupportCallService.findOrCreate(studentInstructionalSupportCall);
     }

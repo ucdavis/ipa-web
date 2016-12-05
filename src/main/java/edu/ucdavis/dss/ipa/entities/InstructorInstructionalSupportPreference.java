@@ -24,7 +24,7 @@ public class InstructorInstructionalSupportPreference implements Serializable {
     private Instructor instructor;
     private String type, comment;
     private long order;
-
+    private InstructorInstructionalSupportCall instructorInstructionalSupportCall;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
@@ -95,6 +95,18 @@ public class InstructorInstructionalSupportPreference implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorInstructionalSupportCallId", nullable = false)
+    @NotNull
+    @JsonIgnore
+    public InstructorInstructionalSupportCall getInstructorInstructionalSupportCall() {
+        return instructorInstructionalSupportCall;
+    }
+
+    public void setInstructorInstructionalSupportCall(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
+        this.instructorInstructionalSupportCall = instructorInstructionalSupportCall;
     }
 
     @JsonProperty("instructionalSupportStaffId")

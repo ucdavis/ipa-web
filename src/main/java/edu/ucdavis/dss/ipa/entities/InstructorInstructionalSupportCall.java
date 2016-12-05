@@ -1,10 +1,10 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,17 +20,21 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "InstructorInstructionalSupportCalls")
+@JsonDeserialize(using = InstructorInstructionalSupportCallDeserializer.class)
 public class InstructorInstructionalSupportCall implements Serializable {
     private long id;
+    private int minimumNumberOfPreferences;
     private Schedule schedule;
     private String message, termCode;
     private Date startDate, dueDate;
     private boolean sendEmails, AllowSubmissionAfterDueDate;
+    private List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponse = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -124,5 +128,24 @@ public class InstructorInstructionalSupportCall implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty
+    public int getMinimumNumberOfPreferences() {
+        return minimumNumberOfPreferences;
+    }
+
+    public void setMinimumNumberOfPreferences(int minimumNumberOfPreferences) {
+        this.minimumNumberOfPreferences = minimumNumberOfPreferences;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall")
+    @JsonIgnore
+    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponse() {
+        return instructorInstructionalSupportCallResponse;
+    }
+
+    public void setInstructorInstructionalSupportCallResponse(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponse) {
+        this.instructorInstructionalSupportCallResponse = instructorInstructionalSupportCallResponse;
     }
 }

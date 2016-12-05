@@ -23,6 +23,7 @@ CREATE TABLE `StudentInstructionalSupportPreferences` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `InstructionalSupportStaffId` int(11) NOT NULL,
   `SectionGroupId` int(11) NOT NULL,
+  `StudentInstructionalSupportCallId` int(11) NOT NULL,
   `Comment` varchar(20) DEFAULT NULL,
   `Type` varchar(20) NOT NULL,
   `Priority` int(11) NOT NULL,
@@ -37,6 +38,7 @@ CREATE TABLE `InstructorInstructionalSupportPreferences` (
   `InstructorId` int(11) NOT NULL,
   `InstructionalSupportStaffId` int(11) NOT NULL,
   `SectionGroupId` int(11) NOT NULL,
+  `InstructorInstructionalSupportCallId` int(11) NOT NULL,
   `Priority` int(11) NOT NULL,
   KEY `InstructorISCPreferences_SectionGroupId_idx` (`SectionGroupId`),
   KEY `InstructorISCPreferences_InstructionalSupportStaffId_idx` (`InstructionalSupportStaffId`),
@@ -84,27 +86,23 @@ CREATE TABLE `StudentInstructionalSupportCallResponses` (
   `Id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `NotifiedAt` timestamp NULL DEFAULT NULL,
   `WarnedAt` timestamp NULL DEFAULT NULL,
-  `IsSubmitted` tinyint(1) NOT NULL DEFAULT '0',
-  `TeachingCallId` int(11) NOT NULL,
+  `Submitted` tinyint(1) NOT NULL DEFAULT '0',
+  `StudentInstructionalSupportCallId` int(11) NOT NULL,
   `InstructionalSupportStaffId` int(11) NOT NULL,
   `GeneralComments` text,
   `TeachingQualifications` text,
-  KEY `StudentISCResponses_TeachingCallId_idx` (`TeachingCallId`),
   KEY `StudentISCResponses_InstructionalSupportStaffId_idx` (`InstructionalSupportStaffId`),
-  CONSTRAINT `StudentISCResponses_InstructionalSupportStaffId` FOREIGN KEY (`InstructionalSupportStaffId`) REFERENCES `InstructionalSupportStaff` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `StudentISCResponses_TeachingCallId` FOREIGN KEY (`TeachingCallId`) REFERENCES `TeachingCalls` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `StudentISCResponses_InstructionalSupportStaffId` FOREIGN KEY (`InstructionalSupportStaffId`) REFERENCES `InstructionalSupportStaff` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE `InstructorInstructionalSupportCallResponses` (
   `Id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `NotifiedAt` timestamp NULL DEFAULT NULL,
   `WarnedAt` timestamp NULL DEFAULT NULL,
-  `IsSubmitted` tinyint(1) NOT NULL DEFAULT '0',
-  `TeachingCallId` int(11) NOT NULL,
+  `Submitted` tinyint(1) NOT NULL DEFAULT '0',
+  `InstructorInstructionalSupportCallId` int(11) NOT NULL,
   `InstructorId` int(11) NOT NULL,
   `GeneralComments` text,
-  KEY `InstructorInstructionalSupportCallResponses_TeachingCallId_idx` (`TeachingCallId`),
   KEY `InstructorInstructionalSupportCallResponses_InstructorId_idx` (`InstructorId`),
-  CONSTRAINT `InstructorInstructionalSupportCallResponses_InstructorId` FOREIGN KEY (`InstructorId`) REFERENCES `Instructors` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `InstructorInstructionalSupportCallResponses_TeachingCallId` FOREIGN KEY (`TeachingCallId`) REFERENCES `TeachingCalls` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `InstructorInstructionalSupportCallResponses_InstructorId` FOREIGN KEY (`InstructorId`) REFERENCES `Instructors` (`Id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 );

@@ -1,27 +1,24 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.StudentInstructionalSupportCallDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "StudentInstructionalSupportCalls")
+@JsonDeserialize(using = StudentInstructionalSupportCallDeserializer.class)
 public class StudentInstructionalSupportCall implements Serializable {
     private long id;
     private long MinimumNumberOfPreferences;
@@ -32,6 +29,7 @@ public class StudentInstructionalSupportCall implements Serializable {
     private boolean CollectGeneralComments, CollectTeachingQualifications, CollectPreferenceComments;
     private boolean CollectEligibilityConfirmation, CollectTeachingAssistantPreferences, CollectReaderPreferences;
     private boolean CollectAssociateInstructorPreferences;
+    private List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -194,6 +192,16 @@ public class StudentInstructionalSupportCall implements Serializable {
 
     public void setCollectAssociateInstructorPreferences(boolean collectAssociateInstructorPreferences) {
         CollectAssociateInstructorPreferences = collectAssociateInstructorPreferences;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall")
+    @JsonIgnore
+    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
+        return studentInstructionalSupportCallResponses;
+    }
+
+    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
+        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
     }
 
     @JsonProperty("scheduleId")

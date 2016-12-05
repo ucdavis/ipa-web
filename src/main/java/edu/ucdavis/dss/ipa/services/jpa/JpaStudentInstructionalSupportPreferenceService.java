@@ -7,10 +7,12 @@ import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportPreferenceRep
 import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportPreferenceService;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class JpaStudentInstructionalSupportPreferenceService implements StudentInstructionalSupportPreferenceService {
 
     @Inject StudentInstructionalSupportPreferenceRepository studentInstructionalSupportPreferenceRepository;

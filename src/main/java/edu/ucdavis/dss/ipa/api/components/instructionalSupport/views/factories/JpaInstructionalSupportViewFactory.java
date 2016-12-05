@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
+import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject UserService userService;
     @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
     @Inject UserRoleService userRoleService;
 
     @Override
@@ -70,5 +72,37 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         }
 
         return new InstructionalSupportAssignmentView(sectionGroups, courses, instructionalSupportAssignments, instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds);
+    }
+
+    @Override
+    public InstructionalSupportCallStatusView createSupportCallStatusView(long workgroupId, long year) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        List<UserRole> userRoles = workgroup.getUserRoles();
+        List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<StudentInstructionalSupportCall> studentInstructionalSupportCalls = studentInstructionalSupportCallService.findByScheduleId(schedule.getId());
+
+        List<InstructionalSupportStaff> mastersStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<Long> mastersStudentIds = new ArrayList<>();
+        List<InstructionalSupportStaff> phdStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<Long> phdStudentIds = new ArrayList<>();
+        List<InstructionalSupportStaff> instructionalSupport = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<Long> instructionalSupportIds = new ArrayList<>();
+
+        for (InstructionalSupportStaff supportStaff : mastersStudents) {
+            mastersStudentIds.add(supportStaff.getId());
+        }
+
+        for (InstructionalSupportStaff supportStaff : phdStudents) {
+            phdStudentIds.add(supportStaff.getId());
+        }
+
+        for (InstructionalSupportStaff supportStaff : instructionalSupport) {
+            instructionalSupportIds.add(supportStaff.getId());
+        }
+
+
+        return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls);
     }
 }
