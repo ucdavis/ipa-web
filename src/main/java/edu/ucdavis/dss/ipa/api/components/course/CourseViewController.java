@@ -241,6 +241,7 @@ public class CourseViewController {
 		Section newSection = new Section();
 		newSection.setSectionGroup(sectionGroup);
 		newSection.setSequenceNumber(section.getSequenceNumber());
+		newSection.setSeats(section.getSeats());
 
 		return sectionService.save(newSection);
 	}
