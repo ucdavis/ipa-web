@@ -194,7 +194,7 @@ public class StudentInstructionalSupportCall implements Serializable {
         CollectAssociateInstructorPreferences = collectAssociateInstructorPreferences;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
         return studentInstructionalSupportCallResponses;

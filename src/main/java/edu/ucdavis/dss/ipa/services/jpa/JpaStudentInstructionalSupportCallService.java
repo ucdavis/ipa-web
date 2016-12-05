@@ -66,6 +66,8 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
 
     @Override
     public void delete(long studentInstructionalSupportCallId) {
+        StudentInstructionalSupportCall studentInstructionalSupportCall = this.findOneById(studentInstructionalSupportCallId);
+
         studentInstructionalSupportCallRepository.delete(studentInstructionalSupportCallId);
     }
 
