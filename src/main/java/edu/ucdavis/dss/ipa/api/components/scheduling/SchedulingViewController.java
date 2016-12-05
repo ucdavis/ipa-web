@@ -99,11 +99,7 @@ public class SchedulingViewController {
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		if (activity.getLocation() != null) {
-			Location location = locationService.findOneById(activity.getLocation().getId());
-			originalActivity.setLocation(location);
-		}
-
+		originalActivity.setLocation(activity.getLocation());
 		originalActivity.setActivityState(activity.getActivityState());
 		originalActivity.setFrequency(activity.getFrequency());
 		originalActivity.setDayIndicator(activity.getDayIndicator());
