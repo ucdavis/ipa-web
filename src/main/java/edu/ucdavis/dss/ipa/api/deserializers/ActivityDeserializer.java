@@ -59,6 +59,8 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 		
 		if (node.has("dayIndicator")) {
 			activity.setDayIndicator(node.get("dayIndicator").textValue());
+		} else {
+			activity.setDayIndicator("0000000");
 		}
 
 		if (node.has("activityTypeCode")) {
