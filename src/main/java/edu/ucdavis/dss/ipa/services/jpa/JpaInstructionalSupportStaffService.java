@@ -90,4 +90,9 @@ public class JpaInstructionalSupportStaffService implements InstructionalSupport
 
         return activeInstructionalSupportStaffList;
     }
+
+    @Override
+    public InstructionalSupportStaff findByLoginId(String loginId) {
+        return this.instructionalSupportStaffRepository.findByLoginIdIgnoreCase(loginId);
+    }
 }

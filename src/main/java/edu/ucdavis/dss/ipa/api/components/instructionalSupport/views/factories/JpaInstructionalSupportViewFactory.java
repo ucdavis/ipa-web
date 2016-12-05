@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
+import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,10 @@ import java.util.List;
 
 @Service
 public class JpaInstructionalSupportViewFactory implements InstructionalSupportViewFactory {
-    @Inject
-    WorkgroupService workgroupService;
-    @Inject
-    InstructorService instructorService;
-    @Inject
-    ScheduleInstructorNoteService scheduleInstructorNoteService;
-    @Inject
-    TeachingAssignmentService teachingAssignmentService;
+    @Inject WorkgroupService workgroupService;
+    @Inject InstructorService instructorService;
+    @Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
@@ -31,6 +28,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
     @Inject UserRoleService userRoleService;
+    @Inject StudentInstructionalSupportPreferenceService studentInstructionalSupportPreferenceService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -104,5 +102,35 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
 
         return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls);
+    }
+
+    @Override
+    public InstructionalSupportCallStudentFormView createStudentFormView(long workgroupId, long year, String shortTermCode, long supportStaffId) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        // Calculate termcode from shortTermCode
+        String termCode = "";
+
+        if (Long.valueOf(shortTermCode) >= 5) {
+            termCode = String.valueOf(year) + shortTermCode;
+        } else {
+            termCode = String.valueOf(year + 1) + shortTermCode;
+        }
+
+        StudentInstructionalSupportCall studentSupportCall = null;
+
+        for (StudentInstructionalSupportCall slotStudentInstructionalSupportCall : studentInstructionalSupportCallService.findByScheduleId(schedule.getId())) {
+            if (slotStudentInstructionalSupportCall.getTermCode().equals(termCode)) {
+                studentSupportCall = slotStudentInstructionalSupportCall;
+            }
+        }
+
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCodeAndStudentSupportCallId(schedule.getId(), termCode, studentSupportCall.getId());
+        List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+        List<InstructionalSupportAssignment> instructionalSupportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences = studentInstructionalSupportPreferenceService.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCall.getId());
+
+        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, instructionalSupportAssignments, studentInstructionalSupportPreferences, schedule.getId(), supportStaffId, studentSupportCall);
     }
 }

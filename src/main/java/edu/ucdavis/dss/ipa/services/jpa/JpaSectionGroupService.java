@@ -24,6 +24,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject InstructorService instructorService;
 	@Inject WorkgroupService workgroupService;
 	@Inject TermService termService;
+	@Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+	@Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
 
 	@Override
 	@Transactional
@@ -84,6 +86,59 @@ public class JpaSectionGroupService implements SectionGroupService {
 		}
 
 		return sectionGroups;
+	}
+
+	/**
+	 * Returns sectionGroups that have an support assignment for a type that is relevant to the specified student support call.
+	 * @param scheduleId
+	 * @param termCode
+	 * @param studentSupportCallId
+     * @return
+     */
+	@Override
+	public List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallId(long scheduleId, String termCode, long studentSupportCallId) {
+		List<SectionGroup> allSectionGroups = this.findByScheduleIdAndTermCode(scheduleId, termCode);
+		StudentInstructionalSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentSupportCallId);
+		List<InstructionalSupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
+		List<SectionGroup> filteredSectionGroups = new ArrayList<>();
+
+		// Loop over sectionGroups
+		for ( SectionGroup slotSectionGroup : allSectionGroups) {
+
+			for (InstructionalSupportAssignment slotSupportAssignment : supportAssignments) {
+
+				// Assignment is for this sectionGroupId and matches one of the interested types from the support call?
+				if (slotSupportAssignment.getSectionGroup().getId() == slotSectionGroup.getId()
+				&& isSupportCallAssignmentMatch(studentSupportCall, slotSupportAssignment)) {
+					filteredSectionGroups.add(slotSectionGroup);
+					break;
+				}
+			}
+		}
+
+		return filteredSectionGroups;
+	}
+
+	private boolean isSupportCallAssignmentMatch (StudentInstructionalSupportCall studentSupportCall, InstructionalSupportAssignment supportAssignment) {
+		if (studentSupportCall.isCollectAssociateInstructorPreferences()) {
+			if (supportAssignment.getAppointmentType().equals("associateInstructor")) {
+				return true;
+			}
+		}
+
+		if (studentSupportCall.isCollectReaderPreferences()) {
+			if (supportAssignment.getAppointmentType().equals("reader")) {
+				return true;
+			}
+		}
+
+		if (studentSupportCall.isCollectTeachingAssistantPreferences()) {
+			if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private boolean isLocked(long sectionGroupId) {

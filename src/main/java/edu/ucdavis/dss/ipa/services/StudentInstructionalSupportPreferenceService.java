@@ -13,7 +13,9 @@ public interface StudentInstructionalSupportPreferenceService {
      */
     List<Long> updatePriorities(List<Long> studentInstructionalSupportPreferenceIds);
 
-    StudentInstructionalSupportPreference create (long instructionalSupportStaffId, long sectionGroupId, String type, String comment);
+    StudentInstructionalSupportPreference create (long instructionalSupportStaffId, long supportCallId, long sectionGroupId, String type, String comment);
 
     void delete(Long studentInstructionalSupportPreferenceId);
+
+    List<StudentInstructionalSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId);
 }

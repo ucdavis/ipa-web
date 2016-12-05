@@ -108,4 +108,26 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
 
         return instructionalSupportAssignments;
     }
+
+    /**
+     * Returns support assignments assigned to the specified support staff.
+     * @param scheduleId
+     * @param termCode
+     * @param supportStaffId
+     * @return
+     */
+    @Override
+    public List<InstructionalSupportAssignment> findByScheduleIdAndTermCodeAndSupportStaffId(long scheduleId, String termCode, long supportStaffId) {
+        List<InstructionalSupportAssignment> allSupportAssignments = this.findByScheduleIdAndTermCode(scheduleId, termCode);
+        List<InstructionalSupportAssignment> supportStaffAssignments = new ArrayList<>();
+
+        for (InstructionalSupportAssignment slotAssignment : allSupportAssignments) {
+            if (slotAssignment.getInstructionalSupportStaff() != null
+            && slotAssignment.getInstructionalSupportStaff().getId() == supportStaffId) {
+                supportStaffAssignments.add(slotAssignment);
+            }
+        }
+
+        return supportStaffAssignments;
+    }
 }

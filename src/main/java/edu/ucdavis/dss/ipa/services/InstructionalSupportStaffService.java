@@ -13,4 +13,6 @@ public interface InstructionalSupportStaffService {
     List<InstructionalSupportStaff> findActiveByWorkgroupId(long workgroupId);
 
     List<InstructionalSupportStaff> findActiveByWorkgroupIdAndRoleToken(long workgroupId, String studentMasters);
+
+    InstructionalSupportStaff findByLoginId(String loginId);
 }
