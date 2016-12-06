@@ -6,7 +6,9 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
@@ -109,6 +111,14 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
+        // Does the user have an associated instructionalSupportStaff entity?
+        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+
+        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        if (instructionalSupportStaff == null) {
+            return null;
+        }
+
         // Calculate termcode from shortTermCode
         String termCode = "";
 
@@ -119,10 +129,22 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         }
 
         StudentInstructionalSupportCall studentSupportCall = null;
+        StudentInstructionalSupportCallResponse studentSupportCallResponse = null;
 
+        // Ensure the scheduleId and termCode match, and that the support Call contains a studentSupportCallResponse for the current user
+        outerloop:
         for (StudentInstructionalSupportCall slotStudentInstructionalSupportCall : studentInstructionalSupportCallService.findByScheduleId(schedule.getId())) {
             if (slotStudentInstructionalSupportCall.getTermCode().equals(termCode)) {
-                studentSupportCall = slotStudentInstructionalSupportCall;
+
+                for (StudentInstructionalSupportCallResponse slotStudentInstructionalSupportCallResponse : slotStudentInstructionalSupportCall.getStudentInstructionalSupportCallResponses()) {
+                    if (slotStudentInstructionalSupportCallResponse.getInstructionalSupportStaffIdentification() == instructionalSupportStaff.getId() ) {
+                        studentSupportCallResponse = slotStudentInstructionalSupportCallResponse;
+                        studentSupportCall = slotStudentInstructionalSupportCall;
+
+                        break outerloop;
+                    }
+                }
+
             }
         }
 
@@ -131,6 +153,6 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<InstructionalSupportAssignment> instructionalSupportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences = studentInstructionalSupportPreferenceService.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCall.getId());
 
-        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, instructionalSupportAssignments, studentInstructionalSupportPreferences, schedule.getId(), supportStaffId, studentSupportCall);
+        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, instructionalSupportAssignments, studentInstructionalSupportPreferences, schedule.getId(), supportStaffId, studentSupportCall, studentSupportCallResponse);
     }
 }

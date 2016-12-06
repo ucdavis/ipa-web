@@ -9,7 +9,7 @@ public class InstructionalSupportCallStudentFormView {
     List<Course> courses;
     List<InstructionalSupportAssignment> instructionalSupportAssignments;
     List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
-
+    StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse;
     Long scheduleId;
     Long supportStaffId;
     StudentInstructionalSupportCall studentInstructionalSupportCall;
@@ -20,7 +20,8 @@ public class InstructionalSupportCallStudentFormView {
                                                List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
                                                Long scheduleId,
                                                Long supportStaffId,
-                                               StudentInstructionalSupportCall studentInstructionalSupportCall) {
+                                               StudentInstructionalSupportCall studentInstructionalSupportCall,
+                                               StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
@@ -28,6 +29,7 @@ public class InstructionalSupportCallStudentFormView {
         setSupportStaffId(supportStaffId);
         setStudentInstructionalSupportCall(studentInstructionalSupportCall);
         setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
+        setStudentInstructionalSupportCallResponse(studentInstructionalSupportCallResponse);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -84,5 +86,13 @@ public class InstructionalSupportCallStudentFormView {
 
     public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
         this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
+    }
+
+    public StudentInstructionalSupportCallResponse getStudentInstructionalSupportCallResponse() {
+        return studentInstructionalSupportCallResponse;
+    }
+
+    public void setStudentInstructionalSupportCallResponse(StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
+        this.studentInstructionalSupportCallResponse = studentInstructionalSupportCallResponse;
     }
 }

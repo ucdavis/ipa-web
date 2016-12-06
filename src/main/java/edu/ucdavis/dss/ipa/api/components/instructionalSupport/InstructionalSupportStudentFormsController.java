@@ -26,6 +26,7 @@ public class InstructionalSupportStudentFormsController {
     @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @Inject StudentInstructionalSupportPreferenceService studentInstructionalSupportPreferenceService;
+    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -48,6 +49,23 @@ public class InstructionalSupportStudentFormsController {
         InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
         return studentInstructionalSupportPreferenceService.create(instructionalSupportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
+    }
+
+    @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentSupportCallResponses/{studentSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public StudentInstructionalSupportCallResponse updateStudentSupportCallResponse(@PathVariable long studentSupportCallResponseId, @RequestBody StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponseDTO, HttpServletResponse httpResponse) {
+        StudentInstructionalSupportCallResponse originalSupportCallResponse = studentInstructionalSupportCallResponseService.findOneById(studentSupportCallResponseId);
+        Long workgroupId = originalSupportCallResponse.getStudentInstructionalSupportCall().getSchedule().getWorkgroup().getId();
+        //Authorizer.hasWorkgroupRoles(workgroupId, );
+
+        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+
+        originalSupportCallResponse.setGeneralComments(studentInstructionalSupportCallResponseDTO.getGeneralComments());
+        originalSupportCallResponse.setTeachingQualifications(studentInstructionalSupportCallResponseDTO.getTeachingQualifications());
+        originalSupportCallResponse.setSubmitted(studentInstructionalSupportCallResponseDTO.isSubmitted());
+
+        return studentInstructionalSupportCallResponseService.update(originalSupportCallResponse);
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")

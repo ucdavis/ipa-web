@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportPreference;
 import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,11 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     @Override
     public void delete(long studentInstructionalSupportCallResponseId) {
         studentInstructionalSupportCallResponseRepository.delete(studentInstructionalSupportCallResponseId);
+    }
+
+    @Override
+    public StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse) {
+        return studentInstructionalSupportCallResponseRepository.save(studentSupportCallResponse);
     }
 
     @Override
