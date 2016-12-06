@@ -114,6 +114,7 @@ public class AuthController {
                     .claim("expirationDate", expirationDate)
                     .setIssuedAt(new Date())
                     .signWith(SignatureAlgorithm.HS256, SettingsConfiguration.getJwtSigningKey()).compact();
+            securityDTO.setLoginId(loginId);
             securityDTO.setUserRoles(userRoles);
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
