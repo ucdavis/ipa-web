@@ -42,4 +42,5 @@ public interface UserService {
 	
 	void contact(@Valid User user, String messageBody, String subject);
 
+    void updateLastAccessed(User user);
 }

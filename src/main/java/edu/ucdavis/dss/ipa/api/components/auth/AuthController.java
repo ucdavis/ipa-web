@@ -99,15 +99,18 @@ public class AuthController {
                 userRoles = userRoleService.findByLoginId(loginId);
                 termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
                 user = userService.getOneByLoginId(loginId);
-
-                if (user == null) {
-                    throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
-                }
             }
+        }
+
+        if (user == null) {
+            throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
         }
 
         // May not be set if we need to redirect to CAS
         if(userRoles != null) {
+            // Update the user lastAccessed value
+            userService.updateLastAccessed(user);
+
             securityDTO.token = Jwts.builder().setSubject(loginId)
                     .claim("userRoles", userRoles)
                     .claim("loginId", loginId)

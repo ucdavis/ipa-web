@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -105,6 +106,13 @@ public class JpaUserService implements UserService {
 		}
 
 		Email.send(email, messageBody, subject);
+	}
+
+	@Override
+	public void updateLastAccessed(User user) {
+		if (user == null) { return; }
+		user.setLastAccessed(new Date());
+		this.save(user);
 	}
 
 	@Override
