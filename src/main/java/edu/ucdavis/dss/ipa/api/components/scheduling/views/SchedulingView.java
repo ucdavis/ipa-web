@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SchedulingView {
-	private List<SchedulingViewSectionGroup> sectionGroups = new ArrayList<>();
+	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Course> courses = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<>();
 	private List<Location> locations = new ArrayList<>();
@@ -20,7 +20,7 @@ public class SchedulingView {
 
 	public SchedulingView(
 			List<Course> courses,
-			List<SchedulingViewSectionGroup> sectionGroups,
+			List<SectionGroup> sectionGroups,
 			List<Tag> tags,
 			List<Location> locations,
 			List<Instructor> instructors,
@@ -42,11 +42,11 @@ public class SchedulingView {
 		setTeachingAssignments(teachingAssignments);
 	}
 
-	public List<SchedulingViewSectionGroup> getSectionGroups() {
+	public List<SectionGroup> getSectionGroups() {
 		return sectionGroups;
 	}
 
-	public void setSectionGroups(List<SchedulingViewSectionGroup> sectionGroups) {
+	public void setSectionGroups(List<SectionGroup> sectionGroups) {
 		this.sectionGroups = sectionGroups;
 	}
 
