@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface SchedulingViewFactory {
 
-	SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint);
+	SchedulingView createSchedulingView(long workgroupId, long year, String termCode);
 
     SchedulingViewSectionGroup createSchedulingViewSectionGroup(SectionGroup sectionGroup);
 
-    List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode, Boolean showDoNotPrint);
+    List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode);
 }

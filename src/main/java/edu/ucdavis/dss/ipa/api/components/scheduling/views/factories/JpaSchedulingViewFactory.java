@@ -22,22 +22,15 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject TermService termService;
 
 	@Override
-	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
+	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode) {
 		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
 		Term term = termService.getOneByTermCode(termCode);
 
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
-		List<SchedulingViewSectionGroup> sectionGroups = this.createSchedulingViewAllSectionGroups(workgroupId, year, termCode, showDoNotPrint);
-		List<Course> courses;
-		List<Activity> activities;
-		if (showDoNotPrint != null && showDoNotPrint) {
-			courses = courseService.findByWorkgroupIdAndYear(workgroupId, year);
-			activities = activityService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-		} else {
-			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-			activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-		}
+		List<SchedulingViewSectionGroup> sectionGroups = this.createSchedulingViewAllSectionGroups(workgroupId, year, termCode);
+		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
 		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term);
 	}
@@ -53,15 +46,10 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	}
 
 	@Override
-	public List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode, Boolean showDoNotPrint) {
+	public List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode) {
 		List<SchedulingViewSectionGroup> schedulingViewSectionGroups = new ArrayList<>();
 
-		List<SectionGroup> sectionGroups;
-		if (showDoNotPrint != null && showDoNotPrint) {
-			sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-		} else {
-			sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-		}
+		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
 		for (SectionGroup sectionGroup: sectionGroups) {
 			schedulingViewSectionGroups.add(this.createSchedulingViewSectionGroup(sectionGroup));

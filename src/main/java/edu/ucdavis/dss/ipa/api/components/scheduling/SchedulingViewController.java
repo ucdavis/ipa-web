@@ -39,12 +39,13 @@ public class SchedulingViewController {
      */
 	@RequestMapping(value = "/api/schedulingView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public SchedulingView showSchedulingView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
-										 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-										 HttpServletResponse httpResponse) {
+	public SchedulingView showSchedulingView(@PathVariable long workgroupId,
+											 @PathVariable long year,
+											 @PathVariable String termCode,
+											 HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-		return schedulingViewFactory.createSchedulingView(workgroupId, year, termCode, showDoNotPrint);
+		return schedulingViewFactory.createSchedulingView(workgroupId, year, termCode);
 	}
 
 	/**
@@ -79,12 +80,13 @@ public class SchedulingViewController {
 	 */
 	@RequestMapping(value = "/api/schedulingView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}/sectionGroupDetails", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public List<SchedulingViewSectionGroup> getAllSectionGroupDetails(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
-																	  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+	public List<SchedulingViewSectionGroup> getAllSectionGroupDetails(@PathVariable long workgroupId,
+																	  @PathVariable long year,
+																	  @PathVariable String termCode,
 																	  HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-		return schedulingViewFactory.createSchedulingViewAllSectionGroups(workgroupId, year, termCode, showDoNotPrint);
+		return schedulingViewFactory.createSchedulingViewAllSectionGroups(workgroupId, year, termCode);
 	}
 
     @RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
