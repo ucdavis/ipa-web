@@ -93,6 +93,11 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
+	public List<TeachingAssignment> findApprovedByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return teachingAssignmentRepository.findByScheduleWorkgroupIdAndScheduleYearAndTermCodeAndApprovedTrue(workgroupId, year, termCode);
+	}
+
+	@Override
 	public TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbatical(
 			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical) {
 

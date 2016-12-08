@@ -64,6 +64,11 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	}
 
 	@Override
+	public List<TeachingCallResponse> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		return this.teachingCallResponseRepository.findByTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearAndTermCode(workgroupId, year, termCode);
+	}
+
+	@Override
 	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(
 			Long teachingCallId, long instructorId, String termCode) {
 		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);

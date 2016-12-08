@@ -34,4 +34,6 @@ public interface TeachingAssignmentRepository extends CrudRepository<TeachingAss
 
 	TeachingAssignment findOneByScheduleAndInstructorAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
 			Schedule schedule, Instructor instructor, String termCode, String suggestedCourseNumber, String suggestedSubjectCode, String suggestedEffectiveTermCode);
+
+	List<TeachingAssignment> findByScheduleWorkgroupIdAndScheduleYearAndTermCodeAndApprovedTrue(long workgroupId, long year, String termCode);
 }

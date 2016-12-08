@@ -13,6 +13,10 @@ public class SchedulingView {
 	private List<Instructor> instructors = new ArrayList<>();
 	private List<Activity> activities = new ArrayList<>();
 	private Term term;
+	private List<Section> sections;
+	private List<TeachingCallResponse> teachingCallResponses;
+	private List<TeachingAssignment> teachingAssignments;
+
 
 	public SchedulingView(
 			List<Course> courses,
@@ -21,7 +25,10 @@ public class SchedulingView {
 			List<Location> locations,
 			List<Instructor> instructors,
 			List<Activity> activities,
-			Term term
+			Term term,
+			List<Section> sections,
+			List<TeachingCallResponse> teachingCallResponses,
+			List<TeachingAssignment> teachingAssignments
 	) {
 		setSectionGroups(sectionGroups);
 		setCourses(courses);
@@ -30,6 +37,9 @@ public class SchedulingView {
 		setInstructors(instructors);
 		setActivities(activities);
 		setTerm(term);
+		setSections(sections);
+		setTeachingCallResponses(teachingCallResponses);
+		setTeachingAssignments(teachingAssignments);
 	}
 
 	public List<SchedulingViewSectionGroup> getSectionGroups() {
@@ -86,5 +96,29 @@ public class SchedulingView {
 
 	public void setTerm(Term term) {
 		this.term = term;
+	}
+
+	public List<Section> getSections() {
+		return sections;
+	}
+
+	public void setSections(List<Section> sections) {
+		this.sections = sections;
+	}
+
+	public List<TeachingCallResponse> getTeachingCallResponses() {
+		return teachingCallResponses;
+	}
+
+	public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
+		this.teachingCallResponses = teachingCallResponses;
+	}
+
+	public List<TeachingAssignment> getTeachingAssignments() {
+		return teachingAssignments;
+	}
+
+	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+		this.teachingAssignments = teachingAssignments;
 	}
 }

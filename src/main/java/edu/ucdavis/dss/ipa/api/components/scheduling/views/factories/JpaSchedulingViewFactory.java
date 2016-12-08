@@ -13,9 +13,11 @@ import java.util.List;
 @Service
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
+	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
 	@Inject CourseService courseService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
+	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject UserRoleService userRoleService;
 	@Inject LocationService locationService;
 	@Inject TagService tagService;
@@ -26,13 +28,15 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
 		Term term = termService.getOneByTermCode(termCode);
-
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<SchedulingViewSectionGroup> sectionGroups = this.createSchedulingViewAllSectionGroups(workgroupId, year, termCode);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<Section> sections =sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findApprovedByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
-		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term);
+		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term, sections, teachingCallResponses, teachingAssignments);
 	}
 
 	@Override

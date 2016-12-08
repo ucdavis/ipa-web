@@ -26,4 +26,5 @@ public interface TeachingCallResponseRepository extends CrudRepository<TeachingC
     		@Param("sectionGroupId") long sectionGroupId,
 			@Param("termCode") String termCode);
 
+	List<TeachingCallResponse> findByTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearAndTermCode(long workgroupId, long year, String termCode);
 }
