@@ -28,15 +28,13 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		Term term = termService.getOneByTermCode(termCode);
 
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
-		List<SectionGroup> sectionGroups;
+		List<SchedulingViewSectionGroup> sectionGroups = this.createSchedulingViewAllSectionGroups(workgroupId, year, termCode, showDoNotPrint);
 		List<Course> courses;
 		List<Activity> activities;
 		if (showDoNotPrint != null && showDoNotPrint) {
-			sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 			courses = courseService.findByWorkgroupIdAndYear(workgroupId, year);
 			activities = activityService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		} else {
-			sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 			activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		}
