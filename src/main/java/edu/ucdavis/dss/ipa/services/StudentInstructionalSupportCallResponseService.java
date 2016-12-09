@@ -19,4 +19,6 @@ public interface StudentInstructionalSupportCallResponseService {
     StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse);
 
     List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
+
+    List<StudentInstructionalSupportCallResponse> findByScheduleIdAndTermCode(long id, String termCode);
 }

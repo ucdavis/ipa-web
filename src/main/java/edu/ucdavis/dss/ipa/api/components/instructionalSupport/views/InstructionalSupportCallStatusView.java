@@ -10,6 +10,7 @@ public class InstructionalSupportCallStatusView {
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
     List<StudentInstructionalSupportCall> studentSupportCalls;
+    List<InstructorInstructionalSupportCall> instructorSupportCalls;
     Long scheduleId;
 
     public InstructionalSupportCallStatusView(Long scheduleId,
@@ -17,7 +18,8 @@ public class InstructionalSupportCallStatusView {
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
-                                              List<StudentInstructionalSupportCall> studentSupportCalls) {
+                                              List<StudentInstructionalSupportCall> studentSupportCalls,
+                                              List<InstructorInstructionalSupportCall> instructorSupportCalls) {
 
         setScheduleId(scheduleId);
         setInstructionalSupportStaffList(instructionalSupportStaffList);
@@ -25,6 +27,7 @@ public class InstructionalSupportCallStatusView {
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
         setStudentSupportCalls(studentSupportCalls);
+        setInstructorSupportCalls(instructorSupportCalls);
     }
 
     public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
@@ -73,5 +76,13 @@ public class InstructionalSupportCallStatusView {
 
     public void setScheduleId(Long scheduleId) {
         this.scheduleId = scheduleId;
+    }
+
+    public List<InstructorInstructionalSupportCall> getInstructorSupportCalls() {
+        return instructorSupportCalls;
+    }
+
+    public void setInstructorSupportCalls(List<InstructorInstructionalSupportCall> instructorSupportCalls) {
+        this.instructorSupportCalls = instructorSupportCalls;
     }
 }

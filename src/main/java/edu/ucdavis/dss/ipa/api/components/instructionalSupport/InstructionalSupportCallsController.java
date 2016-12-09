@@ -54,9 +54,11 @@ public class InstructionalSupportCallsController {
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/instructorInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public InstructorInstructionalSupportCall addInstructorSupportCall(@PathVariable long scheduleId, @RequestBody InstructorInstructionalSupportCall instructorInstructionalSupportCall, HttpServletResponse httpResponse) {
-
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+        instructorInstructionalSupportCall.setSchedule(schedule);
 
         return instructorInstructionalSupportCallService.findOrCreate(instructorInstructionalSupportCall);
     }
