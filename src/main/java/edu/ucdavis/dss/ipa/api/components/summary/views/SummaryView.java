@@ -16,8 +16,8 @@ public class SummaryView {
     List<Term> terms = new ArrayList<>();
     List<StudentInstructionalSupportCall> studentSupportCalls;
     List<InstructorInstructionalSupportCall> instructorSupportCalls;
-    StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse;
-    InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse;
+    List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
+    List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses;
 
     public SummaryView(List<Course> courses,
                        List<SectionGroup> sectionGroups,
@@ -28,8 +28,8 @@ public class SummaryView {
                        List<Term> terms,
                        List<StudentInstructionalSupportCall> studentSupportCalls,
                        List<InstructorInstructionalSupportCall> instructorSupportCalls,
-                       StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse,
-                       InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
+                       List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
+                       List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -40,8 +40,8 @@ public class SummaryView {
         setTeachingCallReceipts(teachingCallReceipts);
         setStudentSupportCalls(studentSupportCalls);
         setInstructorSupportCalls(instructorSupportCalls);
-        setStudentInstructionalSupportCallResponse(studentInstructionalSupportCallResponse);
-        setInstructorInstructionalSupportCallResponse(instructorInstructionalSupportCallResponse);
+        setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+        setInstructorInstructionalSupportCallResponses(instructorInstructionalSupportCallResponses);
     }
 
     public List<Term> getTerms() { return this.terms; }
@@ -113,19 +113,19 @@ public class SummaryView {
         this.instructorSupportCalls = instructorSupportCalls;
     }
 
-    public StudentInstructionalSupportCallResponse getStudentInstructionalSupportCallResponse() {
-        return studentInstructionalSupportCallResponse;
+    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
+        return studentInstructionalSupportCallResponses;
     }
 
-    public void setStudentInstructionalSupportCallResponse(StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
-        this.studentInstructionalSupportCallResponse = studentInstructionalSupportCallResponse;
+    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
+        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
     }
 
-    public InstructorInstructionalSupportCallResponse getInstructorInstructionalSupportCallResponse() {
-        return instructorInstructionalSupportCallResponse;
+    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
+        return instructorInstructionalSupportCallResponses;
     }
 
-    public void setInstructorInstructionalSupportCallResponse(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
-        this.instructorInstructionalSupportCallResponse = instructorInstructionalSupportCallResponse;
+    public void setInstructorInstructionalSupportCallResponses(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
+        this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
     }
 }

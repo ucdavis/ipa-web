@@ -18,5 +18,5 @@ public interface StudentInstructionalSupportCallResponseService {
 
     StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse);
 
-    StudentInstructionalSupportCallResponse findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
+    List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 }

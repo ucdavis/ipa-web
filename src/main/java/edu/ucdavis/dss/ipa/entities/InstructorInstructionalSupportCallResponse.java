@@ -80,7 +80,7 @@ public class InstructorInstructionalSupportCallResponse implements Serializable 
     }
 
     public void setSubmitted(boolean submitted) {
-        submitted = submitted;
+        this.submitted = submitted;
     }
 
     @Column (nullable = false)
@@ -97,6 +97,16 @@ public class InstructorInstructionalSupportCallResponse implements Serializable 
     public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorSupportCallId")
+    @Transient
+    public long getInstructorInstructionalSupportCallIdentification() {
+        if(instructorInstructionalSupportCall != null) {
+            return instructorInstructionalSupportCall.getId();
         } else {
             return 0;
         }

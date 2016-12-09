@@ -93,12 +93,12 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
         // Get student support Calls
         List<StudentInstructionalSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
-        StudentInstructionalSupportCallResponse studentSupportCallResponse = studentInstructionalSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
+        List<StudentInstructionalSupportCallResponse> studentSupportCallResponses = studentInstructionalSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
 
         // Get instructor support Calls
         List<InstructorInstructionalSupportCall> instructorSupportCalls = instructorInstructionalSupportCallService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
-        InstructorInstructionalSupportCallResponse instructorSupportCallResponse = instructorInstructionalSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+        List<InstructorInstructionalSupportCallResponse> instructorSupportCallResponses = instructorInstructionalSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCalls, instructorSupportCalls, studentSupportCallResponse, instructorSupportCallResponse);
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCalls, instructorSupportCalls, studentSupportCallResponses, instructorSupportCallResponses);
     }
 }

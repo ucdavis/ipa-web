@@ -81,7 +81,7 @@ public class StudentInstructionalSupportCallResponse implements Serializable {
     }
 
     public void setSubmitted(boolean submitted) {
-        submitted = submitted;
+        this.submitted = submitted;
     }
 
     @Column (nullable = false)
@@ -100,6 +100,16 @@ public class StudentInstructionalSupportCallResponse implements Serializable {
 
     public void setTeachingQualifications(String teachingQualifications) {
         this.teachingQualifications = teachingQualifications;
+    }
+
+    @JsonProperty("studentSupportCallId")
+    @Transient
+    public long getStudentInstructionalSupportCallIdentification() {
+        if(studentInstructionalSupportCall != null) {
+            return studentInstructionalSupportCall.getId();
+        } else {
+            return 0;
+        }
     }
 
     @JsonProperty("instructionalSupportStaffId")

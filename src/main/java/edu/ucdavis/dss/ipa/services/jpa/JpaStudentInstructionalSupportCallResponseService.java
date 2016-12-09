@@ -49,16 +49,17 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
-    public StudentInstructionalSupportCallResponse findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId) {
+    public List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId) {
         List<StudentInstructionalSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
+        List<StudentInstructionalSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
 
         for (StudentInstructionalSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
             if (supportCallResponse.getInstructionalSupportStaffIdentification() == supportStaffId) {
-                return supportCallResponse;
+                filteredSupportCallResponses.add(supportCallResponse);
             }
         }
 
-        return null;
+        return filteredSupportCallResponses;
     }
 
     @Override

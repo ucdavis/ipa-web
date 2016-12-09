@@ -44,16 +44,17 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
     }
 
     @Override
-    public InstructorInstructionalSupportCallResponse findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
+    public List<InstructorInstructionalSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
         List<InstructorInstructionalSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
+        List<InstructorInstructionalSupportCallResponse> filtereSupportCallResponses = new ArrayList<>();
 
         for (InstructorInstructionalSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
             if (supportCallResponse.getInstructorIdentification() == instructorId) {
-                return supportCallResponse;
+                filtereSupportCallResponses.add(supportCallResponse);
             }
         }
 
-        return null;
+        return filtereSupportCallResponses;
     }
 
     @Override
