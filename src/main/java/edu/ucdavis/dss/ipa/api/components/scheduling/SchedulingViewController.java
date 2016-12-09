@@ -48,47 +48,6 @@ public class SchedulingViewController {
 		return schedulingViewFactory.createSchedulingView(workgroupId, year, termCode);
 	}
 
-	/**
-	 * Delivers sectionGroup details children including sections and their child activities
-	 *
-	 * @param sectionGroupId
-	 * @param httpResponse
-	 * @return
-	 */
-	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}", method = RequestMethod.GET, produces="application/json")
-	@ResponseBody
-	public SchedulingViewSectionGroup getSectionGroupDetails(@PathVariable long sectionGroupId,
-															 HttpServletResponse httpResponse) {
-		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-		if (sectionGroup == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
-		}
-		Authorizer.hasWorkgroupRoles(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner", "reviewer");
-
-		return schedulingViewFactory.createSchedulingViewSectionGroup(sectionGroup);
-	}
-
-	/**
-	 * Delivers all sectionGroup details for a given workgroup term, used in when the "Select all" option is toggled
-	 *
-	 * @param workgroupId
-	 * @param year
-	 * @param termCode
-	 * @param httpResponse
-	 * @return
-	 */
-	@RequestMapping(value = "/api/schedulingView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}/sectionGroupDetails", method = RequestMethod.GET, produces="application/json")
-	@ResponseBody
-	public List<SchedulingViewSectionGroup> getAllSectionGroupDetails(@PathVariable long workgroupId,
-																	  @PathVariable long year,
-																	  @PathVariable String termCode,
-																	  HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
-
-		return schedulingViewFactory.createSchedulingViewAllSectionGroups(workgroupId, year, termCode);
-	}
-
     @RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {

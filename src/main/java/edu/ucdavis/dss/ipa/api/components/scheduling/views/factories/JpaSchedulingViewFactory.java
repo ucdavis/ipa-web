@@ -39,27 +39,4 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term, sections, teachingCallResponses, teachingAssignments);
 	}
 
-	@Override
-	public SchedulingViewSectionGroup createSchedulingViewSectionGroup(SectionGroup sectionGroup) {
-		boolean IS_SHARED = true;
-		boolean IS_NOT_SHARED = false;
-		List<Activity> sharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_SHARED);
-		List<Activity> unSharedActivities = activityService.findBySectionGroupId(sectionGroup.getId(), IS_NOT_SHARED);
-		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findBySectionGroup(sectionGroup);
-		return new SchedulingViewSectionGroup(sectionGroup, sharedActivities, unSharedActivities, teachingCallResponses);
-	}
-
-	@Override
-	public List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode) {
-		List<SchedulingViewSectionGroup> schedulingViewSectionGroups = new ArrayList<>();
-
-		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-
-		for (SectionGroup sectionGroup: sectionGroups) {
-			schedulingViewSectionGroups.add(this.createSchedulingViewSectionGroup(sectionGroup));
-		}
-
-		return schedulingViewSectionGroups;
-	}
-
 }

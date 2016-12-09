@@ -10,7 +10,4 @@ public interface SchedulingViewFactory {
 
 	SchedulingView createSchedulingView(long workgroupId, long year, String termCode);
 
-    SchedulingViewSectionGroup createSchedulingViewSectionGroup(SectionGroup sectionGroup);
-
-    List<SchedulingViewSectionGroup> createSchedulingViewAllSectionGroups(long workgroupId, long year, String termCode);
 }
