@@ -90,6 +90,11 @@ public class SiteController {
 		// This tends to be long, so truncate it to character length of
 		// JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH.
 		String messageSubject = exception.get("message");
+
+		if (messageSubject == null) {
+			messageSubject = "";
+		}
+
 		if(messageSubject.length() > JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH) {
 			int wordBoundaryIndex = messageSubject.lastIndexOf(' ', JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH - 3);
 			if(wordBoundaryIndex == -1) {
