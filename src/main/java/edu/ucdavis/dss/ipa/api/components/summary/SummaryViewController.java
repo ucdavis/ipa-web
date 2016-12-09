@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.summary;
 
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
+import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
@@ -25,7 +26,7 @@ public class SummaryViewController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject WorkgroupService workgroupService;
-
+    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public SummaryView getInitialSummaryView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
@@ -42,7 +43,14 @@ public class SummaryViewController {
         if (instructor != null) {
             instructorId = instructor.getId();
         }
-        
-        return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId);
+
+        // Determine if user is an instructional support staff
+        long supportStaffId = 0;
+        InstructionalSupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        if (supportStaff != null) {
+            supportStaffId = supportStaff.getId();
+        }
+
+        return summaryViewFactory.createSummaryView(workgroupId, year, currentUser.getId(), instructorId, supportStaffId);
     }
 }

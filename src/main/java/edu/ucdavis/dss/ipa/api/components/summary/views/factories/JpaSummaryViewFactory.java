@@ -19,8 +19,14 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject TermService termService;
     @Inject InstructorService instructorService;
 
+    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
+
+    @Inject InstructorInstructionalSupportCallService instructorInstructionalSupportCallService;
+    @Inject InstructorInstructionalSupportCallResponseService instructorInstructionalSupportCallResponseService;
     @Override
-    public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId) {
+    public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId, long supportStaffId) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
         List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
@@ -85,6 +91,14 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             teachingCallReceipts = instructor.getTeachingCallReceipts();
         }
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms);
+        // Get student support Calls
+        List<StudentInstructionalSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
+        StudentInstructionalSupportCallResponse studentSupportCallResponse = studentInstructionalSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
+
+        // Get instructor support Calls
+        List<InstructorInstructionalSupportCall> instructorSupportCalls = instructorInstructionalSupportCallService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+        InstructorInstructionalSupportCallResponse instructorSupportCallResponse = instructorInstructionalSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCalls, instructorSupportCalls, studentSupportCallResponse, instructorSupportCallResponse);
     }
 }

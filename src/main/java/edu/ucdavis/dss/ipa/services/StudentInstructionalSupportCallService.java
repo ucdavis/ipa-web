@@ -13,4 +13,6 @@ public interface StudentInstructionalSupportCallService {
     List<StudentInstructionalSupportCall> findByScheduleId(long scheduleId);
 
     void delete(long studentInstructionalSupportCallId);
+
+    List<StudentInstructionalSupportCall> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 }

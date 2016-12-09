@@ -17,4 +17,6 @@ public interface StudentInstructionalSupportCallResponseService {
     void delete(long studentInstructionalSupportCallResponseId);
 
     StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse);
+
+    StudentInstructionalSupportCallResponse findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 }

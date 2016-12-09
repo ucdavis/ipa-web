@@ -22,8 +22,7 @@ public class InstructorInstructionalSupportPreference implements Serializable {
     private SectionGroup sectionGroup;
     private InstructionalSupportStaff instructionalSupportStaff;
     private Instructor instructor;
-    private String type, comment;
-    private long order;
+    private long priority;
     private InstructorInstructionalSupportCall instructorInstructionalSupportCall;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,30 +72,6 @@ public class InstructorInstructionalSupportPreference implements Serializable {
         this.instructor = instructor;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public long getOrder() {
-        return order;
-    }
-
-    public void setOrder(long order) {
-        this.order = order;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "InstructorInstructionalSupportCallId", nullable = false)
     @NotNull
@@ -137,5 +112,13 @@ public class InstructorInstructionalSupportPreference implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    public long getPriority() {
+        return priority;
+    }
+
+    public void setPriority(long priority) {
+        this.priority = priority;
     }
 }

@@ -71,6 +71,23 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
         studentInstructionalSupportCallRepository.delete(studentInstructionalSupportCallId);
     }
 
+    @Override
+    public List<StudentInstructionalSupportCall> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId) {
+        List<StudentInstructionalSupportCall> scheduleSupportCalls = this.findByScheduleId(scheduleId);
+        List<StudentInstructionalSupportCall> filteredSupportCalls = new ArrayList<>();
+
+        for (StudentInstructionalSupportCall studentSupportCall : scheduleSupportCalls) {
+            for (StudentInstructionalSupportCallResponse studentSupportCallResponse : studentSupportCall.getStudentInstructionalSupportCallResponses()) {
+                if (studentSupportCallResponse.getInstructionalSupportStaffIdentification() == supportStaffId) {
+                    filteredSupportCalls.add(studentSupportCall);
+                    break;
+                }
+            }
+        }
+
+        return filteredSupportCalls;
+    }
+
     private StudentInstructionalSupportCall create (StudentInstructionalSupportCall studentInstructionalSupportCall) {
 
         // Create StartDate

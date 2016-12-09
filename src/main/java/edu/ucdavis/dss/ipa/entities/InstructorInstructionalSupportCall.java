@@ -29,12 +29,12 @@ import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallD
 @JsonDeserialize(using = InstructorInstructionalSupportCallDeserializer.class)
 public class InstructorInstructionalSupportCall implements Serializable {
     private long id;
-    private int minimumNumberOfPreferences;
     private Schedule schedule;
     private String message, termCode;
     private Date startDate, dueDate;
     private boolean sendEmails, AllowSubmissionAfterDueDate;
-    private List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponse = new ArrayList<>();
+    private List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses = new ArrayList<>();
+    private List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -130,22 +130,23 @@ public class InstructorInstructionalSupportCall implements Serializable {
         }
     }
 
-    @JsonProperty
-    public int getMinimumNumberOfPreferences() {
-        return minimumNumberOfPreferences;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall")
+    @JsonIgnore
+    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
+        return instructorInstructionalSupportCallResponses;
     }
 
-    public void setMinimumNumberOfPreferences(int minimumNumberOfPreferences) {
-        this.minimumNumberOfPreferences = minimumNumberOfPreferences;
+    public void setInstructorInstructionalSupportCallResponses(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
+        this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall")
     @JsonIgnore
-    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponse() {
-        return instructorInstructionalSupportCallResponse;
+    public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
+        return instructorInstructionalSupportPreferences;
     }
 
-    public void setInstructorInstructionalSupportCallResponse(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponse) {
-        this.instructorInstructionalSupportCallResponse = instructorInstructionalSupportCallResponse;
+    public void setInstructorInstructionalSupportPreferences(List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences) {
+        this.instructorInstructionalSupportPreferences = instructorInstructionalSupportPreferences;
     }
 }

@@ -63,10 +63,6 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
             instructorInstructionalSupportCall.setTermCode(node.get("termCode").textValue());
         }
 
-        if (node.has("minimumNumberOfPreferences")) {
-            instructorInstructionalSupportCall.setMinimumNumberOfPreferences(Integer.valueOf(node.get("minimumNumberOfPreferences").textValue()));
-        }
-
         if (node.has("sendEmails")) {
             instructorInstructionalSupportCall.setSendEmails(node.get("sendEmails").booleanValue());
         }

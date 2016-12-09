@@ -14,6 +14,10 @@ public class SummaryView {
     List<TeachingAssignment> teachingAssignments = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<Term> terms = new ArrayList<>();
+    List<StudentInstructionalSupportCall> studentSupportCalls;
+    List<InstructorInstructionalSupportCall> instructorSupportCalls;
+    StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse;
+    InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse;
 
     public SummaryView(List<Course> courses,
                        List<SectionGroup> sectionGroups,
@@ -21,7 +25,11 @@ public class SummaryView {
                        List<Activity> activities,
                        List<TeachingAssignment> teachingAssignments,
                        List<TeachingCallReceipt> teachingCallReceipts,
-                       List<Term> terms) {
+                       List<Term> terms,
+                       List<StudentInstructionalSupportCall> studentSupportCalls,
+                       List<InstructorInstructionalSupportCall> instructorSupportCalls,
+                       StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse,
+                       InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -30,6 +38,10 @@ public class SummaryView {
         setTeachingAssignments(teachingAssignments);
         setTerms(terms);
         setTeachingCallReceipts(teachingCallReceipts);
+        setStudentSupportCalls(studentSupportCalls);
+        setInstructorSupportCalls(instructorSupportCalls);
+        setStudentInstructionalSupportCallResponse(studentInstructionalSupportCallResponse);
+        setInstructorInstructionalSupportCallResponse(instructorInstructionalSupportCallResponse);
     }
 
     public List<Term> getTerms() { return this.terms; }
@@ -83,5 +95,37 @@ public class SummaryView {
 
     public void setTeachingCallReceipts(List<TeachingCallReceipt> teachingCallReceipts) {
         this.teachingCallReceipts = teachingCallReceipts;
+    }
+
+    public List<StudentInstructionalSupportCall> getStudentSupportCalls() {
+        return studentSupportCalls;
+    }
+
+    public void setStudentSupportCalls(List<StudentInstructionalSupportCall> studentSupportCalls) {
+        this.studentSupportCalls = studentSupportCalls;
+    }
+
+    public List<InstructorInstructionalSupportCall> getInstructorSupportCalls() {
+        return instructorSupportCalls;
+    }
+
+    public void setInstructorSupportCalls(List<InstructorInstructionalSupportCall> instructorSupportCalls) {
+        this.instructorSupportCalls = instructorSupportCalls;
+    }
+
+    public StudentInstructionalSupportCallResponse getStudentInstructionalSupportCallResponse() {
+        return studentInstructionalSupportCallResponse;
+    }
+
+    public void setStudentInstructionalSupportCallResponse(StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
+        this.studentInstructionalSupportCallResponse = studentInstructionalSupportCallResponse;
+    }
+
+    public InstructorInstructionalSupportCallResponse getInstructorInstructionalSupportCallResponse() {
+        return instructorInstructionalSupportCallResponse;
+    }
+
+    public void setInstructorInstructionalSupportCallResponse(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
+        this.instructorInstructionalSupportCallResponse = instructorInstructionalSupportCallResponse;
     }
 }
