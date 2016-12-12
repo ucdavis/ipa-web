@@ -31,7 +31,7 @@ public class SectionGroup implements Serializable {
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
-	private int PlannedSeats;
+	private Integer PlannedSeats;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,12 +107,13 @@ public class SectionGroup implements Serializable {
 		this.termCode = termCode;
 	}
 
+	@Column(name = "PlannedSeats", nullable = true)
 	@JsonProperty
-	public int getPlannedSeats() {
+	public Integer getPlannedSeats() {
 		return PlannedSeats;
 	}
 
-	public void setPlannedSeats(int plannedSeats) {
+	public void setPlannedSeats(Integer plannedSeats) {
 		PlannedSeats = plannedSeats;
 	}
 

@@ -36,7 +36,7 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 			sg.setTermCode(node.get("termCode").textValue());
 		}
 
-		if (node.has("plannedSeats")) {
+		if (node.has("plannedSeats") && node.hasNonNull("plannedSeats")) {
 			sg.setPlannedSeats(node.get("plannedSeats").intValue());
 		}
 
