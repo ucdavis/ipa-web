@@ -10,10 +10,8 @@ import edu.ucdavis.dss.ipa.repositories.CourseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 
 @Service
@@ -113,12 +111,23 @@ public class JpaCourseService implements CourseService {
 
 	@Override
 	public Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule) {
+			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData) {
 
 		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
 				subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule);
 
 		if (course == null) {
+			List<Tag> tags = new ArrayList<>();
+			// Get the meta data (title, tags) from previous offerings if any
+			if (copyMetaData) {
+				Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+						subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule.getWorkgroup().getId());
+				if (matchingCourse != null) {
+					title = matchingCourse.getTitle();
+					tags.addAll(matchingCourse.getTags());
+				}
+			}
+
 			course = new Course();
 			course.setSubjectCode(subjectCode);
 			course.setCourseNumber(courseNumber);
@@ -126,6 +135,7 @@ public class JpaCourseService implements CourseService {
 			course.setTitle(title);
 			course.setEffectiveTermCode(effectiveTermCode);
 			course.setSchedule(schedule);
+			course.setTags(tags);
 			courseRepository.save(course);
 		}
 

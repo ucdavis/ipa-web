@@ -12,7 +12,6 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 
@@ -20,8 +19,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,7 +261,8 @@ public class CourseViewController {
 					sectionGroupImport.getSequencePattern(),
 					sectionGroupImport.getTitle(),
 					sectionGroupImport.getEffectiveTermCode(),
-					schedule
+					schedule,
+					true
 			);
 
 			SectionGroup sectionGroup = new SectionGroup();

@@ -44,4 +44,21 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
 
     Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
             String subjectCode, String courseNumber, String sequencePattern, String effectiveTermCode, Schedule schedule);
+
+    @Query( value = " SELECT c.*" +
+            " FROM Courses c, Courses_has_Tags t, Schedules s" +
+            " WHERE t.CourseId = c.Id" +
+            " AND c.ScheduleId = s.Id" +
+            " AND s.WorkgroupId = :workgroupId" +
+            " AND c.subjectCode = :subjectCode" +
+            " AND c.courseNumber = :courseNumber" +
+            " AND c.sequencePattern = :sequencePattern" +
+            " AND c.effectiveTermCode = :effectiveTermCode" +
+            " ORDER BY s.year DESC LIMIT 1", nativeQuery = true)
+    Course findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+            @Param("subjectCode") String subjectCode,
+            @Param("courseNumber") String courseNumber,
+            @Param("sequencePattern") String sequencePattern,
+            @Param("effectiveTermCode") String effectiveTermCode,
+            @Param("workgroupId") long workgroupId);
 }

@@ -29,5 +29,5 @@ public interface CourseService {
 	List<Course> findBySubjectCodeAndCourseNumberAndScheduleId(String subjectCode, String courseNumber, long id);
 
 	Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule);
+			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
 }
