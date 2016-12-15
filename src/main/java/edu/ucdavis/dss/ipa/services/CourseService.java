@@ -30,4 +30,6 @@ public interface CourseService {
 
 	Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
+
+	Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule);
 }

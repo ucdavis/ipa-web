@@ -142,4 +142,27 @@ public class JpaCourseService implements CourseService {
 		return course;
 	}
 
+	@Override
+	public Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule) {
+		if (course == null || schedule == null) { return null; }
+
+		List<Tag> tags = new ArrayList<>();
+		Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+				course.getSubjectCode(),
+				course.getCourseNumber(),
+				course.getSequencePattern(),
+				course.getEffectiveTermCode(),
+				schedule.getWorkgroup().getId());
+
+		if (matchingCourse != null) {
+			course.setTitle(matchingCourse.getTitle());
+			tags.addAll(matchingCourse.getTags());
+		}
+
+		course.setSchedule(schedule);
+		course.setTags(tags);
+
+		return this.save(course);
+	}
+
 }

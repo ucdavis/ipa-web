@@ -147,9 +147,10 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		if (schedule != null) {
-			course.setSchedule(schedule);
-			return this.courseService.save(course);
+		Course newCourse = courseService.copyMetaDataAndAddToSchedule(course, schedule);
+
+		if (newCourse != null) {
+			return newCourse;
 		} else {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
