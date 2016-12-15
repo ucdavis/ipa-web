@@ -25,6 +25,8 @@ public class ReportViewController {
 	@Inject InstructorService instructorService;
 	@Inject ActivityService activityService;
 	@Inject SyncActionService syncActionService;
+	@Inject UserService userService;
+	@Inject UserRoleService userRoleService;
 
 	/**
 	 * Delivers the available termStates for the initial report form.
@@ -103,9 +105,21 @@ public class ReportViewController {
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Instructor instructorToAssign = instructorService.getOneByLoginId(instructor.getLoginId());
+
+		// In case the instructor is not in IPA yet
 		if (instructorToAssign == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
+			// Get the user info from DW
+			User user = userService.findOrCreateByLoginId(instructor.getLoginId());
+			if (user == null) {
+				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+				return null;
+			}
+
+			// Add the "senateInstructor" role to the new user (This will also create the instructor)
+			userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(
+						instructor.getLoginId(), workgroup.getId(), "senateInstructor");
+
+			instructorToAssign = instructorService.getOneByLoginId(instructor.getLoginId());
 		}
 
 		TeachingAssignment assignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);

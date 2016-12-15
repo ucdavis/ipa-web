@@ -44,6 +44,10 @@ public class InstructorDeserializer extends JsonDeserializer<Object> {
 			instructor.setLoginId(node.get("loginId").textValue());
 		}
 
+		if (node.has("ucdStudentSID")) {
+			instructor.setUcdStudentSID(node.get("ucdStudentSID").textValue());
+		}
+
 		return instructor;
 	}
 
