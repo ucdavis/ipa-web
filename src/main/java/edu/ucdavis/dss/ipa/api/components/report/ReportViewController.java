@@ -88,7 +88,15 @@ public class ReportViewController {
 			originalSection.setSeats(section.getSeats());
 		}
 
-		return sectionService.save(originalSection);
+		originalSection = sectionService.save(originalSection);
+
+		if (originalSection == null){
+		    // Section is locked
+            httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            return null;
+        } else {
+		    return originalSection;
+        }
 	}
 
 	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/instructors", method = RequestMethod.POST, produces = "application/json")
