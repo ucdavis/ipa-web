@@ -104,6 +104,7 @@ public class CourseViewController {
 
 		if (originalSectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
 		}
 
 		Workgroup workgroup = originalSectionGroup.getCourse().getSchedule().getWorkgroup();
@@ -117,6 +118,12 @@ public class CourseViewController {
 	public void deleteCourse(@PathVariable long courseId, HttpServletResponse httpResponse) {
 		// TODO: Consider how we can improve the authorizer
 		Course course = courseService.getOneById(courseId);
+
+		if (course == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+		}
+
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
