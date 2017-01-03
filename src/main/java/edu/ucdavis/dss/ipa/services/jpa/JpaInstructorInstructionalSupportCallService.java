@@ -1,10 +1,13 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 
+import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCall;
 import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCallResponse;
 import edu.ucdavis.dss.ipa.repositories.InstructorInstructionalSupportCallRepository;
+import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallService;
+import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -15,6 +18,8 @@ import java.util.List;
 public class JpaInstructorInstructionalSupportCallService implements InstructorInstructionalSupportCallService {
 
     @Inject InstructorInstructionalSupportCallRepository instructorInstructionalSupportCallRepository;
+    @Inject InstructorService instructorService;
+    @Inject InstructorInstructionalSupportCallResponseService instructorInstructionalSupportCallResponseService;
 
     @Override
     public InstructorInstructionalSupportCall findOneById(long instructorInstructionalSupportCallId) {
@@ -23,7 +28,32 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
 
     @Override
     public InstructorInstructionalSupportCall findOrCreate(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
-        return this.create(instructorInstructionalSupportCall);
+        // Extract the supportStaffIds
+        List<Long> instructorIds = new ArrayList<>();
+
+        for (InstructorInstructionalSupportCallResponse supportCallResponse : instructorInstructionalSupportCall.getInstructorInstructionalSupportCallResponses()) {
+            Long instructorId = supportCallResponse.getInstructor().getId();
+
+            instructorIds.add(instructorId);
+        }
+
+        // Make the supportCall
+        InstructorInstructionalSupportCall supportCall = this.create(instructorInstructionalSupportCall);
+
+        // Make supportCallResponses
+        List<InstructorInstructionalSupportCallResponse> supportCallResponses = new ArrayList<>();
+
+        for (Long instructorId : instructorIds) {
+            Instructor instructor = instructorService.getOneById(instructorId);
+            InstructorInstructionalSupportCallResponse supportCallResponse = instructorInstructionalSupportCallResponseService.create(instructorInstructionalSupportCall, instructor);
+
+            supportCallResponses.add(supportCallResponse);
+        }
+
+        // Tie the supportCallResponses to the new SupportCall
+        instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(supportCallResponses);
+
+        return instructorInstructionalSupportCall;
     }
 
     @Override

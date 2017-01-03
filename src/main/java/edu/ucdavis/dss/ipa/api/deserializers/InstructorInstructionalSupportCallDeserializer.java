@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCallResponse;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 import java.util.Date;
+import java.util.List;
 
 public class InstructorInstructionalSupportCallDeserializer extends JsonDeserializer<Object> {
 
@@ -93,14 +95,27 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
         if (node.has("collectAssociateInstructorPreferences")) {
             instructorInstructionalSupportCall.setSendEmails(node.get("collectAssociateInstructorPreferences").booleanValue());
         }
+        if (node.has("participantPool")) {
 
-        if (node.has("instructors")) {
-            Instructor instructor = new Instructor();
-            if (node.get("instructors").get("id") != null) {
-                instructor.setId(node.get("instructor").get("id").longValue());
+            for (JsonNode objNode : node.get("participantPool")) {
+                // For each participant:
+                // 1) Create a new Instructor entity and a new supportCallResponse object
+                // 2) Assign the instructor to the supportCallResponse
+                // 3) Assign the supportCallResponse to the supportCall
+                // The controller can use these mostly filled in entities to figure what needs to be created as part of support call creation
+
+                InstructorInstructionalSupportCallResponse supportCallResponse = new InstructorInstructionalSupportCallResponse();
+                Instructor instructor = new Instructor();
+
+                instructor.setId(objNode.get("id").intValue());
+
+                supportCallResponse.setInstructor(instructor);
+
+                List<InstructorInstructionalSupportCallResponse> supportCallResponses = instructorInstructionalSupportCall.getInstructorInstructionalSupportCallResponses();
+                supportCallResponses.add(supportCallResponse);
+
+                instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(supportCallResponses);
             }
-
-           // instructor.setInstructor(instructor);
         }
 
         return instructorInstructionalSupportCall;
