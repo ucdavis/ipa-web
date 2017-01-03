@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class InstructionalSupportCallStatusView {
@@ -11,6 +11,8 @@ public class InstructionalSupportCallStatusView {
     List<Long> instructionalSupportIds;
     List<StudentInstructionalSupportCall> studentSupportCalls;
     List<InstructorInstructionalSupportCall> instructorSupportCalls;
+    List<Instructor> activeInstructors;
+    List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
 
     public InstructionalSupportCallStatusView(Long scheduleId,
@@ -19,7 +21,9 @@ public class InstructionalSupportCallStatusView {
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
                                               List<StudentInstructionalSupportCall> studentSupportCalls,
-                                              List<InstructorInstructionalSupportCall> instructorSupportCalls) {
+                                              List<InstructorInstructionalSupportCall> instructorSupportCalls,
+                                              List<Instructor> activeInstructors,
+                                              List<TeachingAssignment> teachingAssignments) {
 
         setScheduleId(scheduleId);
         setInstructionalSupportStaffList(instructionalSupportStaffList);
@@ -28,6 +32,8 @@ public class InstructionalSupportCallStatusView {
         setInstructionalSupportIds(instructionalSupportIds);
         setStudentSupportCalls(studentSupportCalls);
         setInstructorSupportCalls(instructorSupportCalls);
+        setActiveInstructors(activeInstructors);
+        setTeachingAssignments(teachingAssignments);
     }
 
     public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
@@ -84,5 +90,21 @@ public class InstructionalSupportCallStatusView {
 
     public void setInstructorSupportCalls(List<InstructorInstructionalSupportCall> instructorSupportCalls) {
         this.instructorSupportCalls = instructorSupportCalls;
+    }
+
+    public List<Instructor> getActiveInstructors() {
+        return activeInstructors;
+    }
+
+    public void setActiveInstructors(List<Instructor> activeInstructors) {
+        this.activeInstructors = activeInstructors;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
     }
 }

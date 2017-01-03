@@ -31,4 +31,6 @@ public interface InstructorService {
 	void removeOrphanedByLoginId(String loginId);
 
 	List<Instructor> findByScheduleId(long scheduleId);
+
+	List<Instructor> findActiveByWorkgroupId(long workgroupId);
 }

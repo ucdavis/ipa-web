@@ -93,6 +93,9 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<InstructionalSupportStaff> instructionalSupport = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
 
+        List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
+        List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
+
         for (InstructionalSupportStaff supportStaff : mastersStudents) {
             mastersStudentIds.add(supportStaff.getId());
         }
@@ -105,8 +108,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructionalSupportIds.add(supportStaff.getId());
         }
 
-
-        return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls, instructorInstructionalSupportCalls);
+        return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls, instructorInstructionalSupportCalls, activeInstructors, teachingAssignments);
     }
 
     @Override

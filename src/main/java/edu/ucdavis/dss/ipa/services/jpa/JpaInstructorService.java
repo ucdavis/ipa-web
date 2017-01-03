@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -146,4 +148,22 @@ public class JpaInstructorService implements InstructorService {
 		return uniqueInstructors;
 	}
 
+	public List<Instructor> findActiveByWorkgroupId(long workgroupId) {
+		List<Instructor> activeInstructors = new ArrayList<Instructor>();
+
+		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+		List<UserRole> userRoles = workgroup.getUserRoles();
+
+		for (UserRole userRole : userRoles) {
+			if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor")) {
+				String loginId = userRole.getUser().getLoginId();
+
+				Instructor slotInstructor = this.getOneByLoginId(loginId);
+				activeInstructors.add(slotInstructor);
+			}
+		}
+
+		return activeInstructors;
+	}
 }

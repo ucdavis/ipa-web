@@ -100,9 +100,11 @@ public class JpaSectionGroupService implements SectionGroupService {
 		List<SectionGroup> allSectionGroups = this.findByScheduleIdAndTermCode(scheduleId, termCode);
 		StudentInstructionalSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentSupportCallId);
 		List<InstructionalSupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
+
+		// List of sectionGroups that are valid options to be preferences
 		List<SectionGroup> filteredSectionGroups = new ArrayList<>();
 
-		// Loop over sectionGroups
+		// Loop over sectionGroups in schedule/term
 		for ( SectionGroup slotSectionGroup : allSectionGroups) {
 
 			for (InstructionalSupportAssignment slotSupportAssignment : supportAssignments) {
@@ -119,6 +121,12 @@ public class JpaSectionGroupService implements SectionGroupService {
 		return filteredSectionGroups;
 	}
 
+	/**
+	 * Returns true if the assignment is a type of interest to the support call
+	 * @param studentSupportCall
+	 * @param supportAssignment
+     * @return
+     */
 	private boolean isSupportCallAssignmentMatch (StudentInstructionalSupportCall studentSupportCall, InstructionalSupportAssignment supportAssignment) {
 		if (studentSupportCall.isCollectAssociateInstructorPreferences()) {
 			if (supportAssignment.getAppointmentType().equals("associateInstructor")) {
