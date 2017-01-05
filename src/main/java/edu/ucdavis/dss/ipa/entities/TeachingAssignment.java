@@ -24,6 +24,7 @@ public class TeachingAssignment implements Serializable {
 	private boolean buyout;
 	private boolean courseRelease;
 	private boolean sabbatical;
+	private boolean inResidence;
 	private boolean approved;
 	private boolean fromInstructor;
 	private String suggestedSubjectCode;
@@ -119,6 +120,15 @@ public class TeachingAssignment implements Serializable {
 
 	public void setSabbatical(boolean sabbatical) {
 		this.sabbatical = sabbatical;
+	}
+
+	@JsonProperty
+	public boolean isInResidence() {
+		return inResidence;
+	}
+
+	public void setInResidence(boolean inResidence) {
+		this.inResidence = inResidence;
 	}
 
 	@JsonProperty

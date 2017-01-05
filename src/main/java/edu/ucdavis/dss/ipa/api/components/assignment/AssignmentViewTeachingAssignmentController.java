@@ -35,6 +35,7 @@ public class AssignmentViewTeachingAssignmentController {
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false
+            && teachingAssignment.isInResidence() == false
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
@@ -69,6 +70,7 @@ public class AssignmentViewTeachingAssignmentController {
         // Handle non sectionGroup based preference
         if (teachingAssignment.isBuyout() == true
                 || teachingAssignment.isCourseRelease() == true
+                || teachingAssignment.isInResidence() == true
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
@@ -323,7 +325,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // Make a single teaching Preference if its a buyout/sab/release
-        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout()) {
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence()) {
 
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);

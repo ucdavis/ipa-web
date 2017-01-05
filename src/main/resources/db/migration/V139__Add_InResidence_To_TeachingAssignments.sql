@@ -1,0 +1,1 @@
+ALTER TABLE `TeachingAssignments` ADD COLUMN `InResidence` TINYINT(1) NOT NULL DEFAULT '0';
