@@ -55,8 +55,8 @@ public class AssignmentViewTeachingAssignmentController {
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // If a Teaching Assignment already exists, update it instead.
-        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbatical(
-                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical());
+        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
+                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence());
 
         if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
             existingTeachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
