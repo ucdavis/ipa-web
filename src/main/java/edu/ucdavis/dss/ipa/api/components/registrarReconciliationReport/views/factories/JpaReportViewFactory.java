@@ -1,10 +1,10 @@
-package edu.ucdavis.dss.ipa.api.components.report.views.factories;
+package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories;
 
 import edu.ucdavis.dss.dw.dto.DwSection;
-import edu.ucdavis.dss.ipa.api.components.report.views.ActivityDiffDto;
-import edu.ucdavis.dss.ipa.api.components.report.views.InstructorDiffDto;
-import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffDto;
-import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.ActivityDiffDto;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.InstructorDiffDto;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SyncAction;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;

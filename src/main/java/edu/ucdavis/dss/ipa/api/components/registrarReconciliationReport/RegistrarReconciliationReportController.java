@@ -1,7 +1,7 @@
-package edu.ucdavis.dss.ipa.api.components.report;
+package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport;
 
-import edu.ucdavis.dss.ipa.api.components.report.views.SectionDiffView;
-import edu.ucdavis.dss.ipa.api.components.report.views.factories.ReportViewFactory;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories.ReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
-public class ReportViewController {
+public class RegistrarReconciliationReportController {
 
 	@Inject ReportViewFactory reportViewFactory;
 	@Inject TermService termService;

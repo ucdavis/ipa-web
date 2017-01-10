@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.report.views;
+package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views;
 
 
 import org.javers.core.metamodel.annotation.DiffIgnore;

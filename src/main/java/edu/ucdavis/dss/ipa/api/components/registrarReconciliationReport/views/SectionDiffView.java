@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.report.views;
+package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views;
 
 import edu.ucdavis.dss.ipa.entities.SyncAction;
 import org.javers.core.diff.Change;
