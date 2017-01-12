@@ -48,7 +48,7 @@ public class CourseExcelView extends AbstractXlsView {
                 SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, term.getTermCode());
 
                 if (sectionGroup != null) {
-                    excelHeader.createCell(col).setCellValue(sectionGroup.getPlannedSeats());
+//                    excelHeader.createCell(col).setCellValue(sectionGroup.getPlannedSeats());
                 }
 
                 col++;

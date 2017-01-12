@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -35,4 +37,11 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
 
         return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors);
     }
+
+    @Override
+    public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode) {
+        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode);
+        return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);
+    }
+
 }
