@@ -76,7 +76,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
 
                         // Set Days
                         col = 6;
-                        excelHeader.createCell(col).setCellValue(activity.getDayIndicator());
+                        excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
 
                         // Set Start
                         if (activity.getStartTime() != null) {
@@ -121,7 +121,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         excelHeader.createCell(3).setCellValue("CRN");
         excelHeader.createCell(4).setCellValue("Seats");
         excelHeader.createCell(5).setCellValue("Activity");
-        excelHeader.createCell(6).setCellValue("Activity");
+        excelHeader.createCell(6).setCellValue("Days");
         excelHeader.createCell(7).setCellValue("Start");
         excelHeader.createCell(8).setCellValue("End");
         excelHeader.createCell(9).setCellValue("Location");

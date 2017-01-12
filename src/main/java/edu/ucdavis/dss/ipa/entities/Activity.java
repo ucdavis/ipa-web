@@ -115,6 +115,45 @@ public class Activity implements Serializable {
 		this.dayIndicator = dayIndicator;
 	}
 
+	@JsonIgnore
+	@Transient
+	public String getDayIndicatorDescription() {
+
+		String description = "";
+
+		for (int i = 0; i < this.dayIndicator.length(); i++) {
+			int intValue = this.dayIndicator.charAt(i) - '0';
+
+			if (1 == intValue) {
+				switch(i) {
+					case 0:
+						description += "U";
+						break;
+					case 1:
+						description += "M";
+						break;
+					case 2:
+						description += "T";
+						break;
+					case 3:
+						description += "W";
+						break;
+					case 4:
+						description += "R";
+						break;
+					case 5:
+						description += "F";
+						break;
+					case 6:
+						description += "S";
+						break;
+				}
+			}
+		}
+
+		return description;
+	}
+
 	@Basic
 	@Column(name = "ActivityState", unique = false, nullable = false)
 	@JsonProperty
@@ -310,6 +349,7 @@ public class Activity implements Serializable {
 		return null;
 	}
 
+	@JsonIgnore
 	@Transient
 	public String getActivityTypeCodeDescription() {
 		String description = null;
