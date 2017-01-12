@@ -22,6 +22,9 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String termCode = scheduleSummaryReportViewDTO.getTermCode();
+
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", "attachment; filename=ScheduleData.xls");
@@ -42,6 +45,10 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
             excelHeader.createCell(col).setCellValue(course.getShortDescription());
 
             for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                // Course will include sectionGroups from all terms in the year, but our view is scoped to a term
+                if (termCode.equals(sectionGroup.getTermCode())) {
+                    continue;
+                }
 
                 // Set Assigned column
                 col = 1;

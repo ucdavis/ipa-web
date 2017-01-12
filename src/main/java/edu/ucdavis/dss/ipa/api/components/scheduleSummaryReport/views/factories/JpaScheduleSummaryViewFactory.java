@@ -35,7 +35,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 
-        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors);
+        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, termCode);
     }
 
     @Override

@@ -12,19 +12,22 @@ public class ScheduleSummaryReportView {
 
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
+    String termCode;
 
     public ScheduleSummaryReportView(List<Course> courses,
                                      List<SectionGroup> sectionGroups,
                                      List<Section> sections,
                                      List<Activity> activities,
                                      List<TeachingAssignment> teachingAssignments,
-                                     List<Instructor> instructors) {
+                                     List<Instructor> instructors,
+                                     String termCode) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
         setActivities(activities);
         setTeachingAssignments(teachingAssignments);
         setInstructors(instructors);
+        setTermCode(termCode);
     }
 
     public List<Course> getCourses() {
@@ -73,5 +76,13 @@ public class ScheduleSummaryReportView {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
     }
 }
