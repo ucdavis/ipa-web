@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
@@ -88,6 +89,16 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public TeachingAssignment updateTeachingAssignment(@PathVariable long teachingAssignmentId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         TeachingAssignment originalTeachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
+
+        // Ensuring basic validity of request params
+        if (originalTeachingAssignment == null
+        || teachingAssignment.getInstructor() == null
+        || teachingAssignment.getSchedule() == null) {
+
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Schedule schedule = scheduleService.findById(originalTeachingAssignment.getSchedule().getId());
         Workgroup workgroup = schedule.getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
