@@ -91,9 +91,7 @@ public class AssignmentViewTeachingAssignmentController {
         TeachingAssignment originalTeachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
 
         // Ensuring basic validity of request params
-        if (originalTeachingAssignment == null
-        || teachingAssignment.getInstructor() == null
-        || teachingAssignment.getSchedule() == null) {
+        if (originalTeachingAssignment == null) {
 
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
