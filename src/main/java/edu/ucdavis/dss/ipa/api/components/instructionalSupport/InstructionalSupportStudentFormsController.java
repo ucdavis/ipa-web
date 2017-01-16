@@ -27,6 +27,7 @@ public class InstructionalSupportStudentFormsController {
     @Inject InstructionalSupportStaffService instructionalSupportStaffService;
     @Inject StudentInstructionalSupportPreferenceService studentInstructionalSupportPreferenceService;
     @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
+    @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -66,6 +67,20 @@ public class InstructionalSupportStudentFormsController {
         originalSupportCallResponse.setSubmitted(studentInstructionalSupportCallResponseDTO.isSubmitted());
 
         return studentInstructionalSupportCallResponseService.update(originalSupportCallResponse);
+    }
+
+    @RequestMapping(value = "/api/instructionalSupportStudentFormView/schedules/{scheduleId}/terms/{termCode}", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public List<Long> updatePreferencesOrder(@PathVariable long scheduleId, @PathVariable String termCode, @RequestBody List<Long> preferenceIdsParams, HttpServletResponse httpResponse) {
+        Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd");
+
+        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+
+        studentInstructionalSupportPreferenceService.updatePriorities(preferenceIdsParams);
+
+        return preferenceIdsParams;
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")

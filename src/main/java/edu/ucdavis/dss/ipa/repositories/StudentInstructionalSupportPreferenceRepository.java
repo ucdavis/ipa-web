@@ -16,4 +16,6 @@ public interface StudentInstructionalSupportPreferenceRepository extends CrudRep
     void deleteById(long studentInstructionalSupportPreferenceId);
 
     List<StudentInstructionalSupportPreference> findByInstructionalSupportStaffIdAndStudentInstructionalSupportCallId(long supportStaffId, long studentSupportCallId);
+
+    StudentInstructionalSupportPreference findOneById(long preferenceId);
 }

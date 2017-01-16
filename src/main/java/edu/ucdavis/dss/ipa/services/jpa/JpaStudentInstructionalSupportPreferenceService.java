@@ -23,8 +23,16 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
     }
 
     @Override
-    public List<Long> updatePriorities(List<Long> studentInstructionalSupportPreferenceIds) {
-        return null;
+    public List<Long> updatePriorities(List<Long> preferenceIds) {
+        for (int i = 0; i < preferenceIds.size(); i++) {
+            long preferenceId = preferenceIds.get(i);
+
+            StudentInstructionalSupportPreference preference = this.findById(preferenceId);
+            preference.setPriority(i+1);
+            this.save(preference);
+        }
+
+        return preferenceIds;
     }
 
     @Override
@@ -67,5 +75,9 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
         }
 
         return preferences;
+    }
+
+    private StudentInstructionalSupportPreference findById(long preferenceId) {
+        return studentInstructionalSupportPreferenceRepository.findOneById(preferenceId);
     }
 }
