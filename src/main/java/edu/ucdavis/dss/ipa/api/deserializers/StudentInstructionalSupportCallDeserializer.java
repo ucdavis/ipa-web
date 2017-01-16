@@ -90,15 +90,15 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
         if (node.has("collectEligibilityConfirmation")) {
             studentInstructionalSupportCall.setCollectEligibilityConfirmation(node.get("collectEligibilityConfirmation").booleanValue());
         }
-        if (node.has("collectTeachingAssistantPreferences")) {
-            studentInstructionalSupportCall.setCollectTeachingAssistantPreferences(node.get("collectTeachingAssistantPreferences").booleanValue());
+        if (node.has("collectTAPreferences")) {
+            studentInstructionalSupportCall.setCollectTeachingAssistantPreferences(node.get("collectTAPreferences").booleanValue());
         }
         if (node.has("collectReaderPreferences")) {
             studentInstructionalSupportCall.setCollectReaderPreferences(node.get("collectReaderPreferences").booleanValue());
         }
 
-        if (node.has("collectAssociateInstructorPreferences")) {
-            studentInstructionalSupportCall.setCollectAssociateInstructorPreferences(node.get("collectAssociateInstructorPreferences").booleanValue());
+        if (node.has("collectAIPreferences")) {
+            studentInstructionalSupportCall.setCollectAssociateInstructorPreferences(node.get("collectAIPreferences").booleanValue());
         }
 
         if (node.has("participantPool")) {
