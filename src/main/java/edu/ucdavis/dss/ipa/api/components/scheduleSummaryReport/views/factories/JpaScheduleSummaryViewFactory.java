@@ -25,17 +25,17 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject UserRoleService userRoleService;
 
     @Override
-    public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String termCode) {
+    public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
         List<Course> courses = schedule.getCourses();
-        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
-        List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
+        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
+        List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 
-        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, termCode);
+        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year);
     }
 
     @Override

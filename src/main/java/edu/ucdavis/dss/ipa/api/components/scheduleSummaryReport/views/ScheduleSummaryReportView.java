@@ -13,6 +13,7 @@ public class ScheduleSummaryReportView {
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
     String termCode;
+    Long year;
 
     public ScheduleSummaryReportView(List<Course> courses,
                                      List<SectionGroup> sectionGroups,
@@ -20,7 +21,8 @@ public class ScheduleSummaryReportView {
                                      List<Activity> activities,
                                      List<TeachingAssignment> teachingAssignments,
                                      List<Instructor> instructors,
-                                     String termCode) {
+                                     String termCode,
+                                     Long year) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -28,6 +30,7 @@ public class ScheduleSummaryReportView {
         setTeachingAssignments(teachingAssignments);
         setInstructors(instructors);
         setTermCode(termCode);
+        setYear(year);
     }
 
     public List<Course> getCourses() {
@@ -84,5 +87,13 @@ public class ScheduleSummaryReportView {
 
     public void setTermCode(String termCode) {
         this.termCode = termCode;
+    }
+
+    public Long getYear() {
+        return year;
+    }
+
+    public void setYear(Long year) {
+        this.year = year;
     }
 }

@@ -23,11 +23,21 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        String termCode = scheduleSummaryReportViewDTO.getTermCode();
+        String shortTermCode = scheduleSummaryReportViewDTO.getTermCode();
+        Long year = scheduleSummaryReportViewDTO.getYear();
+        String termCode = "";
+
+        if (Long.valueOf(shortTermCode) > 4) {
+            termCode = year + shortTermCode;
+        } else {
+            year = Long.valueOf(year) + 1;
+            termCode = year + shortTermCode;
+        }
+        String fileName = "attachment; filename=ScheduleData-" + termCode + ".xls";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=ScheduleData.xls");
+        response.setHeader("Content-Disposition", fileName);
 
         // Create sheet
         Sheet sheet = workbook.createSheet("Schedule");
