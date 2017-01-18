@@ -14,7 +14,8 @@ public class InstructionalSupportCallStatusView {
     List<Instructor> activeInstructors;
     List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
-
+    List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
+    List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses;
     public InstructionalSupportCallStatusView(Long scheduleId,
                                               List<InstructionalSupportStaff> instructionalSupportStaffList,
                                               List<Long> mastersStudentsIds,
@@ -23,8 +24,9 @@ public class InstructionalSupportCallStatusView {
                                               List<StudentInstructionalSupportCall> studentSupportCalls,
                                               List<InstructorInstructionalSupportCall> instructorSupportCalls,
                                               List<Instructor> activeInstructors,
-                                              List<TeachingAssignment> teachingAssignments) {
-
+                                              List<TeachingAssignment> teachingAssignments,
+                                              List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
+                                              List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
         setScheduleId(scheduleId);
         setInstructionalSupportStaffList(instructionalSupportStaffList);
         setMastersStudentIds(mastersStudentsIds);
@@ -34,6 +36,8 @@ public class InstructionalSupportCallStatusView {
         setInstructorSupportCalls(instructorSupportCalls);
         setActiveInstructors(activeInstructors);
         setTeachingAssignments(teachingAssignments);
+        setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+        setInstructorInstructionalSupportCallResponses(instructorInstructionalSupportCallResponses);
     }
 
     public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
@@ -106,5 +110,21 @@ public class InstructionalSupportCallStatusView {
 
     public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
         this.teachingAssignments = teachingAssignments;
+    }
+
+    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
+        return studentInstructionalSupportCallResponses;
+    }
+
+    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
+        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    }
+
+    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
+        return instructorInstructionalSupportCallResponses;
+    }
+
+    public void setInstructorInstructionalSupportCallResponses(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
+        this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
     }
 }

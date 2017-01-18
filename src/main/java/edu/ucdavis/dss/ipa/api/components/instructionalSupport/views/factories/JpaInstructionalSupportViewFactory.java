@@ -84,7 +84,19 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<UserRole> userRoles = workgroup.getUserRoles();
         List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
         List<StudentInstructionalSupportCall> studentInstructionalSupportCalls = studentInstructionalSupportCallService.findByScheduleId(schedule.getId());
+
+        List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = new ArrayList<>();
+        for (StudentInstructionalSupportCall supportCall : studentInstructionalSupportCalls) {
+            studentInstructionalSupportCallResponses.addAll(supportCall.getStudentInstructionalSupportCallResponses());
+        }
+
+
         List<InstructorInstructionalSupportCall> instructorInstructionalSupportCalls = instructorInstructionalSupportCallService.findByScheduleId(schedule.getId());
+
+        List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses = new ArrayList<>();
+        for (InstructorInstructionalSupportCall supportCall : instructorInstructionalSupportCalls) {
+            instructorInstructionalSupportCallResponses.addAll(supportCall.getInstructorInstructionalSupportCallResponses());
+        }
 
         List<InstructionalSupportStaff> mastersStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
@@ -108,7 +120,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructionalSupportIds.add(supportStaff.getId());
         }
 
-        return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls, instructorInstructionalSupportCalls, activeInstructors, teachingAssignments);
+        return new InstructionalSupportCallStatusView(schedule.getId(), instructionalSupportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentInstructionalSupportCalls, instructorInstructionalSupportCalls, activeInstructors, teachingAssignments, studentInstructionalSupportCallResponses, instructorInstructionalSupportCallResponses);
     }
 
     @Override
