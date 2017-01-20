@@ -88,4 +88,32 @@ public class InstructionalSupportCallsController {
 
         return studentInstructionalSupportCallId;
     }
+
+    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openStudentSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public Schedule openStudentSupportCallReview(@PathVariable long scheduleId, HttpServletResponse httpResponse) {
+
+
+        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+        schedule.setStudentSupportCallReviewOpen(true);
+
+        return scheduleService.saveSchedule(schedule);
+    }
+
+    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openInstructorSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public Schedule openInstructorSupportCallReview(@PathVariable long scheduleId, HttpServletResponse httpResponse) {
+
+
+        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+        schedule.setInstructorSupportCallReviewOpen(true);
+
+        return scheduleService.saveSchedule(schedule);
+    }
 }

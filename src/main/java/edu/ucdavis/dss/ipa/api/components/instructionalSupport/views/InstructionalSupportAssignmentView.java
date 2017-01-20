@@ -14,6 +14,7 @@ public class InstructionalSupportAssignmentView {
     List<Long> instructionalSupportIds;
     List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
     List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
+    Schedule schedule;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -23,7 +24,8 @@ public class InstructionalSupportAssignmentView {
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
                                               List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
-                                              List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
+                                              List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
+                                              Schedule schedule) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
@@ -33,6 +35,7 @@ public class InstructionalSupportAssignmentView {
         setInstructionalSupportIds(instructionalSupportIds);
         setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
         setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+        setSchedule(schedule);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -105,5 +108,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
         this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 }

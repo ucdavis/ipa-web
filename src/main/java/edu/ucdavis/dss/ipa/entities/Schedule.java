@@ -49,6 +49,8 @@ public class Schedule implements Serializable {
 	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+	private boolean StudentSupportCallReviewOpen;
+	private boolean InstructorSupportCallReviewOpen;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -152,5 +154,23 @@ public class Schedule implements Serializable {
 
 	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
 		this.teachingAssignments = teachingAssignments;
+	}
+
+	@JsonProperty
+	public boolean isStudentSupportCallReviewOpen() {
+		return StudentSupportCallReviewOpen;
+	}
+
+	public void setStudentSupportCallReviewOpen(boolean studentSupportCallReviewOpen) {
+		StudentSupportCallReviewOpen = studentSupportCallReviewOpen;
+	}
+
+	@JsonProperty
+	public boolean isInstructorSupportCallReviewOpen() {
+		return InstructorSupportCallReviewOpen;
+	}
+
+	public void setInstructorSupportCallReviewOpen(boolean instructorSupportCallReviewOpen) {
+		InstructorSupportCallReviewOpen = instructorSupportCallReviewOpen;
 	}
 }
