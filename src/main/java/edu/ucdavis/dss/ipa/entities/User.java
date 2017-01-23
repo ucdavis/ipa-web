@@ -30,6 +30,7 @@ public class User {
 	private String loginId, email, firstName, lastName, token;
 	private Date lastAccessed;
 	private List<UserRole> userRoles = new ArrayList<UserRole>(0);
+	private boolean placeholder;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -194,5 +195,14 @@ public class User {
 	@Override
 	public String toString() {
 		return String.format("User[id=%d,loginId=%s,email=%s,firstName=%s,lastName=%s]", this.getId(), this.getLoginId(), this.getEmail(), this.getFirstName(), this.getLastName());
+	}
+
+	@JsonProperty
+	public boolean isPlaceholder() {
+		return placeholder;
+	}
+
+	public void setPlaceholder(boolean placeholder) {
+		this.placeholder = placeholder;
 	}
 }
