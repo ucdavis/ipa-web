@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
+import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallInstructorFormView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
 import edu.ucdavis.dss.ipa.entities.*;
@@ -171,5 +172,90 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences = studentInstructionalSupportPreferenceService.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCall.getId());
 
         return new InstructionalSupportCallStudentFormView(sectionGroups, courses, instructionalSupportAssignments, studentInstructionalSupportPreferences, schedule.getId(), supportStaffId, studentSupportCall, studentSupportCallResponse);
+    }
+
+    @Override
+    public InstructionalSupportCallInstructorFormView createInstructorFormView(long workgroupId, long year, String shortTermCode, long instructorId) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        // Does the user have an associated instructor entity?
+        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+
+        Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
+        if (instructor == null) {
+            return null;
+        }
+
+        // Calculate termcode from shortTermCode
+        String termCode = "";
+
+        if (Long.valueOf(shortTermCode) >= 5) {
+            termCode = String.valueOf(year) + shortTermCode;
+        } else {
+            termCode = String.valueOf(year + 1) + shortTermCode;
+        }
+
+        InstructorInstructionalSupportCall instructorSupportCall = null;
+        InstructorInstructionalSupportCallResponse instructorSupportCallResponse = null;
+
+        // Set supportCall and supportCallResponse
+        // Ensure the scheduleId and termCode match, and that the support Call contains a studentSupportCallResponse for the current user
+        outerloop:
+        for (InstructorInstructionalSupportCall slotInstructorSupportCall : instructorInstructionalSupportCallService.findByScheduleId(schedule.getId())) {
+            if (slotInstructorSupportCall.getTermCode().equals(termCode)) {
+
+                for (InstructorInstructionalSupportCallResponse slotInstructorSupportCallResponse : slotInstructorSupportCall.getInstructorInstructionalSupportCallResponses()) {
+                    if (slotInstructorSupportCallResponse.getInstructorIdentification() == instructor.getId() ) {
+                        instructorSupportCallResponse = slotInstructorSupportCallResponse;
+                        instructorSupportCall = slotInstructorSupportCall;
+
+                        break outerloop;
+                    }
+                }
+
+            }
+        }
+
+        // Set sectionGroups and Courses
+        List<SectionGroup> sectionGroups = new ArrayList<>();
+        List<Course> courses = new ArrayList<>();
+        List<Long> courseIds = new ArrayList<>();
+
+        for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
+            if (termCode.equals(teachingAssignment.getTermCode()) && teachingAssignment.isApproved()) {
+                sectionGroups.add(teachingAssignment.getSectionGroup());
+
+                // Only add unique courses
+                Course slotCourse = teachingAssignment.getSectionGroup().getCourse();
+
+                if (courseIds.indexOf(slotCourse.getId()) < 0) {
+                    courses.add(slotCourse);
+                    courseIds.add(slotCourse.getId());
+                }
+            }
+        }
+
+        // Add student preferences associated to sectionGroups the instructor is teaching
+        List<StudentInstructionalSupportPreference> studentPreferences = new ArrayList<>();
+
+        for (SectionGroup slotSectionGroup : sectionGroups) {
+            for (StudentInstructionalSupportPreference slotPreference : slotSectionGroup.getStudentInstructionalSupportCallPreferences()) {
+                if ("teachingAssistant".equals(slotPreference.getType())) {
+                    studentPreferences.add(slotPreference);
+                }
+            }
+        }
+
+        // Add instructor preferences associated to sectionGroups the instructor is teaching
+        List<InstructorInstructionalSupportPreference> instructorPreferences = new ArrayList<>();
+
+        for (SectionGroup slotSectionGroup : sectionGroups) {
+            instructorPreferences.addAll(slotSectionGroup.getInstructorInstructionalSupportPreferences());
+        }
+
+        List<InstructionalSupportStaff> instructionalSupportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
+
+        return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, instructionalSupportStaffList, schedule.getId(), instructorId, instructorSupportCall, instructorSupportCallResponse);
     }
 }

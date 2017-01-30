@@ -29,6 +29,8 @@ public class SectionGroup implements Serializable {
 	private Course course;
 	private List<Section> sections;
 	private List<InstructionalSupportAssignment> instructionalSupportAssignments;
+	private List<StudentInstructionalSupportPreference> studentInstructionalSupportCallPreferences;
+	private List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences;
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
@@ -129,5 +131,25 @@ public class SectionGroup implements Serializable {
 
 	public void setInstructionalSupportAssignments(List<InstructionalSupportAssignment> instructionalSupportAssignments) {
 		this.instructionalSupportAssignments = instructionalSupportAssignments;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportCallPreferences() {
+		return studentInstructionalSupportCallPreferences;
+	}
+
+	public void setStudentInstructionalSupportCallPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportCallPreferences) {
+		this.studentInstructionalSupportCallPreferences = studentInstructionalSupportCallPreferences;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
+		return instructorInstructionalSupportPreferences;
+	}
+
+	public void setInstructorInstructionalSupportPreferences(List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences) {
+		this.instructorInstructionalSupportPreferences = instructorInstructionalSupportPreferences;
 	}
 }
