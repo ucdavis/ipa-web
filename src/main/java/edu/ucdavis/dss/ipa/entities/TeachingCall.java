@@ -168,7 +168,7 @@ public class TeachingCall implements Serializable {
 		this.showUnavailabilities = showUnavailabilities;
 	}
 
-	// Terms are expected to be sorted ['05','06','07','08','09','10','01','02','03']
+	// Terms are expected to be sorted ['01','02','03', '04', '05','06','07','08','09','10']
 	@JsonProperty
 	@Column(name = "TermsBlob", nullable = false)
 	public String getTermsBlob() {
