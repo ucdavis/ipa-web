@@ -6,6 +6,7 @@ import java.util.List;
 
 public class TeachingCallResponseReportView {
     List<Course> courses = new ArrayList<Course>();
+    List<SectionGroup> sectionGroups = new ArrayList<>();
     List<TeachingCall> teachingCalls = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
@@ -15,6 +16,7 @@ public class TeachingCallResponseReportView {
 
     public TeachingCallResponseReportView(List<TeachingCall> teachingCalls,
                                           List<Course> courses,
+                                          List<SectionGroup> sectionGroups,
                                           List<TeachingAssignment> teachingAssignments,
                                           List<TeachingCallReceipt> teachingCallReceipts,
                                           List<TeachingCallResponse> teachingCallResponses,
@@ -25,6 +27,7 @@ public class TeachingCallResponseReportView {
         setTeachingCallReceipts(teachingCallReceipts);
         setTeachingCallResponses(teachingCallResponses);
         setInstructors(instructors);
+        setSectionGroups(sectionGroups);
     }
 
     public List<Course> getCourses() {
@@ -73,5 +76,13 @@ public class TeachingCallResponseReportView {
 
     public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
         this.teachingCallResponses = teachingCallResponses;
+    }
+
+    public List<SectionGroup> getSectionGroups() {
+        return sectionGroups;
+    }
+
+    public void setSectionGroups(List<SectionGroup> sectionGroups) {
+        this.sectionGroups = sectionGroups;
     }
 }

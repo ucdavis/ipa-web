@@ -33,6 +33,24 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 			@Param("year") long year,
 			@Param("termCode") String termCode);
 
+
+	/**
+	 * Finds sectionGroups that have no sections
+	 * @param workgroupId
+	 * @param year
+	 * @return
+	 */
+	@Query( " SELECT DISTINCT sg" +
+			" FROM SectionGroup sg, Course c, Schedule sch" +
+			" WHERE sg.course = c" +
+			" AND c.schedule = sch" +
+			" AND sch.year = :year " +
+			" AND sch.workgroup.id = :workgroupId " +
+			" AND sg.id NOT IN (SELECT sg.id FROM SectionGroup sg, Section s WHERE s.sectionGroup = sg)")
+	List<SectionGroup> findEmptyByWorkgroupIdAndYear(
+			@Param("workgroupId") long workgroupId,
+			@Param("year") long year);
+
 	/**
 	 * Finds sectionGroups that do have sections and those sections have the
 	 * visible flag set to true or Null
@@ -54,6 +72,26 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 			@Param("workgroupId") long workgroupId,
 			@Param("year") long year,
 			@Param("termCode") String termCode);
+
+
+	/**
+	 * Finds sectionGroups that do have sections and those sections have the
+	 * visible flag set to true or Null
+	 * @param workgroupId
+	 * @param year
+	 * @return
+	 */
+	@Query( " SELECT DISTINCT sg" +
+			" FROM Course c, SectionGroup sg, Section s, Schedule sch" +
+			" WHERE sg.course = c" +
+			" AND s.sectionGroup = sg" +
+			" AND c.schedule = sch" +
+			" AND sch.year = :year" +
+			" AND sch.workgroup.id = :workgroupId" +
+			" AND (s.visible = true OR s.visible IS NULL)")
+	List<SectionGroup> findOccupiedVisibleByWorkgroupIdAndYear(
+			@Param("workgroupId") long workgroupId,
+			@Param("year") long year);
 
 	/**
 	 * Finds all sectionGroups for the given params no filtering, even the doNotPrint

@@ -31,6 +31,7 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<TeachingCall> teachingCalls = teachingCallService.findByScheduleId(schedule.getId());
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Course> courses = schedule.getCourses();
+        List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 
         List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
         List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
@@ -51,6 +52,6 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
             }
         }
 
-        return new TeachingCallResponseReportView(teachingCalls, courses, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors);
+        return new TeachingCallResponseReportView(teachingCalls, courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors);
     }
 }
