@@ -77,6 +77,11 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
+    public void sendNotificationsByWorkgroupId(Long workgroupId) {
+        
+    }
+
+    @Override
     public StudentInstructionalSupportCallResponse create (StudentInstructionalSupportCall studentInstructionalSupportCall, InstructionalSupportStaff instructionalSupportStaff) {
         StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse = new StudentInstructionalSupportCallResponse();
 

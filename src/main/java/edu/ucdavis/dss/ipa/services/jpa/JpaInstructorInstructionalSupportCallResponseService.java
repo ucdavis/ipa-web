@@ -58,6 +58,11 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
     }
 
     @Override
+    public void sendNotificationsByWorkgroupId(Long workgroupId) {
+
+    }
+
+    @Override
     public InstructorInstructionalSupportCallResponse create (InstructorInstructionalSupportCall instructorInstructionalSupportCall, Instructor instructor) {
         InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse = new InstructorInstructionalSupportCallResponse();
 

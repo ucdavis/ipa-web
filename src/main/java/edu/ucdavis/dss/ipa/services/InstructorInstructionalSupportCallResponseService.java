@@ -16,4 +16,6 @@ public interface InstructorInstructionalSupportCallResponseService {
     InstructorInstructionalSupportCallResponse update(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse);
 
     List<InstructorInstructionalSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
+
+    void sendNotificationsByWorkgroupId(Long workgroupId);
 }

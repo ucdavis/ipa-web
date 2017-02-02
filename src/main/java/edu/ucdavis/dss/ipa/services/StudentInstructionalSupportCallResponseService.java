@@ -21,4 +21,6 @@ public interface StudentInstructionalSupportCallResponseService {
     List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 
     List<StudentInstructionalSupportCallResponse> findByScheduleIdAndTermCode(long id, String termCode);
+
+    void sendNotificationsByWorkgroupId(Long workgroupId);
 }
