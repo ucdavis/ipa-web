@@ -11,6 +11,7 @@ import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,14 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
     }
 
     private InstructorInstructionalSupportCall create (InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
+        // Create StartDate
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        java.util.Date utilDate = cal.getTime();
+        java.sql.Date sqlDate = new Date(utilDate.getTime());
+
+        instructorInstructionalSupportCall.setStartDate(sqlDate);
+        instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(null);
+
         return instructorInstructionalSupportCallRepository.save(instructorInstructionalSupportCall);
     }
 }

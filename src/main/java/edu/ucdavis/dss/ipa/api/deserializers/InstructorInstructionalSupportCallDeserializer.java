@@ -57,8 +57,9 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
             instructorInstructionalSupportCall.setDueDate((java.sql.Date) date);
         }
 
-        if (node.has("message")) {
-            instructorInstructionalSupportCall.setMessage(node.get("message").textValue());
+        System.out.println();
+        if (node.has("emailMessage")) {
+            instructorInstructionalSupportCall.setMessage(node.get("emailMessage").textValue());
         }
 
         if (node.has("termCode")) {
