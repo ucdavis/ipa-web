@@ -5,17 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -130,7 +120,7 @@ public class InstructorInstructionalSupportCall implements Serializable {
         }
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
         return instructorInstructionalSupportCallResponses;
@@ -140,7 +130,7 @@ public class InstructorInstructionalSupportCall implements Serializable {
         this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
         return instructorInstructionalSupportPreferences;
