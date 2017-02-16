@@ -27,7 +27,7 @@ public class TeachingCallResponse implements Serializable {
 
 	private Instructor instructor;
 	private String availabilityBlob, termCode;
-	private TeachingCall teachingCall;
+	private Schedule schedule;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,15 +80,15 @@ public class TeachingCallResponse implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "TeachingCallId", nullable = false)
+	@JoinColumn(name = "Schedules_ScheduleId", nullable = false)
 	@NotNull
 	@JsonIgnore
-	public TeachingCall getTeachingCall() {
-		return teachingCall;
+	public Schedule getSchedule() {
+		return schedule;
 	}
 
-	public void setTeachingCall(TeachingCall teachingCall) {
-		this.teachingCall = teachingCall;
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 
 	@JsonProperty("instructorId")

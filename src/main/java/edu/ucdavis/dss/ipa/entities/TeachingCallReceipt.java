@@ -25,10 +25,10 @@ public class TeachingCallReceipt implements Serializable {
 	private long id;
 
 	private Instructor instructor;
-	private Boolean isDone = false;
-	private Date notifiedAt, warnedAt;
-	private TeachingCall teachingCall;
-	private String comment;
+	private Boolean isDone = false, showUnavailabilities = true;
+	private Date lastContactedAt, nextContactAt;
+	private Schedule schedule;
+	private String comment, termsBlob;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,12 +58,12 @@ public class TeachingCallReceipt implements Serializable {
 	@JoinColumn(name = "TeachingCallId", nullable = false)
 	@NotNull
 	@JsonIgnore
-	public TeachingCall getTeachingCall() {
-		return teachingCall;
+	public Schedule getSchedule() {
+		return schedule;
 	}
 
-	public void setTeachingCall(TeachingCall teachingCall) {
-		this.teachingCall = teachingCall;
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 
 	@Column(name = "isDone", nullable = false)
@@ -76,24 +76,6 @@ public class TeachingCallReceipt implements Serializable {
 		this.isDone = isDone;
 	}
 
-	@JsonProperty
-	public Date getNotifiedAt() {
-		return notifiedAt;
-	}
-
-	public void setNotifiedAt(Date notifiedAt) {
-		this.notifiedAt = notifiedAt;
-	}
-
-	@JsonProperty
-	public Date getWarnedAt() {
-		return warnedAt;
-	}
-
-	public void setWarnedAt(Date warnedAt) {
-		this.warnedAt = warnedAt;
-	}
-
 	@Column(name = "Comment", nullable = true)
 	@JsonProperty
 	public String getComment() {
@@ -102,6 +84,38 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public Boolean getShowUnavailabilities() {
+		return showUnavailabilities;
+	}
+
+	public void setShowUnavailabilities(Boolean showUnavailabilities) {
+		this.showUnavailabilities = showUnavailabilities;
+	}
+
+	public Date getLastContactedAt() {
+		return lastContactedAt;
+	}
+
+	public void setLastContactedAt(Date lastContactedAt) {
+		this.lastContactedAt = lastContactedAt;
+	}
+
+	public Date getNextContactAt() {
+		return nextContactAt;
+	}
+
+	public void setNextContactAt(Date nextContactAt) {
+		this.nextContactAt = nextContactAt;
+	}
+
+	public String getTermsBlob() {
+		return termsBlob;
+	}
+
+	public void setTermsBlob(String termsBlob) {
+		this.termsBlob = termsBlob;
 	}
 
 	@JsonProperty("instructorId")
@@ -114,11 +128,11 @@ public class TeachingCallReceipt implements Serializable {
 		}
 	}
 
-	@JsonProperty("teachingCallId")
+	@JsonProperty("scheduleId")
 	@Transient
-	public long getTeachingCallIdentification() {
-		if(teachingCall != null) {
-			return teachingCall.getId();
+	public long getScheduleIndentification() {
+		if(schedule != null) {
+			return schedule.getId();
 		} else {
 			return 0;
 		}
