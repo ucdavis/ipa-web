@@ -27,13 +27,12 @@ public class AssignmentViewTeachingCallResponseController {
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
     @Inject TeachingCallResponseService teachingCallResponseService;
-    @Inject TeachingCallService teachingCallService;
 
     @RequestMapping(value = "/api/assignmentView/teachingCallResponses/{teachingCallResponseId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public TeachingCallResponse updateTeachingCallResponse(@PathVariable long teachingCallResponseId, @RequestBody TeachingCallResponse teachingCallResponse, HttpServletResponse httpResponse) {
         TeachingCallResponse originalTeachingCallResponse = teachingCallResponseService.getOneById(teachingCallResponseId);
-        Workgroup workgroup = originalTeachingCallResponse.getTeachingCall().getSchedule().getWorkgroup();
+        Workgroup workgroup = originalTeachingCallResponse.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor");
 
         originalTeachingCallResponse.setAvailabilityBlob(teachingCallResponse.getAvailabilityBlob());

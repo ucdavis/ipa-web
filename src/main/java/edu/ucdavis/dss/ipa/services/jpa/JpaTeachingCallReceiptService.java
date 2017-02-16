@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;

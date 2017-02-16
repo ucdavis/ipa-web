@@ -21,9 +21,7 @@ public class AssignmentViewSectionGroupController {
 	@Inject AuthenticationService authenticationService;
 	@Inject WorkgroupService workgroupService;
 	@Inject ScheduleService scheduleService;
-	@Inject TeachingCallService teachingCallService;
-	@Inject
-	AssignmentViewFactory teachingCallViewFactory;
+	@Inject AssignmentViewFactory teachingCallViewFactory;
 	@Inject SectionGroupService sectionGroupService;
 
 	@RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")

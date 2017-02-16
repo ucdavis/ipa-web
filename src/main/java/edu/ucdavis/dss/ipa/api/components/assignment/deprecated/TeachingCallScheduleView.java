@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
 
 public class TeachingCallScheduleView {
 	private long id, year, workgroupId;

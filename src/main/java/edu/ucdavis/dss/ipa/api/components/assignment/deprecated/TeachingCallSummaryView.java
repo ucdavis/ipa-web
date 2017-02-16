@@ -3,8 +3,6 @@ package edu.ucdavis.dss.ipa.api.components.assignment.deprecated;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ucdavis.dss.ipa.entities.TeachingCall;
-
 public class TeachingCallSummaryView {
 	private long id, scheduleId, year;
 	private boolean showUnavailabilities;

@@ -20,7 +20,7 @@ public interface TeachingCallResponseService {
 
 	public void delete(Long id);
 
-	public List<TeachingCallResponse> findByTeachingCallAndInstructorLoginId(TeachingCall teachingCall, String loginId);
+	public List<TeachingCallResponse> findByScheduleIdAndInstructorLoginId(Schedule schedule, String loginId);
 
 	List<TeachingCallResponse> findByScheduleIdAndTermCode(Long scheduleId, String termCode);
 
