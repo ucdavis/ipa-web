@@ -15,17 +15,11 @@ public interface TeachingCallReceiptService {
 
 	public TeachingCallReceipt findOneById(Long id);
 
-	public TeachingCallReceipt findOrCreateByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId);
-
 	public TeachingCallReceipt save(@NotNull @Valid TeachingCallReceipt teachingCallReceipt);
 
 	public void sendNotificationsByWorkgroupId(Long workgroupId);
 
-	public TeachingCallReceipt createByInstructorAndTeachingCall(Instructor instructor, TeachingCall teachingCall);
+	public TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt);
 
-	public TeachingCallReceipt findByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId);
-
-	public List<TeachingCallReceipt> findByTeachingCallId(long id);
-
-	List<TeachingCallReceipt> findByScheduleId(long id);
+	public List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
 }

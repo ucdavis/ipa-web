@@ -8,16 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
-import edu.ucdavis.dss.ipa.api.views.TeachingCallReceiptViews;
-
-/**
- * @author okadri
- * Stores instructor's notification time-stamps for a given TeachingCall 
- * It also has a flag to indicate whether the instructor is done inputing
- * preferences for the year
- */
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "TeachingCallReceipts")
@@ -28,7 +19,7 @@ public class TeachingCallReceipt implements Serializable {
 	private Boolean isDone = false, showUnavailabilities = true;
 	private Date lastContactedAt, nextContactAt;
 	private Schedule schedule;
-	private String comment, termsBlob;
+	private String comment, termsBlob, message;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +46,7 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "TeachingCallId", nullable = false)
+	@JoinColumn(name = "Schedules_ScheduleId", nullable = false)
 	@NotNull
 	@JsonIgnore
 	public Schedule getSchedule() {
@@ -116,6 +107,14 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setTermsBlob(String termsBlob) {
 		this.termsBlob = termsBlob;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	@JsonProperty("instructorId")

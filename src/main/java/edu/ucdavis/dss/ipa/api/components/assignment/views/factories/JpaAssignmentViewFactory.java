@@ -21,7 +21,6 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject CourseService courseService;
 	@Inject UserRoleService userRoleService;
-	@Inject TeachingCallService teachingCallService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject UserService userService;
@@ -36,15 +35,14 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
-		List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.findByScheduleId(schedule.getId());
-		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByScheduleId(schedule.getId());
-		TeachingCall activeTeachingCall = teachingCallService.findOneByUserIdAndScheduleId(userId, schedule.getId());
+		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
+		List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
 		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
 		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
 
 		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
-				scheduleInstructorNotes, scheduleTermStates, schedule.getTeachingCalls(), teachingCallReceipts,
-				teachingCallResponses, activeTeachingCall, userId, instructorId, scheduleId,
+				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
+				teachingCallResponses, userId, instructorId, scheduleId,
 				senateInstructorIds, federationInstructorIds, workgroup.getTags());
 	}
 

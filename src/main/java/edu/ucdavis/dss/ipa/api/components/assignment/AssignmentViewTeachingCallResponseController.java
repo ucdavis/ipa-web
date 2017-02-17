@@ -43,29 +43,29 @@ public class AssignmentViewTeachingCallResponseController {
 
     /**
      * Creates a new teachingCallResponse.
-     * @param teachingCallId
+     * @param scheduleId
      * @param instructorId
      * @param teachingCallResponseDTO
      * @param httpResponse
      * @return
      */
-    @RequestMapping(value = "/api/assignmentView/teachingCallResponses/{teachingCallId}/{instructorId}", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/assignmentView/teachingCallResponses/{scheduleId}/{instructorId}", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public TeachingCallResponse createTeachingCallResponse(@PathVariable long teachingCallId, @PathVariable long instructorId, @RequestBody TeachingCallResponse teachingCallResponseDTO, HttpServletResponse httpResponse) {
+    public TeachingCallResponse createTeachingCallResponse(@PathVariable long scheduleId, @PathVariable long instructorId, @RequestBody TeachingCallResponse teachingCallResponseDTO, HttpServletResponse httpResponse) {
         // Verify params
-        TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
+        Schedule schedule = scheduleService.findById(scheduleId);
         Instructor instructor = instructorService.getOneById(instructorId);
 
-        if (teachingCall == null || instructor == null) {
+        if (schedule == null || instructor == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
 
         // Authorize user
-        Workgroup workgroup = teachingCall.getSchedule().getWorkgroup();
+        Workgroup workgroup = schedule.getWorkgroup();
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
 
-        TeachingCallResponse teachingCallResponse = teachingCallResponseService.findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(teachingCall.getId(), instructor.getId(), teachingCallResponseDTO.getTermCode());
+        TeachingCallResponse teachingCallResponse = teachingCallResponseService.findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(schedule.getId(), instructor.getId(), teachingCallResponseDTO.getTermCode());
 
         teachingCallResponse.setAvailabilityBlob(teachingCallResponseDTO.getAvailabilityBlob());
 

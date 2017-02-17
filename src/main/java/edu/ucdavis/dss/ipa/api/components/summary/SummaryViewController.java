@@ -25,7 +25,6 @@ public class SummaryViewController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject WorkgroupService workgroupService;
-    @Inject TeachingCallService teachingCallService;
 
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody

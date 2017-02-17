@@ -12,7 +12,6 @@ public class SummaryView {
     List<Activity> activities = new ArrayList<>();
 
     List<TeachingAssignment> teachingAssignments = new ArrayList<>();
-    List<TeachingCall> teachingCalls = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<Term> terms = new ArrayList<>();
 
@@ -21,7 +20,6 @@ public class SummaryView {
                        List<Section> sections,
                        List<Activity> activities,
                        List<TeachingAssignment> teachingAssignments,
-                       List<TeachingCall> teachingCalls,
                        List<TeachingCallReceipt> teachingCallReceipts,
                        List<Term> terms) {
 
@@ -30,7 +28,6 @@ public class SummaryView {
         setSections(sections);
         setActivities(activities);
         setTeachingAssignments(teachingAssignments);
-        setTeachingCalls(teachingCalls);
         setTerms(terms);
         setTeachingCallReceipts(teachingCallReceipts);
     }
@@ -63,9 +60,6 @@ public class SummaryView {
         this.teachingAssignments = teachingAssignments;
     }
 
-    public List<TeachingCall> getTeachingCalls() { return this.teachingCalls; }
-    public void setTeachingCalls(List<TeachingCall> teachingCalls) { this.teachingCalls = teachingCalls; }
-
     public List<Section> getSections() {
         return sections;
     }
@@ -90,5 +84,4 @@ public class SummaryView {
     public void setTeachingCallReceipts(List<TeachingCallReceipt> teachingCallReceipts) {
         this.teachingCallReceipts = teachingCallReceipts;
     }
-
 }

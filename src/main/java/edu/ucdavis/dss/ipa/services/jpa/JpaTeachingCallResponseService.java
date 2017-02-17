@@ -16,13 +16,11 @@ import edu.ucdavis.dss.ipa.repositories.TeachingCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingCallResponseService;
-import edu.ucdavis.dss.ipa.services.TeachingCallService;
 
 @Service
 public class JpaTeachingCallResponseService implements TeachingCallResponseService {
 
 	@Inject TeachingCallResponseRepository teachingCallResponseRepository;
-	@Inject TeachingCallService teachingCallService;
 	@Inject ScheduleService scheduleService;
 	@Inject InstructorService instructorService;
 
@@ -44,79 +42,37 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 	}
 
 	@Override
-	public List<TeachingCallResponse> findByTeachingCallAndInstructorLoginId(TeachingCall teachingCall, String loginId) {
-		List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-		Instructor instructor = instructorService.getOneByLoginId(loginId);
-		if (instructor == null) return null;
+	public List<TeachingCallResponse> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
+		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-		for(TeachingCallResponse response : teachingCall.getTeachingCallResponses() ) {
-			if( response.getInstructor().getLoginId().equals(instructor.getLoginId()) ) {
-				teachingCallResponses.add(response);
-			}
+		if (schedule == null) {
+			return null;
 		}
 
-		return teachingCallResponses;
+		return this.teachingCallResponseRepository.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 	}
 
 	@Override
-	public List<TeachingCallResponse> findByScheduleIdAndTermCode(Long scheduleId, String termCode) {
-		return this.teachingCallResponseRepository.findByTeachingCallScheduleIdAndTermCode(scheduleId, termCode);
-	}
-
-	@Override
-	public List<TeachingCallResponse> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
-		return this.teachingCallResponseRepository.findByTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearAndTermCode(workgroupId, year, termCode);
-	}
-
-	@Override
-	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(
-			Long teachingCallId, long instructorId, String termCode) {
-		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
+	public TeachingCallResponse findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(
+			Long scheduleId, long instructorId, String termCode) {
+		Schedule schedule = scheduleService.findById(scheduleId);
 		Instructor instructor = instructorService.getOneById(instructorId);
-		if (instructor == null) return null;
 
-		TeachingCallResponse teachingCallResponse = this.teachingCallResponseRepository.findOneByTeachingCallIdAndInstructorIdAndTermCode(teachingCallId, instructorId, termCode);
+		if (instructor == null || schedule == null) {
+			return null;
+		}
+
+		TeachingCallResponse teachingCallResponse = this.teachingCallResponseRepository.findOneByScheduleIdAndInstructorIdAndTermCode(scheduleId, instructorId, termCode);
 
 		if (teachingCallResponse == null) {
 			teachingCallResponse = new TeachingCallResponse();
 			teachingCallResponse.setInstructor(instructor);
-			teachingCallResponse.setTeachingCall(teachingCall);
+			teachingCallResponse.setSchedule(schedule);
 			teachingCallResponse.setTermCode(termCode);
-			teachingCallResponse.setAvailabilityBlob(TeachingCall.DefaultBlob());
+			teachingCallResponse.setAvailabilityBlob(TeachingCallResponse.DefaultAvailabilityBlob());
 			this.save(teachingCallResponse);
 		}
 
 		return teachingCallResponse;
 	}
-
-	@Override
-	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor, int years) {
-		if (workgroup == null || instructor == null)
-			return null;
-
-		long thisYear = Calendar.getInstance().get(Calendar.YEAR);
-		List<Long> yearsList = LongStream.rangeClosed(thisYear - years + 1, thisYear).boxed().collect(Collectors.toList());
-		List<TeachingCallResponse> teachingCallResponses = this.teachingCallResponseRepository.findByInstructorIdAndTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearIn(instructor.getId(), workgroup.getId(), yearsList);
-
-		return teachingCallResponses;
-	}
-
-	@Override
-	public List<TeachingCallResponse> findByScheduleId(long scheduleId) {
-		return this.teachingCallResponseRepository.findByTeachingCallScheduleId(scheduleId);
-	}
-
-	@Override
-	public List<TeachingCallResponse> findBySectionGroup(SectionGroup sectionGroup) {
-		return teachingCallResponseRepository.findBySectionGroupIdAndTermCode(sectionGroup.getId(), sectionGroup.getTermCode());
-	}
-
-	@Override
-	public List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor) {
-		int NUMBER_OF_YEARS = 10;
-		return getWorkgroupTeachingCallResponsesByInstructorId(workgroup, instructor, NUMBER_OF_YEARS);
-	}
-
 }

@@ -22,26 +22,18 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject InstructorService instructorService;
     @Inject UserRoleService userRoleService;
-    @Inject TeachingCallService teachingCallService;
 
     @Override
     public TeachingCallResponseReportView createTeachingCallResponseReportView(long workgroupId, long year) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-        List<TeachingCall> teachingCalls = teachingCallService.findByScheduleId(schedule.getId());
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Course> courses = schedule.getCourses();
         List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
-        List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
+        List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
         List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
         List<Instructor> instructors = new ArrayList<>();
-
-
-        for (TeachingCall teachingCall : teachingCalls) {
-            teachingCallResponses.addAll(teachingCall.getTeachingCallResponses());
-            teachingCallReceipts.addAll(teachingCall.getTeachingCallReceipts());
-        }
 
         for (TeachingAssignment teachingAssignment : teachingAssignments) {
             Instructor instructor = teachingAssignment.getInstructor();
@@ -52,6 +44,6 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
             }
         }
 
-        return new TeachingCallResponseReportView(teachingCalls, courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors);
+        return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors);
     }
 }

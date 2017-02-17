@@ -16,7 +16,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject CourseService courseService;
-    @Inject TeachingCallService teachingCallService;
     @Inject TermService termService;
     @Inject InstructorService instructorService;
 
@@ -74,11 +73,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             }
         }
 
-        // Grab teaching calls
-        List<TeachingCall> teachingCallsToAdd = new ArrayList<TeachingCall>();
-        if (schedule != null) {
-            teachingCallsToAdd = teachingCallService.findByScheduleId(schedule.getId());
-        }
 
         // Grab terms info from DW
         long currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -91,6 +85,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             teachingCallReceipts = instructor.getTeachingCallReceipts();
         }
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallsToAdd, teachingCallReceipts, terms);
+        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms);
     }
 }

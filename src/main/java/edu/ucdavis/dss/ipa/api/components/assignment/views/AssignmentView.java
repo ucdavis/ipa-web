@@ -11,10 +11,8 @@ public class AssignmentView {
     List<Instructor> instructors = new ArrayList<Instructor>();
     List<ScheduleInstructorNote> scheduleInstructorNotes = new ArrayList<ScheduleInstructorNote>();
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
-    List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-    TeachingCall activeTeachingCall;
     List<Long> senateInstructorIds = new ArrayList<Long>();
     List<Long> federationInstructorIds = new ArrayList<Long>();
     List<Tag> tags = new ArrayList<Tag>();
@@ -27,10 +25,8 @@ public class AssignmentView {
                           List<Instructor> instructors,
                           List<ScheduleInstructorNote> scheduleInstructorNotes,
                           List<ScheduleTermState> scheduleTermStates,
-                          List<TeachingCall> teachingCalls,
                           List<TeachingCallReceipt> teachingCallReceipts,
                           List<TeachingCallResponse> teachingCallResponses,
-                          TeachingCall activeTeachingCall,
                           long userId,
                           long instructorId,
                           long scheduleId,
@@ -44,10 +40,8 @@ public class AssignmentView {
         setInstructors(instructors);
         setScheduleInstructorNotes(scheduleInstructorNotes);
         setScheduleTermStates(scheduleTermStates);
-        setTeachingCalls(teachingCalls);
         setTeachingCallReceipts(teachingCallReceipts);
         setTeachingCallResponses(teachingCallResponses);
-        setActiveTeachingCall(activeTeachingCall);
         setInstructorId(instructorId);
         setUserId(userId);
         setFederationInstructorIds(federationInstructorIds);
@@ -104,13 +98,6 @@ public class AssignmentView {
         this.scheduleTermStates = scheduleTermStates;
     }
 
-    public List<TeachingCall> getTeachingCalls() {
-        return teachingCalls;
-    }
-
-    public void setTeachingCalls(List<TeachingCall> teachingCalls) {
-        this.teachingCalls = teachingCalls;
-    }
 
     public List<TeachingCallReceipt> getTeachingCallReceipts() {
         return teachingCallReceipts;
@@ -126,14 +113,6 @@ public class AssignmentView {
 
     public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
         this.teachingCallResponses = teachingCallResponses;
-    }
-
-    public TeachingCall getActiveTeachingCall() {
-        return activeTeachingCall;
-    }
-
-    public void setActiveTeachingCall(TeachingCall activeTeachingCall) {
-        this.activeTeachingCall = activeTeachingCall;
     }
 
     public long getInstructorId() {

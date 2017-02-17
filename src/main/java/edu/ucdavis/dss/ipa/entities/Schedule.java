@@ -46,7 +46,8 @@ public class Schedule implements Serializable {
 	private String secretToken;
 	private Workgroup workgroup;
 	private List<Course> courses = new ArrayList<Course>();
-	private List<TeachingCall> teachingCalls = new ArrayList<TeachingCall>();
+	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
+	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
 
 	@Id
@@ -125,12 +126,22 @@ public class Schedule implements Serializable {
 
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-	public List<TeachingCall> getTeachingCalls() {
-		return teachingCalls;
+	public List<TeachingCallResponse> getTeachingCallResponses() {
+		return teachingCallResponses;
 	}
 
-	public void setTeachingCalls(List<TeachingCall> teachingCalls) {
-		this.teachingCalls = teachingCalls;
+	public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
+		this.teachingCallResponses = teachingCallResponses;
+	}
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<TeachingCallReceipt> getTeachingCallReceipts() {
+		return teachingCallReceipts;
+	}
+
+	public void setTeachingCallReceipts(List<TeachingCallReceipt> teachingCallReceipts) {
+		this.teachingCallReceipts = teachingCallReceipts;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")

@@ -19,7 +19,6 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallReceiptRepository;
 import edu.ucdavis.dss.utilities.Email;
@@ -29,7 +28,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Inject TeachingCallReceiptRepository teachingCallReceiptRepository;
 	@Inject InstructorService instructorService;
-	@Inject TeachingCallService teachingCallService;
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
@@ -47,25 +45,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	public TeachingCallReceipt findOneById(Long id) {
 		return this.teachingCallReceiptRepository.findOne(id);
-	}
-
-	@Override
-	public TeachingCallReceipt findOrCreateByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId) {
-		Instructor instructor = instructorService.getOneByLoginId(loginId);
-		TeachingCall teachingCall = teachingCallService.findOneById(teachingCallId);
-		if (instructor == null) return null;
-
-		TeachingCallReceipt teachingCallReceipt = teachingCallReceiptRepository.findOneByTeachingCallIdAndInstructorId(
-				teachingCallId, instructor.getId());
-
-		if (teachingCallReceipt == null) {
-			teachingCallReceipt = new TeachingCallReceipt();
-			teachingCallReceipt.setInstructor(instructor);
-			teachingCallReceipt.setTeachingCall(teachingCall);
-			this.save(teachingCallReceipt);
-		}
-
-		return teachingCallReceipt;
 	}
 
 	/**
@@ -91,63 +70,18 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		for (Schedule schedule : workgroup.getSchedules()) {
 			// Ignore historical schedules
 			if (schedule.getYear() >= currentYear) {
-				for (TeachingCall teachingCall : schedule.getTeachingCalls()) {
-					// Identify relevant UserRoles
-					List<UserRole> userRoles = new ArrayList<UserRole>();
 
-					if (teachingCall.isSentToFederation()) {
-						userRoles.addAll(userRoleService.findByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor"));
-					}
+				// Check teachingCallReceipts to see if messages need to be sent
+				for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
 
-					if (teachingCall.isSentToSenate()) {
-						userRoles.addAll(userRoleService.findByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor"));
-					}
+					// Is an email scheduled to be sent?
+					if (teachingCallReceipt.getNextContactAt() != null) {
+						long currentTime = currentDate.getTime();
+						long contactAtTime = teachingCallReceipt.getNextContactAt().getTime();
 
-					// Get Instructors from UserRoles
-					List<Instructor> instructors = new ArrayList<Instructor>();
-
-					for (UserRole userRole : userRoles) {
-						String loginId = userRole.getUser().getLoginId();
-						Instructor instructor = instructorService.getOneByLoginId(loginId);
-
-						if (instructor != null) {
-							instructors.add(instructor);
-						} else {
-							log.error("User with loginId '" + loginId + "' and role '" + userRole.getRole().getName() + "' should also have an instructor, but none were found.");
-						}
-					}
-
-					// Will create teachingCallReceipts for any instructors that should have one, but do not currently.
-					// This allows TeachingCalls to dictate membership through groups 'senateInstructor' and allows new members of
-					// the group to automatically be added into the teachingCall.
-					List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
-
-					for (Instructor instructor : instructors) {
-						TeachingCallReceipt teachingCallReceipt = this.findByTeachingCallIdAndInstructorLoginId(teachingCall.getId(), instructor.getLoginId());
-
-						if (teachingCallReceipt == null) {
-							teachingCallReceipt = this.createByInstructorAndTeachingCall(instructor, teachingCall);
-							log.info("Creating TeachingCallReceipt for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "' and instructor '" + instructor.getLoginId() + "'");
-
-							if (teachingCall.isEmailInstructors() == false) {
-								log.info("TeachingCall emailInstructors flag is false for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "', Setting warn and notify dates to 'now' for instructor '" + instructor.getLoginId() + "'");
-								teachingCallReceipt.setNotifiedAt(currentDate);
-								teachingCallReceipt.setWarnedAt(currentDate);
-								teachingCallReceipt = this.save(teachingCallReceipt);
-							}
-						}
-
-						teachingCallReceipts.add(teachingCallReceipt);
-					}
-
-					if (teachingCall.isEmailInstructors()) {
-						// Check teachingCallReceipts to see if messages need to be sent
-						for (TeachingCallReceipt teachingCallReceipt : teachingCallReceipts) {
-							long currentTime = currentDate.getTime();
-							long endTime = teachingCallReceipt.getTeachingCall().getDueDate().getTime();
-							long beginTime = teachingCallReceipt.getTeachingCall().getStartDate().getTime();
-
-							sendTeachingCall(teachingCallReceipt, currentDate, currentTime, endTime, beginTime);
+						// Is it time to send that email?
+						if (currentTime > contactAtTime) {
+							sendTeachingCall(teachingCallReceipt, currentDate);
 						}
 					}
 				}
@@ -156,14 +90,11 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	}
 
 	/**
-	 * Determines if a given teachingCallReceipt is waiting to send an email, builds the email and triggers sending of the email.
+	 * Builds the email and triggers sending of the email.
 	 * @param teachingCallReceipt
 	 * @param currentDate
-	 * @param currentTime
-	 * @param endTime
-	 * @param beginTime
 	 */
-	private void sendTeachingCall(TeachingCallReceipt teachingCallReceipt, Date currentDate, long currentTime, long endTime, long beginTime) {
+	private void sendTeachingCall(TeachingCallReceipt teachingCallReceipt, Date currentDate) {
 		if (teachingCallReceipt.getIsDone()) {
 			return;
 		}
@@ -185,7 +116,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String recipientEmail = user.getEmail();
 		String messageSubject = "";
 
-		Schedule schedule = teachingCallReceipt.getTeachingCall().getSchedule();
+		Schedule schedule = teachingCallReceipt.getSchedule();
 		long workgroupId = schedule.getWorkgroup().getId();
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
@@ -195,107 +126,57 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 
-		// Check for notification emails
-		if (teachingCallReceipt.getNotifiedAt() == null) {
-			Long year = teachingCallReceipt.getTeachingCall().getSchedule().getYear();
+		Long year = teachingCallReceipt.getSchedule().getYear();
 
-			// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
-			messageSubject = "IPA: Teaching Call has started";
-			messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-			messageBody = "Faculty,";
-			messageBody += "<br /><br />";
-			messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>.";
-			messageBody += "<br />";
-			messageBody += "<br />";
-			messageBody += teachingCallReceipt.getTeachingCall().getMessage();
-			messageBody += "<br />";
-			messageBody += "<br />";
-			messageBody += "Please submit your teaching preferences by <b>" + format.format(teachingCallReceipt.getTeachingCall().getDueDate()) + "</b>.";
-			messageBody += "<br />";
-			messageBody += "<br />";
-			messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
-			messageBody += "</td></tr></tbody></table>";
+		// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
+		messageSubject = "IPA: Teaching Call has started";
+		messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
+		messageBody = "Faculty,";
+		messageBody += "<br /><br />";
+		messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>.";
+		messageBody += "<br />";
+		messageBody += "<br />";
+		messageBody += teachingCallReceipt.getMessage();
+		messageBody += "<br />";
+		messageBody += "<br />";
+		messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
+		messageBody += "</td></tr></tbody></table>";
 
-			log.info("Initiating notification email to '" + user.getEmail() + "' for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "'");
+		log.info("Initiating notification email to '" + user.getEmail() + "' for teaching Call in ScheduleId: '" + teachingCallReceipt.getSchedule().getId() + "'");
 
-			if (Email.send(recipientEmail, messageBody, messageSubject)) {
-				teachingCallReceipt.setNotifiedAt(currentDate);
-				this.save(teachingCallReceipt);
-			}
-		}
-
-		// Warning email threshold is set to be 70% by variable.
-		// The warn date is calculated as 70% of the way from the teachingCall startDate to the teachingCall dueDate.
-		float warnThreshold = .70f;
-		long warnTime = (long) ( beginTime + ((endTime - beginTime) * warnThreshold) );
-
-		if (currentTime > warnTime && teachingCallReceipt.getWarnedAt() == null) {
-			messageSubject = "IPA: Action needed - Teaching Call closing soon";
-
-			messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-			messageBody += "Faculty,";
-			messageBody += "<br />";
-			messageBody += "A teaching call will be closing soon. Please submit your teaching preferences for the academic year by <b>" + format.format(teachingCallReceipt.getTeachingCall().getDueDate()) + "</b>.";
-			messageBody += "<br />";
-			messageBody += "<br />";
-			messageBody += "<h3><a href='" + teachingCallUrl + "'>View Teaching Call</a></h3>";
-
-			messageBody += "</td></tr></tbody></table>";
-
-			log.info("Initiating warning email to '" + user.getEmail() + "' for teachingCallId '" + teachingCallReceipt.getTeachingCall().getId() + "'");
-			if (Email.send(recipientEmail, messageBody, messageSubject)) {
-				teachingCallReceipt.setWarnedAt(currentDate);
-
-				this.save(teachingCallReceipt);
-			}
+		if (Email.send(recipientEmail, messageBody, messageSubject)) {
+			teachingCallReceipt.setLastContactedAt(currentDate);
+			this.save(teachingCallReceipt);
 		}
 	}
 
 	@Override
-	public TeachingCallReceipt createByInstructorAndTeachingCall(Instructor instructor, TeachingCall teachingCall) {
-		TeachingCallReceipt teachingCallReceipt = new TeachingCallReceipt();
+	public TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt) {
 
-		teachingCallReceipt.setInstructor(instructor);
 		teachingCallReceipt.setIsDone(false);
-		teachingCallReceipt.setTeachingCall(teachingCall);
-
 		teachingCallReceipt = teachingCallReceiptRepository.save(teachingCallReceipt);
-
 		return teachingCallReceipt;
 	}
 
 	@Override
-	public TeachingCallReceipt findByTeachingCallIdAndInstructorLoginId(Long teachingCallId, String loginId) {
-		Instructor instructor = instructorService.getOneByLoginId(loginId);
+	public List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceiptDTO) {
+		TeachingCallReceipt teachingCallReceipt = new TeachingCallReceipt();
+		List<TeachingCallReceipt> receipts = new ArrayList<>();
 
-		if (instructor == null) {
-			return null;
+		for (Long instructorId : instructorIds) {
+			TeachingCallReceipt slotTeachingCallReceipt = new TeachingCallReceipt();
+			slotTeachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
+			slotTeachingCallReceipt.setComment(teachingCallReceiptDTO.getComment());
+			slotTeachingCallReceipt.setInstructor(teachingCallReceiptDTO.getInstructor());
+			slotTeachingCallReceipt.setIsDone(false);
+			slotTeachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
+			slotTeachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
+			slotTeachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
+
+			slotTeachingCallReceipt = this.save(slotTeachingCallReceipt);
+			receipts.add(slotTeachingCallReceipt);
 		}
 
-		TeachingCallReceipt teachingCallReceipt = teachingCallReceiptRepository.findOneByTeachingCallIdAndInstructorId(teachingCallId, instructor.getId());
-
-		if (teachingCallReceipt == null) {
-			return null;
-		}
-
-		return teachingCallReceipt;
-	}
-
-	@Override
-	public List<TeachingCallReceipt> findByTeachingCallId(long teachingCallId) {
-		return this.teachingCallReceiptRepository.findByTeachingCallId(teachingCallId);
-	}
-
-	// Finds all teachingCalls associated to the schedule, and collects all teachingCallReceipts
-	@Override
-	public List<TeachingCallReceipt> findByScheduleId(long scheduleId) {
-		List<TeachingCall> teachingCalls = scheduleService.findById(scheduleId).getTeachingCalls();
-		List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
-
-		for (TeachingCall teachingCall : teachingCalls) {
-			teachingCallReceipts.addAll(teachingCall.getTeachingCallReceipts());
-		}
-
-		return teachingCallReceipts;
+		return receipts;
 	}
 }

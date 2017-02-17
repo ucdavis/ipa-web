@@ -7,21 +7,18 @@ import java.util.List;
 public class TeachingCallResponseReportView {
     List<Course> courses = new ArrayList<Course>();
     List<SectionGroup> sectionGroups = new ArrayList<>();
-    List<TeachingCall> teachingCalls = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
 
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
 
-    public TeachingCallResponseReportView(List<TeachingCall> teachingCalls,
-                                          List<Course> courses,
+    public TeachingCallResponseReportView(List<Course> courses,
                                           List<SectionGroup> sectionGroups,
                                           List<TeachingAssignment> teachingAssignments,
                                           List<TeachingCallReceipt> teachingCallReceipts,
                                           List<TeachingCallResponse> teachingCallResponses,
                                           List<Instructor> instructors) {
-        setTeachingCalls(teachingCalls);
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
         setTeachingCallReceipts(teachingCallReceipts);
@@ -52,14 +49,6 @@ public class TeachingCallResponseReportView {
 
     public void setInstructors(List<Instructor> instructors) {
         this.instructors = instructors;
-    }
-
-    public List<TeachingCall> getTeachingCalls() {
-        return teachingCalls;
-    }
-
-    public void setTeachingCalls(List<TeachingCall> teachingCalls) {
-        this.teachingCalls = teachingCalls;
     }
 
     public List<TeachingCallReceipt> getTeachingCallReceipts() {

@@ -9,14 +9,6 @@ import java.util.List;
 
 public interface TeachingCallResponseRepository extends CrudRepository<TeachingCallResponse, Long> {
 
-	List<TeachingCallResponse> findByTeachingCallScheduleIdAndTermCode(Long scheduleId, String termCode);
-
-	List<TeachingCallResponse> findByInstructorIdAndTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearIn(long instructorId, long workgroupId, List<Long> years);
-
-	TeachingCallResponse findOneByTeachingCallIdAndInstructorIdAndTermCode(Long teachingCallId, long instructorId, String termCode);
-
-	List<TeachingCallResponse> findByTeachingCallScheduleId(Long scheduleId);
-
 	@Query( " SELECT tr" +
 			" FROM TeachingAssignment ta, TeachingCallResponse tr" +
 			" WHERE ta.sectionGroup.id = :sectionGroupId" +
@@ -26,5 +18,9 @@ public interface TeachingCallResponseRepository extends CrudRepository<TeachingC
     		@Param("sectionGroupId") long sectionGroupId,
 			@Param("termCode") String termCode);
 
-	List<TeachingCallResponse> findByTeachingCallScheduleWorkgroupIdAndTeachingCallScheduleYearAndTermCode(long workgroupId, long year, String termCode);
+	List<TeachingCallResponse> findByScheduleIdAndTermCode(long scheduleId, String termCode);
+
+	TeachingCallResponse findOneByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode);
+
+	List<TeachingCallResponse> findByScheduleId(long scheduleId);
 }

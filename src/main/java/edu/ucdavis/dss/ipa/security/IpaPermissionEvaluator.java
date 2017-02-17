@@ -19,7 +19,6 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 	@Inject ActivityService activityService;
 	@Inject SectionService sectionService;
 	@Inject SectionGroupService sectionGroupService;
-	@Inject TeachingCallService teachingCallService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 
@@ -99,24 +98,11 @@ public class IpaPermissionEvaluator implements PermissionEvaluator {
 
 				return userHasRequiredRoleAndWorkgroup(user, role, teachingAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup());
 
-			case "teachingCall":
-				TeachingCall teachingCall = this.teachingCallService.findOneById((Long)item);
-				if(teachingCall == null) { return false; }
-
-				// Check if the instructor belongs to the right role
-				if("senateInstructor".equals(role) && teachingCall.isSentToSenate()) {
-					return userHasRequiredRoleAndWorkgroup(user, role, teachingCall.getSchedule().getWorkgroup());
-				} else if("federationInstructor".equals(role) && teachingCall.isSentToFederation()) {
-					return userHasRequiredRoleAndWorkgroup(user, role, teachingCall.getSchedule().getWorkgroup());
-				} else {
-					return false;
-				}
-
 			case "teachingCallReceipt":
 				TeachingCallReceipt teachingCallReceipt = this.teachingCallReceiptService.findOneById((Long)item);
 				if (teachingCallReceipt == null) { return false; }
 
-				return userHasRequiredRoleAndWorkgroup(user, role, teachingCallReceipt.getTeachingCall().getSchedule().getWorkgroup());
+				return userHasRequiredRoleAndWorkgroup(user, role, teachingCallReceipt.getSchedule().getWorkgroup());
 
 			case "":
 				throw new IllegalArgumentException("Use '*' instead of '' for ID-less resource-based permission checking.");

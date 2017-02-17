@@ -20,31 +20,7 @@ public interface TeachingCallResponseService {
 
 	public void delete(Long id);
 
-	public List<TeachingCallResponse> findByScheduleIdAndInstructorLoginId(Schedule schedule, String loginId);
-
-	List<TeachingCallResponse> findByScheduleIdAndTermCode(Long scheduleId, String termCode);
-
 	List<TeachingCallResponse> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
-	public TeachingCallResponse findOrCreateOneByTeachingCallIdAndInstructorIdAndTermCode(Long teachingCallId, long instructorId, String termCode);
-
-	/**
-	 * Overloaded version of {@link #getWorkgroupTeachingCallResponsesByInstructorId(Workgroup, Instructor, int)}.
-	 * <p>
-	 * Implementation defaults to returning a List of TeachingCallResponses for ten years for a
-	 * given Workgroup/Instructor combination.
-	 *
-	 * @param workgroup Workgroup from which to get TeachingCallResponses
-	 * @param instructor Instructor whose TeachingCallResponses should be retrieved
-	 * @return List of TeachingCallResponses for (10) years
-	 */
-	List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor);
-
-	List<TeachingCallResponse> getWorkgroupTeachingCallResponsesByInstructorId(
-			Workgroup workgroup, Instructor instructor, int years);
-
-	public List<TeachingCallResponse> findByScheduleId(long scheduleId);
-
-	List<TeachingCallResponse> findBySectionGroup(SectionGroup sectionGroup);
+	public TeachingCallResponse findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(Long scheduleId, long instructorId, String termCode);
 }

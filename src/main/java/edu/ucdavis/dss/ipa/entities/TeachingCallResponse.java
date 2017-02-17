@@ -100,4 +100,15 @@ public class TeachingCallResponse implements Serializable {
 			return 0;
 		}
 	}
+
+	@Transient
+	@JsonIgnore
+	public static String DefaultAvailabilityBlob() {
+		String blob = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+				+ "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+				+ "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+				+ "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+				+ "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"; // 29
+		return blob;
+	}
 }
