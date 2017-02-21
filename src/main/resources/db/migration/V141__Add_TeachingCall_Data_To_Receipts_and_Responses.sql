@@ -8,6 +8,7 @@ ALTER TABLE `TeachingCallReceipts` ADD COLUMN `ShowUnavailabilities` TINYINT(1) 
 ALTER TABLE `TeachingCallReceipts` ADD COLUMN `Schedules_ScheduleId` INT(11) NOT NULL;
 ALTER TABLE `TeachingCallReceipts` ADD COLUMN `LastContactedAt` TIMESTAMP NULL;
 ALTER TABLE `TeachingCallReceipts` ADD COLUMN `NextContactAt` TIMESTAMP NULL;
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `DueDate` TIMESTAMP NULL;
 
 -- Rename columns from responses
 ALTER TABLE `TeachingCallResponses` ADD COLUMN `Schedules_ScheduleId` INT(11) NOT NULL;

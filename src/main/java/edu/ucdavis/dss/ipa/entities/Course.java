@@ -169,4 +169,13 @@ public class Course implements Serializable {
 		this.sequencePattern = sequencePattern;
 	}
 
+	@JsonProperty("scheduleId")
+	@Transient
+	public long getScheduleIndentification() {
+		if(schedule != null) {
+			return schedule.getId();
+		} else {
+			return 0;
+		}
+	}
 }

@@ -17,7 +17,7 @@ public class TeachingCallReceipt implements Serializable {
 
 	private Instructor instructor;
 	private Boolean isDone = false, showUnavailabilities = true;
-	private Date lastContactedAt, nextContactAt;
+	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
 	private String comment, termsBlob, message;
 
@@ -101,6 +101,17 @@ public class TeachingCallReceipt implements Serializable {
 		this.nextContactAt = nextContactAt;
 	}
 
+	public Date getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
+	}
+
+	/**
+	 * Terms are expected to be sorted ['01','02','03', '04', '05','06','07','08','09','10']
+	 */
 	public String getTermsBlob() {
 		return termsBlob;
 	}
@@ -137,4 +148,24 @@ public class TeachingCallReceipt implements Serializable {
 		}
 	}
 
+	@JsonProperty("academicYear")
+	@Transient
+	public long getAcademicYear() {
+		if(schedule != null) {
+			return schedule.getYear();
+		} else {
+			return 0;
+		}
+	}
+
+
+	@JsonProperty("workgroupId")
+	@Transient
+	public long getWorkgroupId() {
+		if(schedule != null) {
+			return schedule.getWorkgroup().getId();
+		} else {
+			return 0;
+		}
+	}
 }
