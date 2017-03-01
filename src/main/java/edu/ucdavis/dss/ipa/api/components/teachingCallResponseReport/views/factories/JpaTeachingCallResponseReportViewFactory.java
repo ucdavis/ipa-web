@@ -32,7 +32,7 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 
         List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
-        List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
+        List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
         List<Instructor> instructors = new ArrayList<>();
 
         for (TeachingAssignment teachingAssignment : teachingAssignments) {

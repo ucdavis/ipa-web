@@ -84,6 +84,31 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 							sendTeachingCall(teachingCallReceipt, currentDate);
 						}
 					}
+
+					// Is a warning scheduled to be sent?
+					if (teachingCallReceipt.getDueDate() != null) {
+						Long oneDayInMilliseconds = 86400000L;
+						Long threeDaysInMilliseconds = 259200000L;
+
+						Long currentTime = currentDate.getTime();
+						Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
+						Long warnTime = dueDateTime - threeDaysInMilliseconds;
+						Long timeSinceLastContact = null;
+
+						if (teachingCallReceipt.getLastContactedAt() != null) {
+							timeSinceLastContact = currentTime - teachingCallReceipt.getLastContactedAt().getTime();
+						}
+
+						// Is it time to send a warning email?
+						// Warning emails are sent 3 days before dueDate
+						// To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
+						// Warning emails are suppressed if the due Date has passed
+						if (currentTime > warnTime) {
+							if (timeSinceLastContact == null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+								sendTeachingCallWarning(teachingCallReceipt, currentDate);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -146,6 +171,62 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		if (Email.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
+			teachingCallReceipt.setNextContactAt(null);
+			this.save(teachingCallReceipt);
+		}
+	}
+
+	private void sendTeachingCallWarning(TeachingCallReceipt teachingCallReceipt, Date currentDate) {
+		if (teachingCallReceipt.getIsDone()) {
+			return;
+		}
+
+		String loginId = teachingCallReceipt.getInstructor().getLoginId();
+
+		// loginId is necessary to map to a user and email
+		if ( loginId == null) {
+			log.error("Attempted to send notification to instructor id '" + teachingCallReceipt.getInstructor().getId() + "' but loginId was null.");
+			return;
+		}
+
+		User user = userService.getOneByLoginId(loginId);
+		if (user == null) {
+			log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
+			return;
+		}
+
+		String recipientEmail = user.getEmail();
+		String messageSubject = "";
+
+		Schedule schedule = teachingCallReceipt.getSchedule();
+		long workgroupId = schedule.getWorkgroup().getId();
+
+		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
+		//       at all -- it breaks out frontend / backend separation.
+		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
+		String messageBody = "";
+
+		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+
+		Long year = teachingCallReceipt.getSchedule().getYear();
+
+		// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
+
+		messageSubject = "IPA: Action needed - Teaching Call closing soon";
+
+		messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
+		messageBody += "Faculty,";
+		messageBody += "<br />";
+		messageBody += "A teaching call will be closing soon. Please submit your teaching preferences for the academic year by <b>" + format.format(teachingCallReceipt.getDueDate()) + "</b>.";
+		messageBody += "<br />";
+		messageBody += "<br />";
+		messageBody += "<h3><a href='" + teachingCallUrl + "'>View Teaching Call</a></h3>";
+
+		messageBody += "</td></tr></tbody></table>";
+
+		log.info("Initiating warning email to '" + user.getEmail() + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
+		if (Email.send(recipientEmail, messageBody, messageSubject)) {
+			teachingCallReceipt.setLastContactedAt(currentDate);
 			this.save(teachingCallReceipt);
 		}
 	}
@@ -160,23 +241,34 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceiptDTO) {
-		TeachingCallReceipt teachingCallReceipt = new TeachingCallReceipt();
 		List<TeachingCallReceipt> receipts = new ArrayList<>();
 
 		for (Long instructorId : instructorIds) {
+			Instructor slotInstructor = instructorService.getOneById(instructorId);
 			TeachingCallReceipt slotTeachingCallReceipt = new TeachingCallReceipt();
+
 			slotTeachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
-			slotTeachingCallReceipt.setComment(teachingCallReceiptDTO.getComment());
-			slotTeachingCallReceipt.setInstructor(teachingCallReceiptDTO.getInstructor());
+			slotTeachingCallReceipt.setInstructor(slotInstructor);
 			slotTeachingCallReceipt.setIsDone(false);
+			slotTeachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
 			slotTeachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
 			slotTeachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
 			slotTeachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
+			slotTeachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
 
 			slotTeachingCallReceipt = this.save(slotTeachingCallReceipt);
 			receipts.add(slotTeachingCallReceipt);
 		}
 
 		return receipts;
+	}
+
+	@Override
+	@Transactional
+	public boolean delete(Long id) {
+		TeachingCallReceipt teachingCallReceipt = this.findOneById(id);
+
+		this.teachingCallReceiptRepository.delete(id);
+		return true;
 	}
 }
