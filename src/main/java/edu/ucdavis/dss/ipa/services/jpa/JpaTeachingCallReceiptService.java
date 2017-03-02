@@ -167,7 +167,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
 		messageBody += "</td></tr></tbody></table>";
 
-		log.info("Initiating notification email to '" + user.getEmail() + "' for teaching Call in ScheduleId: '" + teachingCallReceipt.getSchedule().getId() + "'");
+		log.info("Initiating warning email to '" + user.getEmail() + "' email subject '" + messageSubject + "' email contents '" + messageBody + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
 
 		if (Email.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
@@ -224,7 +224,8 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		messageBody += "</td></tr></tbody></table>";
 
-		log.info("Initiating warning email to '" + user.getEmail() + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
+		log.info("Initiating warning email to '" + user.getEmail() + "' email subject '" + messageSubject + "' email contents '" + messageBody + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
+
 		if (Email.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			this.save(teachingCallReceipt);
