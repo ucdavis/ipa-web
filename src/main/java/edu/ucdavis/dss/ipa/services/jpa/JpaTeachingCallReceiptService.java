@@ -104,9 +104,12 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 						// To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
 						// Warning emails are suppressed if the due Date has passed
 						if (currentTime > warnTime) {
-							if (timeSinceLastContact == null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+							if (timeSinceLastContact == null && currentTime < dueDateTime) {
+								sendTeachingCallWarning(teachingCallReceipt, currentDate);
+							} else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
 								sendTeachingCallWarning(teachingCallReceipt, currentDate);
 							}
+
 						}
 					}
 				}
