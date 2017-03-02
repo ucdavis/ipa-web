@@ -23,6 +23,7 @@ public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses imp
                 String message = rsTeachingCalls.getString("Message");
                 String termsBlob = rsTeachingCalls.getString("TermsBlob");
                 long scheduleId = rsTeachingCalls.getLong("ScheduleId");
+                Date dueDate = rsTeachingCalls.getDate("DueDate");
 
                 // STEP 1: Find Related teachingCallReceipts
                 PreparedStatement psTeachingCallReceipts = connection.prepareStatement(
@@ -42,7 +43,8 @@ public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses imp
                                     " SET receipt.`Message` = ?, " +
                                     "     receipt.`TermsBlob` = ?, " +
                                     "     receipt.`ShowUnavailabilities` = ?, " +
-                                    "     receipt.`Schedules_ScheduleId` = ? " +
+                                    "     receipt.`Schedules_ScheduleId` = ?, " +
+                                    "     receipt.`DueDate` = ? " +
                                     " WHERE receipt.`TeachingCallId` = ?; "
                     );
 
@@ -50,8 +52,8 @@ public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses imp
                     psSetReceiptMetadata.setString(2, termsBlob);
                     psSetReceiptMetadata.setLong(3, ShowUnavailabilities);
                     psSetReceiptMetadata.setLong(4, scheduleId);
-                    psSetReceiptMetadata.setLong(5, teachingCallId);
-
+                    psSetReceiptMetadata.setDate(5, dueDate);
+                    psSetReceiptMetadata.setLong(6, teachingCallId);
                     psSetReceiptMetadata.execute();
                     psSetReceiptMetadata.close();
 
