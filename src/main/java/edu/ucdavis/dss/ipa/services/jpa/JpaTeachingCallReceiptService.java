@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import edu.ucdavis.dss.ipa.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
@@ -33,7 +34,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Inject UserRoleService userRoleService;
 	@Inject ScheduleService scheduleService;
 
-	private static final Logger log = LogManager.getLogger();
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
 	@Override
 	@Transactional
@@ -170,8 +171,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
 		messageBody += "</td></tr></tbody></table>";
 
-		log.info("Initiating warning email to '" + user.getEmail() + "' email subject '" + messageSubject + "' email contents '" + messageBody + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
-
 		if (Email.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			teachingCallReceipt.setNextContactAt(null);
@@ -226,8 +225,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		messageBody += "<h3><a href='" + teachingCallUrl + "'>View Teaching Call</a></h3>";
 
 		messageBody += "</td></tr></tbody></table>";
-
-		log.info("Initiating warning email to '" + user.getEmail() + "' email subject '" + messageSubject + "' email contents '" + messageBody + "' for scheduleId '" + teachingCallReceipt.getSchedule().getId() + "'");
 
 		if (Email.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);

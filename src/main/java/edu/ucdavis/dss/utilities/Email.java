@@ -27,6 +27,7 @@ public class Email {
 	 */
 	public static boolean send(String recipientEmail, String messageBody, String messageSubject) {
 		if(SettingsConfiguration.runningModeIsProduction()) {
+			log.info("Initiating email to '" + recipientEmail + "' email subject '" + messageSubject + "' email contents '" + messageBody + "'");
 			return sendEmail(recipientEmail, messageBody, messageSubject, true);
 		} else {
 			// TODO: Why does this message not appear even if logging level is set to INFO?
