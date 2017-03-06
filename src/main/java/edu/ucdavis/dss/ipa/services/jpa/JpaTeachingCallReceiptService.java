@@ -150,7 +150,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
+		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -205,7 +205,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/assignments/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
+		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
