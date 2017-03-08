@@ -42,6 +42,7 @@ public class JwtFilter extends GenericFilterBean {
                         .parseClaimsJws(token).getBody();
 
                 Authorization.setLoginId((String) claims.get("loginId"));
+                Authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
                 Authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
                 Authorization.setExpirationDate((Long) claims.get("expirationDate"));
 

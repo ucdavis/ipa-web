@@ -13,7 +13,7 @@ import java.util.List;
 
 @JsonDeserialize(using = SecurityDTODeserializer.class)
 public class SecurityDTO {
-    public String token, displayName, loginId;
+    public String token, displayName, realUserDisplayName, loginId, realUserLoginId;
     static public String redirect = null;
     public List<UserRoleDTO> userRoles;
     public List<ScheduleTermState> termStates;
@@ -46,9 +46,17 @@ public class SecurityDTO {
         this.loginId = loginId;
     }
 
+    public void setRealUserLoginId(String realUserLoginId) {
+        this.realUserLoginId = realUserLoginId;
+    }
+
     public void setTermStates(List<ScheduleTermState> termStates) {
         this.termStates = termStates;
     }
 
     public String getRedirect() { return redirect; }
+
+    public void setRealUserDisplayName(String realUserDisplayName) {
+        this.realUserDisplayName = realUserDisplayName;
+    }
 }

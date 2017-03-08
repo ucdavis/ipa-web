@@ -16,6 +16,8 @@ public class Authorization {
 
     private static final ThreadLocal<List<UserRole>> userRoles = new ThreadLocal();
     private static final ThreadLocal<String> loginId = new ThreadLocal();
+    private static final ThreadLocal<String> realUserLoginId = new ThreadLocal();
+
     private static final ThreadLocal<Long> expirationDate = new ThreadLocal();
 
     public static void setUserRoles(List<UserRole> userRoles) {
@@ -28,6 +30,14 @@ public class Authorization {
 
     public static String getLoginId() {
         return Authorization.loginId.get();
+    }
+
+    public static void setRealUserLoginId(String realUserLoginId) {
+        Authorization.realUserLoginId.set(realUserLoginId);
+    }
+
+    public static String getRealUserLoginId() {
+        return Authorization.realUserLoginId.get();
     }
 
     public static void setExpirationDate(Long expirationDate) {
