@@ -163,7 +163,7 @@ public class AuthController {
     }
 
     @CrossOrigin // TODO: make CORS more specific depending on profile
-    @RequestMapping(value = "/impersonate/{loginId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/impersonate/{loginIdToImpersonate}", method = RequestMethod.POST)
     public SecurityDTO impersonate(@PathVariable String loginIdToImpersonate, @RequestBody SecurityDTO securityDTO,
                                                 HttpServletRequest request,
                                                 HttpServletResponse response) {

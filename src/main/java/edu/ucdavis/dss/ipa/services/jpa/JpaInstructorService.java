@@ -2,19 +2,26 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JpaInstructorService implements InstructorService {
 	@Inject InstructorRepository instructorRepository;
 	@Inject WorkgroupService workgroupService;
+	@Inject ScheduleService scheduleService;
+	@Inject UserRoleService userRoleService;
 
 	private static final Logger log = LogManager.getLogger();
 
@@ -87,6 +94,56 @@ public class JpaInstructorService implements InstructorService {
 			instructor.getTeachingCallReceipts().size() == 0) {
 				instructorRepository.delete(instructor.getId());
 		}
+	}
+
+	@Override
+	public List<Instructor> findByScheduleId(long scheduleId) {
+		Schedule schedule = scheduleService.findById(scheduleId);
+
+		List<SectionGroup> sectionGroups = new ArrayList<>();
+
+		for (Course course : schedule.getCourses()) {
+			sectionGroups.addAll(course.getSectionGroups());
+		}
+
+		List<Instructor> activeInstructors = userRoleService.getInstructorsByWorkgroupId(schedule.getWorkgroup().getId());
+		List<Instructor> instructorsFromAssignments = this.findBySectionGroups(sectionGroups);
+
+		List<Long> uniqueInstructorIds = new ArrayList<>();
+		List<Instructor> uniqueInstructors = new ArrayList<>();
+
+		for (Instructor slotInstructor : instructorsFromAssignments) {
+			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+				uniqueInstructorIds.add(slotInstructor.getId());
+				uniqueInstructors.add(slotInstructor);
+			}
+		}
+
+		for (Instructor slotInstructor : activeInstructors) {
+			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+				uniqueInstructorIds.add(slotInstructor.getId());
+				uniqueInstructors.add(slotInstructor);
+			}
+		}
+
+		return uniqueInstructors;
+	}
+
+	private List<Instructor> findBySectionGroups(List<SectionGroup> sectionGroups) {
+		List<Long> uniqueInstructorIds = new ArrayList<>();
+		List<Instructor> uniqueInstructors = new ArrayList<>();
+
+		for(SectionGroup sectionGroup : sectionGroups) {
+			for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+				Instructor slotInstructor = teachingAssignment.getInstructor();
+				if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+					uniqueInstructors.add(slotInstructor);
+					uniqueInstructorIds.add(slotInstructor.getId());
+				}
+			}
+		}
+
+		return uniqueInstructors;
 	}
 
 }

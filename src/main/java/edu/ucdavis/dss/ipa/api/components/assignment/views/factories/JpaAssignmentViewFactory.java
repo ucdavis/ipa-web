@@ -32,6 +32,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		long scheduleId = schedule.getId();
 		List<Course> courses = schedule.getCourses();
 		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
+		List<Instructor> instructorMasterList = instructorService.findByScheduleId(scheduleId);
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
@@ -40,7 +41,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
 		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
 
-		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
+		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
 				senateInstructorIds, federationInstructorIds, workgroup.getTags());
