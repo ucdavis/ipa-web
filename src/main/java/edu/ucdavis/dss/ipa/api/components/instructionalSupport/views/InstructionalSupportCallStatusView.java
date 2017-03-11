@@ -9,23 +9,23 @@ public class InstructionalSupportCallStatusView {
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
-    List<StudentInstructionalSupportCall> studentSupportCalls;
+    List<StudentSupportCall> studentSupportCalls;
     List<InstructorSupportCall> instructorSupportCalls;
     List<Instructor> activeInstructors;
     List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
-    List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
+    List<StudentSupportCallResponse> studentSupportCallResponses;
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
     public InstructionalSupportCallStatusView(Long scheduleId,
                                               List<SupportStaff> supportStaffList,
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
-                                              List<StudentInstructionalSupportCall> studentSupportCalls,
+                                              List<StudentSupportCall> studentSupportCalls,
                                               List<InstructorSupportCall> instructorSupportCalls,
                                               List<Instructor> activeInstructors,
                                               List<TeachingAssignment> teachingAssignments,
-                                              List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
+                                              List<StudentSupportCallResponse> studentSupportCallResponses,
                                               List<InstructorSupportCallResponse> instructorSupportCallResponses) {
         setScheduleId(scheduleId);
         setSupportStaffList(supportStaffList);
@@ -36,7 +36,7 @@ public class InstructionalSupportCallStatusView {
         setInstructorSupportCalls(instructorSupportCalls);
         setActiveInstructors(activeInstructors);
         setTeachingAssignments(teachingAssignments);
-        setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+        setStudentSupportCallResponses(studentSupportCallResponses);
         setInstructorSupportCallResponses(instructorSupportCallResponses);
     }
 
@@ -72,11 +72,11 @@ public class InstructionalSupportCallStatusView {
         this.instructionalSupportIds = instructionalSupportIds;
     }
 
-    public List<StudentInstructionalSupportCall> getStudentSupportCalls() {
+    public List<StudentSupportCall> getStudentSupportCalls() {
         return studentSupportCalls;
     }
 
-    public void setStudentSupportCalls(List<StudentInstructionalSupportCall> studentSupportCalls) {
+    public void setStudentSupportCalls(List<StudentSupportCall> studentSupportCalls) {
         this.studentSupportCalls = studentSupportCalls;
     }
 
@@ -112,12 +112,12 @@ public class InstructionalSupportCallStatusView {
         this.teachingAssignments = teachingAssignments;
     }
 
-    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
-        return studentInstructionalSupportCallResponses;
+    public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+        return studentSupportCallResponses;
     }
 
-    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
-        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    public void setStudentSupportCallResponses(List<StudentSupportCallResponse> studentSupportCallResponses) {
+        this.studentSupportCallResponses = studentSupportCallResponses;
     }
 
     public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {

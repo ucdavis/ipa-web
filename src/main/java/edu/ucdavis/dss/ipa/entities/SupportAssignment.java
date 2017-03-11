@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * InstructionalSupportAssignment is used to record the desire to fill this support 'position'.
+ * SupportAssignment is used to record the desire to fill this support 'position'.
  * When an instructionalSupportStaffId is set, that records the assignment into this position.
  */
 
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "InstructionalSupportAssignments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class InstructionalSupportAssignment implements Serializable {
+public class SupportAssignment implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
     private SupportStaff supportStaff;

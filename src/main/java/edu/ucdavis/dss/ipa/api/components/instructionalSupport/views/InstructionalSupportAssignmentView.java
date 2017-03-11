@@ -7,34 +7,34 @@ import java.util.List;
 public class InstructionalSupportAssignmentView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
-    List<InstructionalSupportAssignment> instructionalSupportAssignments;
+    List<SupportAssignment> supportAssignments;
     List<SupportStaff> supportStaffList;
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
-    List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
-    List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
+    List<StudentSupportPreference> studentSupportPreferences;
+    List<StudentSupportCallResponse> studentSupportCallResponses;
     Schedule schedule;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
-                                              List<InstructionalSupportAssignment> instructionalSupportAssignments,
+                                              List<SupportAssignment> supportAssignments,
                                               List<SupportStaff> supportStaffList,
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
-                                              List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
-                                              List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
+                                              List<StudentSupportPreference> studentSupportPreferences,
+                                              List<StudentSupportCallResponse> studentSupportCallResponses,
                                               Schedule schedule) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
-        setInstructionalSupportAssignments(instructionalSupportAssignments);
+        setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setMastersStudentIds(mastersStudentsIds);
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
-        setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
-        setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+        setStudentSupportPreferences(studentSupportPreferences);
+        setStudentSupportCallResponses(studentSupportCallResponses);
         setSchedule(schedule);
     }
 
@@ -54,12 +54,12 @@ public class InstructionalSupportAssignmentView {
         this.courses = courses;
     }
 
-    public List<InstructionalSupportAssignment> getInstructionalSupportAssignments() {
-        return instructionalSupportAssignments;
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
     }
 
-    public void setInstructionalSupportAssignments(List<InstructionalSupportAssignment> instructionalSupportAssignments) {
-        this.instructionalSupportAssignments = instructionalSupportAssignments;
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
     }
 
     public List<SupportStaff> getSupportStaffList() {
@@ -94,20 +94,20 @@ public class InstructionalSupportAssignmentView {
         this.instructionalSupportIds = instructionalSupportIds;
     }
 
-    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
-        return studentInstructionalSupportPreferences;
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
     }
 
-    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
-        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
+    public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 
-    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
-        return studentInstructionalSupportCallResponses;
+    public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+        return studentSupportCallResponses;
     }
 
-    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
-        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    public void setStudentSupportCallResponses(List<StudentSupportCallResponse> studentSupportCallResponses) {
+        this.studentSupportCallResponses = studentSupportCallResponses;
     }
 
     public Schedule getSchedule() {

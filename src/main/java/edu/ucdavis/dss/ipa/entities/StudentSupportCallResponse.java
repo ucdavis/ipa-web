@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "StudentInstructionalSupportCallResponses")
-public class StudentInstructionalSupportCallResponse implements Serializable {
+public class StudentSupportCallResponse implements Serializable {
     private long id;
-    private StudentInstructionalSupportCall studentInstructionalSupportCall;
+    private StudentSupportCall studentSupportCall;
     private SupportStaff supportStaff;
     private Date notifiedAt, warnedAt;
     private boolean submitted;
@@ -48,12 +48,12 @@ public class StudentInstructionalSupportCallResponse implements Serializable {
     @JoinColumn(name = "StudentInstructionalSupportCallId", nullable = false)
     @NotNull
     @JsonIgnore
-    public StudentInstructionalSupportCall getStudentInstructionalSupportCall() {
-        return studentInstructionalSupportCall;
+    public StudentSupportCall getStudentSupportCall() {
+        return studentSupportCall;
     }
 
-    public void setStudentInstructionalSupportCall(StudentInstructionalSupportCall studentInstructionalSupportCall) {
-        this.studentInstructionalSupportCall = studentInstructionalSupportCall;
+    public void setStudentSupportCall(StudentSupportCall studentSupportCall) {
+        this.studentSupportCall = studentSupportCall;
     }
 
 
@@ -105,8 +105,8 @@ public class StudentInstructionalSupportCallResponse implements Serializable {
     @JsonProperty("studentSupportCallId")
     @Transient
     public long getStudentInstructionalSupportCallIdentification() {
-        if(studentInstructionalSupportCall != null) {
-            return studentInstructionalSupportCall.getId();
+        if(studentSupportCall != null) {
+            return studentSupportCall.getId();
         } else {
             return 0;
         }

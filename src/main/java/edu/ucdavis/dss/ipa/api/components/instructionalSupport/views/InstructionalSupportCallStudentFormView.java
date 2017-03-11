@@ -1,35 +1,35 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class InstructionalSupportCallStudentFormView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
-    List<InstructionalSupportAssignment> instructionalSupportAssignments;
-    List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
-    StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse;
+    List<SupportAssignment> supportAssignments;
+    List<StudentSupportPreference> studentSupportPreferences;
+    StudentSupportCallResponse studentSupportCallResponse;
     Long scheduleId;
     Long supportStaffId;
-    StudentInstructionalSupportCall studentInstructionalSupportCall;
+    StudentSupportCall studentSupportCall;
 
     public InstructionalSupportCallStudentFormView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
-                                              List<InstructionalSupportAssignment> instructionalSupportAssignments,
-                                               List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
+                                              List<SupportAssignment> supportAssignments,
+                                               List<StudentSupportPreference> studentSupportPreferences,
                                                Long scheduleId,
                                                Long supportStaffId,
-                                               StudentInstructionalSupportCall studentInstructionalSupportCall,
-                                               StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
+                                               StudentSupportCall studentSupportCall,
+                                               StudentSupportCallResponse studentSupportCallResponse) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
-        setInstructionalSupportAssignments(instructionalSupportAssignments);
+        setSupportAssignments(supportAssignments);
         setScheduleId(scheduleId);
         setSupportStaffId(supportStaffId);
-        setStudentInstructionalSupportCall(studentInstructionalSupportCall);
-        setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
-        setStudentInstructionalSupportCallResponse(studentInstructionalSupportCallResponse);
+        setStudentSupportCall(studentSupportCall);
+        setStudentSupportPreferences(studentSupportPreferences);
+        setStudentSupportCallResponse(studentSupportCallResponse);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -48,12 +48,12 @@ public class InstructionalSupportCallStudentFormView {
         this.courses = courses;
     }
 
-    public List<InstructionalSupportAssignment> getInstructionalSupportAssignments() {
-        return instructionalSupportAssignments;
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
     }
 
-    public void setInstructionalSupportAssignments(List<InstructionalSupportAssignment> instructionalSupportAssignments) {
-        this.instructionalSupportAssignments = instructionalSupportAssignments;
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
     }
 
     public Long getSupportStaffId() {
@@ -72,27 +72,27 @@ public class InstructionalSupportCallStudentFormView {
         this.scheduleId = scheduleId;
     }
 
-    public StudentInstructionalSupportCall getStudentInstructionalSupportCall() {
-        return studentInstructionalSupportCall;
+    public StudentSupportCall getStudentSupportCall() {
+        return studentSupportCall;
     }
 
-    public void setStudentInstructionalSupportCall(StudentInstructionalSupportCall studentInstructionalSupportCall) {
-        this.studentInstructionalSupportCall = studentInstructionalSupportCall;
+    public void setStudentSupportCall(StudentSupportCall studentSupportCall) {
+        this.studentSupportCall = studentSupportCall;
     }
 
-    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
-        return studentInstructionalSupportPreferences;
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
     }
 
-    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
-        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
+    public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 
-    public StudentInstructionalSupportCallResponse getStudentInstructionalSupportCallResponse() {
-        return studentInstructionalSupportCallResponse;
+    public StudentSupportCallResponse getStudentSupportCallResponse() {
+        return studentSupportCallResponse;
     }
 
-    public void setStudentInstructionalSupportCallResponse(StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse) {
-        this.studentInstructionalSupportCallResponse = studentInstructionalSupportCallResponse;
+    public void setStudentSupportCallResponse(StudentSupportCallResponse studentSupportCallResponse) {
+        this.studentSupportCallResponse = studentSupportCallResponse;
     }
 }

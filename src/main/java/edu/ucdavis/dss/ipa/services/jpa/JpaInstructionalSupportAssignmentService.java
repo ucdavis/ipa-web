@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportAssignment;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
@@ -26,12 +26,12 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     @Inject ScheduleService scheduleService;
 
     @Override
-    public InstructionalSupportAssignment save(InstructionalSupportAssignment instructionalSupportAssignment) {
-        return this.instructionalSupportAssignmentRepository.save(instructionalSupportAssignment);
+    public SupportAssignment save(SupportAssignment supportAssignment) {
+        return this.instructionalSupportAssignmentRepository.save(supportAssignment);
     }
 
     @Override
-    public InstructionalSupportAssignment findOneById(Long instructionalSupportAssignmentId) {
+    public SupportAssignment findOneById(Long instructionalSupportAssignmentId) {
         return this.instructionalSupportAssignmentRepository.findById(instructionalSupportAssignmentId);
     }
 
@@ -41,56 +41,56 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     }
 
     @Override
-    public InstructionalSupportAssignment create(long sectionGroupId, String type, long appointmentPercentage) {
+    public SupportAssignment create(long sectionGroupId, String type, long appointmentPercentage) {
 
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
-        InstructionalSupportAssignment instructionalSupportAssignment = new InstructionalSupportAssignment();
+        SupportAssignment supportAssignment = new SupportAssignment();
 
-        instructionalSupportAssignment.setSectionGroup(sectionGroup);
-        instructionalSupportAssignment.setAppointmentPercentage(appointmentPercentage);
-        instructionalSupportAssignment.setAppointmentType(type);
+        supportAssignment.setSectionGroup(sectionGroup);
+        supportAssignment.setAppointmentPercentage(appointmentPercentage);
+        supportAssignment.setAppointmentType(type);
 
-        return this.save(instructionalSupportAssignment);
+        return this.save(supportAssignment);
     }
 
     @Override
-    public List<InstructionalSupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate) {
+    public List<SupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate) {
 
-        List<InstructionalSupportAssignment> instructionalSupportAssignments = new ArrayList<InstructionalSupportAssignment>();
+        List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
 
         for (int i = 0; i < numberToCreate; i++) {
-            InstructionalSupportAssignment instructionalSupportAssignment = this.create(sectionGroupId, type, appointmentPercentage);
-            instructionalSupportAssignments.add(instructionalSupportAssignment);
+            SupportAssignment supportAssignment = this.create(sectionGroupId, type, appointmentPercentage);
+            supportAssignments.add(supportAssignment);
         }
 
-        return instructionalSupportAssignments;
+        return supportAssignments;
     }
 
     @Override
-    public InstructionalSupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId) {
+    public SupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId) {
 
         SupportStaff supportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
-        InstructionalSupportAssignment instructionalSupportAssignment = this.findOneById(instructionalSupportAssignmentId);
+        SupportAssignment supportAssignment = this.findOneById(instructionalSupportAssignmentId);
 
-        instructionalSupportAssignment.setSupportStaff(supportStaff);
+        supportAssignment.setSupportStaff(supportStaff);
 
-        return this.save(instructionalSupportAssignment);
+        return this.save(supportAssignment);
     }
 
     @Override
-    public InstructionalSupportAssignment unassignInstructionalSupportStaff(long instructionalSupportAssignmentId) {
-        InstructionalSupportAssignment instructionalSupportAssignment = this.findOneById(instructionalSupportAssignmentId);
+    public SupportAssignment unassignInstructionalSupportStaff(long instructionalSupportAssignmentId) {
+        SupportAssignment supportAssignment = this.findOneById(instructionalSupportAssignmentId);
 
-        instructionalSupportAssignment.setSupportStaff(null);
+        supportAssignment.setSupportStaff(null);
 
-        return this.save(instructionalSupportAssignment);
+        return this.save(supportAssignment);
     }
 
     @Override
-    public List<InstructionalSupportAssignment> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
+    public List<SupportAssignment> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
         Schedule schedule = this.scheduleService.findById(scheduleId);
-        List<InstructionalSupportAssignment> instructionalSupportAssignments = new ArrayList<InstructionalSupportAssignment>();
+        List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
 
         // Find all sectionGroups for the specified schedule and termCode
         List<SectionGroup> sectionGroups = schedule.getCourses()
@@ -101,12 +101,12 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        // Find all instructionalSupportAssignments associated to the sectionGroups.
+        // Find all supportAssignments associated to the sectionGroups.
         for (SectionGroup sectionGroup : sectionGroups) {
-            instructionalSupportAssignments.addAll(sectionGroup.getInstructionalSupportAssignments());
+            supportAssignments.addAll(sectionGroup.getSupportAssignments());
         }
 
-        return instructionalSupportAssignments;
+        return supportAssignments;
     }
 
     /**
@@ -117,11 +117,11 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
      * @return
      */
     @Override
-    public List<InstructionalSupportAssignment> findByScheduleIdAndTermCodeAndSupportStaffId(long scheduleId, String termCode, long supportStaffId) {
-        List<InstructionalSupportAssignment> allSupportAssignments = this.findByScheduleIdAndTermCode(scheduleId, termCode);
-        List<InstructionalSupportAssignment> supportStaffAssignments = new ArrayList<>();
+    public List<SupportAssignment> findByScheduleIdAndTermCodeAndSupportStaffId(long scheduleId, String termCode, long supportStaffId) {
+        List<SupportAssignment> allSupportAssignments = this.findByScheduleIdAndTermCode(scheduleId, termCode);
+        List<SupportAssignment> supportStaffAssignments = new ArrayList<>();
 
-        for (InstructionalSupportAssignment slotAssignment : allSupportAssignments) {
+        for (SupportAssignment slotAssignment : allSupportAssignments) {
             if (slotAssignment.getSupportStaff() != null
             && slotAssignment.getSupportStaff().getId() == supportStaffId) {
                 supportStaffAssignments.add(slotAssignment);

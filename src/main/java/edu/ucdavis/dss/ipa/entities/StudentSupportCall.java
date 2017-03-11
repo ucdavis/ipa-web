@@ -12,14 +12,13 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.StudentInstructionalSupportCallDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "StudentInstructionalSupportCalls")
 @JsonDeserialize(using = StudentInstructionalSupportCallDeserializer.class)
-public class StudentInstructionalSupportCall implements Serializable {
+public class StudentSupportCall implements Serializable {
     private long id;
     private long MinimumNumberOfPreferences;
     private Schedule schedule;
@@ -29,8 +28,8 @@ public class StudentInstructionalSupportCall implements Serializable {
     private boolean CollectGeneralComments, CollectTeachingQualifications, CollectPreferenceComments;
     private boolean CollectEligibilityConfirmation, CollectTeachingAssistantPreferences, CollectReaderPreferences;
     private boolean CollectAssociateInstructorPreferences;
-    private List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = new ArrayList<>();
-    private List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences = new ArrayList<>();
+    private List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
+    private List<StudentSupportPreference> studentSupportPreferences = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -197,22 +196,22 @@ public class StudentInstructionalSupportCall implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    public List<StudentInstructionalSupportCallResponse> getStudentInstructionalSupportCallResponses() {
-        return studentInstructionalSupportCallResponses;
+    public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+        return studentSupportCallResponses;
     }
 
-    public void setStudentInstructionalSupportCallResponses(List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses) {
-        this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
+    public void setStudentSupportCallResponses(List<StudentSupportCallResponse> studentSupportCallResponses) {
+        this.studentSupportCallResponses = studentSupportCallResponses;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "studentInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
-        return studentInstructionalSupportPreferences;
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
     }
 
-    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
-        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
+    public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 
     @JsonProperty("scheduleId")

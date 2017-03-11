@@ -1,18 +1,17 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
-import org.springframework.stereotype.Service;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
 
 import java.util.List;
 
 public interface StudentInstructionalSupportCallService {
-    StudentInstructionalSupportCall findOneById(long studentInstructionalSupportCallId);
+    StudentSupportCall findOneById(long studentInstructionalSupportCallId);
 
-    StudentInstructionalSupportCall findOrCreate(StudentInstructionalSupportCall studentInstructionalSupportCall);
+    StudentSupportCall findOrCreate(StudentSupportCall studentSupportCall);
 
-    List<StudentInstructionalSupportCall> findByScheduleId(long scheduleId);
+    List<StudentSupportCall> findByScheduleId(long scheduleId);
 
     void delete(long studentInstructionalSupportCallId);
 
-    List<StudentInstructionalSupportCall> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
+    List<StudentSupportCall> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 }

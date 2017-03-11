@@ -10,20 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * StudentInstructionalSupportPreference records an supportStaff's desire to fill a position of this type and sectionGroup.
+ * StudentSupportPreference records an supportStaff's desire to fill a position of this type and sectionGroup.
  */
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "StudentInstructionalSupportPreferences")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class StudentInstructionalSupportPreference implements Serializable {
+public class StudentSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
     private SupportStaff supportStaff;
     private String type, comment;
     private long priority;
-    private StudentInstructionalSupportCall studentInstructionalSupportCall;
+    private StudentSupportCall studentSupportCall;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,12 +90,12 @@ public class StudentInstructionalSupportPreference implements Serializable {
     @JoinColumn(name = "StudentInstructionalSupportCallId", nullable = false)
     @NotNull
     @JsonIgnore
-    public StudentInstructionalSupportCall getStudentInstructionalSupportCall() {
-        return studentInstructionalSupportCall;
+    public StudentSupportCall getStudentSupportCall() {
+        return studentSupportCall;
     }
 
-    public void setStudentInstructionalSupportCall(StudentInstructionalSupportCall studentInstructionalSupportCall) {
-        this.studentInstructionalSupportCall = studentInstructionalSupportCall;
+    public void setStudentSupportCall(StudentSupportCall studentSupportCall) {
+        this.studentSupportCall = studentSupportCall;
     }
 
     @JsonProperty("instructionalSupportStaffId")

@@ -36,16 +36,16 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/studentInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public StudentInstructionalSupportCall addStudentSupportCall(@PathVariable long scheduleId, @RequestBody StudentInstructionalSupportCall studentInstructionalSupportCall, HttpServletResponse httpResponse) {
+    public StudentSupportCall addStudentSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCall studentSupportCall, HttpServletResponse httpResponse) {
 
 
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
-        studentInstructionalSupportCall.setSchedule(schedule);
+        studentSupportCall.setSchedule(schedule);
 
-        return studentInstructionalSupportCallService.findOrCreate(studentInstructionalSupportCall);
+        return studentInstructionalSupportCallService.findOrCreate(studentSupportCall);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/instructorInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
@@ -76,9 +76,9 @@ public class InstructionalSupportCallsController {
     @RequestMapping(value = "/api/instructionalSupportView/studentInstructionalSupportCalls/{studentInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deleteStudentSupportCall(@PathVariable long studentInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        StudentInstructionalSupportCall studentInstructionalSupportCall = studentInstructionalSupportCallService.findOneById(studentInstructionalSupportCallId);
+        StudentSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentInstructionalSupportCallId);
 
-        Workgroup workgroup = studentInstructionalSupportCall.getSchedule().getWorkgroup();
+        Workgroup workgroup = studentSupportCall.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         studentInstructionalSupportCallService.delete(studentInstructionalSupportCallId);

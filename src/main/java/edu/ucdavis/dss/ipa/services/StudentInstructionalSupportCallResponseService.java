@@ -1,25 +1,25 @@
 package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 
 import java.util.List;
 
 public interface StudentInstructionalSupportCallResponseService {
-    StudentInstructionalSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId);
+    StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId);
 
-    List<StudentInstructionalSupportCallResponse> findByScheduleId(long scheduleId);
+    List<StudentSupportCallResponse> findByScheduleId(long scheduleId);
 
-    StudentInstructionalSupportCallResponse create(StudentInstructionalSupportCall studentInstructionalSupportCall, SupportStaff supportStaff);
+    StudentSupportCallResponse create(StudentSupportCall studentSupportCall, SupportStaff supportStaff);
 
     void delete(long studentInstructionalSupportCallResponseId);
 
-    StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse);
+    StudentSupportCallResponse update(StudentSupportCallResponse studentSupportCallResponse);
 
-    List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
+    List<StudentSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId);
 
-    List<StudentInstructionalSupportCallResponse> findByScheduleIdAndTermCode(long id, String termCode);
+    List<StudentSupportCallResponse> findByScheduleIdAndTermCode(long id, String termCode);
 
     void sendNotificationsByWorkgroupId(Long workgroupId);
 }

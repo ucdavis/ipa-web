@@ -1,8 +1,8 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallService;
@@ -20,17 +20,17 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
 
     @Override
-    public StudentInstructionalSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId) {
+    public StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId) {
         return studentInstructionalSupportCallResponseRepository.findById(studentInstructionalSupportCallResponseId);
     }
 
     @Override
-    public List<StudentInstructionalSupportCallResponse> findByScheduleId(long scheduleId) {
-        List<StudentInstructionalSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleId(scheduleId);
-        List<StudentInstructionalSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
+    public List<StudentSupportCallResponse> findByScheduleId(long scheduleId) {
+        List<StudentSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
 
-        for (StudentInstructionalSupportCall studentSupportCall : studentSupportCalls) {
-            studentSupportCallResponses.addAll(studentSupportCall.getStudentInstructionalSupportCallResponses());
+        for (StudentSupportCall studentSupportCall : studentSupportCalls) {
+            studentSupportCallResponses.addAll(studentSupportCall.getStudentSupportCallResponses());
         }
 
         return studentSupportCallResponses;
@@ -42,16 +42,16 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
-    public StudentInstructionalSupportCallResponse update(StudentInstructionalSupportCallResponse studentSupportCallResponse) {
+    public StudentSupportCallResponse update(StudentSupportCallResponse studentSupportCallResponse) {
         return studentInstructionalSupportCallResponseRepository.save(studentSupportCallResponse);
     }
 
     @Override
-    public List<StudentInstructionalSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId) {
-        List<StudentInstructionalSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
-        List<StudentInstructionalSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
+    public List<StudentSupportCallResponse> findByScheduleIdAndSupportStaffId(long scheduleId, long supportStaffId) {
+        List<StudentSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
+        List<StudentSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
 
-        for (StudentInstructionalSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
+        for (StudentSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
             if (supportCallResponse.getInstructionalSupportStaffIdentification() == supportStaffId) {
                 filteredSupportCallResponses.add(supportCallResponse);
             }
@@ -61,12 +61,12 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
-    public List<StudentInstructionalSupportCallResponse> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<StudentInstructionalSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
-        List<StudentInstructionalSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
+    public List<StudentSupportCallResponse> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
+        List<StudentSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
+        List<StudentSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
 
-        for (StudentInstructionalSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
-            if (supportCallResponse.getStudentInstructionalSupportCall().getTermCode().equals(termCode)) {
+        for (StudentSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
+            if (supportCallResponse.getStudentSupportCall().getTermCode().equals(termCode)) {
                 filteredSupportCallResponses.add(supportCallResponse);
             }
         }
@@ -80,12 +80,12 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
-    public StudentInstructionalSupportCallResponse create (StudentInstructionalSupportCall studentInstructionalSupportCall, SupportStaff supportStaff) {
-        StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse = new StudentInstructionalSupportCallResponse();
+    public StudentSupportCallResponse create (StudentSupportCall studentSupportCall, SupportStaff supportStaff) {
+        StudentSupportCallResponse studentSupportCallResponse = new StudentSupportCallResponse();
 
-        studentInstructionalSupportCallResponse.setStudentInstructionalSupportCall(studentInstructionalSupportCall);
-        studentInstructionalSupportCallResponse.setSupportStaff(supportStaff);
+        studentSupportCallResponse.setStudentSupportCall(studentSupportCall);
+        studentSupportCallResponse.setSupportStaff(supportStaff);
 
-        return studentInstructionalSupportCallResponseRepository.save(studentInstructionalSupportCallResponse);
+        return studentInstructionalSupportCallResponseRepository.save(studentSupportCallResponse);
     }
 }

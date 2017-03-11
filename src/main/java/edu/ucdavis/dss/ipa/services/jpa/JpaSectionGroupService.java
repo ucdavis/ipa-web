@@ -98,8 +98,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Override
 	public List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallId(long scheduleId, String termCode, long studentSupportCallId) {
 		List<SectionGroup> allSectionGroups = this.findByScheduleIdAndTermCode(scheduleId, termCode);
-		StudentInstructionalSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentSupportCallId);
-		List<InstructionalSupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
+		StudentSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentSupportCallId);
+		List<SupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
 
 		// List of sectionGroups that are valid options to be preferences
 		List<SectionGroup> filteredSectionGroups = new ArrayList<>();
@@ -107,7 +107,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 		// Loop over sectionGroups in schedule/term
 		for ( SectionGroup slotSectionGroup : allSectionGroups) {
 
-			for (InstructionalSupportAssignment slotSupportAssignment : supportAssignments) {
+			for (SupportAssignment slotSupportAssignment : supportAssignments) {
 
 				// Assignment is for this sectionGroupId and matches one of the interested types from the support call?
 				if (slotSupportAssignment.getSectionGroup().getId() == slotSectionGroup.getId()
@@ -127,7 +127,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	 * @param supportAssignment
      * @return
      */
-	private boolean isSupportCallAssignmentMatch (StudentInstructionalSupportCall studentSupportCall, InstructionalSupportAssignment supportAssignment) {
+	private boolean isSupportCallAssignmentMatch (StudentSupportCall studentSupportCall, SupportAssignment supportAssignment) {
 		if (studentSupportCall.isCollectAssociateInstructorPreferences()) {
 			if (supportAssignment.getAppointmentType().equals("associateInstructor")) {
 				return true;

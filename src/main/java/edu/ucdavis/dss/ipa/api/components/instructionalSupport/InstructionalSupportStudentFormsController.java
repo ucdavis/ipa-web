@@ -39,7 +39,7 @@ public class InstructionalSupportStudentFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/supportCalls/{supportCallId}/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public StudentInstructionalSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable String preferenceType, HttpServletResponse httpResponse) {
+    public StudentSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable String preferenceType, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
@@ -51,17 +51,17 @@ public class InstructionalSupportStudentFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentSupportCallResponses/{studentSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public StudentInstructionalSupportCallResponse updateStudentSupportCallResponse(@PathVariable long studentSupportCallResponseId, @RequestBody StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponseDTO, HttpServletResponse httpResponse) {
-        StudentInstructionalSupportCallResponse originalSupportCallResponse = studentInstructionalSupportCallResponseService.findOneById(studentSupportCallResponseId);
-        Long workgroupId = originalSupportCallResponse.getStudentInstructionalSupportCall().getSchedule().getWorkgroup().getId();
+    public StudentSupportCallResponse updateStudentSupportCallResponse(@PathVariable long studentSupportCallResponseId, @RequestBody StudentSupportCallResponse studentSupportCallResponseDTO, HttpServletResponse httpResponse) {
+        StudentSupportCallResponse originalSupportCallResponse = studentInstructionalSupportCallResponseService.findOneById(studentSupportCallResponseId);
+        Long workgroupId = originalSupportCallResponse.getStudentSupportCall().getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
-        originalSupportCallResponse.setGeneralComments(studentInstructionalSupportCallResponseDTO.getGeneralComments());
-        originalSupportCallResponse.setTeachingQualifications(studentInstructionalSupportCallResponseDTO.getTeachingQualifications());
-        originalSupportCallResponse.setSubmitted(studentInstructionalSupportCallResponseDTO.isSubmitted());
+        originalSupportCallResponse.setGeneralComments(studentSupportCallResponseDTO.getGeneralComments());
+        originalSupportCallResponse.setTeachingQualifications(studentSupportCallResponseDTO.getTeachingQualifications());
+        originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
 
         return studentInstructionalSupportCallResponseService.update(originalSupportCallResponse);
     }

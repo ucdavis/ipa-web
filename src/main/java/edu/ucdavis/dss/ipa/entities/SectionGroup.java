@@ -28,8 +28,8 @@ public class SectionGroup implements Serializable {
 	private long id;
 	private Course course;
 	private List<Section> sections;
-	private List<InstructionalSupportAssignment> instructionalSupportAssignments;
-	private List<StudentInstructionalSupportPreference> studentInstructionalSupportCallPreferences;
+	private List<SupportAssignment> supportAssignments;
+	private List<StudentSupportPreference> studentInstructionalSupportCallPreferences;
 	private List<InstructorSupportPreference> instructorSupportPreferences;
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
@@ -125,21 +125,21 @@ public class SectionGroup implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
 	@JsonIgnore
-	public List<InstructionalSupportAssignment> getInstructionalSupportAssignments() {
-		return instructionalSupportAssignments;
+	public List<SupportAssignment> getSupportAssignments() {
+		return supportAssignments;
 	}
 
-	public void setInstructionalSupportAssignments(List<InstructionalSupportAssignment> instructionalSupportAssignments) {
-		this.instructionalSupportAssignments = instructionalSupportAssignments;
+	public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+		this.supportAssignments = supportAssignments;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
 	@JsonIgnore
-	public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportCallPreferences() {
+	public List<StudentSupportPreference> getStudentInstructionalSupportCallPreferences() {
 		return studentInstructionalSupportCallPreferences;
 	}
 
-	public void setStudentInstructionalSupportCallPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportCallPreferences) {
+	public void setStudentInstructionalSupportCallPreferences(List<StudentSupportPreference> studentInstructionalSupportCallPreferences) {
 		this.studentInstructionalSupportCallPreferences = studentInstructionalSupportCallPreferences;
 	}
 

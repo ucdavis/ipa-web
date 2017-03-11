@@ -8,7 +8,7 @@ public class InstructionalSupportCallInstructorFormView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
 
-    List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
+    List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorSupportPreference> instructorSupportPreferences;
 
     List<SupportStaff> supportStaffList;
@@ -21,7 +21,7 @@ public class InstructionalSupportCallInstructorFormView {
 
     public InstructionalSupportCallInstructorFormView(List<SectionGroup> sectionGroups,
                                                       List<Course> courses,
-                                                      List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
+                                                      List<StudentSupportPreference> studentSupportPreferences,
                                                       List<InstructorSupportPreference> instructorSupportPreferences,
                                                       List<SupportStaff> supportStaffList,
                                                       Long scheduleId,
@@ -30,7 +30,7 @@ public class InstructionalSupportCallInstructorFormView {
                                                       InstructorSupportCallResponse instructorSupportCallResponse) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
-        setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
+        setStudentSupportPreferences(studentSupportPreferences);
         setInstructorSupportPreferences(instructorSupportPreferences);
         setSupportStaffList(supportStaffList);
         setScheduleId(scheduleId);
@@ -63,12 +63,12 @@ public class InstructionalSupportCallInstructorFormView {
         this.scheduleId = scheduleId;
     }
 
-    public List<StudentInstructionalSupportPreference> getStudentInstructionalSupportPreferences() {
-        return studentInstructionalSupportPreferences;
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
     }
 
-    public void setStudentInstructionalSupportPreferences(List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences) {
-        this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
+    public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 
     public List<InstructorSupportPreference> getInstructorSupportPreferences() {

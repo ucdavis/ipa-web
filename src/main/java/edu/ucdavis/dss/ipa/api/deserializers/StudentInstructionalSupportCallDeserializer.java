@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 import java.util.Date;
@@ -27,10 +27,10 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        StudentInstructionalSupportCall studentInstructionalSupportCall = new StudentInstructionalSupportCall();
+        StudentSupportCall studentSupportCall = new StudentSupportCall();
 
         if (node.has("id")) {
-            studentInstructionalSupportCall.setId(node.get("id").longValue());
+            studentSupportCall.setId(node.get("id").longValue());
         }
 
         if (node.has("startDate")) {
@@ -42,7 +42,7 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
             } catch (ParseException e) {
                 ExceptionLogger.logAndMailException(this.getClass().getName(), e);
             }
-            studentInstructionalSupportCall.setStartDate((java.sql.Date) date);
+            studentSupportCall.setStartDate((java.sql.Date) date);
         }
 
         if (node.has("dueDate")) {
@@ -54,50 +54,50 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
             } catch (ParseException e) {
                 ExceptionLogger.logAndMailException(this.getClass().getName(), e);
             }
-            studentInstructionalSupportCall.setDueDate((java.sql.Date) date);
+            studentSupportCall.setDueDate((java.sql.Date) date);
         }
 
         if (node.has("emailMessage")) {
-            studentInstructionalSupportCall.setMessage(node.get("emailMessage").textValue());
+            studentSupportCall.setMessage(node.get("emailMessage").textValue());
         }
 
         if (node.has("termCode")) {
-            studentInstructionalSupportCall.setTermCode(node.get("termCode").textValue());
+            studentSupportCall.setTermCode(node.get("termCode").textValue());
         }
 
         if (node.has("minimumNumberOfPreferences")) {
-            studentInstructionalSupportCall.setMinimumNumberOfPreferences(node.get("minimumNumberOfPreferences").intValue());
+            studentSupportCall.setMinimumNumberOfPreferences(node.get("minimumNumberOfPreferences").intValue());
         }
 
         if (node.has("sendEmails")) {
-            studentInstructionalSupportCall.setSendEmails(node.get("sendEmails").booleanValue());
+            studentSupportCall.setSendEmails(node.get("sendEmails").booleanValue());
         }
         if (node.has("allowSubmissionAfterDueDate")) {
-            studentInstructionalSupportCall.setAllowSubmissionAfterDueDate(node.get("allowSubmissionAfterDueDate").booleanValue());
+            studentSupportCall.setAllowSubmissionAfterDueDate(node.get("allowSubmissionAfterDueDate").booleanValue());
         }
 
         if (node.has("collectGeneralComments")) {
-            studentInstructionalSupportCall.setCollectGeneralComments(node.get("collectGeneralComments").booleanValue());
+            studentSupportCall.setCollectGeneralComments(node.get("collectGeneralComments").booleanValue());
         }
 
         if (node.has("collectTeachingQualifications")) {
-            studentInstructionalSupportCall.setCollectTeachingQualifications(node.get("collectTeachingQualifications").booleanValue());
+            studentSupportCall.setCollectTeachingQualifications(node.get("collectTeachingQualifications").booleanValue());
         }
         if (node.has("collectPreferenceComments")) {
-            studentInstructionalSupportCall.setCollectPreferenceComments(node.get("collectPreferenceComments").booleanValue());
+            studentSupportCall.setCollectPreferenceComments(node.get("collectPreferenceComments").booleanValue());
         }
         if (node.has("collectEligibilityConfirmation")) {
-            studentInstructionalSupportCall.setCollectEligibilityConfirmation(node.get("collectEligibilityConfirmation").booleanValue());
+            studentSupportCall.setCollectEligibilityConfirmation(node.get("collectEligibilityConfirmation").booleanValue());
         }
         if (node.has("collectTAPreferences")) {
-            studentInstructionalSupportCall.setCollectTeachingAssistantPreferences(node.get("collectTAPreferences").booleanValue());
+            studentSupportCall.setCollectTeachingAssistantPreferences(node.get("collectTAPreferences").booleanValue());
         }
         if (node.has("collectReaderPreferences")) {
-            studentInstructionalSupportCall.setCollectReaderPreferences(node.get("collectReaderPreferences").booleanValue());
+            studentSupportCall.setCollectReaderPreferences(node.get("collectReaderPreferences").booleanValue());
         }
 
         if (node.has("collectAIPreferences")) {
-            studentInstructionalSupportCall.setCollectAssociateInstructorPreferences(node.get("collectAIPreferences").booleanValue());
+            studentSupportCall.setCollectAssociateInstructorPreferences(node.get("collectAIPreferences").booleanValue());
         }
 
         if (node.has("participantPool")) {
@@ -109,21 +109,21 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
                 // 3) Assign the supportCallResponse to the supportCall
                 // The controller can use these mostly entities to figure what needs to be created as part of support call creation
 
-                StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse = new StudentInstructionalSupportCallResponse();
+                StudentSupportCallResponse studentSupportCallResponse = new StudentSupportCallResponse();
                 SupportStaff supportStaff = new SupportStaff();
 
                 supportStaff.setId(objNode.get("id").intValue());
 
-                studentInstructionalSupportCallResponse.setSupportStaff(supportStaff);
+                studentSupportCallResponse.setSupportStaff(supportStaff);
 
-                List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = studentInstructionalSupportCall.getStudentInstructionalSupportCallResponses();
-                studentInstructionalSupportCallResponses.add(studentInstructionalSupportCallResponse);
+                List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCall.getStudentSupportCallResponses();
+                studentSupportCallResponses.add(studentSupportCallResponse);
 
-                studentInstructionalSupportCall.setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
+                studentSupportCall.setStudentSupportCallResponses(studentSupportCallResponses);
             }
         }
 
 
-        return studentInstructionalSupportCall;
+        return studentSupportCall;
     }
 }
