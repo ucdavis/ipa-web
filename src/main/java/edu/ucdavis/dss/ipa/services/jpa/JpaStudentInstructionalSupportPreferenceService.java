@@ -37,13 +37,13 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
 
     @Override
     public StudentInstructionalSupportPreference create(long instructionalSupportStaffId, long supportCallId, long sectionGroupId, String type, String comment) {
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
+        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
         StudentInstructionalSupportCall studentInstructionalSupportCall = studentInstructionalSupportCallService.findOneById(supportCallId);
 
         StudentInstructionalSupportPreference studentInstructionalSupportPreference = new StudentInstructionalSupportPreference();
         studentInstructionalSupportPreference.setSectionGroup(sectionGroup);
-        studentInstructionalSupportPreference.setInstructionalSupportStaff(instructionalSupportStaff);
+        studentInstructionalSupportPreference.setSupportStaff(supportStaff);
         studentInstructionalSupportPreference.setType(type);
         studentInstructionalSupportPreference.setComment(comment);
         studentInstructionalSupportPreference.setStudentInstructionalSupportCall(studentInstructionalSupportCall);

@@ -66,7 +66,7 @@ public class InstructionalSupportAssignmentsController {
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // Ensure the assignment is unassigned.
-        if (instructionalSupportAssignment.getInstructionalSupportStaff() != null) {
+        if (instructionalSupportAssignment.getSupportStaff() != null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
@@ -80,12 +80,12 @@ public class InstructionalSupportAssignmentsController {
     @ResponseBody
     public InstructionalSupportAssignment assignStaffToSlot(@PathVariable long assignmentId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
         InstructionalSupportAssignment instructionalSupportAssignment = instructionalSupportAssignmentService.findOneById(assignmentId);
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
+        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
 
         Workgroup workgroup = instructionalSupportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        instructionalSupportAssignment.setInstructionalSupportStaff(instructionalSupportStaff);
+        instructionalSupportAssignment.setSupportStaff(supportStaff);
 
         return instructionalSupportAssignmentService.save(instructionalSupportAssignment);
     }
@@ -98,7 +98,7 @@ public class InstructionalSupportAssignmentsController {
         Workgroup workgroup = instructionalSupportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        instructionalSupportAssignment.setInstructionalSupportStaff(null);
+        instructionalSupportAssignment.setSupportStaff(null);
 
         return instructionalSupportAssignmentService.save(instructionalSupportAssignment);
     }

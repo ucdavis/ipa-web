@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
 import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallRepository;
@@ -35,7 +35,7 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
         List<Long> supportStaffIds = new ArrayList<>();
 
         for (StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse : studentInstructionalSupportCallDTO.getStudentInstructionalSupportCallResponses()) {
-            Long supportStaffId = studentInstructionalSupportCallResponse.getInstructionalSupportStaff().getId();
+            Long supportStaffId = studentInstructionalSupportCallResponse.getSupportStaff().getId();
 
             supportStaffIds.add(supportStaffId);
         }
@@ -47,8 +47,8 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
         List<StudentInstructionalSupportCallResponse> supportCallResponses = new ArrayList<>();
 
         for (Long supportStaffId : supportStaffIds) {
-            InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
-            StudentInstructionalSupportCallResponse supportCallResponse = studentInstructionalSupportCallResponseService.create(studentInstructionalSupportCall, instructionalSupportStaff);
+            SupportStaff supportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
+            StudentInstructionalSupportCallResponse supportCallResponse = studentInstructionalSupportCallResponseService.create(studentInstructionalSupportCall, supportStaff);
 
             supportCallResponses.add(supportCallResponse);
         }

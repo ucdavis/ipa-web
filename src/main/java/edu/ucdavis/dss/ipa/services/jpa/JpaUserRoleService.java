@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.dw.DwClient;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.UserRoleRepository;
 
@@ -96,7 +95,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 			if (roleName.equals("instructionalSupport")) {
 				log.info("Creating Instructional Support Staff for user '" + user.getLoginId() + "'");
-				InstructionalSupportStaff InstructionalSupportStaff = instructionalSupportStaffService.findOrCreate(
+				SupportStaff SupportStaff = instructionalSupportStaffService.findOrCreate(
 						user.getFirstName(),
 						user.getLastName(),
 						user.getEmail(),

@@ -17,17 +17,17 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
     @Inject InstructorInstructionalSupportCallService instructorInstructionalSupportCallService;
 
     @Override
-    public InstructorInstructionalSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId) {
+    public InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId) {
         return instructorInstructionalSupportCallResponseRepository.findById(instructorInstructionalSupportCallResponseId);
     }
 
     @Override
-    public List<InstructorInstructionalSupportCallResponse> findByScheduleId(long scheduleId) {
-        List<InstructorInstructionalSupportCall> scheduleSupportCalls = instructorInstructionalSupportCallService.findByScheduleId(scheduleId);
-        List<InstructorInstructionalSupportCallResponse> supportCallResponses = new ArrayList<>();
+    public List<InstructorSupportCallResponse> findByScheduleId(long scheduleId) {
+        List<InstructorSupportCall> scheduleSupportCalls = instructorInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<InstructorSupportCallResponse> supportCallResponses = new ArrayList<>();
 
-        for (InstructorInstructionalSupportCall instructorSupportCall : scheduleSupportCalls) {
-            supportCallResponses.addAll(instructorSupportCall.getInstructorInstructionalSupportCallResponses());
+        for (InstructorSupportCall instructorSupportCall : scheduleSupportCalls) {
+            supportCallResponses.addAll(instructorSupportCall.getInstructorSupportCallResponses());
         }
 
         return supportCallResponses;
@@ -39,16 +39,16 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
     }
 
     @Override
-    public InstructorInstructionalSupportCallResponse update(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
-        return instructorInstructionalSupportCallResponseRepository.save(instructorInstructionalSupportCallResponse);
+    public InstructorSupportCallResponse update(InstructorSupportCallResponse instructorSupportCallResponse) {
+        return instructorInstructionalSupportCallResponseRepository.save(instructorSupportCallResponse);
     }
 
     @Override
-    public List<InstructorInstructionalSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
-        List<InstructorInstructionalSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
-        List<InstructorInstructionalSupportCallResponse> filtereSupportCallResponses = new ArrayList<>();
+    public List<InstructorSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
+        List<InstructorSupportCallResponse> scheduleSupportCallResponses = this.findByScheduleId(scheduleId);
+        List<InstructorSupportCallResponse> filtereSupportCallResponses = new ArrayList<>();
 
-        for (InstructorInstructionalSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
+        for (InstructorSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
             if (supportCallResponse.getInstructorIdentification() == instructorId) {
                 filtereSupportCallResponses.add(supportCallResponse);
             }
@@ -63,12 +63,12 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
     }
 
     @Override
-    public InstructorInstructionalSupportCallResponse create (InstructorInstructionalSupportCall instructorInstructionalSupportCall, Instructor instructor) {
-        InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse = new InstructorInstructionalSupportCallResponse();
+    public InstructorSupportCallResponse create (InstructorSupportCall instructorSupportCall, Instructor instructor) {
+        InstructorSupportCallResponse instructorSupportCallResponse = new InstructorSupportCallResponse();
 
-        instructorInstructionalSupportCallResponse.setInstructorInstructionalSupportCall(instructorInstructionalSupportCall);
-        instructorInstructionalSupportCallResponse.setInstructor(instructor);
+        instructorSupportCallResponse.setInstructorSupportCall(instructorSupportCall);
+        instructorSupportCallResponse.setInstructor(instructor);
 
-        return instructorInstructionalSupportCallResponseRepository.save(instructorInstructionalSupportCallResponse);
+        return instructorInstructionalSupportCallResponseRepository.save(instructorSupportCallResponse);
     }
 }

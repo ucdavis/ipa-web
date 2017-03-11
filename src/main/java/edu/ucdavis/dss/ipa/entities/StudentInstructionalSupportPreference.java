@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * StudentInstructionalSupportPreference records an instructionalSupportStaff's desire to fill a position of this type and sectionGroup.
+ * StudentInstructionalSupportPreference records an supportStaff's desire to fill a position of this type and sectionGroup.
  */
 
 @SuppressWarnings("serial")
@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class StudentInstructionalSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
-    private InstructionalSupportStaff instructionalSupportStaff;
+    private SupportStaff supportStaff;
     private String type, comment;
     private long priority;
     private StudentInstructionalSupportCall studentInstructionalSupportCall;
@@ -54,12 +54,12 @@ public class StudentInstructionalSupportPreference implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "InstructionalSupportStaffId", nullable = false)
     @JsonIgnore
-    public InstructionalSupportStaff getInstructionalSupportStaff() {
-        return instructionalSupportStaff;
+    public SupportStaff getSupportStaff() {
+        return supportStaff;
     }
 
-    public void setInstructionalSupportStaff(InstructionalSupportStaff instructionalSupportStaff) {
-        this.instructionalSupportStaff = instructionalSupportStaff;
+    public void setSupportStaff(SupportStaff supportStaff) {
+        this.supportStaff = supportStaff;
     }
 
     public String getType() {
@@ -101,8 +101,8 @@ public class StudentInstructionalSupportPreference implements Serializable {
     @JsonProperty("instructionalSupportStaffId")
     @Transient
     public long getInstructionalSupportStaffIdentification() {
-        if(instructionalSupportStaff != null) {
-            return instructionalSupportStaff.getId();
+        if(supportStaff != null) {
+            return supportStaff.getId();
         } else {
             return 0;
         }

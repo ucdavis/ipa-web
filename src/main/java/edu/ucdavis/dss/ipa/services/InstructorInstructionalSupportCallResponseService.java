@@ -5,17 +5,17 @@ import edu.ucdavis.dss.ipa.entities.*;
 import java.util.List;
 
 public interface InstructorInstructionalSupportCallResponseService {
-    InstructorInstructionalSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId);
+    InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId);
 
-    List<InstructorInstructionalSupportCallResponse> findByScheduleId(long scheduleId);
+    List<InstructorSupportCallResponse> findByScheduleId(long scheduleId);
 
-    InstructorInstructionalSupportCallResponse create(InstructorInstructionalSupportCall instructorInstructionalSupportCall, Instructor instructor);
+    InstructorSupportCallResponse create(InstructorSupportCall instructorSupportCall, Instructor instructor);
 
     void delete(long instructorInstructionalSupportCallResponseId);
 
-    InstructorInstructionalSupportCallResponse update(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse);
+    InstructorSupportCallResponse update(InstructorSupportCallResponse instructorSupportCallResponse);
 
-    List<InstructorInstructionalSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
+    List<InstructorSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 
     void sendNotificationsByWorkgroupId(Long workgroupId);
 }

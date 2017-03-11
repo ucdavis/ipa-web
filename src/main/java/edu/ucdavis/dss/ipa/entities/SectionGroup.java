@@ -30,7 +30,7 @@ public class SectionGroup implements Serializable {
 	private List<Section> sections;
 	private List<InstructionalSupportAssignment> instructionalSupportAssignments;
 	private List<StudentInstructionalSupportPreference> studentInstructionalSupportCallPreferences;
-	private List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences;
+	private List<InstructorSupportPreference> instructorSupportPreferences;
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
@@ -145,11 +145,11 @@ public class SectionGroup implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
 	@JsonIgnore
-	public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
-		return instructorInstructionalSupportPreferences;
+	public List<InstructorSupportPreference> getInstructorSupportPreferences() {
+		return instructorSupportPreferences;
 	}
 
-	public void setInstructorInstructionalSupportPreferences(List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences) {
-		this.instructorInstructionalSupportPreferences = instructorInstructionalSupportPreferences;
+	public void setInstructorSupportPreferences(List<InstructorSupportPreference> instructorSupportPreferences) {
+		this.instructorSupportPreferences = instructorSupportPreferences;
 	}
 }

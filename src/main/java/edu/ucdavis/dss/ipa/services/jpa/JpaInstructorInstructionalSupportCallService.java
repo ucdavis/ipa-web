@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCall;
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCall;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
 import edu.ucdavis.dss.ipa.repositories.InstructorInstructionalSupportCallRepository;
 import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallService;
@@ -23,42 +23,42 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
     @Inject InstructorInstructionalSupportCallResponseService instructorInstructionalSupportCallResponseService;
 
     @Override
-    public InstructorInstructionalSupportCall findOneById(long instructorInstructionalSupportCallId) {
+    public InstructorSupportCall findOneById(long instructorInstructionalSupportCallId) {
         return instructorInstructionalSupportCallRepository.findById(instructorInstructionalSupportCallId);
     }
 
     @Override
-    public InstructorInstructionalSupportCall findOrCreate(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
+    public InstructorSupportCall findOrCreate(InstructorSupportCall instructorSupportCall) {
         // Extract the supportStaffIds
         List<Long> instructorIds = new ArrayList<>();
 
-        for (InstructorInstructionalSupportCallResponse supportCallResponse : instructorInstructionalSupportCall.getInstructorInstructionalSupportCallResponses()) {
+        for (InstructorSupportCallResponse supportCallResponse : instructorSupportCall.getInstructorSupportCallResponses()) {
             Long instructorId = supportCallResponse.getInstructor().getId();
 
             instructorIds.add(instructorId);
         }
 
         // Make the supportCall
-        InstructorInstructionalSupportCall supportCall = this.create(instructorInstructionalSupportCall);
+        InstructorSupportCall supportCall = this.create(instructorSupportCall);
 
         // Make supportCallResponses
-        List<InstructorInstructionalSupportCallResponse> supportCallResponses = new ArrayList<>();
+        List<InstructorSupportCallResponse> supportCallResponses = new ArrayList<>();
 
         for (Long instructorId : instructorIds) {
             Instructor instructor = instructorService.getOneById(instructorId);
-            InstructorInstructionalSupportCallResponse supportCallResponse = instructorInstructionalSupportCallResponseService.create(instructorInstructionalSupportCall, instructor);
+            InstructorSupportCallResponse supportCallResponse = instructorInstructionalSupportCallResponseService.create(instructorSupportCall, instructor);
 
             supportCallResponses.add(supportCallResponse);
         }
 
         // Tie the supportCallResponses to the new SupportCall
-        instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(supportCallResponses);
+        instructorSupportCall.setInstructorSupportCallResponses(supportCallResponses);
 
-        return instructorInstructionalSupportCall;
+        return instructorSupportCall;
     }
 
     @Override
-    public List<InstructorInstructionalSupportCall> findByScheduleId(long scheduleId) {
+    public List<InstructorSupportCall> findByScheduleId(long scheduleId) {
         return instructorInstructionalSupportCallRepository.findByScheduleId(scheduleId);
     }
 
@@ -68,12 +68,12 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
     }
 
     @Override
-    public List<InstructorInstructionalSupportCall> findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
-        List<InstructorInstructionalSupportCall> scheduleSupportCalls = this.findByScheduleId(scheduleId);
-        List<InstructorInstructionalSupportCall> filteredSupportCalls = new ArrayList<>();
+    public List<InstructorSupportCall> findByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
+        List<InstructorSupportCall> scheduleSupportCalls = this.findByScheduleId(scheduleId);
+        List<InstructorSupportCall> filteredSupportCalls = new ArrayList<>();
 
-        for (InstructorInstructionalSupportCall instructorSupportCall : scheduleSupportCalls) {
-            for (InstructorInstructionalSupportCallResponse instructorSupportCallResponse : instructorSupportCall.getInstructorInstructionalSupportCallResponses()) {
+        for (InstructorSupportCall instructorSupportCall : scheduleSupportCalls) {
+            for (InstructorSupportCallResponse instructorSupportCallResponse : instructorSupportCall.getInstructorSupportCallResponses()) {
                 if (instructorSupportCallResponse.getInstructorIdentification() == instructorId) {
                     filteredSupportCalls.add(instructorSupportCall);
                     break;
@@ -84,15 +84,15 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
         return filteredSupportCalls;
     }
 
-    private InstructorInstructionalSupportCall create (InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
+    private InstructorSupportCall create (InstructorSupportCall instructorSupportCall) {
         // Create StartDate
         java.util.Calendar cal = java.util.Calendar.getInstance();
         java.util.Date utilDate = cal.getTime();
         java.sql.Date sqlDate = new Date(utilDate.getTime());
 
-        instructorInstructionalSupportCall.setStartDate(sqlDate);
-        instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(null);
+        instructorSupportCall.setStartDate(sqlDate);
+        instructorSupportCall.setInstructorSupportCallResponses(null);
 
-        return instructorInstructionalSupportCallRepository.save(instructorInstructionalSupportCall);
+        return instructorInstructionalSupportCallRepository.save(instructorSupportCall);
     }
 }

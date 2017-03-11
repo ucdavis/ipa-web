@@ -1,11 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportPreference;
 import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallResponseRepository;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallService;
 import org.springframework.stereotype.Service;
@@ -82,11 +80,11 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
     }
 
     @Override
-    public StudentInstructionalSupportCallResponse create (StudentInstructionalSupportCall studentInstructionalSupportCall, InstructionalSupportStaff instructionalSupportStaff) {
+    public StudentInstructionalSupportCallResponse create (StudentInstructionalSupportCall studentInstructionalSupportCall, SupportStaff supportStaff) {
         StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse = new StudentInstructionalSupportCallResponse();
 
         studentInstructionalSupportCallResponse.setStudentInstructionalSupportCall(studentInstructionalSupportCall);
-        studentInstructionalSupportCallResponse.setInstructionalSupportStaff(instructionalSupportStaff);
+        studentInstructionalSupportCallResponse.setSupportStaff(supportStaff);
 
         return studentInstructionalSupportCallResponseRepository.save(studentInstructionalSupportCallResponse);
     }

@@ -1,19 +1,15 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport;
 
-import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallInstructorFormView;
-import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.InstructionalSupportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,7 +39,7 @@ public class InstructionalSupportInstructorFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/supportCalls/{supportCallId}/sectionGroups/{sectionGroupId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public InstructorInstructionalSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+    public InstructorSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
@@ -54,12 +50,12 @@ public class InstructionalSupportInstructorFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/instructorSupportCallResponses/{instructorSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public InstructorInstructionalSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponseDTO, HttpServletResponse httpResponse) {
-        InstructorInstructionalSupportCallResponse originalSupportCallResponse = instructorInstructionalSupportCallResponseService.findOneById(instructorSupportCallResponseId);
-        Long workgroupId = originalSupportCallResponse.getInstructorInstructionalSupportCall().getSchedule().getWorkgroup().getId();
+    public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO, HttpServletResponse httpResponse) {
+        InstructorSupportCallResponse originalSupportCallResponse = instructorInstructionalSupportCallResponseService.findOneById(instructorSupportCallResponseId);
+        Long workgroupId = originalSupportCallResponse.getInstructorSupportCall().getSchedule().getWorkgroup().getId();
 
-        originalSupportCallResponse.setGeneralComments(instructorInstructionalSupportCallResponseDTO.getGeneralComments());
-        originalSupportCallResponse.setSubmitted(instructorInstructionalSupportCallResponseDTO.isSubmitted());
+        originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
+        originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());
 
         return instructorInstructionalSupportCallResponseService.update(originalSupportCallResponse);
     }

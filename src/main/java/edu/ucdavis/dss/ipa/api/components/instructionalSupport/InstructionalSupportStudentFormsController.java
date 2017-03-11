@@ -1,18 +1,15 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport;
 
-import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportAssignmentView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.InstructionalSupportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -35,9 +32,9 @@ public class InstructionalSupportStudentFormsController {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
-        return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, instructionalSupportStaff.getId());
+        return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaff.getId());
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/supportCalls/{supportCallId}/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")
@@ -47,9 +44,9 @@ public class InstructionalSupportStudentFormsController {
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
-        return studentInstructionalSupportPreferenceService.create(instructionalSupportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
+        return studentInstructionalSupportPreferenceService.create(supportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentSupportCallResponses/{studentSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
@@ -60,7 +57,7 @@ public class InstructionalSupportStudentFormsController {
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
         originalSupportCallResponse.setGeneralComments(studentInstructionalSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setTeachingQualifications(studentInstructionalSupportCallResponseDTO.getTeachingQualifications());
@@ -76,7 +73,7 @@ public class InstructionalSupportStudentFormsController {
         Authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
 
         studentInstructionalSupportPreferenceService.updatePriorities(preferenceIdsParams);
 

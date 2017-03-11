@@ -6,13 +6,10 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -53,22 +50,22 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/instructorInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public InstructorInstructionalSupportCall addInstructorSupportCall(@PathVariable long scheduleId, @RequestBody InstructorInstructionalSupportCall instructorInstructionalSupportCall, HttpServletResponse httpResponse) {
+    public InstructorSupportCall addInstructorSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCall instructorSupportCall, HttpServletResponse httpResponse) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
-        instructorInstructionalSupportCall.setSchedule(schedule);
+        instructorSupportCall.setSchedule(schedule);
 
-        return instructorInstructionalSupportCallService.findOrCreate(instructorInstructionalSupportCall);
+        return instructorInstructionalSupportCallService.findOrCreate(instructorSupportCall);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/instructorInstructionalSupportCalls/{instructorInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deleteInstructorSupportCall(@PathVariable long instructorInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        InstructorInstructionalSupportCall instructorInstructionalSupportCall = instructorInstructionalSupportCallService.findOneById(instructorInstructionalSupportCallId);
+        InstructorSupportCall instructorSupportCall = instructorInstructionalSupportCallService.findOneById(instructorInstructionalSupportCallId);
 
-        Workgroup workgroup = instructorInstructionalSupportCall.getSchedule().getWorkgroup();
+        Workgroup workgroup = instructorSupportCall.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         instructorInstructionalSupportCallService.delete(instructorInstructionalSupportCallId);

@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.InstructionalSupportAssignment;
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.repositories.InstructionalSupportAssignmentRepository;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collection;
-import java.util.Collections;
 
 @Service
 public class JpaInstructionalSupportAssignmentService implements InstructionalSupportAssignmentService {
@@ -71,10 +70,10 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     @Override
     public InstructionalSupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId) {
 
-        InstructionalSupportStaff instructionalSupportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
+        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
         InstructionalSupportAssignment instructionalSupportAssignment = this.findOneById(instructionalSupportAssignmentId);
 
-        instructionalSupportAssignment.setInstructionalSupportStaff(instructionalSupportStaff);
+        instructionalSupportAssignment.setSupportStaff(supportStaff);
 
         return this.save(instructionalSupportAssignment);
     }
@@ -83,7 +82,7 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     public InstructionalSupportAssignment unassignInstructionalSupportStaff(long instructionalSupportAssignmentId) {
         InstructionalSupportAssignment instructionalSupportAssignment = this.findOneById(instructionalSupportAssignmentId);
 
-        instructionalSupportAssignment.setInstructionalSupportStaff(null);
+        instructionalSupportAssignment.setSupportStaff(null);
 
         return this.save(instructionalSupportAssignment);
     }
@@ -123,8 +122,8 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
         List<InstructionalSupportAssignment> supportStaffAssignments = new ArrayList<>();
 
         for (InstructionalSupportAssignment slotAssignment : allSupportAssignments) {
-            if (slotAssignment.getInstructionalSupportStaff() != null
-            && slotAssignment.getInstructionalSupportStaff().getId() == supportStaffId) {
+            if (slotAssignment.getSupportStaff() != null
+            && slotAssignment.getSupportStaff().getId() == supportStaffId) {
                 supportStaffAssignments.add(slotAssignment);
             }
         }

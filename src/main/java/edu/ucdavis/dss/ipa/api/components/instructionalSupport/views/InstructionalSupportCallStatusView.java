@@ -5,30 +5,30 @@ import edu.ucdavis.dss.ipa.entities.*;
 import java.util.List;
 
 public class InstructionalSupportCallStatusView {
-    List<InstructionalSupportStaff> instructionalSupportStaffList;
+    List<SupportStaff> supportStaffList;
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
     List<StudentInstructionalSupportCall> studentSupportCalls;
-    List<InstructorInstructionalSupportCall> instructorSupportCalls;
+    List<InstructorSupportCall> instructorSupportCalls;
     List<Instructor> activeInstructors;
     List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
     List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses;
-    List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses;
+    List<InstructorSupportCallResponse> instructorSupportCallResponses;
     public InstructionalSupportCallStatusView(Long scheduleId,
-                                              List<InstructionalSupportStaff> instructionalSupportStaffList,
+                                              List<SupportStaff> supportStaffList,
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
                                               List<StudentInstructionalSupportCall> studentSupportCalls,
-                                              List<InstructorInstructionalSupportCall> instructorSupportCalls,
+                                              List<InstructorSupportCall> instructorSupportCalls,
                                               List<Instructor> activeInstructors,
                                               List<TeachingAssignment> teachingAssignments,
                                               List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses,
-                                              List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
+                                              List<InstructorSupportCallResponse> instructorSupportCallResponses) {
         setScheduleId(scheduleId);
-        setInstructionalSupportStaffList(instructionalSupportStaffList);
+        setSupportStaffList(supportStaffList);
         setMastersStudentIds(mastersStudentsIds);
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
@@ -37,15 +37,15 @@ public class InstructionalSupportCallStatusView {
         setActiveInstructors(activeInstructors);
         setTeachingAssignments(teachingAssignments);
         setStudentInstructionalSupportCallResponses(studentInstructionalSupportCallResponses);
-        setInstructorInstructionalSupportCallResponses(instructorInstructionalSupportCallResponses);
+        setInstructorSupportCallResponses(instructorSupportCallResponses);
     }
 
-    public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
-        return instructionalSupportStaffList;
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
     }
 
-    public void setInstructionalSupportStaffList(List<InstructionalSupportStaff> instructionalSupportStaffList) {
-        this.instructionalSupportStaffList = instructionalSupportStaffList;
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
     }
 
     public List<Long> getMastersStudentIds() {
@@ -88,11 +88,11 @@ public class InstructionalSupportCallStatusView {
         this.scheduleId = scheduleId;
     }
 
-    public List<InstructorInstructionalSupportCall> getInstructorSupportCalls() {
+    public List<InstructorSupportCall> getInstructorSupportCalls() {
         return instructorSupportCalls;
     }
 
-    public void setInstructorSupportCalls(List<InstructorInstructionalSupportCall> instructorSupportCalls) {
+    public void setInstructorSupportCalls(List<InstructorSupportCall> instructorSupportCalls) {
         this.instructorSupportCalls = instructorSupportCalls;
     }
 
@@ -120,11 +120,11 @@ public class InstructionalSupportCallStatusView {
         this.studentInstructionalSupportCallResponses = studentInstructionalSupportCallResponses;
     }
 
-    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
-        return instructorInstructionalSupportCallResponses;
+    public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {
+        return instructorSupportCallResponses;
     }
 
-    public void setInstructorInstructionalSupportCallResponses(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
-        this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
+    public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+        this.instructorSupportCallResponses = instructorSupportCallResponses;
     }
 }

@@ -1,14 +1,14 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class InstructionalSupportAssignmentView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
     List<InstructionalSupportAssignment> instructionalSupportAssignments;
-    List<InstructionalSupportStaff> instructionalSupportStaffList;
+    List<SupportStaff> supportStaffList;
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
@@ -19,7 +19,7 @@ public class InstructionalSupportAssignmentView {
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
                                               List<InstructionalSupportAssignment> instructionalSupportAssignments,
-                                              List<InstructionalSupportStaff> instructionalSupportStaffList,
+                                              List<SupportStaff> supportStaffList,
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
@@ -29,7 +29,7 @@ public class InstructionalSupportAssignmentView {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setInstructionalSupportAssignments(instructionalSupportAssignments);
-        setInstructionalSupportStaffList(instructionalSupportStaffList);
+        setSupportStaffList(supportStaffList);
         setMastersStudentIds(mastersStudentsIds);
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
@@ -62,12 +62,12 @@ public class InstructionalSupportAssignmentView {
         this.instructionalSupportAssignments = instructionalSupportAssignments;
     }
 
-    public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
-        return instructionalSupportStaffList;
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
     }
 
-    public void setInstructionalSupportStaffList(List<InstructionalSupportStaff> instructionalSupportStaffList) {
-        this.instructionalSupportStaffList = instructionalSupportStaffList;
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
     }
 
     public List<Long> getMastersStudentIds() {

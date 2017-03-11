@@ -1,13 +1,13 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCall;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCall;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface InstructorInstructionalSupportCallRepository extends CrudRepository<InstructorInstructionalSupportCall, Long> {
+public interface InstructorInstructionalSupportCallRepository extends CrudRepository<InstructorSupportCall, Long> {
 
-    List<InstructorInstructionalSupportCall> findByScheduleId(long scheduleId);
+    List<InstructorSupportCall> findByScheduleId(long scheduleId);
 
-    InstructorInstructionalSupportCall findById(long instructorInstructionalSupportCallId);
+    InstructorSupportCall findById(long instructorInstructionalSupportCallId);
 }

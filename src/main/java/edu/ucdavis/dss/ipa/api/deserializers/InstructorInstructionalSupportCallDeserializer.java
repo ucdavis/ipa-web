@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCall;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCall;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 import java.util.Date;
@@ -27,10 +27,10 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        InstructorInstructionalSupportCall instructorInstructionalSupportCall = new InstructorInstructionalSupportCall();
+        InstructorSupportCall instructorSupportCall = new InstructorSupportCall();
 
         if (node.has("id")) {
-            instructorInstructionalSupportCall.setId(node.get("id").longValue());
+            instructorSupportCall.setId(node.get("id").longValue());
         }
 
         if (node.has("startDate")) {
@@ -42,7 +42,7 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
             } catch (ParseException e) {
                 ExceptionLogger.logAndMailException(this.getClass().getName(), e);
             }
-            instructorInstructionalSupportCall.setStartDate((java.sql.Date) date);
+            instructorSupportCall.setStartDate((java.sql.Date) date);
         }
 
         if (node.has("dueDate")) {
@@ -54,47 +54,47 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
             } catch (ParseException e) {
                 ExceptionLogger.logAndMailException(this.getClass().getName(), e);
             }
-            instructorInstructionalSupportCall.setDueDate((java.sql.Date) date);
+            instructorSupportCall.setDueDate((java.sql.Date) date);
         }
 
         System.out.println();
         if (node.has("emailMessage")) {
-            instructorInstructionalSupportCall.setMessage(node.get("emailMessage").textValue());
+            instructorSupportCall.setMessage(node.get("emailMessage").textValue());
         }
 
         if (node.has("termCode")) {
-            instructorInstructionalSupportCall.setTermCode(node.get("termCode").textValue());
+            instructorSupportCall.setTermCode(node.get("termCode").textValue());
         }
 
         if (node.has("sendEmails")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("sendEmails").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("sendEmails").booleanValue());
         }
         if (node.has("allowSubmissionAfterDueDate")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("allowSubmissionAfterDueDate").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("allowSubmissionAfterDueDate").booleanValue());
         }
 
         if (node.has("collectGeneralComments")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectGeneralComments").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectGeneralComments").booleanValue());
         }
 
         if (node.has("collectTeachingQualifications")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectTeachingQualifications").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectTeachingQualifications").booleanValue());
         }
         if (node.has("collectPreferenceComments")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectPreferenceComments").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectPreferenceComments").booleanValue());
         }
         if (node.has("collectEligibilityConfirmation")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectEligibilityConfirmation").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectEligibilityConfirmation").booleanValue());
         }
         if (node.has("collectTeachingAssistantPreferences")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectTeachingAssistantPreferences").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectTeachingAssistantPreferences").booleanValue());
         }
         if (node.has("collectReaderPreferences")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectReaderPreferences").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectReaderPreferences").booleanValue());
         }
 
         if (node.has("collectAssociateInstructorPreferences")) {
-            instructorInstructionalSupportCall.setSendEmails(node.get("collectAssociateInstructorPreferences").booleanValue());
+            instructorSupportCall.setSendEmails(node.get("collectAssociateInstructorPreferences").booleanValue());
         }
         if (node.has("participantPool")) {
 
@@ -105,20 +105,20 @@ public class InstructorInstructionalSupportCallDeserializer extends JsonDeserial
                 // 3) Assign the supportCallResponse to the supportCall
                 // The controller can use these mostly filled in entities to figure what needs to be created as part of support call creation
 
-                InstructorInstructionalSupportCallResponse supportCallResponse = new InstructorInstructionalSupportCallResponse();
+                InstructorSupportCallResponse supportCallResponse = new InstructorSupportCallResponse();
                 Instructor instructor = new Instructor();
 
                 instructor.setId(objNode.get("id").intValue());
 
                 supportCallResponse.setInstructor(instructor);
 
-                List<InstructorInstructionalSupportCallResponse> supportCallResponses = instructorInstructionalSupportCall.getInstructorInstructionalSupportCallResponses();
+                List<InstructorSupportCallResponse> supportCallResponses = instructorSupportCall.getInstructorSupportCallResponses();
                 supportCallResponses.add(supportCallResponse);
 
-                instructorInstructionalSupportCall.setInstructorInstructionalSupportCallResponses(supportCallResponses);
+                instructorSupportCall.setInstructorSupportCallResponses(supportCallResponses);
             }
         }
 
-        return instructorInstructionalSupportCall;
+        return instructorSupportCall;
     }
 }

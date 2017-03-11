@@ -1,9 +1,8 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportPreference;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface StudentInstructionalSupportCallResponseService {
 
     List<StudentInstructionalSupportCallResponse> findByScheduleId(long scheduleId);
 
-    StudentInstructionalSupportCallResponse create(StudentInstructionalSupportCall studentInstructionalSupportCall, InstructionalSupportStaff instructionalSupportStaff);
+    StudentInstructionalSupportCallResponse create(StudentInstructionalSupportCall studentInstructionalSupportCall, SupportStaff supportStaff);
 
     void delete(long studentInstructionalSupportCallResponseId);
 

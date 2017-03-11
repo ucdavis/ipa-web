@@ -4,15 +4,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportCallResponse;
-import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
 import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 

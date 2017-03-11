@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCall;
 
 import java.io.IOException;
@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import edu.ucdavis.dss.ipa.entities.StudentInstructionalSupportCallResponse;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -111,11 +110,11 @@ public class StudentInstructionalSupportCallDeserializer extends JsonDeserialize
                 // The controller can use these mostly entities to figure what needs to be created as part of support call creation
 
                 StudentInstructionalSupportCallResponse studentInstructionalSupportCallResponse = new StudentInstructionalSupportCallResponse();
-                InstructionalSupportStaff instructionalSupportStaff = new InstructionalSupportStaff();
+                SupportStaff supportStaff = new SupportStaff();
 
-                instructionalSupportStaff.setId(objNode.get("id").intValue());
+                supportStaff.setId(objNode.get("id").intValue());
 
-                studentInstructionalSupportCallResponse.setInstructionalSupportStaff(instructionalSupportStaff);
+                studentInstructionalSupportCallResponse.setSupportStaff(supportStaff);
 
                 List<StudentInstructionalSupportCallResponse> studentInstructionalSupportCallResponses = studentInstructionalSupportCall.getStudentInstructionalSupportCallResponses();
                 studentInstructionalSupportCallResponses.add(studentInstructionalSupportCallResponse);

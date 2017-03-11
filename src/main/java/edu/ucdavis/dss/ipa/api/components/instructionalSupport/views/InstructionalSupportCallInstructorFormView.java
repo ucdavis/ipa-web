@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class InstructionalSupportCallInstructorFormView {
@@ -9,12 +9,12 @@ public class InstructionalSupportCallInstructorFormView {
     List<Course> courses;
 
     List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences;
-    List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences;
+    List<InstructorSupportPreference> instructorSupportPreferences;
 
-    List<InstructionalSupportStaff> instructionalSupportStaffList;
+    List<SupportStaff> supportStaffList;
 
-    InstructorInstructionalSupportCall instructorInstructionalSupportCall;
-    InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse;
+    InstructorSupportCall instructorSupportCall;
+    InstructorSupportCallResponse instructorSupportCallResponse;
 
     Long scheduleId;
     Long instructorId;
@@ -22,21 +22,21 @@ public class InstructionalSupportCallInstructorFormView {
     public InstructionalSupportCallInstructorFormView(List<SectionGroup> sectionGroups,
                                                       List<Course> courses,
                                                       List<StudentInstructionalSupportPreference> studentInstructionalSupportPreferences,
-                                                      List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences,
-                                                      List<InstructionalSupportStaff> instructionalSupportStaffList,
+                                                      List<InstructorSupportPreference> instructorSupportPreferences,
+                                                      List<SupportStaff> supportStaffList,
                                                       Long scheduleId,
                                                       Long instructorId,
-                                                      InstructorInstructionalSupportCall instructorInstructionalSupportCall,
-                                                      InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
+                                                      InstructorSupportCall instructorSupportCall,
+                                                      InstructorSupportCallResponse instructorSupportCallResponse) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setStudentInstructionalSupportPreferences(studentInstructionalSupportPreferences);
-        setInstructorInstructionalSupportPreferences(instructorInstructionalSupportPreferences);
-        setInstructionalSupportStaffList(instructionalSupportStaffList);
+        setInstructorSupportPreferences(instructorSupportPreferences);
+        setSupportStaffList(supportStaffList);
         setScheduleId(scheduleId);
         setInstructorId(instructorId);
-        setInstructorInstructionalSupportCall(instructorInstructionalSupportCall);
-        setInstructorInstructionalSupportCallResponse(instructorInstructionalSupportCallResponse);
+        setInstructorSupportCall(instructorSupportCall);
+        setInstructorSupportCallResponse(instructorSupportCallResponse);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -71,36 +71,36 @@ public class InstructionalSupportCallInstructorFormView {
         this.studentInstructionalSupportPreferences = studentInstructionalSupportPreferences;
     }
 
-    public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
-        return instructorInstructionalSupportPreferences;
+    public List<InstructorSupportPreference> getInstructorSupportPreferences() {
+        return instructorSupportPreferences;
     }
 
-    public void setInstructorInstructionalSupportPreferences(List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences) {
-        this.instructorInstructionalSupportPreferences = instructorInstructionalSupportPreferences;
+    public void setInstructorSupportPreferences(List<InstructorSupportPreference> instructorSupportPreferences) {
+        this.instructorSupportPreferences = instructorSupportPreferences;
     }
 
-    public List<InstructionalSupportStaff> getInstructionalSupportStaffList() {
-        return instructionalSupportStaffList;
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
     }
 
-    public void setInstructionalSupportStaffList(List<InstructionalSupportStaff> instructionalSupportStaffList) {
-        this.instructionalSupportStaffList = instructionalSupportStaffList;
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
     }
 
-    public InstructorInstructionalSupportCall getInstructorInstructionalSupportCall() {
-        return instructorInstructionalSupportCall;
+    public InstructorSupportCall getInstructorSupportCall() {
+        return instructorSupportCall;
     }
 
-    public void setInstructorInstructionalSupportCall(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
-        this.instructorInstructionalSupportCall = instructorInstructionalSupportCall;
+    public void setInstructorSupportCall(InstructorSupportCall instructorSupportCall) {
+        this.instructorSupportCall = instructorSupportCall;
     }
 
-    public InstructorInstructionalSupportCallResponse getInstructorInstructionalSupportCallResponse() {
-        return instructorInstructionalSupportCallResponse;
+    public InstructorSupportCallResponse getInstructorSupportCallResponse() {
+        return instructorSupportCallResponse;
     }
 
-    public void setInstructorInstructionalSupportCallResponse(InstructorInstructionalSupportCallResponse instructorInstructionalSupportCallResponse) {
-        this.instructorInstructionalSupportCallResponse = instructorInstructionalSupportCallResponse;
+    public void setInstructorSupportCallResponse(InstructorSupportCallResponse instructorSupportCallResponse) {
+        this.instructorSupportCallResponse = instructorSupportCallResponse;
     }
 
     public Long getInstructorId() {

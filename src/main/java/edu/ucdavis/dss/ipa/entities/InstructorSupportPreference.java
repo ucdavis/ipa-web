@@ -10,20 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * InstructorInstructionalSupportPreference records an instructor's preferences for who fills TA positions for courses they are teaching.
+ * InstructorSupportPreference records an instructor's preferences for who fills TA positions for courses they are teaching.
  */
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "InstructorInstructionalSupportPreferences")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class InstructorInstructionalSupportPreference implements Serializable {
+public class InstructorSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
-    private InstructionalSupportStaff instructionalSupportStaff;
+    private SupportStaff supportStaff;
     private Instructor instructor;
     private long priority;
-    private InstructorInstructionalSupportCall instructorInstructionalSupportCall;
+    private InstructorSupportCall instructorSupportCall;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
@@ -53,12 +53,12 @@ public class InstructorInstructionalSupportPreference implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "InstructionalSupportStaffId", nullable = false)
     @JsonIgnore
-    public InstructionalSupportStaff getInstructionalSupportStaff() {
-        return instructionalSupportStaff;
+    public SupportStaff getSupportStaff() {
+        return supportStaff;
     }
 
-    public void setInstructionalSupportStaff(InstructionalSupportStaff instructionalSupportStaff) {
-        this.instructionalSupportStaff = instructionalSupportStaff;
+    public void setSupportStaff(SupportStaff supportStaff) {
+        this.supportStaff = supportStaff;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,19 +76,19 @@ public class InstructorInstructionalSupportPreference implements Serializable {
     @JoinColumn(name = "InstructorInstructionalSupportCallId", nullable = false)
     @NotNull
     @JsonIgnore
-    public InstructorInstructionalSupportCall getInstructorInstructionalSupportCall() {
-        return instructorInstructionalSupportCall;
+    public InstructorSupportCall getInstructorSupportCall() {
+        return instructorSupportCall;
     }
 
-    public void setInstructorInstructionalSupportCall(InstructorInstructionalSupportCall instructorInstructionalSupportCall) {
-        this.instructorInstructionalSupportCall = instructorInstructionalSupportCall;
+    public void setInstructorSupportCall(InstructorSupportCall instructorSupportCall) {
+        this.instructorSupportCall = instructorSupportCall;
     }
 
     @JsonProperty("instructionalSupportStaffId")
     @Transient
     public long getInstructionalSupportStaffIdentification() {
-        if(instructionalSupportStaff != null) {
-            return instructionalSupportStaff.getId();
+        if(supportStaff != null) {
+            return supportStaff.getId();
         } else {
             return 0;
         }

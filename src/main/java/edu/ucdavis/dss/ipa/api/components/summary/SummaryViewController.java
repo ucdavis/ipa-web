@@ -2,10 +2,9 @@ package edu.ucdavis.dss.ipa.api.components.summary;
 
 import edu.ucdavis.dss.ipa.api.components.summary.views.SummaryView;
 import edu.ucdavis.dss.ipa.api.components.summary.views.factories.SummaryViewFactory;
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -46,7 +43,7 @@ public class SummaryViewController {
 
         // Determine if user is an instructional support staff
         long supportStaffId = 0;
-        InstructionalSupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
         if (supportStaff != null) {
             supportStaffId = supportStaff.getId();
         }

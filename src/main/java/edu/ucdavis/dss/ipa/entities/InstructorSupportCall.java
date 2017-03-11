@@ -17,14 +17,14 @@ import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallD
 @Entity
 @Table(name = "InstructorInstructionalSupportCalls")
 @JsonDeserialize(using = InstructorInstructionalSupportCallDeserializer.class)
-public class InstructorInstructionalSupportCall implements Serializable {
+public class InstructorSupportCall implements Serializable {
     private long id;
     private Schedule schedule;
     private String message, termCode;
     private Date startDate, dueDate;
     private boolean sendEmails, AllowSubmissionAfterDueDate;
-    private List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses = new ArrayList<>();
-    private List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences = new ArrayList<>();
+    private List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
+    private List<InstructorSupportPreference> instructorSupportPreferences = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -122,21 +122,21 @@ public class InstructorInstructionalSupportCall implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    public List<InstructorInstructionalSupportCallResponse> getInstructorInstructionalSupportCallResponses() {
-        return instructorInstructionalSupportCallResponses;
+    public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {
+        return instructorSupportCallResponses;
     }
 
-    public void setInstructorInstructionalSupportCallResponses(List<InstructorInstructionalSupportCallResponse> instructorInstructionalSupportCallResponses) {
-        this.instructorInstructionalSupportCallResponses = instructorInstructionalSupportCallResponses;
+    public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+        this.instructorSupportCallResponses = instructorSupportCallResponses;
     }
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    public List<InstructorInstructionalSupportPreference> getInstructorInstructionalSupportPreferences() {
-        return instructorInstructionalSupportPreferences;
+    public List<InstructorSupportPreference> getInstructorSupportPreferences() {
+        return instructorSupportPreferences;
     }
 
-    public void setInstructorInstructionalSupportPreferences(List<InstructorInstructionalSupportPreference> instructorInstructionalSupportPreferences) {
-        this.instructorInstructionalSupportPreferences = instructorInstructionalSupportPreferences;
+    public void setInstructorSupportPreferences(List<InstructorSupportPreference> instructorSupportPreferences) {
+        this.instructorSupportPreferences = instructorSupportPreferences;
     }
 }

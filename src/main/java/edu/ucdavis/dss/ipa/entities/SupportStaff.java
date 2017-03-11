@@ -27,9 +27,9 @@ import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructionalSupportStaff")
+@Table(name = "SupportStaff")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class InstructionalSupportStaff implements Serializable {
+public class SupportStaff implements Serializable {
     private long id;
     private String firstName;
     private String lastName;

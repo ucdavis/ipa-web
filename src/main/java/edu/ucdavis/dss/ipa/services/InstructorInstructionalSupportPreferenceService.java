@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.InstructorInstructionalSupportPreference;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportPreference;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ public interface InstructorInstructionalSupportPreferenceService {
      */
     List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds);
 
-    InstructorInstructionalSupportPreference create (long instructionalSupportStaffId, long instructorId, long supportCallId, long sectionGroupId);
+    InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long supportCallId, long sectionGroupId);
 
     void delete(Long studentInstructionalSupportPreferenceId);
 
-    List<InstructorInstructionalSupportPreference> findByInstructorIdAndInstructorSupportCallId(long instructorId, long instructorSupportCallId);
+    List<InstructorSupportPreference> findByInstructorIdAndInstructorSupportCallId(long instructorId, long instructorSupportCallId);
 
-    List<InstructorInstructionalSupportPreference> findByScheduleIdAndTermCode(long id, String termCode);
+    List<InstructorSupportPreference> findByScheduleIdAndTermCode(long id, String termCode);
 }

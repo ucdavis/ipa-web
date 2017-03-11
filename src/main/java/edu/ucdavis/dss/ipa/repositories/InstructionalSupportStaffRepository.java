@@ -1,12 +1,11 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import org.springframework.data.repository.CrudRepository;
 
-import edu.ucdavis.dss.ipa.entities.InstructionalSupportStaff;
+public interface InstructionalSupportStaffRepository extends CrudRepository<SupportStaff, Long> {
 
-public interface InstructionalSupportStaffRepository extends CrudRepository<InstructionalSupportStaff, Long> {
+    SupportStaff findById(Long id);
 
-    InstructionalSupportStaff findById(Long id);
-
-    InstructionalSupportStaff findByLoginIdIgnoreCase(String loginId);
+    SupportStaff findByLoginIdIgnoreCase(String loginId);
 }
