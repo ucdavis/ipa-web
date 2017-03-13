@@ -187,10 +187,39 @@ public class AuthController {
 
             // [DESERIALIZE TOKEN]
             String realUserLoginId = (String) claims.get("realUserLoginId");
+            User realUser = userService.getOneByLoginId(realUserLoginId);
 
             List<UserRole> userRoles = userRoleService.findByLoginId(loginIdToImpersonate);
+
+            List<UserRole> realUserRoles = userRoleService.findByLoginId(realUserLoginId);
+
+            // [AUTHORIZE]
+            boolean allowedToImpersonate = false;
+
+
+            if (realUser.isAdmin()) {
+                allowedToImpersonate = true;
+            } else {
+                for (UserRole userRole : realUserRoles) {
+                    if (userRole.getRoleToken().equals("academicPlanner")) {
+                        long workGroupId = userRole.getWorkgroup().getId();
+
+                        for (UserRole targetUserRole : userRoles) {
+                            if (UserRole.isInstructor(targetUserRole) && (workGroupId == targetUserRole.getWorkgroup().getId()) ) {
+                                allowedToImpersonate = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (allowedToImpersonate == false) {
+                response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+                return null;
+            }
+
+
             List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginIdToImpersonate);
-            User realUser = userService.getOneByLoginId(realUserLoginId);
 
 
             // [REBUILD TOKEN]
