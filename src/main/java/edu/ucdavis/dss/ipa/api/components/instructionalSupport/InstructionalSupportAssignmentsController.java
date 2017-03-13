@@ -22,8 +22,10 @@ public class InstructionalSupportAssignmentsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject
+    SupportAssignmentService supportAssignmentService;
+    @Inject
+    SupportStaffService supportStaffService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -47,7 +49,7 @@ public class InstructionalSupportAssignmentsController {
             && numberOfAssignments > 0
             && sectionGroupId > 0 ) {
 
-            supportAssignments = instructionalSupportAssignmentService.createMultiple(sectionGroupId, supportAssignment.getAppointmentType(), supportAssignment.getAppointmentPercentage(), numberOfAssignments);
+            supportAssignments = supportAssignmentService.createMultiple(sectionGroupId, supportAssignment.getAppointmentType(), supportAssignment.getAppointmentPercentage(), numberOfAssignments);
         }
 
         Workgroup workgroup = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup();
@@ -60,7 +62,7 @@ public class InstructionalSupportAssignmentsController {
     @ResponseBody
     public Long deleteAssignment(@PathVariable long instructionalSupportAssignmentId, HttpServletResponse httpResponse) {
 
-        SupportAssignment supportAssignment = instructionalSupportAssignmentService.findOneById(instructionalSupportAssignmentId);
+        SupportAssignment supportAssignment = supportAssignmentService.findOneById(instructionalSupportAssignmentId);
 
         Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
@@ -71,7 +73,7 @@ public class InstructionalSupportAssignmentsController {
             return null;
         }
 
-        instructionalSupportAssignmentService.delete(instructionalSupportAssignmentId);
+        supportAssignmentService.delete(instructionalSupportAssignmentId);
 
         return instructionalSupportAssignmentId;
     }
@@ -79,27 +81,27 @@ public class InstructionalSupportAssignmentsController {
     @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{assignmentId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public SupportAssignment assignStaffToSlot(@PathVariable long assignmentId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
-        SupportAssignment supportAssignment = instructionalSupportAssignmentService.findOneById(assignmentId);
-        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
+        SupportAssignment supportAssignment = supportAssignmentService.findOneById(assignmentId);
+        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
 
         Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         supportAssignment.setSupportStaff(supportStaff);
 
-        return instructionalSupportAssignmentService.save(supportAssignment);
+        return supportAssignmentService.save(supportAssignment);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}/unassign", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public SupportAssignment removeStaffFromSlot(@PathVariable long instructionalSupportAssignmentId, HttpServletResponse httpResponse) {
-        SupportAssignment supportAssignment = instructionalSupportAssignmentService.findOneById(instructionalSupportAssignmentId);
+        SupportAssignment supportAssignment = supportAssignmentService.findOneById(instructionalSupportAssignmentId);
 
         Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         supportAssignment.setSupportStaff(null);
 
-        return instructionalSupportAssignmentService.save(supportAssignment);
+        return supportAssignmentService.save(supportAssignment);
     }
 }

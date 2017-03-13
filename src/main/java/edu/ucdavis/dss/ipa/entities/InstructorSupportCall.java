@@ -15,7 +15,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.InstructorInstructionalSupportCallD
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructorInstructionalSupportCalls")
+@Table(name = "InstructorSupportCalls")
 @JsonDeserialize(using = InstructorInstructionalSupportCallDeserializer.class)
 public class InstructorSupportCall implements Serializable {
     private long id;
@@ -120,7 +120,7 @@ public class InstructorSupportCall implements Serializable {
         }
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {
         return instructorSupportCallResponses;
@@ -130,7 +130,7 @@ public class InstructorSupportCall implements Serializable {
         this.instructorSupportCallResponses = instructorSupportCallResponses;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorInstructionalSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorSupportCall", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public List<InstructorSupportPreference> getInstructorSupportPreferences() {
         return instructorSupportPreferences;

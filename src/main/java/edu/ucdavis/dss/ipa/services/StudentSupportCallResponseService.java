@@ -6,7 +6,7 @@ import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 
 import java.util.List;
 
-public interface StudentInstructionalSupportCallResponseService {
+public interface StudentSupportCallResponseService {
     StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId);
 
     List<StudentSupportCallResponse> findByScheduleId(long scheduleId);

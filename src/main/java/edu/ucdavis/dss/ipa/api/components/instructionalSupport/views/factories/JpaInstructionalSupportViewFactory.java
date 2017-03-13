@@ -23,13 +23,19 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
     @Inject UserService userService;
-    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
-    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+    @Inject
+    SupportAssignmentService supportAssignmentService;
+    @Inject
+    SupportStaffService supportStaffService;
+    @Inject
+    StudentSupportCallService studentSupportCallService;
     @Inject UserRoleService userRoleService;
-    @Inject StudentInstructionalSupportPreferenceService studentInstructionalSupportPreferenceService;
-    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
-    @Inject InstructorInstructionalSupportCallService instructorInstructionalSupportCallService;
+    @Inject
+    StudentSupportPreferenceService studentSupportPreferenceService;
+    @Inject
+    StudentSupportCallResponseService studentSupportCallResponseService;
+    @Inject
+    InstructorSupportCallService instructorSupportCallService;
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
@@ -46,18 +52,18 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-        List<SupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<UserRole> userRoles = workgroup.getUserRoles();
-        List<SupportStaff> supportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
 
-        List<SupportStaff> mastersStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
-        List<SupportStaff> phdStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
         List<Long> phdStudentIds = new ArrayList<>();
-        List<SupportStaff> instructionalSupport = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
-        List<StudentSupportPreference> studentSupportPreferences = studentInstructionalSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<StudentSupportCallResponse> studentSupportCallResponses = studentInstructionalSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         for (SupportStaff supportStaff : mastersStudents) {
             mastersStudentIds.add(supportStaff.getId());
         }
@@ -79,8 +85,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         List<UserRole> userRoles = workgroup.getUserRoles();
-        List<SupportStaff> supportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
-        List<StudentSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleId(schedule.getId());
+        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<StudentSupportCall> studentSupportCalls = studentSupportCallService.findByScheduleId(schedule.getId());
 
         List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
         for (StudentSupportCall supportCall : studentSupportCalls) {
@@ -88,18 +94,18 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         }
 
 
-        List<InstructorSupportCall> instructorSupportCalls = instructorInstructionalSupportCallService.findByScheduleId(schedule.getId());
+        List<InstructorSupportCall> instructorSupportCalls = instructorSupportCallService.findByScheduleId(schedule.getId());
 
         List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
         for (InstructorSupportCall supportCall : instructorSupportCalls) {
             instructorSupportCallResponses.addAll(supportCall.getInstructorSupportCallResponses());
         }
 
-        List<SupportStaff> mastersStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
-        List<SupportStaff> phdStudents = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
         List<Long> phdStudentIds = new ArrayList<>();
-        List<SupportStaff> instructionalSupport = instructionalSupportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
 
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
@@ -128,7 +134,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         // Does the user have an associated supportStaff entity?
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
         if (supportStaff == null) {
             return null;
         }
@@ -147,7 +153,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         // Ensure the scheduleId and termCode match, and that the support Call contains a studentSupportCallResponse for the current user
         outerloop:
-        for (StudentSupportCall slotStudentSupportCall : studentInstructionalSupportCallService.findByScheduleId(schedule.getId())) {
+        for (StudentSupportCall slotStudentSupportCall : studentSupportCallService.findByScheduleId(schedule.getId())) {
             if (slotStudentSupportCall.getTermCode().equals(termCode)) {
 
                 for (StudentSupportCallResponse slotStudentSupportCallResponse : slotStudentSupportCall.getStudentSupportCallResponses()) {
@@ -164,8 +170,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCodeAndStudentSupportCallId(schedule.getId(), termCode, studentSupportCall.getId());
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-        List<SupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<StudentSupportPreference> studentSupportPreferences = studentInstructionalSupportPreferenceService.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCall.getId());
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCall.getId());
 
         return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCall, studentSupportCallResponse);
     }
@@ -198,7 +204,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         // Set supportCall and supportCallResponse
         // Ensure the scheduleId and termCode match, and that the support Call contains a studentSupportCallResponse for the current user
         outerloop:
-        for (InstructorSupportCall slotInstructorSupportCall : instructorInstructionalSupportCallService.findByScheduleId(schedule.getId())) {
+        for (InstructorSupportCall slotInstructorSupportCall : instructorSupportCallService.findByScheduleId(schedule.getId())) {
             if (slotInstructorSupportCall.getTermCode().equals(termCode)) {
 
                 for (InstructorSupportCallResponse slotInstructorSupportCallResponse : slotInstructorSupportCall.getInstructorSupportCallResponses()) {
@@ -250,7 +256,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
         }
 
-        List<SupportStaff> supportStaffList = instructionalSupportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
 
         return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCall, instructorSupportCallResponse);
     }

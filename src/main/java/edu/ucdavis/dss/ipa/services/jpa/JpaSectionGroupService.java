@@ -24,8 +24,10 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject InstructorService instructorService;
 	@Inject WorkgroupService workgroupService;
 	@Inject TermService termService;
-	@Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
-	@Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
+	@Inject
+	StudentSupportCallService studentSupportCallService;
+	@Inject
+	SupportAssignmentService supportAssignmentService;
 
 	@Override
 	@Transactional
@@ -98,8 +100,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Override
 	public List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallId(long scheduleId, String termCode, long studentSupportCallId) {
 		List<SectionGroup> allSectionGroups = this.findByScheduleIdAndTermCode(scheduleId, termCode);
-		StudentSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentSupportCallId);
-		List<SupportAssignment> supportAssignments = instructionalSupportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
+		StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(studentSupportCallId);
+		List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
 
 		// List of sectionGroups that are valid options to be preferences
 		List<SectionGroup> filteredSectionGroups = new ArrayList<>();

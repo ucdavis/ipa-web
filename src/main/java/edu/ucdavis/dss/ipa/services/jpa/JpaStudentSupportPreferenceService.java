@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportPreferenceRepository;
+import edu.ucdavis.dss.ipa.repositories.StudentSupportPreferenceRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
@@ -10,16 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaStudentInstructionalSupportPreferenceService implements StudentInstructionalSupportPreferenceService {
+public class JpaStudentSupportPreferenceService implements StudentSupportPreferenceService {
 
-    @Inject StudentInstructionalSupportPreferenceRepository studentInstructionalSupportPreferenceRepository;
+    @Inject
+    StudentSupportPreferenceRepository studentSupportPreferenceRepository;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
-    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+    @Inject
+    SupportStaffService supportStaffService;
+    @Inject
+    StudentSupportCallService studentSupportCallService;
 
 
     public StudentSupportPreference save(StudentSupportPreference studentSupportPreference) {
-        return this.studentInstructionalSupportPreferenceRepository.save(studentSupportPreference);
+        return this.studentSupportPreferenceRepository.save(studentSupportPreference);
     }
 
     @Override
@@ -37,9 +40,9 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
 
     @Override
     public StudentSupportPreference create(long instructionalSupportStaffId, long supportCallId, long sectionGroupId, String type, String comment) {
-        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
+        SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-        StudentSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(supportCallId);
+        StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(supportCallId);
 
         StudentSupportPreference studentSupportPreference = new StudentSupportPreference();
         studentSupportPreference.setSectionGroup(sectionGroup);
@@ -55,17 +58,17 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
 
     @Override
     public void delete(Long studentInstructionalSupportPreferenceId) {
-        this.studentInstructionalSupportPreferenceRepository.deleteById(studentInstructionalSupportPreferenceId);
+        this.studentSupportPreferenceRepository.deleteById(studentInstructionalSupportPreferenceId);
     }
 
     @Override
     public List<StudentSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId) {
-        return this.studentInstructionalSupportPreferenceRepository.findByInstructionalSupportStaffIdAndStudentInstructionalSupportCallId(supportStaffId, studentSupportCallId);
+        return this.studentSupportPreferenceRepository.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCallId);
     }
 
     @Override
     public List<StudentSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<StudentSupportCall> supportCalls = studentInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<StudentSupportCall> supportCalls = studentSupportCallService.findByScheduleId(scheduleId);
         List<StudentSupportPreference> preferences = new ArrayList<>();
 
         for (StudentSupportCall supportCall : supportCalls) {
@@ -78,6 +81,6 @@ public class JpaStudentInstructionalSupportPreferenceService implements StudentI
     }
 
     private StudentSupportPreference findById(long preferenceId) {
-        return studentInstructionalSupportPreferenceRepository.findOneById(preferenceId);
+        return studentSupportPreferenceRepository.findOneById(preferenceId);
     }
 }

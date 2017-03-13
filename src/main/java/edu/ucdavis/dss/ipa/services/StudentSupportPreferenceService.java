@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 
 import java.util.List;
 
-public interface StudentInstructionalSupportPreferenceService {
+public interface StudentSupportPreferenceService {
 
     /**
      * Will set the priority values of all preferences tied to the relevant instructionalSupportStaff and instructionalSupportCall based on the order of the ids.

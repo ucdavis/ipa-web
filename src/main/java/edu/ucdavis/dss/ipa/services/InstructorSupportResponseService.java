@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
 
-public interface InstructorInstructionalSupportCallResponseService {
+public interface InstructorSupportResponseService {
     InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId);
 
     List<InstructorSupportCallResponse> findByScheduleId(long scheduleId);

@@ -20,10 +20,14 @@ public class InstructionalSupportStudentFormsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
-    @Inject StudentInstructionalSupportPreferenceService studentInstructionalSupportPreferenceService;
-    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
+    @Inject
+    SupportAssignmentService supportAssignmentService;
+    @Inject
+    SupportStaffService supportStaffService;
+    @Inject
+    StudentSupportPreferenceService studentSupportPreferenceService;
+    @Inject
+    StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
@@ -32,7 +36,7 @@ public class InstructionalSupportStudentFormsController {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
         return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaff.getId());
     }
@@ -44,26 +48,26 @@ public class InstructionalSupportStudentFormsController {
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
-        return studentInstructionalSupportPreferenceService.create(supportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
+        return studentSupportPreferenceService.create(supportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentSupportCallResponses/{studentSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public StudentSupportCallResponse updateStudentSupportCallResponse(@PathVariable long studentSupportCallResponseId, @RequestBody StudentSupportCallResponse studentSupportCallResponseDTO, HttpServletResponse httpResponse) {
-        StudentSupportCallResponse originalSupportCallResponse = studentInstructionalSupportCallResponseService.findOneById(studentSupportCallResponseId);
+        StudentSupportCallResponse originalSupportCallResponse = studentSupportCallResponseService.findOneById(studentSupportCallResponseId);
         Long workgroupId = originalSupportCallResponse.getStudentSupportCall().getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
         originalSupportCallResponse.setGeneralComments(studentSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setTeachingQualifications(studentSupportCallResponseDTO.getTeachingQualifications());
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
 
-        return studentInstructionalSupportCallResponseService.update(originalSupportCallResponse);
+        return studentSupportCallResponseService.update(originalSupportCallResponse);
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/schedules/{scheduleId}/terms/{termCode}", method = RequestMethod.PUT, produces = "application/json")
@@ -73,9 +77,9 @@ public class InstructionalSupportStudentFormsController {
         Authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
-        studentInstructionalSupportPreferenceService.updatePriorities(preferenceIdsParams);
+        studentSupportPreferenceService.updatePriorities(preferenceIdsParams);
 
         return preferenceIdsParams;
     }
@@ -83,12 +87,12 @@ public class InstructionalSupportStudentFormsController {
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deletePreference(@PathVariable long studentPreferenceId, HttpServletResponse httpResponse) {
-        //Long workgroupId = studentInstructionalSupportPreferenceService.findById(studentPreferenceId).getCourse().getSchedule().getWorkgroup().getId();
+        //Long workgroupId = studentSupportPreferenceService.findById(studentPreferenceId).getCourse().getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        studentInstructionalSupportPreferenceService.delete(studentPreferenceId);
+        studentSupportPreferenceService.delete(studentPreferenceId);
 
         return studentPreferenceId;
     }

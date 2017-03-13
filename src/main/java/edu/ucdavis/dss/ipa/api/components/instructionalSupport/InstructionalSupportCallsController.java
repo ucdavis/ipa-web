@@ -19,9 +19,12 @@ public class InstructionalSupportCallsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
-    @Inject InstructorInstructionalSupportCallService instructorInstructionalSupportCallService;
-    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+    @Inject
+    SupportAssignmentService supportAssignmentService;
+    @Inject
+    InstructorSupportCallService instructorSupportCallService;
+    @Inject
+    StudentSupportCallService studentSupportCallService;
     @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
@@ -45,7 +48,7 @@ public class InstructionalSupportCallsController {
         Schedule schedule = scheduleService.findById(scheduleId);
         studentSupportCall.setSchedule(schedule);
 
-        return studentInstructionalSupportCallService.findOrCreate(studentSupportCall);
+        return studentSupportCallService.findOrCreate(studentSupportCall);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/instructorInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
@@ -57,18 +60,18 @@ public class InstructionalSupportCallsController {
         Schedule schedule = scheduleService.findById(scheduleId);
         instructorSupportCall.setSchedule(schedule);
 
-        return instructorInstructionalSupportCallService.findOrCreate(instructorSupportCall);
+        return instructorSupportCallService.findOrCreate(instructorSupportCall);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/instructorInstructionalSupportCalls/{instructorInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deleteInstructorSupportCall(@PathVariable long instructorInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        InstructorSupportCall instructorSupportCall = instructorInstructionalSupportCallService.findOneById(instructorInstructionalSupportCallId);
+        InstructorSupportCall instructorSupportCall = instructorSupportCallService.findOneById(instructorInstructionalSupportCallId);
 
         Workgroup workgroup = instructorSupportCall.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        instructorInstructionalSupportCallService.delete(instructorInstructionalSupportCallId);
+        instructorSupportCallService.delete(instructorInstructionalSupportCallId);
 
         return instructorInstructionalSupportCallId;
     }
@@ -76,12 +79,12 @@ public class InstructionalSupportCallsController {
     @RequestMapping(value = "/api/instructionalSupportView/studentInstructionalSupportCalls/{studentInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deleteStudentSupportCall(@PathVariable long studentInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        StudentSupportCall studentSupportCall = studentInstructionalSupportCallService.findOneById(studentInstructionalSupportCallId);
+        StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(studentInstructionalSupportCallId);
 
         Workgroup workgroup = studentSupportCall.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        studentInstructionalSupportCallService.delete(studentInstructionalSupportCallId);
+        studentSupportCallService.delete(studentInstructionalSupportCallId);
 
         return studentInstructionalSupportCallId;
     }

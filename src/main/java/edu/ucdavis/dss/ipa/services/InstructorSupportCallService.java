@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.InstructorSupportCall;
 
 import java.util.List;
 
-public interface InstructorInstructionalSupportCallService {
+public interface InstructorSupportCallService {
     InstructorSupportCall findOneById(long instructorInstructionalSupportCallId);
 
     InstructorSupportCall findOrCreate(InstructorSupportCall instructorSupportCall);

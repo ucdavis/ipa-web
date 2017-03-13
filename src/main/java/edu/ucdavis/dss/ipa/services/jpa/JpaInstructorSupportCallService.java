@@ -4,9 +4,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorSupportCall;
 import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
-import edu.ucdavis.dss.ipa.repositories.InstructorInstructionalSupportCallRepository;
-import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallResponseService;
-import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallService;
+import edu.ucdavis.dss.ipa.repositories.InstructorSupportCallRepository;
+import edu.ucdavis.dss.ipa.services.InstructorSupportResponseService;
+import edu.ucdavis.dss.ipa.services.InstructorSupportCallService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaInstructorInstructionalSupportCallService implements InstructorInstructionalSupportCallService {
+public class JpaInstructorSupportCallService implements InstructorSupportCallService {
 
-    @Inject InstructorInstructionalSupportCallRepository instructorInstructionalSupportCallRepository;
+    @Inject
+    InstructorSupportCallRepository instructorSupportCallRepository;
     @Inject InstructorService instructorService;
-    @Inject InstructorInstructionalSupportCallResponseService instructorInstructionalSupportCallResponseService;
+    @Inject
+    InstructorSupportResponseService instructorSupportResponseService;
 
     @Override
     public InstructorSupportCall findOneById(long instructorInstructionalSupportCallId) {
-        return instructorInstructionalSupportCallRepository.findById(instructorInstructionalSupportCallId);
+        return instructorSupportCallRepository.findById(instructorInstructionalSupportCallId);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
 
         for (Long instructorId : instructorIds) {
             Instructor instructor = instructorService.getOneById(instructorId);
-            InstructorSupportCallResponse supportCallResponse = instructorInstructionalSupportCallResponseService.create(instructorSupportCall, instructor);
+            InstructorSupportCallResponse supportCallResponse = instructorSupportResponseService.create(instructorSupportCall, instructor);
 
             supportCallResponses.add(supportCallResponse);
         }
@@ -59,12 +61,12 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
 
     @Override
     public List<InstructorSupportCall> findByScheduleId(long scheduleId) {
-        return instructorInstructionalSupportCallRepository.findByScheduleId(scheduleId);
+        return instructorSupportCallRepository.findByScheduleId(scheduleId);
     }
 
     @Override
     public void delete(long instructorInstructionalSupportCallId) {
-        instructorInstructionalSupportCallRepository.delete(instructorInstructionalSupportCallId);
+        instructorSupportCallRepository.delete(instructorInstructionalSupportCallId);
     }
 
     @Override
@@ -93,6 +95,6 @@ public class JpaInstructorInstructionalSupportCallService implements InstructorI
         instructorSupportCall.setStartDate(sqlDate);
         instructorSupportCall.setInstructorSupportCallResponses(null);
 
-        return instructorInstructionalSupportCallRepository.save(instructorSupportCall);
+        return instructorSupportCallRepository.save(instructorSupportCall);
     }
 }

@@ -4,9 +4,9 @@ import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.repositories.InstructionalSupportAssignmentRepository;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportAssignmentService;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
+import edu.ucdavis.dss.ipa.repositories.SupportAssignmentRepository;
+import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.springframework.stereotype.Service;
@@ -18,26 +18,28 @@ import java.util.stream.Collectors;
 import java.util.Collection;
 
 @Service
-public class JpaInstructionalSupportAssignmentService implements InstructionalSupportAssignmentService {
+public class JpaSupportAssignmentService implements SupportAssignmentService {
 
-    @Inject InstructionalSupportAssignmentRepository instructionalSupportAssignmentRepository;
+    @Inject
+    SupportAssignmentRepository supportAssignmentRepository;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject
+    SupportStaffService supportStaffService;
     @Inject ScheduleService scheduleService;
 
     @Override
     public SupportAssignment save(SupportAssignment supportAssignment) {
-        return this.instructionalSupportAssignmentRepository.save(supportAssignment);
+        return this.supportAssignmentRepository.save(supportAssignment);
     }
 
     @Override
     public SupportAssignment findOneById(Long instructionalSupportAssignmentId) {
-        return this.instructionalSupportAssignmentRepository.findById(instructionalSupportAssignmentId);
+        return this.supportAssignmentRepository.findById(instructionalSupportAssignmentId);
     }
 
     @Override
     public void delete(Long instructionalSupportAssignmentId) {
-        this.instructionalSupportAssignmentRepository.deleteById(instructionalSupportAssignmentId);
+        this.supportAssignmentRepository.deleteById(instructionalSupportAssignmentId);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class JpaInstructionalSupportAssignmentService implements InstructionalSu
     @Override
     public SupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId) {
 
-        SupportStaff supportStaff = instructionalSupportStaffService.findOneById(instructionalSupportStaffId);
+        SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
         SupportAssignment supportAssignment = this.findOneById(instructionalSupportAssignmentId);
 
         supportAssignment.setSupportStaff(supportStaff);

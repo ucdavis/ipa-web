@@ -23,7 +23,8 @@ public class SummaryViewController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject WorkgroupService workgroupService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject
+    SupportStaffService supportStaffService;
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public SummaryView getInitialSummaryView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
@@ -43,7 +44,7 @@ public class SummaryViewController {
 
         // Determine if user is an instructional support staff
         long supportStaffId = 0;
-        SupportStaff supportStaff = instructionalSupportStaffService.findByLoginId(currentUser.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
         if (supportStaff != null) {
             supportStaffId = supportStaff.getId();
         }

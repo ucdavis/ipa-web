@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import java.util.List;
 
 @Validated
-public interface InstructionalSupportAssignmentService {
+public interface SupportAssignmentService {
 
     SupportAssignment findOneById(Long instructionalSupportAssignmentId);
 

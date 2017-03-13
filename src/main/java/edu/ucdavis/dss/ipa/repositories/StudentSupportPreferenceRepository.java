@@ -8,14 +8,14 @@ package edu.ucdavis.dss.ipa.repositories;
 
         import java.util.List;
 
-public interface StudentInstructionalSupportPreferenceRepository extends CrudRepository<StudentSupportPreference, Long> {
+public interface StudentSupportPreferenceRepository extends CrudRepository<StudentSupportPreference, Long> {
 
     @Modifying
     @Transactional
-    @Query(value="delete from StudentInstructionalSupportPreference sisp WHERE sisp.id = ?1")
+    @Query(value="delete from StudentSupportPreference sisp WHERE sisp.id = ?1")
     void deleteById(long studentInstructionalSupportPreferenceId);
 
-    List<StudentSupportPreference> findByInstructionalSupportStaffIdAndStudentInstructionalSupportCallId(long supportStaffId, long studentSupportCallId);
+    List<StudentSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId);
 
     StudentSupportPreference findOneById(long preferenceId);
 }

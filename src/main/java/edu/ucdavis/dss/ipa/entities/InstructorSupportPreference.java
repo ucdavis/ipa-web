@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructorInstructionalSupportPreferences")
+@Table(name = "InstructorSupportPreferences")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class InstructorSupportPreference implements Serializable {
     private long id;
@@ -51,7 +51,7 @@ public class InstructorSupportPreference implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructionalSupportStaffId", nullable = false)
+    @JoinColumn(name = "SupportStaffId", nullable = false)
     @JsonIgnore
     public SupportStaff getSupportStaff() {
         return supportStaff;
@@ -73,7 +73,7 @@ public class InstructorSupportPreference implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorInstructionalSupportCallId", nullable = false)
+    @JoinColumn(name = "InstructorSupportCallId", nullable = false)
     @NotNull
     @JsonIgnore
     public InstructorSupportCall getInstructorSupportCall() {
@@ -84,7 +84,7 @@ public class InstructorSupportPreference implements Serializable {
         this.instructorSupportCall = instructorSupportCall;
     }
 
-    @JsonProperty("instructionalSupportStaffId")
+    @JsonProperty("supportStaffId")
     @Transient
     public long getInstructionalSupportStaffIdentification() {
         if(supportStaff != null) {

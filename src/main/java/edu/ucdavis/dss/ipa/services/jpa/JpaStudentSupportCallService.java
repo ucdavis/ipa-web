@@ -3,10 +3,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
-import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallRepository;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallService;
+import edu.ucdavis.dss.ipa.repositories.StudentSupportCallRepository;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -15,15 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaStudentInstructionalSupportCallService implements StudentInstructionalSupportCallService {
+public class JpaStudentSupportCallService implements StudentSupportCallService {
 
-    @Inject StudentInstructionalSupportCallRepository studentInstructionalSupportCallRepository;
-    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
+    @Inject
+    StudentSupportCallRepository studentSupportCallRepository;
+    @Inject
+    StudentSupportCallResponseService studentSupportCallResponseService;
+    @Inject
+    SupportStaffService supportStaffService;
 
     @Override
-    public StudentSupportCall findOneById(long studentInstructionalSupportCallId) {
-        return studentInstructionalSupportCallRepository.findById(studentInstructionalSupportCallId);
+    public StudentSupportCall findOneById(long studentSupportCallId) {
+        return studentSupportCallRepository.findById(studentSupportCallId);
     }
 
     @Override
@@ -47,8 +50,8 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
         List<StudentSupportCallResponse> supportCallResponses = new ArrayList<>();
 
         for (Long supportStaffId : supportStaffIds) {
-            SupportStaff supportStaff = instructionalSupportStaffService.findOneById(supportStaffId);
-            StudentSupportCallResponse supportCallResponse = studentInstructionalSupportCallResponseService.create(studentSupportCall, supportStaff);
+            SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
+            StudentSupportCallResponse supportCallResponse = studentSupportCallResponseService.create(studentSupportCall, supportStaff);
 
             supportCallResponses.add(supportCallResponse);
         }
@@ -61,14 +64,14 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
 
     @Override
     public List<StudentSupportCall> findByScheduleId(long scheduleId) {
-        return studentInstructionalSupportCallRepository.findByScheduleId(scheduleId);
+        return studentSupportCallRepository.findByScheduleId(scheduleId);
     }
 
     @Override
-    public void delete(long studentInstructionalSupportCallId) {
-        StudentSupportCall studentSupportCall = this.findOneById(studentInstructionalSupportCallId);
+    public void delete(long studentSupportCallId) {
+        StudentSupportCall studentSupportCall = this.findOneById(studentSupportCallId);
 
-        studentInstructionalSupportCallRepository.delete(studentInstructionalSupportCallId);
+        studentSupportCallRepository.delete(studentSupportCallId);
     }
 
     @Override
@@ -98,6 +101,6 @@ public class JpaStudentInstructionalSupportCallService implements StudentInstruc
         studentSupportCall.setStartDate(sqlDate);
         studentSupportCall.setStudentSupportCallResponses(null);
 
-        return studentInstructionalSupportCallRepository.save(studentSupportCall);
+        return studentSupportCallRepository.save(studentSupportCall);
     }
 }

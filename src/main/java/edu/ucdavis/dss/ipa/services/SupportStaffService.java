@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.SupportStaff;
 
 import java.util.List;
 
-public interface InstructionalSupportStaffService {
+public interface SupportStaffService {
     SupportStaff findOneById(long instructionalSupportStaffId);
 
     SupportStaff findOrCreate(String firstName, String lastName, String email, String loginId);

@@ -3,9 +3,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
-import edu.ucdavis.dss.ipa.repositories.StudentInstructionalSupportCallResponseRepository;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallResponseService;
-import edu.ucdavis.dss.ipa.services.StudentInstructionalSupportCallService;
+import edu.ucdavis.dss.ipa.repositories.StudentSupportCallResponseRepository;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -13,20 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaStudentInstructionalSupportCallResponseService implements StudentInstructionalSupportCallResponseService {
+public class JpaStudentSupportCallResponseService implements StudentSupportCallResponseService {
 
-    @Inject StudentInstructionalSupportCallResponseService studentInstructionalSupportCallResponseService;
-    @Inject StudentInstructionalSupportCallResponseRepository studentInstructionalSupportCallResponseRepository;
-    @Inject StudentInstructionalSupportCallService studentInstructionalSupportCallService;
+    @Inject
+    StudentSupportCallResponseService studentSupportCallResponseService;
+    @Inject
+    StudentSupportCallResponseRepository studentSupportCallResponseRepository;
+    @Inject
+    StudentSupportCallService studentSupportCallService;
 
     @Override
     public StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId) {
-        return studentInstructionalSupportCallResponseRepository.findById(studentInstructionalSupportCallResponseId);
+        return studentSupportCallResponseRepository.findById(studentInstructionalSupportCallResponseId);
     }
 
     @Override
     public List<StudentSupportCallResponse> findByScheduleId(long scheduleId) {
-        List<StudentSupportCall> studentSupportCalls = studentInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<StudentSupportCall> studentSupportCalls = studentSupportCallService.findByScheduleId(scheduleId);
         List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
 
         for (StudentSupportCall studentSupportCall : studentSupportCalls) {
@@ -38,12 +41,12 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
 
     @Override
     public void delete(long studentInstructionalSupportCallResponseId) {
-        studentInstructionalSupportCallResponseRepository.delete(studentInstructionalSupportCallResponseId);
+        studentSupportCallResponseRepository.delete(studentInstructionalSupportCallResponseId);
     }
 
     @Override
     public StudentSupportCallResponse update(StudentSupportCallResponse studentSupportCallResponse) {
-        return studentInstructionalSupportCallResponseRepository.save(studentSupportCallResponse);
+        return studentSupportCallResponseRepository.save(studentSupportCallResponse);
     }
 
     @Override
@@ -86,6 +89,6 @@ public class JpaStudentInstructionalSupportCallResponseService implements Studen
         studentSupportCallResponse.setStudentSupportCall(studentSupportCall);
         studentSupportCallResponse.setSupportStaff(supportStaff);
 
-        return studentInstructionalSupportCallResponseRepository.save(studentSupportCallResponse);
+        return studentSupportCallResponseRepository.save(studentSupportCallResponse);
     }
 }

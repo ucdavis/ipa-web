@@ -1,9 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
         import edu.ucdavis.dss.ipa.entities.*;
-        import edu.ucdavis.dss.ipa.repositories.InstructorInstructionalSupportCallResponseRepository;
-        import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallResponseService;
-        import edu.ucdavis.dss.ipa.services.InstructorInstructionalSupportCallService;
+        import edu.ucdavis.dss.ipa.repositories.InstructorSupportResponseRepository;
+        import edu.ucdavis.dss.ipa.services.InstructorSupportResponseService;
+        import edu.ucdavis.dss.ipa.services.InstructorSupportCallService;
         import org.springframework.stereotype.Service;
 
         import javax.inject.Inject;
@@ -11,10 +11,12 @@ package edu.ucdavis.dss.ipa.services.jpa;
         import java.util.List;
 
 @Service
-public class JpaInstructorInstructionalSupportCallResponseService implements InstructorInstructionalSupportCallResponseService {
+public class JpaInstructorSupportResponseService implements InstructorSupportResponseService {
 
-    @Inject InstructorInstructionalSupportCallResponseRepository instructorInstructionalSupportCallResponseRepository;
-    @Inject InstructorInstructionalSupportCallService instructorInstructionalSupportCallService;
+    @Inject
+    InstructorSupportResponseRepository instructorInstructionalSupportCallResponseRepository;
+    @Inject
+    InstructorSupportCallService instructorSupportCallService;
 
     @Override
     public InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId) {
@@ -23,7 +25,7 @@ public class JpaInstructorInstructionalSupportCallResponseService implements Ins
 
     @Override
     public List<InstructorSupportCallResponse> findByScheduleId(long scheduleId) {
-        List<InstructorSupportCall> scheduleSupportCalls = instructorInstructionalSupportCallService.findByScheduleId(scheduleId);
+        List<InstructorSupportCall> scheduleSupportCalls = instructorSupportCallService.findByScheduleId(scheduleId);
         List<InstructorSupportCallResponse> supportCallResponses = new ArrayList<>();
 
         for (InstructorSupportCall instructorSupportCall : scheduleSupportCalls) {

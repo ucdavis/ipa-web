@@ -20,10 +20,14 @@ public class InstructionalSupportInstructorFormsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructionalSupportAssignmentService instructionalSupportAssignmentService;
-    @Inject InstructionalSupportStaffService instructionalSupportStaffService;
-    @Inject InstructorInstructionalSupportPreferenceService instructorInstructionalSupportPreferenceService;
-    @Inject InstructorInstructionalSupportCallResponseService instructorInstructionalSupportCallResponseService;
+    @Inject
+    SupportAssignmentService supportAssignmentService;
+    @Inject
+    SupportStaffService supportStaffService;
+    @Inject
+    InstructorSupportPreferenceService instructorSupportPreferenceService;
+    @Inject
+    InstructorSupportResponseService instructorSupportResponseService;
     @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
@@ -45,19 +49,19 @@ public class InstructionalSupportInstructorFormsController {
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
 
-        return instructorInstructionalSupportPreferenceService.create(supportStaffId, instructor.getId(), supportCallId, sectionGroupId);
+        return instructorSupportPreferenceService.create(supportStaffId, instructor.getId(), supportCallId, sectionGroupId);
     }
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/instructorSupportCallResponses/{instructorSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO, HttpServletResponse httpResponse) {
-        InstructorSupportCallResponse originalSupportCallResponse = instructorInstructionalSupportCallResponseService.findOneById(instructorSupportCallResponseId);
+        InstructorSupportCallResponse originalSupportCallResponse = instructorSupportResponseService.findOneById(instructorSupportCallResponseId);
         Long workgroupId = originalSupportCallResponse.getInstructorSupportCall().getSchedule().getWorkgroup().getId();
 
         originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());
 
-        return instructorInstructionalSupportCallResponseService.update(originalSupportCallResponse);
+        return instructorSupportResponseService.update(originalSupportCallResponse);
     }
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/schedules/{scheduleId}/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces = "application/json")
@@ -65,7 +69,7 @@ public class InstructionalSupportInstructorFormsController {
     public List<Long> updatePreferencesOrder(@PathVariable long scheduleId, @PathVariable long sectionGroupId, @RequestBody List<Long> preferenceIdsParams, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(scheduleId).getCourse().getSchedule().getWorkgroup().getId();
 
-        instructorInstructionalSupportPreferenceService.updatePriorities(preferenceIdsParams);
+        instructorSupportPreferenceService.updatePriorities(preferenceIdsParams);
 
         return preferenceIdsParams;
     }
@@ -73,7 +77,7 @@ public class InstructionalSupportInstructorFormsController {
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/instructorInstructionalSupportPreferences/{instructorPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deletePreference(@PathVariable long instructorPreferenceId, HttpServletResponse httpResponse) {
-        instructorInstructionalSupportPreferenceService.delete(instructorPreferenceId);
+        instructorSupportPreferenceService.delete(instructorPreferenceId);
 
         return instructorPreferenceId;
     }

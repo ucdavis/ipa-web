@@ -5,9 +5,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface InstructorInstructionalSupportCallRepository extends CrudRepository<InstructorSupportCall, Long> {
+public interface InstructorSupportCallRepository extends CrudRepository<InstructorSupportCall, Long> {
 
     List<InstructorSupportCall> findByScheduleId(long scheduleId);
 
-    InstructorSupportCall findById(long instructorInstructionalSupportCallId);
+    InstructorSupportCall findById(long instructorSupportCallId);
 }

@@ -23,7 +23,8 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject WorkgroupService workgroupService;
 	@Inject RoleService roleService;
 	@Inject InstructorService instructorService;
-	@Inject InstructionalSupportStaffService instructionalSupportStaffService;
+	@Inject
+	SupportStaffService supportStaffService;
 
 	@Override
 	@Transactional
@@ -95,7 +96,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 			if (roleName.equals("instructionalSupport")) {
 				log.info("Creating Instructional Support Staff for user '" + user.getLoginId() + "'");
-				SupportStaff SupportStaff = instructionalSupportStaffService.findOrCreate(
+				SupportStaff SupportStaff = supportStaffService.findOrCreate(
 						user.getFirstName(),
 						user.getLastName(),
 						user.getEmail(),

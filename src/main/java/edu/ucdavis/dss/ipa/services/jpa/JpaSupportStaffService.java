@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.repositories.InstructionalSupportStaffRepository;
-import edu.ucdavis.dss.ipa.services.InstructionalSupportStaffService;
+import edu.ucdavis.dss.ipa.repositories.SupportStaffRepository;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import org.springframework.stereotype.Service;
 
@@ -12,23 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JpaInstructionalSupportStaffService implements InstructionalSupportStaffService {
+public class JpaSupportStaffService implements SupportStaffService {
 
-    @Inject InstructionalSupportStaffRepository instructionalSupportStaffRepository;
+    @Inject
+    SupportStaffRepository supportStaffRepository;
     @Inject UserRoleService userRoleService;
 
     public SupportStaff save(SupportStaff supportStaff) {
-        return this.instructionalSupportStaffRepository.save(supportStaff);
+        return this.supportStaffRepository.save(supportStaff);
     }
 
     @Override
     public SupportStaff findOneById(long instructionalSupportStaffId) {
-        return this.instructionalSupportStaffRepository.findById(instructionalSupportStaffId);
+        return this.supportStaffRepository.findById(instructionalSupportStaffId);
     }
 
     @Override
     public SupportStaff findOrCreate(String firstName, String lastName, String email, String loginId) {
-        SupportStaff supportStaff = instructionalSupportStaffRepository.findByLoginIdIgnoreCase(loginId);
+        SupportStaff supportStaff = supportStaffRepository.findByLoginIdIgnoreCase(loginId);
 
         // Check to see if supportStaff already exists
         if (supportStaff != null) {
@@ -91,6 +92,6 @@ public class JpaInstructionalSupportStaffService implements InstructionalSupport
 
     @Override
     public SupportStaff findByLoginId(String loginId) {
-        return this.instructionalSupportStaffRepository.findByLoginIdIgnoreCase(loginId);
+        return this.supportStaffRepository.findByLoginIdIgnoreCase(loginId);
     }
 }
