@@ -162,6 +162,15 @@ public class AuthController {
         return new ResponseEntity<byte[]>(null, headers, HttpStatus.FOUND);
     }
 
+    /**
+     * Modifies the JWT to enable the user to impersonate the specified user.
+     * Returns an updated securityDTO with the 'real' and impersonated user information.
+     * @param loginIdToImpersonate
+     * @param securityDTO
+     * @param request
+     * @param response
+     * @return
+     */
     @CrossOrigin // TODO: make CORS more specific depending on profile
     @RequestMapping(value = "/impersonate/{loginIdToImpersonate}", method = RequestMethod.POST)
     public SecurityDTO impersonate(@PathVariable String loginIdToImpersonate, @RequestBody SecurityDTO securityDTO,
@@ -185,7 +194,7 @@ public class AuthController {
             Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
                     .parseClaimsJws(securityDTO.token).getBody();
 
-            // [DESERIALIZE TOKEN]
+            // Deserialize tokens
             String realUserLoginId = (String) claims.get("realUserLoginId");
             User realUser = userService.getOneByLoginId(realUserLoginId);
 
@@ -193,9 +202,8 @@ public class AuthController {
 
             List<UserRole> realUserRoles = userRoleService.findByLoginId(realUserLoginId);
 
-            // [AUTHORIZE]
+            // Ensure user is authorized to impersonate
             boolean allowedToImpersonate = false;
-
 
             if (realUser.isAdmin()) {
                 allowedToImpersonate = true;
@@ -218,11 +226,9 @@ public class AuthController {
                 return null;
             }
 
-
             List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginIdToImpersonate);
 
-
-            // [REBUILD TOKEN]
+            // Rebuild token
             securityDTO.token = Jwts.builder().setSubject(loginIdToImpersonate)
                     .claim("userRoles", userRoles)
                     .claim("loginId", loginIdToImpersonate)
@@ -245,6 +251,13 @@ public class AuthController {
         return securityDTO;
     }
 
+    /**
+     * Removes impersonation, the user will authenticate normally again.
+     * @param securityDTO
+     * @param request
+     * @param response
+     * @return
+     */
     @CrossOrigin // TODO: make CORS more specific depending on profile
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.POST)
     public SecurityDTO unimpersonate(@RequestBody SecurityDTO securityDTO,
@@ -261,7 +274,7 @@ public class AuthController {
             Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
                     .parseClaimsJws(securityDTO.token).getBody();
 
-            // [DESERIALIZE TOKEN]
+            // Deserialize token
             String realUserLoginId = (String) claims.get("realUserLoginId");
 
             List<UserRole> userRoles = userRoleService.findByLoginId(realUserLoginId);
@@ -270,7 +283,7 @@ public class AuthController {
             User realUser = userService.getOneByLoginId(realUserLoginId);
 
 
-            // [REBUILD TOKEN]
+            // Rebuild token
             securityDTO.token = Jwts.builder().setSubject(realUserLoginId)
                     .claim("userRoles", userRoles)
                     .claim("loginId", realUserLoginId)
