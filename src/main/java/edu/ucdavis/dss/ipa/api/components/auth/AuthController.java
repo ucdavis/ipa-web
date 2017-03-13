@@ -56,9 +56,9 @@ public class AuthController {
         String loginId = null;
         String realUserLoginId = null;
 
-        int jwtMinutesValid = 60;
+        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtMinutesValid);
+        calendarNow.add(Calendar.MINUTE, jwtTimeout);
 
         Date expirationDate = calendarNow.getTime();
 
@@ -184,9 +184,9 @@ public class AuthController {
             return null;
         }
 
-        int jwtMinutesValid = 60;
+        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtMinutesValid);
+        calendarNow.add(Calendar.MINUTE, jwtTimeout);
 
         Date expirationDate = calendarNow.getTime();
 
@@ -264,9 +264,9 @@ public class AuthController {
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
 
-        int jwtMinutesValid = 60;
+        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtMinutesValid);
+        calendarNow.add(Calendar.MINUTE, jwtTimeout);
 
         Date expirationDate = calendarNow.getTime();
 

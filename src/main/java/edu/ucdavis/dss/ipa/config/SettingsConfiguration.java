@@ -1,19 +1,8 @@
 package edu.ucdavis.dss.ipa.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Properties;
-
-import javax.servlet.ServletContext;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * Allows enabling/disabling certain program features.
@@ -25,7 +14,7 @@ public class SettingsConfiguration {
 
 	private static String ipaApiUrl, ipaFrontendUrl;
 	private static String emailProtocol, emailAuth, emailDebug, emailHost, emailFrom;
-	private static Integer emailPort;
+	private static Integer emailPort, jwtTimeout;
 	private static Boolean errorsFound = null;
 	private static String jwtSigningKey, downloadSecretKey;
 	private static String dwUrl, dwToken, dwPort;
@@ -51,6 +40,10 @@ public class SettingsConfiguration {
 		String sRunningMode = findOrWarnSetting("ipa.spring.profile");
 		if(sRunningMode != null) { runningMode = RunningMode.valueOf(sRunningMode); }
 		jwtSigningKey = findOrWarnSetting("ipa.jwt.signingkey");
+
+		String sJwtTimeout = findOrWarnSetting("ipa.jwt.timeout");
+		if(sJwtTimeout != null) { jwtTimeout = Integer.parseInt(sJwtTimeout); }
+
 		dwUrl = findOrWarnSetting("dw.url");
 		dwToken = findOrWarnSetting("dw.token");
 		dwPort = findOrWarnSetting("dw.port");
@@ -161,6 +154,8 @@ public class SettingsConfiguration {
 	public static String getDwPort() {
 		return dwPort;
 	}
+
+	public static Integer getJwtTimeout() { return jwtTimeout; }
 
 	/**
 	 * Returns true if errorsFound is true or null.
