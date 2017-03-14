@@ -12,14 +12,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 @Service
 public class JpaInstructorSupportPreferenceService implements InstructorSupportPreferenceService {
 
-    @Inject
-    InstructorSupportPreferenceRepository instructorSupportPreferenceRepository;
-    @Inject
-    SectionGroupService sectionGroupService;
-    @Inject
-    SupportStaffService supportStaffService;
-    @Inject
-    InstructorSupportCallService instructorSupportCallService;
+    @Inject InstructorSupportPreferenceRepository instructorSupportPreferenceRepository;
+    @Inject SectionGroupService sectionGroupService;
+    @Inject SupportStaffService supportStaffService;
     @Inject InstructorService instructorService;
 
     public InstructorSupportPreference save(InstructorSupportPreference instructorSupportPreference) {
@@ -36,13 +31,12 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
         SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
         Instructor instructor = instructorService.getOneById(instructorId);
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-        InstructorSupportCall instructorSupportCall = instructorSupportCallService.findOneById(supportCallId);
 
         InstructorSupportPreference instructorSupportPreference = new InstructorSupportPreference();
         instructorSupportPreference.setSectionGroup(sectionGroup);
         instructorSupportPreference.setSupportStaff(supportStaff);
         instructorSupportPreference.setInstructor(instructor);
-        instructorSupportPreference.setInstructorSupportCall(instructorSupportCall);
+
         // TODO: Add logic to properly check sibling preferences, determine the current lowest priority, and set priority to one below that.
         instructorSupportPreference.setPriority(1L);
 
@@ -61,14 +55,7 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
 
     @Override
     public List<InstructorSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<InstructorSupportCall> supportCalls = instructorSupportCallService.findByScheduleId(scheduleId);
-        List<InstructorSupportPreference> preferences = new ArrayList<>();
-
-        for (InstructorSupportCall supportCall : supportCalls) {
-            if (supportCall.getTermCode().equals(termCode)) {
-                preferences.addAll(supportCall.getInstructorSupportPreferences());
-            }
-        }
+        List<InstructorSupportPreference> preferences = instructorSupportPreferenceRepository.findByScheduleIdAndTermCode(scheduleId, termCode);
 
         return preferences;
     }

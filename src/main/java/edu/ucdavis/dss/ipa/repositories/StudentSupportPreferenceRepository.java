@@ -18,4 +18,6 @@ public interface StudentSupportPreferenceRepository extends CrudRepository<Stude
     List<StudentSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId);
 
     StudentSupportPreference findOneById(long preferenceId);
+
+    List<StudentSupportPreference> findByScheduleId(long scheduleId);
 }

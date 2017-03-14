@@ -29,7 +29,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject
     InstructorSupportCallService instructorSupportCallService;
     @Inject
-    InstructorSupportResponseService instructorSupportResponseService;
+    InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId, long supportStaffId) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
@@ -102,7 +102,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
         // Get instructor support Calls
         List<InstructorSupportCall> instructorSupportCalls = instructorSupportCallService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
-        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
         return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCalls, instructorSupportCalls, studentSupportCallResponses, instructorSupportCallResponses);
     }

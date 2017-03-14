@@ -9,4 +9,6 @@ public interface StudentSupportCallResponseRepository extends CrudRepository<Stu
     List<StudentSupportCallResponse> findByStudentSupportCallId (long studentSupportCallId);
 
     StudentSupportCallResponse findById (long studentSupportCallResponseId);
+
+    List<StudentSupportCallResponse> findByScheduleId(long scheduleId);
 }

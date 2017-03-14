@@ -23,19 +23,13 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
     @Inject UserService userService;
-    @Inject
-    SupportAssignmentService supportAssignmentService;
-    @Inject
-    SupportStaffService supportStaffService;
-    @Inject
-    StudentSupportCallService studentSupportCallService;
+    @Inject SupportAssignmentService supportAssignmentService;
+    @Inject SupportStaffService supportStaffService;
     @Inject UserRoleService userRoleService;
-    @Inject
-    StudentSupportPreferenceService studentSupportPreferenceService;
-    @Inject
-    StudentSupportCallResponseService studentSupportCallResponseService;
-    @Inject
-    InstructorSupportCallService instructorSupportCallService;
+    @Inject StudentSupportPreferenceService studentSupportPreferenceService;
+    @Inject StudentSupportCallResponseService studentSupportCallResponseService;
+    @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
+
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
@@ -86,21 +80,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<UserRole> userRoles = workgroup.getUserRoles();
         List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
-        List<StudentSupportCall> studentSupportCalls = studentSupportCallService.findByScheduleId(schedule.getId());
-
-        List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
-        for (StudentSupportCall supportCall : studentSupportCalls) {
-            studentSupportCallResponses.addAll(supportCall.getStudentSupportCallResponses());
-        }
-
-
-        List<InstructorSupportCall> instructorSupportCalls = instructorSupportCallService.findByScheduleId(schedule.getId());
-
-        List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
-        for (InstructorSupportCall supportCall : instructorSupportCalls) {
-            instructorSupportCallResponses.addAll(supportCall.getInstructorSupportCallResponses());
-        }
-
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleId(schedule.getId());
+        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleId(schedule.getId());
         List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
         List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");

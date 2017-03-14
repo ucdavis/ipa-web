@@ -9,8 +9,6 @@ public class InstructionalSupportCallStatusView {
     List<Long> mastersStudentIds;
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
-    List<StudentSupportCall> studentSupportCalls;
-    List<InstructorSupportCall> instructorSupportCalls;
     List<Instructor> activeInstructors;
     List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
@@ -21,8 +19,6 @@ public class InstructionalSupportCallStatusView {
                                               List<Long> mastersStudentsIds,
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
-                                              List<StudentSupportCall> studentSupportCalls,
-                                              List<InstructorSupportCall> instructorSupportCalls,
                                               List<Instructor> activeInstructors,
                                               List<TeachingAssignment> teachingAssignments,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
@@ -32,8 +28,6 @@ public class InstructionalSupportCallStatusView {
         setMastersStudentIds(mastersStudentsIds);
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
-        setStudentSupportCalls(studentSupportCalls);
-        setInstructorSupportCalls(instructorSupportCalls);
         setActiveInstructors(activeInstructors);
         setTeachingAssignments(teachingAssignments);
         setStudentSupportCallResponses(studentSupportCallResponses);
@@ -72,28 +66,12 @@ public class InstructionalSupportCallStatusView {
         this.instructionalSupportIds = instructionalSupportIds;
     }
 
-    public List<StudentSupportCall> getStudentSupportCalls() {
-        return studentSupportCalls;
-    }
-
-    public void setStudentSupportCalls(List<StudentSupportCall> studentSupportCalls) {
-        this.studentSupportCalls = studentSupportCalls;
-    }
-
     public Long getScheduleId() {
         return scheduleId;
     }
 
     public void setScheduleId(Long scheduleId) {
         this.scheduleId = scheduleId;
-    }
-
-    public List<InstructorSupportCall> getInstructorSupportCalls() {
-        return instructorSupportCalls;
-    }
-
-    public void setInstructorSupportCalls(List<InstructorSupportCall> instructorSupportCalls) {
-        this.instructorSupportCalls = instructorSupportCalls;
     }
 
     public List<Instructor> getActiveInstructors() {

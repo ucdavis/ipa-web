@@ -23,7 +23,7 @@ public class InstructorSupportPreference implements Serializable {
     private SupportStaff supportStaff;
     private Instructor instructor;
     private long priority;
-    private InstructorSupportCall instructorSupportCall;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
@@ -72,21 +72,9 @@ public class InstructorSupportPreference implements Serializable {
         this.instructor = instructor;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorSupportCallId", nullable = false)
-    @NotNull
-    @JsonIgnore
-    public InstructorSupportCall getInstructorSupportCall() {
-        return instructorSupportCall;
-    }
-
-    public void setInstructorSupportCall(InstructorSupportCall instructorSupportCall) {
-        this.instructorSupportCall = instructorSupportCall;
-    }
-
     @JsonProperty("supportStaffId")
     @Transient
-    public long getInstructionalSupportStaffIdentification() {
+    public long getSupportStaffIdentification() {
         if(supportStaff != null) {
             return supportStaff.getId();
         } else {

@@ -13,12 +13,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "StudentSupportCallResponses")
 public class StudentSupportCallResponse implements Serializable {
-    private long id;
-    private StudentSupportCall studentSupportCall;
+    private long id, minimumNumberOfPreferences;
     private SupportStaff supportStaff;
-    private Date notifiedAt, warnedAt;
-    private boolean submitted;
-    private String generalComments, teachingQualifications;
+    private Date nextContactAt, lastContactedAt, startDate, dueDate;
+    private boolean submitted, allowSubmissionAfterDueDate;
+    private String generalComments, teachingQualifications, message, termCode;
+    private Schedule schedule;
+
+    private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
+    private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
+    private boolean collectAssociateInstructorPreferences;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,37 +46,6 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setSupportStaff(SupportStaff supportStaff) {
         this.supportStaff = supportStaff;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "StudentSupportCallId", nullable = false)
-    @NotNull
-    @JsonIgnore
-    public StudentSupportCall getStudentSupportCall() {
-        return studentSupportCall;
-    }
-
-    public void setStudentSupportCall(StudentSupportCall studentSupportCall) {
-        this.studentSupportCall = studentSupportCall;
-    }
-
-
-    @Column (nullable = false)
-    public Date getNotifiedAt() {
-        return notifiedAt;
-    }
-
-    public void setNotifiedAt(Date notifiedAt) {
-        this.notifiedAt = notifiedAt;
-    }
-
-    @Column (nullable = false)
-    public Date getWarnedAt() {
-        return warnedAt;
-    }
-
-    public void setWarnedAt(Date warnedAt) {
-        this.warnedAt = warnedAt;
     }
 
     @Column (nullable = false)
@@ -102,14 +75,132 @@ public class StudentSupportCallResponse implements Serializable {
         this.teachingQualifications = teachingQualifications;
     }
 
-    @JsonProperty("studentSupportCallId")
-    @Transient
-    public long getStudentInstructionalSupportCallIdentification() {
-        if(studentSupportCall != null) {
-            return studentSupportCall.getId();
-        } else {
-            return 0;
-        }
+    public long getMinimumNumberOfPreferences() {
+        return minimumNumberOfPreferences;
+    }
+
+    public void setMinimumNumberOfPreferences(long minimumNumberOfPreferences) {
+        this.minimumNumberOfPreferences = minimumNumberOfPreferences;
+    }
+
+    public Date getNextContactAt() {
+        return nextContactAt;
+    }
+
+    public void setNextContactAt(Date nextContactAt) {
+        this.nextContactAt = nextContactAt;
+    }
+
+    public Date getLastContactedAt() {
+        return lastContactedAt;
+    }
+
+    public void setLastContactedAt(Date lastContactedAt) {
+        this.lastContactedAt = lastContactedAt;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public boolean isAllowSubmissionAfterDueDate() {
+        return allowSubmissionAfterDueDate;
+    }
+
+    public void setAllowSubmissionAfterDueDate(boolean allowSubmissionAfterDueDate) {
+        this.allowSubmissionAfterDueDate = allowSubmissionAfterDueDate;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public boolean isCollectGeneralComments() {
+        return collectGeneralComments;
+    }
+
+    public void setCollectGeneralComments(boolean collectGeneralComments) {
+        this.collectGeneralComments = collectGeneralComments;
+    }
+
+    public boolean isCollectTeachingQualifications() {
+        return collectTeachingQualifications;
+    }
+
+    public void setCollectTeachingQualifications(boolean collectTeachingQualifications) {
+        this.collectTeachingQualifications = collectTeachingQualifications;
+    }
+
+    public boolean isCollectPreferenceComments() {
+        return collectPreferenceComments;
+    }
+
+    public void setCollectPreferenceComments(boolean collectPreferenceComments) {
+        this.collectPreferenceComments = collectPreferenceComments;
+    }
+
+    public boolean isCollectEligibilityConfirmation() {
+        return collectEligibilityConfirmation;
+    }
+
+    public void setCollectEligibilityConfirmation(boolean collectEligibilityConfirmation) {
+        this.collectEligibilityConfirmation = collectEligibilityConfirmation;
+    }
+
+    public boolean isCollectTeachingAssistantPreferences() {
+        return collectTeachingAssistantPreferences;
+    }
+
+    public void setCollectTeachingAssistantPreferences(boolean collectTeachingAssistantPreferences) {
+        this.collectTeachingAssistantPreferences = collectTeachingAssistantPreferences;
+    }
+
+    public boolean isCollectReaderPreferences() {
+        return collectReaderPreferences;
+    }
+
+    public void setCollectReaderPreferences(boolean collectReaderPreferences) {
+        this.collectReaderPreferences = collectReaderPreferences;
+    }
+
+    public boolean isCollectAssociateInstructorPreferences() {
+        return collectAssociateInstructorPreferences;
+    }
+
+    public void setCollectAssociateInstructorPreferences(boolean collectAssociateInstructorPreferences) {
+        this.collectAssociateInstructorPreferences = collectAssociateInstructorPreferences;
     }
 
     @JsonProperty("supportStaffId")

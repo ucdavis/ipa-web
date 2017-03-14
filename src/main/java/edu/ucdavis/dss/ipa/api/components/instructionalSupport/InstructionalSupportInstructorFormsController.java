@@ -27,7 +27,7 @@ public class InstructionalSupportInstructorFormsController {
     @Inject
     InstructorSupportPreferenceService instructorSupportPreferenceService;
     @Inject
-    InstructorSupportResponseService instructorSupportResponseService;
+    InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
@@ -55,13 +55,13 @@ public class InstructionalSupportInstructorFormsController {
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/instructorSupportCallResponses/{instructorSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO, HttpServletResponse httpResponse) {
-        InstructorSupportCallResponse originalSupportCallResponse = instructorSupportResponseService.findOneById(instructorSupportCallResponseId);
+        InstructorSupportCallResponse originalSupportCallResponse = instructorSupportCallResponseService.findOneById(instructorSupportCallResponseId);
         Long workgroupId = originalSupportCallResponse.getInstructorSupportCall().getSchedule().getWorkgroup().getId();
 
         originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());
 
-        return instructorSupportResponseService.update(originalSupportCallResponse);
+        return instructorSupportCallResponseService.update(originalSupportCallResponse);
     }
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/schedules/{scheduleId}/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces = "application/json")

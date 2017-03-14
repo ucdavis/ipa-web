@@ -4,12 +4,12 @@ import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
 
-public interface InstructorSupportResponseService {
+public interface InstructorSupportCallResponseService {
     InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId);
 
     List<InstructorSupportCallResponse> findByScheduleId(long scheduleId);
 
-    InstructorSupportCallResponse create(InstructorSupportCall instructorSupportCall, Instructor instructor);
+    InstructorSupportCallResponse create(InstructorSupportCallResponse instructorSupportCallResponse);
 
     void delete(long instructorInstructionalSupportCallResponseId);
 

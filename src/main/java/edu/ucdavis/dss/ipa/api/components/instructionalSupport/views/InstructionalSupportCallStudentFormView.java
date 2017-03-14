@@ -12,7 +12,6 @@ public class InstructionalSupportCallStudentFormView {
     StudentSupportCallResponse studentSupportCallResponse;
     Long scheduleId;
     Long supportStaffId;
-    StudentSupportCall studentSupportCall;
 
     public InstructionalSupportCallStudentFormView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -20,14 +19,12 @@ public class InstructionalSupportCallStudentFormView {
                                                List<StudentSupportPreference> studentSupportPreferences,
                                                Long scheduleId,
                                                Long supportStaffId,
-                                               StudentSupportCall studentSupportCall,
                                                StudentSupportCallResponse studentSupportCallResponse) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
         setScheduleId(scheduleId);
         setSupportStaffId(supportStaffId);
-        setStudentSupportCall(studentSupportCall);
         setStudentSupportPreferences(studentSupportPreferences);
         setStudentSupportCallResponse(studentSupportCallResponse);
     }
@@ -70,14 +67,6 @@ public class InstructionalSupportCallStudentFormView {
 
     public void setScheduleId(Long scheduleId) {
         this.scheduleId = scheduleId;
-    }
-
-    public StudentSupportCall getStudentSupportCall() {
-        return studentSupportCall;
-    }
-
-    public void setStudentSupportCall(StudentSupportCall studentSupportCall) {
-        this.studentSupportCall = studentSupportCall;
     }
 
     public List<StudentSupportPreference> getStudentSupportPreferences() {

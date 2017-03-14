@@ -1,11 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.StudentSupportCall;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.repositories.StudentSupportCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
-import edu.ucdavis.dss.ipa.services.StudentSupportCallService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -17,10 +15,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
     @Inject
     StudentSupportCallResponseService studentSupportCallResponseService;
-    @Inject
-    StudentSupportCallResponseRepository studentSupportCallResponseRepository;
-    @Inject
-    StudentSupportCallService studentSupportCallService;
+    @Inject StudentSupportCallResponseRepository studentSupportCallResponseRepository;
 
     @Override
     public StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId) {
@@ -29,12 +24,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
     @Override
     public List<StudentSupportCallResponse> findByScheduleId(long scheduleId) {
-        List<StudentSupportCall> studentSupportCalls = studentSupportCallService.findByScheduleId(scheduleId);
-        List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
-
-        for (StudentSupportCall studentSupportCall : studentSupportCalls) {
-            studentSupportCallResponses.addAll(studentSupportCall.getStudentSupportCallResponses());
-        }
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseRepository.findByScheduleId(scheduleId);
 
         return studentSupportCallResponses;
     }
@@ -69,7 +59,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         List<StudentSupportCallResponse> filteredSupportCallResponses = new ArrayList<>();
 
         for (StudentSupportCallResponse supportCallResponse : scheduleSupportCallResponses) {
-            if (supportCallResponse.getStudentSupportCall().getTermCode().equals(termCode)) {
+            if (supportCallResponse.getTermCode().equals(termCode)) {
                 filteredSupportCallResponses.add(supportCallResponse);
             }
         }
@@ -83,12 +73,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
     }
 
     @Override
-    public StudentSupportCallResponse create (StudentSupportCall studentSupportCall, SupportStaff supportStaff) {
-        StudentSupportCallResponse studentSupportCallResponse = new StudentSupportCallResponse();
-
-        studentSupportCallResponse.setStudentSupportCall(studentSupportCall);
-        studentSupportCallResponse.setSupportStaff(supportStaff);
-
-        return studentSupportCallResponseRepository.save(studentSupportCallResponse);
+    public StudentSupportCallResponse create (StudentSupportCallResponse studentSupportCallResponseDTO) {
+        return studentSupportCallResponseRepository.save(studentSupportCallResponseDTO);
     }
 }

@@ -14,10 +14,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Table(name = "InstructorSupportCallResponses")
 public class InstructorSupportCallResponse implements Serializable {
     private long id;
-    private InstructorSupportCall instructorSupportCall;
+    private Schedule schedule;
+    private String message, termCode;
+    private Date startDate, dueDate, lastContactedAt, nextContactAt;
     private Instructor instructor;
-    private Date notifiedAt, warnedAt;
-    private boolean submitted;
+    private boolean submitted, allowSubmissionAfterDueDate;
     private String generalComments;
 
     @Id
@@ -44,36 +45,6 @@ public class InstructorSupportCallResponse implements Serializable {
         this.instructor = instructor;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorSupportCallId", nullable = false)
-    @NotNull
-    @JsonIgnore
-    public InstructorSupportCall getInstructorSupportCall() {
-        return instructorSupportCall;
-    }
-
-    public void setInstructorSupportCall(InstructorSupportCall instructorSupportCall) {
-        this.instructorSupportCall = instructorSupportCall;
-    }
-
-    @Column (nullable = false)
-    public Date getNotifiedAt() {
-        return notifiedAt;
-    }
-
-    public void setNotifiedAt(Date notifiedAt) {
-        this.notifiedAt = notifiedAt;
-    }
-
-    @Column (nullable = false)
-    public Date getWarnedAt() {
-        return warnedAt;
-    }
-
-    public void setWarnedAt(Date warnedAt) {
-        this.warnedAt = warnedAt;
-    }
-
     @Column (nullable = false)
     public boolean isSubmitted() {
         return submitted;
@@ -92,21 +63,75 @@ public class InstructorSupportCallResponse implements Serializable {
         this.generalComments = generalComments;
     }
 
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Date getLastContactedAt() {
+        return lastContactedAt;
+    }
+
+    public void setLastContactedAt(Date lastContactedAt) {
+        this.lastContactedAt = lastContactedAt;
+    }
+
+    public Date getNextContactAt() {
+        return nextContactAt;
+    }
+
+    public void setNextContactAt(Date nextContactAt) {
+        this.nextContactAt = nextContactAt;
+    }
+
+    public boolean isAllowSubmissionAfterDueDate() {
+        return allowSubmissionAfterDueDate;
+    }
+
+    public void setAllowSubmissionAfterDueDate(boolean allowSubmissionAfterDueDate) {
+        this.allowSubmissionAfterDueDate = allowSubmissionAfterDueDate;
+    }
+
     @JsonProperty("instructorId")
     @Transient
     public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
-        } else {
-            return 0;
-        }
-    }
-
-    @JsonProperty("instructorSupportCallId")
-    @Transient
-    public long getInstructorInstructionalSupportCallIdentification() {
-        if(instructorSupportCall != null) {
-            return instructorSupportCall.getId();
         } else {
             return 0;
         }

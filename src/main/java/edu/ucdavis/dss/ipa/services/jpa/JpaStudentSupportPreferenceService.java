@@ -17,9 +17,6 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     @Inject SectionGroupService sectionGroupService;
     @Inject
     SupportStaffService supportStaffService;
-    @Inject
-    StudentSupportCallService studentSupportCallService;
-
 
     public StudentSupportPreference save(StudentSupportPreference studentSupportPreference) {
         return this.studentSupportPreferenceRepository.save(studentSupportPreference);
@@ -39,17 +36,7 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     }
 
     @Override
-    public StudentSupportPreference create(long instructionalSupportStaffId, long supportCallId, long sectionGroupId, String type, String comment) {
-        SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
-        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-        StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(supportCallId);
-
-        StudentSupportPreference studentSupportPreference = new StudentSupportPreference();
-        studentSupportPreference.setSectionGroup(sectionGroup);
-        studentSupportPreference.setSupportStaff(supportStaff);
-        studentSupportPreference.setType(type);
-        studentSupportPreference.setComment(comment);
-        studentSupportPreference.setStudentSupportCall(studentSupportCall);
+    public StudentSupportPreference create(StudentSupportPreference studentSupportPreference) {
         // TODO: Add logic to properly check sibling preferences, determine the current lowest priority, and set priority to one below that.
         studentSupportPreference.setPriority(1L);
 
@@ -68,12 +55,11 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
 
     @Override
     public List<StudentSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<StudentSupportCall> supportCalls = studentSupportCallService.findByScheduleId(scheduleId);
-        List<StudentSupportPreference> preferences = new ArrayList<>();
+        List<StudentSupportPreference> preferences = studentSupportPreferenceRepository.findByScheduleId(scheduleId);
 
-        for (StudentSupportCall supportCall : supportCalls) {
-            if (supportCall.getTermCode().equals(termCode)) {
-                preferences.addAll(supportCall.getStudentSupportPreferences());
+        for (StudentSupportPreference preference : preferences) {
+            if (preference.getSectionGroup().getTermCode().equals(termCode)) {
+                preferences.add(preference);
             }
         }
 

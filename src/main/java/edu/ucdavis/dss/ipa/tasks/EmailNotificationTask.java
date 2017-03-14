@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import edu.ucdavis.dss.ipa.services.InstructorSupportResponseService;
+import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +25,7 @@ public class EmailNotificationTask {
 	@Inject
 	StudentSupportCallResponseService studentSupportCallResponseService;
 	@Inject
-	InstructorSupportResponseService instructorSupportResponseService;
+	InstructorSupportCallResponseService instructorSupportCallResponseService;
 
 	private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
@@ -40,7 +40,7 @@ public class EmailNotificationTask {
 		for (Long workgroupId : workgroupIds) {
 			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
 			studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
-			instructorSupportResponseService.sendNotificationsByWorkgroupId(workgroupId);
+			instructorSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
 		}
 
 		runningTask = false;
