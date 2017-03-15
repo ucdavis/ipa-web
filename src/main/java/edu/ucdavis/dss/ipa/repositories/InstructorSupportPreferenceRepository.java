@@ -16,7 +16,5 @@ public interface InstructorSupportPreferenceRepository extends CrudRepository<In
     @Query(value="delete from InstructorSupportPreference sisp WHERE sisp.id = ?1")
     void deleteById(long studentSupportPreferenceId);
 
-    List<InstructorSupportPreference> findByInstructorIdAndInstructorSupportCallId(long instructorId, long instructorSupportCallId);
-
-    List<InstructorSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode);
+    List<InstructorSupportPreference> findByInstructorId(long instructorId);
 }

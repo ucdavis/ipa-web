@@ -16,6 +16,7 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
     @Inject SectionGroupService sectionGroupService;
     @Inject SupportStaffService supportStaffService;
     @Inject InstructorService instructorService;
+    @Inject ScheduleService scheduleService;
 
     public InstructorSupportPreference save(InstructorSupportPreference instructorSupportPreference) {
         return this.instructorSupportPreferenceRepository.save(instructorSupportPreference);
@@ -49,13 +50,32 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
     }
 
     @Override
-    public List<InstructorSupportPreference> findByInstructorIdAndInstructorSupportCallId(long instructorId, long instructorSupportCallId) {
-        return this.instructorSupportPreferenceRepository.findByInstructorIdAndInstructorSupportCallId(instructorId, instructorSupportCallId);
+    public List<InstructorSupportPreference> findByInstructorIdAndTermCode(long instructorId, String termCode) {
+        List<InstructorSupportPreference> preferences = new ArrayList<>();
+        List<InstructorSupportPreference> unfilteredPreferences = instructorSupportPreferenceRepository.findByInstructorId(instructorId);
+
+        for (InstructorSupportPreference preference : unfilteredPreferences) {
+            if (termCode.equals(preference.getSectionGroup().getTermCode())) {
+                preferences.add(preference);
+            }
+        }
+
+        return preferences;
     }
 
     @Override
     public List<InstructorSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<InstructorSupportPreference> preferences = instructorSupportPreferenceRepository.findByScheduleIdAndTermCode(scheduleId, termCode);
+        List<InstructorSupportPreference> preferences = new ArrayList<>();
+
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        for (Course course : schedule.getCourses()) {
+            for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                if (termCode.equals(sectionGroup.getTermCode())) {
+                    preferences.addAll(sectionGroup.getInstructorSupportPreferences());
+                }
+            }
+        }
 
         return preferences;
     }

@@ -15,8 +15,8 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     @Inject
     StudentSupportPreferenceRepository studentSupportPreferenceRepository;
     @Inject SectionGroupService sectionGroupService;
-    @Inject
-    SupportStaffService supportStaffService;
+    @Inject SupportStaffService supportStaffService;
+    @Inject ScheduleService scheduleService;
 
     public StudentSupportPreference save(StudentSupportPreference studentSupportPreference) {
         return this.studentSupportPreferenceRepository.save(studentSupportPreference);
@@ -49,21 +49,33 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     }
 
     @Override
-    public List<StudentSupportPreference> findBySupportStaffIdAndStudentSupportCallId(long supportStaffId, long studentSupportCallId) {
-        return this.studentSupportPreferenceRepository.findBySupportStaffIdAndStudentSupportCallId(supportStaffId, studentSupportCallId);
-    }
-
-    @Override
     public List<StudentSupportPreference> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
-        List<StudentSupportPreference> preferences = studentSupportPreferenceRepository.findByScheduleId(scheduleId);
+        List<StudentSupportPreference> preferences = new ArrayList<>();
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        for (StudentSupportPreference preference : preferences) {
-            if (preference.getSectionGroup().getTermCode().equals(termCode)) {
-                preferences.add(preference);
+        for (Course course : schedule.getCourses()) {
+            for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                if (termCode.equals(sectionGroup.getTermCode())) {
+                    preferences.addAll(sectionGroup.getStudentInstructionalSupportCallPreferences());
+                }
             }
         }
 
         return preferences;
+    }
+
+    @Override
+    public List<StudentSupportPreference> findByScheduleIdAndTermCodeAndSupportStaffId(long scheduleId, String termCode, long supportStaffId) {
+        List<StudentSupportPreference> allPreferences = this.findByScheduleIdAndTermCode(scheduleId, termCode);
+        List<StudentSupportPreference> filteredPreferences = new ArrayList<>();
+
+        for (StudentSupportPreference preference : allPreferences) {
+            if (supportStaffId == preference.getSupportStaff().getId()) {
+                filteredPreferences.add(preference);
+            }
+        }
+
+        return filteredPreferences;
     }
 
     private StudentSupportPreference findById(long preferenceId) {

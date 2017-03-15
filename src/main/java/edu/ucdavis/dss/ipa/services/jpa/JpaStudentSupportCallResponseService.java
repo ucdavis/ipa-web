@@ -13,8 +13,6 @@ import java.util.List;
 @Service
 public class JpaStudentSupportCallResponseService implements StudentSupportCallResponseService {
 
-    @Inject
-    StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject StudentSupportCallResponseRepository studentSupportCallResponseRepository;
 
     @Override
@@ -70,6 +68,11 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
     @Override
     public void sendNotificationsByWorkgroupId(Long workgroupId) {
         
+    }
+
+    @Override
+    public StudentSupportCallResponse findByScheduleIdAndSupportStaffIdAndTermCode(long scheduleId, long supportStaffId, String termCode) {
+        return studentSupportCallResponseRepository.findByScheduleIdAndSupportStaffIdAndTermCode(scheduleId, supportStaffId, termCode);
     }
 
     @Override

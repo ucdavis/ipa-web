@@ -139,6 +139,9 @@ public class StudentSupportCallResponse implements Serializable {
         this.termCode = termCode;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ScheduleId", nullable=false)
+    @JsonIgnore
     public Schedule getSchedule() {
         return schedule;
     }

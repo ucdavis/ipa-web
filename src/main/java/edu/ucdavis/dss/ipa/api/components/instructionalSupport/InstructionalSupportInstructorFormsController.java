@@ -56,7 +56,7 @@ public class InstructionalSupportInstructorFormsController {
     @ResponseBody
     public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO, HttpServletResponse httpResponse) {
         InstructorSupportCallResponse originalSupportCallResponse = instructorSupportCallResponseService.findOneById(instructorSupportCallResponseId);
-        Long workgroupId = originalSupportCallResponse.getInstructorSupportCall().getSchedule().getWorkgroup().getId();
+        Long workgroupId = originalSupportCallResponse.getSchedule().getWorkgroup().getId();
 
         originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());

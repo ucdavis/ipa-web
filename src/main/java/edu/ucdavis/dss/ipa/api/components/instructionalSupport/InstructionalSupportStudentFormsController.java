@@ -41,23 +41,29 @@ public class InstructionalSupportStudentFormsController {
         return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaff.getId());
     }
 
-    @RequestMapping(value = "/api/instructionalSupportStudentFormView/supportCalls/{supportCallId}/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportStudentFormView/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public StudentSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable String preferenceType, HttpServletResponse httpResponse) {
+    public StudentSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable String preferenceType, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
-        return studentSupportPreferenceService.create(supportStaff.getId(), supportCallId, sectionGroupId, preferenceType, "");
+        StudentSupportPreference studentSupportPreference = new StudentSupportPreference();
+        studentSupportPreference.setSectionGroup(sectionGroupService.getOneById(sectionGroupId));
+        studentSupportPreference.setSupportStaff(supportStaff);
+        studentSupportPreference.setType(preferenceType);
+        studentSupportPreference.setComment("");
+
+        return studentSupportPreferenceService.create(studentSupportPreference);
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentSupportCallResponses/{studentSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public StudentSupportCallResponse updateStudentSupportCallResponse(@PathVariable long studentSupportCallResponseId, @RequestBody StudentSupportCallResponse studentSupportCallResponseDTO, HttpServletResponse httpResponse) {
         StudentSupportCallResponse originalSupportCallResponse = studentSupportCallResponseService.findOneById(studentSupportCallResponseId);
-        Long workgroupId = originalSupportCallResponse.getStudentSupportCall().getSchedule().getWorkgroup().getId();
+        Long workgroupId = originalSupportCallResponse.getSchedule().getWorkgroup().getId();
         //Authorizer.hasWorkgroupRoles(workgroupId, );
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());

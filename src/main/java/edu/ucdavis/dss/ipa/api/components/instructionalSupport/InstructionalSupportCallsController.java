@@ -19,12 +19,7 @@ public class InstructionalSupportCallsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject
-    SupportAssignmentService supportAssignmentService;
-    @Inject
-    InstructorSupportCallService instructorSupportCallService;
-    @Inject
-    StudentSupportCallService studentSupportCallService;
+    @Inject SupportAssignmentService supportAssignmentService;
     @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
@@ -35,58 +30,6 @@ public class InstructionalSupportCallsController {
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
         return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year);
-    }
-
-    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/studentInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public StudentSupportCall addStudentSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCall studentSupportCall, HttpServletResponse httpResponse) {
-
-
-        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        Schedule schedule = scheduleService.findById(scheduleId);
-        studentSupportCall.setSchedule(schedule);
-
-        return studentSupportCallService.findOrCreate(studentSupportCall);
-    }
-
-    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/instructorInstructionalSupportCalls", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public InstructorSupportCall addInstructorSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCall instructorSupportCall, HttpServletResponse httpResponse) {
-        Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        Schedule schedule = scheduleService.findById(scheduleId);
-        instructorSupportCall.setSchedule(schedule);
-
-        return instructorSupportCallService.findOrCreate(instructorSupportCall);
-    }
-
-    @RequestMapping(value = "/api/instructionalSupportView/instructorInstructionalSupportCalls/{instructorInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
-    @ResponseBody
-    public Long deleteInstructorSupportCall(@PathVariable long instructorInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        InstructorSupportCall instructorSupportCall = instructorSupportCallService.findOneById(instructorInstructionalSupportCallId);
-
-        Workgroup workgroup = instructorSupportCall.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        instructorSupportCallService.delete(instructorInstructionalSupportCallId);
-
-        return instructorInstructionalSupportCallId;
-    }
-
-    @RequestMapping(value = "/api/instructionalSupportView/studentInstructionalSupportCalls/{studentInstructionalSupportCallId}", method = RequestMethod.DELETE, produces = "application/json")
-    @ResponseBody
-    public Long deleteStudentSupportCall(@PathVariable long studentInstructionalSupportCallId, HttpServletResponse httpResponse) {
-        StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(studentInstructionalSupportCallId);
-
-        Workgroup workgroup = studentSupportCall.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        studentSupportCallService.delete(studentInstructionalSupportCallId);
-
-        return studentInstructionalSupportCallId;
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openStudentSupportCallReview", method = RequestMethod.PUT, produces = "application/json")

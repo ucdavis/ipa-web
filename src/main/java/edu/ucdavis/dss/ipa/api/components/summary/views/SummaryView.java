@@ -14,8 +14,6 @@ public class SummaryView {
     List<TeachingAssignment> teachingAssignments = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<Term> terms = new ArrayList<>();
-    List<StudentSupportCall> studentSupportCalls;
-    List<InstructorSupportCall> instructorSupportCalls;
     List<StudentSupportCallResponse> studentSupportCallResponses;
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
 
@@ -26,8 +24,6 @@ public class SummaryView {
                        List<TeachingAssignment> teachingAssignments,
                        List<TeachingCallReceipt> teachingCallReceipts,
                        List<Term> terms,
-                       List<StudentSupportCall> studentSupportCalls,
-                       List<InstructorSupportCall> instructorSupportCalls,
                        List<StudentSupportCallResponse> studentSupportCallResponses,
                        List<InstructorSupportCallResponse> instructorSupportCallResponses) {
 
@@ -38,8 +34,6 @@ public class SummaryView {
         setTeachingAssignments(teachingAssignments);
         setTerms(terms);
         setTeachingCallReceipts(teachingCallReceipts);
-        setStudentSupportCalls(studentSupportCalls);
-        setInstructorSupportCalls(instructorSupportCalls);
         setStudentSupportCallResponses(studentSupportCallResponses);
         setInstructorSupportCallResponses(instructorSupportCallResponses);
     }
@@ -95,22 +89,6 @@ public class SummaryView {
 
     public void setTeachingCallReceipts(List<TeachingCallReceipt> teachingCallReceipts) {
         this.teachingCallReceipts = teachingCallReceipts;
-    }
-
-    public List<StudentSupportCall> getStudentSupportCalls() {
-        return studentSupportCalls;
-    }
-
-    public void setStudentSupportCalls(List<StudentSupportCall> studentSupportCalls) {
-        this.studentSupportCalls = studentSupportCalls;
-    }
-
-    public List<InstructorSupportCall> getInstructorSupportCalls() {
-        return instructorSupportCalls;
-    }
-
-    public void setInstructorSupportCalls(List<InstructorSupportCall> instructorSupportCalls) {
-        this.instructorSupportCalls = instructorSupportCalls;
     }
 
     public List<StudentSupportCallResponse> getStudentSupportCallResponses() {

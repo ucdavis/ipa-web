@@ -18,4 +18,6 @@ public interface InstructorSupportCallResponseService {
     List<InstructorSupportCallResponse> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 
     void sendNotificationsByWorkgroupId(Long workgroupId);
+
+    InstructorSupportCallResponse findByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode);
 }

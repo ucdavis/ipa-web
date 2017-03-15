@@ -63,6 +63,9 @@ public class InstructorSupportCallResponse implements Serializable {
         this.generalComments = generalComments;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="ScheduleId", nullable=false)
+    @JsonIgnore
     public Schedule getSchedule() {
         return schedule;
     }

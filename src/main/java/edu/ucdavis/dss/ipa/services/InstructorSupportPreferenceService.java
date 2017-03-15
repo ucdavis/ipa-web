@@ -17,7 +17,7 @@ public interface InstructorSupportPreferenceService {
 
     void delete(Long studentInstructionalSupportPreferenceId);
 
-    List<InstructorSupportPreference> findByInstructorIdAndInstructorSupportCallId(long instructorId, long instructorSupportCallId);
+    List<InstructorSupportPreference> findByInstructorIdAndTermCode(long instructorId, String termCode);
 
     List<InstructorSupportPreference> findByScheduleIdAndTermCode(long id, String termCode);
 }

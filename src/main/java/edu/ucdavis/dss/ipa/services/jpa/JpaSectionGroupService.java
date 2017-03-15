@@ -24,10 +24,8 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject InstructorService instructorService;
 	@Inject WorkgroupService workgroupService;
 	@Inject TermService termService;
-	@Inject
-	StudentSupportCallService studentSupportCallService;
-	@Inject
-	SupportAssignmentService supportAssignmentService;
+	@Inject SupportAssignmentService supportAssignmentService;
+	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
 
 	@Override
 	@Transactional
@@ -94,14 +92,14 @@ public class JpaSectionGroupService implements SectionGroupService {
 	 * Returns sectionGroups that have an support assignment for a type that is relevant to the specified student support call.
 	 * @param scheduleId
 	 * @param termCode
-	 * @param studentSupportCallId
+	 * @param studentSupportCallResponseId
      * @return
      */
 	@Override
-	public List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallId(long scheduleId, String termCode, long studentSupportCallId) {
+	public List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallResponseId(long scheduleId, String termCode, long studentSupportCallResponseId) {
 		List<SectionGroup> allSectionGroups = this.findByScheduleIdAndTermCode(scheduleId, termCode);
-		StudentSupportCall studentSupportCall = studentSupportCallService.findOneById(studentSupportCallId);
 		List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(scheduleId, termCode);
+		StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findOneById(studentSupportCallResponseId);
 
 		// List of sectionGroups that are valid options to be preferences
 		List<SectionGroup> filteredSectionGroups = new ArrayList<>();
@@ -113,7 +111,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 				// Assignment is for this sectionGroupId and matches one of the interested types from the support call?
 				if (slotSupportAssignment.getSectionGroup().getId() == slotSectionGroup.getId()
-				&& isSupportCallAssignmentMatch(studentSupportCall, slotSupportAssignment)) {
+				&& isSupportCallAssignmentMatch(studentSupportCallResponse, slotSupportAssignment)) {
 					filteredSectionGroups.add(slotSectionGroup);
 					break;
 				}
@@ -125,24 +123,24 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 	/**
 	 * Returns true if the assignment is a type of interest to the support call
-	 * @param studentSupportCall
+	 * @param studentSupportCallResponse
 	 * @param supportAssignment
      * @return
      */
-	private boolean isSupportCallAssignmentMatch (StudentSupportCall studentSupportCall, SupportAssignment supportAssignment) {
-		if (studentSupportCall.isCollectAssociateInstructorPreferences()) {
+	private boolean isSupportCallAssignmentMatch (StudentSupportCallResponse studentSupportCallResponse, SupportAssignment supportAssignment) {
+		if (studentSupportCallResponse.isCollectAssociateInstructorPreferences()) {
 			if (supportAssignment.getAppointmentType().equals("associateInstructor")) {
 				return true;
 			}
 		}
 
-		if (studentSupportCall.isCollectReaderPreferences()) {
+		if (studentSupportCallResponse.isCollectReaderPreferences()) {
 			if (supportAssignment.getAppointmentType().equals("reader")) {
 				return true;
 			}
 		}
 
-		if (studentSupportCall.isCollectTeachingAssistantPreferences()) {
+		if (studentSupportCallResponse.isCollectTeachingAssistantPreferences()) {
 			if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {
 				return true;
 			}
