@@ -23,4 +23,6 @@ public interface TeachingCallResponseService {
 	List<TeachingCallResponse> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
 	public TeachingCallResponse findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(Long scheduleId, long instructorId, String termCode);
+
+	List<TeachingCallResponse> findOrCreateByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 }

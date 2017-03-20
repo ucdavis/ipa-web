@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,5 +75,39 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 		}
 
 		return teachingCallResponse;
+	}
+
+	@Override
+	public List<TeachingCallResponse> findOrCreateByScheduleIdAndInstructorId(long scheduleId, long instructorId) {
+		List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
+
+		Schedule schedule = scheduleService.findById(scheduleId);
+		String year = String.valueOf(schedule.getYear());
+		String endYear = String.valueOf(schedule.getYear()+1);
+
+		String[] termList = {"01", "02", "03", "05", "06", "07", "08", "09", "10"};
+		List<String> terms = new ArrayList<>(Arrays.asList(termList));
+		List<String> termCodes = new ArrayList<>();
+
+		for (String term : terms) {
+			String termCode = "";
+
+			if (Integer.valueOf(term) > 4) {
+				termCode = year + term;
+			} else {
+				termCode = endYear + term;
+			}
+
+			termCodes.add(termCode);
+		}
+
+
+
+		for (String termCode : termCodes) {
+			TeachingCallResponse teachingCallResponse = findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(scheduleId, instructorId, termCode);
+			teachingCallResponses.add(teachingCallResponse);
+		}
+
+		return teachingCallResponses;
 	}
 }
