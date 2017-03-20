@@ -154,7 +154,15 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		Course newCourse = courseService.copyMetaDataAndAddToSchedule(course, schedule);
+
+		Course newCourse = courseService.createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+				course.getSubjectCode(),
+				course.getCourseNumber(),
+				course.getSequencePattern(),
+				course.getTitle(),
+				course.getEffectiveTermCode(),
+				schedule,
+				true);
 
 		if (newCourse != null) {
 			return newCourse;
@@ -263,7 +271,7 @@ public class CourseViewController {
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		for (SectionGroupImport sectionGroupImport: sectionGroupImportList) {
-			Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			Course course = courseService.createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),

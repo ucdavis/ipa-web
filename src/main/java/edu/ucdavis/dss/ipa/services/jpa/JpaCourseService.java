@@ -142,11 +142,61 @@ public class JpaCourseService implements CourseService {
 		return course;
 	}
 
+	/**
+	 * Will create a course based on supplied params. Will return null if an identical course already exists.
+	 * Can optionally copy tag/title data from a similar course in another year.
+	 * @param subjectCode
+	 * @param courseNumber
+	 * @param sequencePattern
+	 * @param title
+	 * @param effectiveTermCode
+	 * @param schedule
+	 * @param copyMetaData
+     * @return
+     */
+	@Override
+	public Course createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData) {
+
+		// Ensure this course doesn't already exist
+		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
+				subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule);
+
+		if (course != null) {
+			return null;
+		}
+
+		List<Tag> tags = new ArrayList<>();
+		// Get the meta data (title, tags) from previous offerings if any
+		if (copyMetaData) {
+			Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+					subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule.getWorkgroup().getId());
+			if (matchingCourse != null) {
+				title = matchingCourse.getTitle();
+				tags.addAll(matchingCourse.getTags());
+			}
+		}
+
+		course = new Course();
+		course.setSubjectCode(subjectCode);
+		course.setCourseNumber(courseNumber);
+		course.setSequencePattern(sequencePattern);
+		course.setTitle(title);
+		course.setEffectiveTermCode(effectiveTermCode);
+		course.setSchedule(schedule);
+		course.setTags(tags);
+		courseRepository.save(course);
+
+		return course;
+	}
+
 	@Override
 	public Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule) {
 		if (course == null || schedule == null) { return null; }
 
 		List<Tag> tags = new ArrayList<>();
+
+
 		Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
 				course.getSubjectCode(),
 				course.getCourseNumber(),
