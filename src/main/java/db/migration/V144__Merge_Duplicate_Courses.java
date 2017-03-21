@@ -3,12 +3,15 @@ package db.migration;
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class V144__Merge_Duplicate_Courses implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
         PreparedStatement psCourses = connection.prepareStatement("SELECT * FROM `Courses`");
+        List<Long> courseIdsAlreadyProcessed = new ArrayList<>();
 
         try {
             connection.setAutoCommit(false);
@@ -42,10 +45,11 @@ public class V144__Merge_Duplicate_Courses implements JdbcMigration {
                 ResultSet rsDuplicateCourses = psDuplicateCourses.executeQuery();
 
                 while (rsDuplicateCourses.next()) {
-                    Long slotCourseId = rsDuplicateCourses.getLong("Id");
+                    long slotCourseId = rsDuplicateCourses.getLong("Id");
 
-                    // Ensure we are not comparing a course against itself
-                    if (slotCourseId != courseId) {
+                    // Ensure we are not comparing a course against itself, or looking at a course we already processed
+
+                    if (slotCourseId != courseId && courseIdsAlreadyProcessed.indexOf(slotCourseId) == -1) {
                         numberDuplicateCoursesFound++;
 
                         // Find The Duplicate courses sectionGroups
@@ -144,15 +148,25 @@ public class V144__Merge_Duplicate_Courses implements JdbcMigration {
                             }
                         } // rsDuplicateSectionGroups
 
-                        // TODO: Delete course
+                        // Remove duplicate course
+                        courseIdsAlreadyProcessed.add(slotCourseId);
+                        courseIdsAlreadyProcessed.add(courseId);
+
+                        PreparedStatement psDeleteCourse = connection.prepareStatement(
+                            "DELETE FROM `Courses` WHERE `Id` = ?;"
+                        );
+
+                        psDeleteCourse.setLong(1, slotCourseId);
+
+                        psDeleteCourse.execute();
+                        psDeleteCourse.close();
+
                     } // Actual duplicate course found
                 } // rsDuplicateCourses
 
                 psDuplicateCourses.close();
 
             } // End rsCourses loop
-
-            System.out.println("numberFound: " + numberDuplicateCoursesFound);
 
             // Commit changes
             connection.commit();
@@ -169,6 +183,5 @@ public class V144__Merge_Duplicate_Courses implements JdbcMigration {
                 e.printStackTrace();
             }
         }
-
     }
 }
