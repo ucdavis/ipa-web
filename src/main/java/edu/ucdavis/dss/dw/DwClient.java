@@ -188,10 +188,11 @@ public class DwClient {
 				HttpEntity entity = response.getEntity();
 
 				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if ((arrNode != null) && (arrNode.get(0) != null)) {
+				JsonNode node = new ObjectMapper().readTree(EntityUtils.toString(entity));
+
+				if (node != null) {
 					dwPerson = mapper.readValue(
-							arrNode.get(0).toString(),
+							node.toString(),
 							mapper.getTypeFactory().constructType(DwPerson.class));
 				} else {
 					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
