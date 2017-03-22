@@ -147,14 +147,8 @@ public class CourseViewController {
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-		Course newCourse = courseService.createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-				course.getSubjectCode(),
-				course.getCourseNumber(),
-				course.getSequencePattern(),
-				course.getTitle(),
-				course.getEffectiveTermCode(),
-				schedule,
-				true);
+		course.setSchedule(schedule);
+		Course newCourse = courseService.create(course);
 
 		if (newCourse != null) {
 			return newCourse;
