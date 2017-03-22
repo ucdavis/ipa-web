@@ -18,8 +18,6 @@ public interface SectionGroupService {
 
 	List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 
-	Section addSection(Long sectionGroupId, Section section);
-
 	List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<SectionGroup> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);

@@ -58,24 +58,6 @@ public class SectionGroup implements Serializable {
 		this.sections = sections;
 	}
 
-	public void addSection(@NotNull @Valid Section section) {
-		addSection(section, true);
-	}
-
-	public void addSection(@NotNull @Valid Section section, boolean add) {
-		if (section != null) {
-			if(getSections().contains(section)) {
-				getSections().remove(section);
-				getSections().add(section);
-			} else {
-				getSections().add(section);
-			}
-			if(add) {
-				section.setSectionGroup(this);
-			}
-		}
-	}
-
 	@JsonIgnore
 	@OneToMany(mappedBy="sectionGroup", cascade=CascadeType.ALL, orphanRemoval = true)
 	public List<TeachingAssignment> getTeachingAssignments() {

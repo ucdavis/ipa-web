@@ -54,26 +54,6 @@ public class JpaSectionGroupService implements SectionGroupService {
 		return sectionGroups;
 	}
 
-	/*
-	 * 1- find or create a CO that has a matching COG AND termCode, then add section to it.
-	 * 2- Find a sectionGroup that has a matching sequence pattern, or create a new one
-	 */
-	@Override
-	@Transactional
-	public Section addSection(Long sectionGroupId, Section section) {
-		if (isLocked(sectionGroupId)) return null;
-
-		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
-
-		if (sectionGroup == null) {
-			return null;
-		} else {
-			section.setSectionGroup(sectionGroup);
-		}
-
-		return sectionService.save(section);
-	}
-
 	@Override
 	public List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year) {
 		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYear(workgroupId, year);
