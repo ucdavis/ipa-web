@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class JpaSectionService implements SectionService {
 	@Inject TermService termService;
 
 	@Override
-	public Section save(Section section) {
+	public Section save(@Valid Section section) {
 		if (isLocked(section)) return null;
 
 		return sectionRepository.save(section);

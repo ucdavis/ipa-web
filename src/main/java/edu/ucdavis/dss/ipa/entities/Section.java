@@ -70,7 +70,7 @@ public class Section implements Serializable {
 	}
 
 	@Basic
-	@Column(name = "SequenceNumber", nullable = true, length = 3)
+	@Column(name = "SequenceNumber", nullable = false, length = 3)
 	@JsonProperty
 	public String getSequenceNumber()
 	{
