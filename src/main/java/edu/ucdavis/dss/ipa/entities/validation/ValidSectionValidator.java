@@ -14,6 +14,11 @@ public class ValidSectionValidator implements ConstraintValidator<ValidSection, 
 	
 	@Override
 	public boolean isValid(Section section, ConstraintValidatorContext context) {
+
+		if (section.getSequenceNumber() == null || section.getSequenceNumber().length() == 0) {
+			return false;
+		}
+
 		for (SectionGroup slotSectionGroup : section.getSectionGroup().getCourse().getSectionGroups()) {
 			for (Section slotSection : slotSectionGroup.getSections()) {
 				// Ensure that if the sequencePattern/termCode match, that its just the same section comparing against itself
