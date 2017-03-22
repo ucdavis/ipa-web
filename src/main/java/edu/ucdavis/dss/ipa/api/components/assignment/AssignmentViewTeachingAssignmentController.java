@@ -153,7 +153,7 @@ public class AssignmentViewTeachingAssignmentController {
                 course.setUnitsHigh(dwCourse.getCreditHoursHigh());
                 course.setUnitsLow(dwCourse.getCreditHoursLow());
 
-                course = courseService.save(course);
+                course = courseService.create(course);
 
                 // Create a sectionGroup for the teachingAssignment
 
