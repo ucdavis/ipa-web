@@ -108,6 +108,10 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 	}
 
 	private Time convertToTime(String textTime) {
+		if (textTime == null || textTime.length() == 0) {
+			return null;
+		}
+
 		try {
 			return java.sql.Time.valueOf(textTime);
 		} catch ( IllegalArgumentException e ) {
