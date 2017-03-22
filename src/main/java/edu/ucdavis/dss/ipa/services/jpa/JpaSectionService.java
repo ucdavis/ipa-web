@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.CourseService;
@@ -45,54 +46,38 @@ public class JpaSectionService implements SectionService {
 		return this.sectionRepository.findById(id);
 	}
 
+	/**
+	 * Based on a new course sequencePattern, will recalculate and save a new section sequenceNumber
+	 * @param sectionId
+	 * @param newSequencePattern
+     * @return
+     */
 	@Override
-	@Transactional
-	public boolean deleteByCourseIdAndSequence(Long courseId, String sequence) {
-		boolean deletedAll = true;
-		Course course = this.courseService.getOneById(courseId);
+	public Section updateSequenceNumber(Long sectionId, String newSequencePattern) {
+		Section section = this.getOneById(sectionId);
 
-		for (SectionGroup sg : course.getSectionGroups()) {
-			List<Section> toDelete = new ArrayList<>();
-			for (Section section : sg.getSections()) {
-				if (section.getSequenceNumber().equals(sequence)) {
-					toDelete.add(section);
-				}
-			}
-			for (Section section : toDelete) {
-				if (this.delete(section.getId())) {
-					sg.getSections().remove(section);
-				} else {
-					deletedAll = false;
-				}
-			}
+		if (newSequencePattern == null || newSequencePattern.length() == 0 || this.isLocked(section)) {
+			return null;
 		}
 
-		return deletedAll;
-	}
+		Character firstChar = null;
+		boolean isNumeric = true;
 
-	@Override
-	public boolean updateSequencesByCourseId(Long courseId, String oldSequence, String newSequence) {
-		boolean renamedAll = true;
-		Course course = this.courseService.getOneById(courseId);
-
-		for (SectionGroup sectionGroup : course.getSectionGroups()) {
-			for (Section section : sectionGroup.getSections()) {
-				if (section.getSequenceNumber().equals(oldSequence)) {
-					if (isLocked(section)) {
-						renamedAll = false;
-						break;
-					} else {
-						section.setSequenceNumber(newSequence);
-					}
-				}
-			}
+		firstChar = newSequencePattern.charAt(0);
+		if (Character.isLetter(firstChar)) {
+			isNumeric = false;
+		} else {
+			return null;
 		}
 
-		if (renamedAll) {
-			this.courseService.save(course);
+		if (isNumeric) {
+			section.setSequenceNumber(newSequencePattern);
+		} else {
+			String newSequenceNumber = firstChar + section.getSequenceNumber().substring(1);
+			section.setSequenceNumber(newSequenceNumber);
 		}
 
-		return renamedAll;
+		return this.save(section);
 	}
 
 	@Override

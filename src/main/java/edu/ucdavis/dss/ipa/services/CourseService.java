@@ -12,7 +12,7 @@ public interface CourseService {
 
 	Course getOneById(Long id);
 
-	Course save(Course course);
+	Course update(Course course);
 
 	boolean delete(Long id);
 
@@ -35,4 +35,6 @@ public interface CourseService {
 			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
 
 	Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule);
+
+	Course create(Course course);
 }

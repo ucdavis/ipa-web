@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.CourseRepository;
 import edu.ucdavis.dss.ipa.services.*;
@@ -25,15 +26,58 @@ public class JpaCourseService implements CourseService {
 	@Inject InstructorService instructorService;
 	@Inject TagService tagService;
 	@Inject WorkgroupService workgroupService;
+	@Inject SectionService sectionService;
 
 	@Override
 	public Course getOneById(Long id) {
 		return this.courseRepository.findOne(id);
 	}
 
-	@Override
-	public Course save(Course course) {
+	private Course save(Course course) {
 		return this.courseRepository.save(course);
+	}
+
+	/**
+	 * Will ensure new course is valid,
+	 * and modify section sequenceNumbers if necessary.
+	 * @param newCourse
+	 * @return
+     */
+	public Course update (Course newCourse) {
+		Course originalCourse = this.getOneById(newCourse.getId());
+
+		// If changing the course sequencePattern
+		if (originalCourse.getSequencePattern() != newCourse.getSequencePattern()) {
+
+			// Ensure the sequencePattern is unique within relevant courses
+			List<Course> duplicateCourses = this.courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCode(
+					newCourse.getSubjectCode(),
+					newCourse.getCourseNumber(),
+					newCourse.getSequencePattern(),
+					newCourse.getEffectiveTermCode()
+			);
+
+			if (duplicateCourses.size() > 0) {
+				return null;
+			}
+
+			// Rebuild section sequenceNumbers
+			for (SectionGroup sectionGroup : originalCourse.getSectionGroups()) {
+				for (Section section : sectionGroup.getSections()) {
+					this.sectionService.updateSequenceNumber(section.getId(), newCourse.getSequencePattern());
+				}
+			}
+		}
+
+		originalCourse.setTitle(newCourse.getTitle());
+		originalCourse.setSequencePattern(newCourse.getSequencePattern());
+
+		return this.save(originalCourse);
+	}
+
+	@Override
+	public Course create(Course course) {
+		return this.save(course);
 	}
 
 	@Override

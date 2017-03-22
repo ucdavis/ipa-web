@@ -17,9 +17,7 @@ public interface SectionService {
 
 	boolean delete(Long id);
 
-	boolean deleteByCourseIdAndSequence(Long courseOfferingGroupId, String sequence);
-
-	boolean updateSequencesByCourseId(Long courseOfferingGroupId, String oldSequence, String newSequence);
+	Section updateSequenceNumber(Long sectionid, String newSequence);
 
 	List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 }

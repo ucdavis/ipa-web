@@ -61,4 +61,6 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
             @Param("sequencePattern") String sequencePattern,
             @Param("effectiveTermCode") String effectiveTermCode,
             @Param("workgroupId") long workgroupId);
+
+    List<Course> findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCode(String subjectCode, String courseNumber, String sequencePattern, String effectiveTermCode);
 }
