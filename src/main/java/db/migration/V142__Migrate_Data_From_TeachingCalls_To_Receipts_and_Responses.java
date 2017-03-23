@@ -4,7 +4,7 @@ package db.migration;
 
         import java.sql.*;
 
-public class V146__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses implements JdbcMigration {
+public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
