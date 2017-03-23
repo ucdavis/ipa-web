@@ -186,21 +186,27 @@ public class DwClient {
 				}
 
 				HttpEntity entity = response.getEntity();
-
 				ObjectMapper mapper = new ObjectMapper();
-				JsonNode node = new ObjectMapper().readTree(EntityUtils.toString(entity));
 
-				if (node != null) {
-					dwPerson = mapper.readValue(
-							node.toString(),
-							mapper.getTypeFactory().constructType(DwPerson.class));
+				String entityString = EntityUtils.toString(entity);
+
+				if (entityString != null) {
+					JsonNode node = new ObjectMapper().readTree(entityString);
+
+					if (node != null) {
+						dwPerson = mapper.readValue(
+								node.toString(),
+								mapper.getTypeFactory().constructType(DwPerson.class));
+					} else {
+						log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
+					}
 				} else {
 					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
 				}
 
 				response.close();
 			} catch (IOException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+				//ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 			}
 		} else if (loginId == null) {
 			log.warn("No login ID given.");
