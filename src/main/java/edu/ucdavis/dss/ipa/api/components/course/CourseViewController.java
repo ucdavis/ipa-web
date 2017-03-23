@@ -257,7 +257,7 @@ public class CourseViewController {
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		for (SectionGroupImport sectionGroupImport: sectionGroupImportList) {
-			Course course = courseService.createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
