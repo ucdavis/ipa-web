@@ -26,7 +26,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
 
     @Override
     public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
-        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         List<Course> courses = schedule.getCourses();
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
