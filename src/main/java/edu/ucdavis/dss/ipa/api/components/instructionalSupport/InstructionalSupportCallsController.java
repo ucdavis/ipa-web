@@ -36,14 +36,14 @@ public class InstructionalSupportCallsController {
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
 
-    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/{term}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
+    public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String term, HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year);
+        return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year, term);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openStudentSupportCallReview", method = RequestMethod.PUT, produces = "application/json")

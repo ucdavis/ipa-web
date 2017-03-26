@@ -9,7 +9,7 @@ public interface InstructionalSupportViewFactory {
 
     InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode);
 
-    InstructionalSupportCallStatusView createSupportCallStatusView(long workgroupId, long year);
+    InstructionalSupportCallStatusView createSupportCallStatusView(long workgroupId, long year, String shortTermCode);
 
     InstructionalSupportCallStudentFormView createStudentFormView(long workgroupId, long year, String shortTermCode, long supportStaffId);
 

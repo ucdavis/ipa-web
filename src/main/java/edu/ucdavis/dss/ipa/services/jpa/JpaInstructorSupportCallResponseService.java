@@ -87,6 +87,11 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
     }
 
     @Override
+    public List<InstructorSupportCallResponse> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
+        return instructorSupportCallResponseRepository.findByScheduleIdAndTermCode(scheduleId, termCode);
+    }
+
+    @Override
     public InstructorSupportCallResponse create (InstructorSupportCallResponse instructorSupportCallResponse) {
         return instructorSupportCallResponseRepository.save(instructorSupportCallResponse);
     }

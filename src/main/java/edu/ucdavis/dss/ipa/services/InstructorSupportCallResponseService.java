@@ -22,4 +22,6 @@ public interface InstructorSupportCallResponseService {
     InstructorSupportCallResponse findByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode);
 
     List<InstructorSupportCallResponse> createMany(List<Long> instructorIds, InstructorSupportCallResponse instructorResponseDTO);
+
+    List<InstructorSupportCallResponse> findByScheduleIdAndTermCode(long id, String termCode);
 }

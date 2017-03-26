@@ -11,4 +11,6 @@ public interface InstructorSupportCallResponseRepository extends CrudRepository<
     List<InstructorSupportCallResponse> findByScheduleId (long scheduleId);
 
     InstructorSupportCallResponse findByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode);
+
+    List<InstructorSupportCallResponse> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 }

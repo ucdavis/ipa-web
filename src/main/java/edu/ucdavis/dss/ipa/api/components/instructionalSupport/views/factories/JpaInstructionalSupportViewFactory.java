@@ -74,16 +74,30 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     }
 
     @Override
-    public InstructionalSupportCallStatusView createSupportCallStatusView(long workgroupId, long year) {
+    public InstructionalSupportCallStatusView createSupportCallStatusView(long workgroupId, long year, String shortTermCode) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        List<String> terms = new ArrayList<String>();
+
+        terms.add("01");
+        terms.add("02");
+        terms.add("03");
+
+        long academicYear = year;
+
+        if (terms.indexOf(shortTermCode) > -1) {
+            academicYear++;
+        }
+
+        String termCode = String.valueOf(academicYear) + shortTermCode;
 
         List<UserRole> userRoles = workgroup.getUserRoles();
         List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
 
-        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleId(schedule.getId());
-        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleId(schedule.getId());
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
         List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
