@@ -20,4 +20,6 @@ public interface InstructorSupportCallResponseService {
     void sendNotificationsByWorkgroupId(Long workgroupId);
 
     InstructorSupportCallResponse findByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode);
+
+    List<InstructorSupportCallResponse> createMany(List<Long> instructorIds, InstructorSupportCallResponse instructorResponseDTO);
 }

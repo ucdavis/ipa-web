@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
         import edu.ucdavis.dss.ipa.entities.*;
         import edu.ucdavis.dss.ipa.repositories.InstructorSupportCallResponseRepository;
+        import edu.ucdavis.dss.ipa.services.InstructorService;
         import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
         import org.springframework.stereotype.Service;
 
@@ -12,8 +13,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 @Service
 public class JpaInstructorSupportCallResponseService implements InstructorSupportCallResponseService {
 
-    @Inject
-    InstructorSupportCallResponseRepository instructorSupportCallResponseRepository;
+    @Inject InstructorSupportCallResponseRepository instructorSupportCallResponseRepository;
+    @Inject InstructorService instructorService;
 
     @Override
     public InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId) {
@@ -60,6 +61,29 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
     @Override
     public InstructorSupportCallResponse findByScheduleIdAndInstructorIdAndTermCode(long scheduleId, long instructorId, String termCode) {
         return instructorSupportCallResponseRepository.findByScheduleIdAndInstructorIdAndTermCode(scheduleId, instructorId, termCode);
+    }
+
+    @Override
+    public List<InstructorSupportCallResponse> createMany(List<Long> instructorIds, InstructorSupportCallResponse instructorResponseDTO) {
+        List<InstructorSupportCallResponse> instructorResponses = new ArrayList<>();
+
+        for (Long instructorId : instructorIds) {
+            Instructor instructor = instructorService.getOneById(instructorId);
+            InstructorSupportCallResponse instructorResponse = new InstructorSupportCallResponse();
+
+            instructorResponse.setSchedule(instructorResponseDTO.getSchedule());
+            instructorResponse.setInstructor(instructor);
+            instructorResponse.setSubmitted(false);
+            instructorResponse.setMessage(instructorResponseDTO.getMessage());
+            instructorResponse.setNextContactAt(instructorResponseDTO.getNextContactAt());
+            instructorResponse.setTermCode(instructorResponseDTO.getTermCode());
+            instructorResponse.setDueDate(instructorResponseDTO.getDueDate());
+
+            instructorResponse = this.create(instructorResponse);
+            instructorResponses.add(instructorResponse);
+        }
+
+        return instructorResponses;
     }
 
     @Override
