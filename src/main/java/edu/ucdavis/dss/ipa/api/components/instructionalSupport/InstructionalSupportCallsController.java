@@ -164,7 +164,7 @@ public class InstructionalSupportCallsController {
     /**
      * Find the specified studentSupportCallResponses and update their message/nextContactAt
      */
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/contactSupportStaff", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO, HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
@@ -378,7 +378,7 @@ public class InstructionalSupportCallsController {
         }
     }
 
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/addInstructors", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/addSupportStaff", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddStudentsDTO addStudentsDTO, HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
