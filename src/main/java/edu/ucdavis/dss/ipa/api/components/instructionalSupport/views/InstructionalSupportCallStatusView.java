@@ -10,7 +10,6 @@ public class InstructionalSupportCallStatusView {
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
     List<Instructor> activeInstructors;
-    List<TeachingAssignment> teachingAssignments;
     Long scheduleId;
     List<StudentSupportCallResponse> studentSupportCallResponses;
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
@@ -20,7 +19,6 @@ public class InstructionalSupportCallStatusView {
                                               List<Long> phdStudentsIds,
                                               List<Long> instructionalSupportIds,
                                               List<Instructor> activeInstructors,
-                                              List<TeachingAssignment> teachingAssignments,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
                                               List<InstructorSupportCallResponse> instructorSupportCallResponses) {
         setScheduleId(scheduleId);
@@ -29,7 +27,6 @@ public class InstructionalSupportCallStatusView {
         setPhdStudentIds(phdStudentsIds);
         setInstructionalSupportIds(instructionalSupportIds);
         setActiveInstructors(activeInstructors);
-        setTeachingAssignments(teachingAssignments);
         setStudentSupportCallResponses(studentSupportCallResponses);
         setInstructorSupportCallResponses(instructorSupportCallResponses);
     }
@@ -80,14 +77,6 @@ public class InstructionalSupportCallStatusView {
 
     public void setActiveInstructors(List<Instructor> activeInstructors) {
         this.activeInstructors = activeInstructors;
-    }
-
-    public List<TeachingAssignment> getTeachingAssignments() {
-        return teachingAssignments;
-    }
-
-    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
-        this.teachingAssignments = teachingAssignments;
     }
 
     public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
