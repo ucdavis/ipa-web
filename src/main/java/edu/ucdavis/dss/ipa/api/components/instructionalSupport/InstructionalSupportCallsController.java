@@ -77,10 +77,12 @@ public class InstructionalSupportCallsController {
     /**
      * Find the specified instructorSupportCallResponses and update their message/nextContactAt
      */
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{scheduleId}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         List<InstructorSupportCallResponse> instructorResponses = new ArrayList<>();
 
@@ -131,32 +133,33 @@ public class InstructionalSupportCallsController {
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
                 throws IOException, JsonProcessingException {
 
+            InstructorSupportCallContactDTO instructorSupportCallContactDTO = new InstructorSupportCallContactDTO();
+
             ObjectCodec oc = jsonParser.getCodec();
             JsonNode node = oc.readTree(jsonParser);
-            JsonNode arrNode = node.get("responses");
+            JsonNode arrNode = node.get("responseIds");
 
-            InstructorSupportCallContactDTO instructorSupportCallContactDTO = new InstructorSupportCallContactDTO();
             List<Long> responseIds = new ArrayList<>();
 
             if (arrNode.isArray()) {
                 for (final JsonNode objNode : arrNode) {
-                    if (objNode.has("id")) {
-                        responseIds.add(objNode.get("id").longValue());
-                    }
-
-                    if (objNode.has("nextContactAt") && !objNode.get("nextContactAt").isNull()) {
-                        long epochDate = objNode.get("nextContactAt").longValue();
-                        Date date = new Date(epochDate);
-                        instructorSupportCallContactDTO.setNextContactAt(date);
-                    }
-
-                    if (objNode.has("message")) {
-                        instructorSupportCallContactDTO.setMessage(objNode.get("message").textValue());
-                    }
+                    responseIds.add(objNode.longValue());
                 }
             }
 
             instructorSupportCallContactDTO.setResponseIds(responseIds);
+
+            if (node.has("message")) {
+                instructorSupportCallContactDTO.setMessage(node.get("message").textValue());
+            }
+
+
+            if (node.has("dueDate") && !node.get("dueDate").isNull()) {
+                long epochDate = node.get("dueDate").longValue();
+                Date dueDate = new Date(epochDate);
+                instructorSupportCallContactDTO.setNextContactAt(dueDate);
+            }
+
             return instructorSupportCallContactDTO;
         }
     }
@@ -164,10 +167,12 @@ public class InstructionalSupportCallsController {
     /**
      * Find the specified studentSupportCallResponses and update their message/nextContactAt
      */
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/contactSupportStaff", method = RequestMethod.PUT, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{scheduleId}/contactSupportStaff", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         List<StudentSupportCallResponse> studentResponses = new ArrayList<>();
 
@@ -217,34 +222,34 @@ public class InstructionalSupportCallsController {
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
                 throws IOException, JsonProcessingException {
+            StudentSupportCallContactDTO studentSupportCallContactDTO = new StudentSupportCallContactDTO();
 
             ObjectCodec oc = jsonParser.getCodec();
             JsonNode node = oc.readTree(jsonParser);
-            JsonNode arrNode = node.get("responses");
+            JsonNode arrNode = node.get("responseIds");
 
-            InstructorSupportCallContactDTO instructorSupportCallContactDTO = new InstructorSupportCallContactDTO();
             List<Long> responseIds = new ArrayList<>();
 
             if (arrNode.isArray()) {
                 for (final JsonNode objNode : arrNode) {
-                    if (objNode.has("message")) {
-                        instructorSupportCallContactDTO.setMessage(objNode.get("message").textValue());
-                    }
-
-                    if (objNode.has("id")) {
-                        responseIds.add(objNode.get("id").longValue());
-                    }
-
-                    if (objNode.has("nextContactAt") && !objNode.get("nextContactAt").isNull()) {
-                        long epochDate = objNode.get("nextContactAt").longValue();
-                        Date date = new Date(epochDate);
-                        instructorSupportCallContactDTO.setNextContactAt(date);
-                    }
+                    responseIds.add(objNode.longValue());
                 }
             }
 
-            instructorSupportCallContactDTO.setResponseIds(responseIds);
-            return instructorSupportCallContactDTO;
+            studentSupportCallContactDTO.setResponseIds(responseIds);
+
+            if (node.has("message")) {
+                studentSupportCallContactDTO.setMessage(node.get("message").textValue());
+            }
+
+
+            if (node.has("dueDate") && !node.get("dueDate").isNull()) {
+                long epochDate = node.get("dueDate").longValue();
+                Date dueDate = new Date(epochDate);
+                studentSupportCallContactDTO.setNextContactAt(dueDate);
+            }
+
+            return studentSupportCallContactDTO;
         }
     }
 
@@ -422,11 +427,11 @@ public class InstructionalSupportCallsController {
         private List<Long> studentIds;
         private Date dueDate;
         private String message, termCode;
-        private Boolean sendEmail, allowSubmissionAfterDueDate,
-                        collectGeneralComments, collectTeachingQualifications,
-                        collectPreferenceComments, collectEligibilityConfirmation,
-                        collectTeachingAssistantPreferences, collectReaderPreferences,
-                        collectAssociateInstructorPreferences;
+        private Boolean sendEmail = false, allowSubmissionAfterDueDate = false,
+                        collectGeneralComments = false, collectTeachingQualifications = false,
+                        collectPreferenceComments = false, collectEligibilityConfirmation = false,
+                        collectTeachingAssistantPreferences = false, collectReaderPreferences = false,
+                        collectAssociateInstructorPreferences = false;
 
         private Long minimumNumberOfPreferences;
 
