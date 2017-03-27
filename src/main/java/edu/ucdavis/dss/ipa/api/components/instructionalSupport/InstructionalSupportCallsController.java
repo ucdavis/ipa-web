@@ -248,12 +248,12 @@ public class InstructionalSupportCallsController {
         }
     }
 
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/addInstructors", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{scheduleId}/addInstructors", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<InstructorSupportCallResponse> addInstructorsToSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddInstructorsDTO addInstructorsDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<InstructorSupportCallResponse> addInstructorsToSupportCall(@PathVariable long scheduleId, @RequestBody AddInstructorsDTO addInstructorsDTO, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         InstructorSupportCallResponse instructorResponseDTO = new InstructorSupportCallResponse();
 
@@ -261,7 +261,7 @@ public class InstructionalSupportCallsController {
         instructorResponseDTO.setTermCode(addInstructorsDTO.getTermCode());
         instructorResponseDTO.setSchedule(schedule);
         instructorResponseDTO.setAllowSubmissionAfterDueDate(addInstructorsDTO.getAllowSubmissionAfterDueDate());
-        if (addInstructorsDTO.getSendEmail() == true) {
+        if (addInstructorsDTO.getSendEmail() != null && addInstructorsDTO.getSendEmail() == true) {
             instructorResponseDTO.setMessage(addInstructorsDTO.getMessage());
 
             Date now = Calendar.getInstance().getTime();
