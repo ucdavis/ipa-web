@@ -279,7 +279,7 @@ public class InstructionalSupportCallsController {
         private List<Long> instructorIds;
         private Date dueDate;
         private String message, termCode;
-        private Boolean sendEmail, allowSubmissionAfterDueDate;
+        private Boolean sendEmail = false, allowSubmissionAfterDueDate = false;
 
         public List<Long> getInstructorIds() {
             return instructorIds;
@@ -378,12 +378,12 @@ public class InstructionalSupportCallsController {
         }
     }
 
-    @RequestMapping(value = "/api/supportCallView/{workgroupId}/{year}/addSupportStaff", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/supportCallView/{scheduleId}/addStudents", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddStudentsDTO addStudentsDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long scheduleId, @RequestBody AddStudentsDTO addStudentsDTO, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         StudentSupportCallResponse studentResponseDTO = new StudentSupportCallResponse();
 
@@ -404,7 +404,7 @@ public class InstructionalSupportCallsController {
         studentResponseDTO.setCollectTeachingAssistantPreferences(addStudentsDTO.getAllowSubmissionAfterDueDate());
         studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getAllowSubmissionAfterDueDate());
 
-        if (addStudentsDTO.getSendEmail() == true) {
+        if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());
 
             Date now = Calendar.getInstance().getTime();
@@ -553,7 +553,7 @@ public class InstructionalSupportCallsController {
 
             AddStudentsDTO addStudentsDTO = new AddStudentsDTO();
 
-            JsonNode arrNode = node.get("instructorIds");
+            JsonNode arrNode = node.get("studentIds");
 
             List<Long> studentIds = new ArrayList<>();
 
@@ -621,5 +621,37 @@ public class InstructionalSupportCallsController {
 
             return addStudentsDTO;
         }
+    }
+
+    @RequestMapping(value = "api/supportCallView/schedules/{scheduleId}/instructorSupportCallResponses/{supportCallResponseId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public Long removeInstructorFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+
+        InstructorSupportCallResponse supportCallResponse = instructorSupportCallResponseService.findOneById(supportCallResponseId);
+
+        if (supportCallResponse != null) {
+            instructorSupportCallResponseService.delete(supportCallResponseId);
+        }
+
+        return supportCallResponseId;
+    }
+
+    @RequestMapping(value = "api/supportCallView/schedules/{scheduleId}/studentSupportCallResponses/{supportCallResponseId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public Long removeStudentFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+
+        StudentSupportCallResponse supportCallResponse = studentSupportCallResponseService.findOneById(supportCallResponseId);
+
+        if (supportCallResponse != null) {
+            studentSupportCallResponseService.delete(supportCallResponseId);
+        }
+
+        return supportCallResponseId;
     }
 }
