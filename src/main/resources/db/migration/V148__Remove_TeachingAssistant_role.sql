@@ -1,2 +1,4 @@
 DELETE FROM `UserRoles` WHERE RoleId = 6;
 DELETE FROM `Roles` WHERE Id = 6;
+DELETE FROM `UserRoles` WHERE RoleId = 7;
+DELETE FROM `Roles` WHERE Id = 7;
