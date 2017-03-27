@@ -266,6 +266,7 @@ public class InstructionalSupportCallsController {
         instructorResponseDTO.setTermCode(addInstructorsDTO.getTermCode());
         instructorResponseDTO.setSchedule(schedule);
         instructorResponseDTO.setAllowSubmissionAfterDueDate(addInstructorsDTO.getAllowSubmissionAfterDueDate());
+
         if (addInstructorsDTO.getSendEmail() != null && addInstructorsDTO.getSendEmail() == true) {
             instructorResponseDTO.setMessage(addInstructorsDTO.getMessage());
 
@@ -365,8 +366,8 @@ public class InstructionalSupportCallsController {
                 addInstructorsDTO.setTermCode(node.get("termCode").textValue());
             }
 
-            if (node.has("sendEmail")) {
-                addInstructorsDTO.setSendEmail(node.get("sendEmail").booleanValue());
+            if (node.has("sendEmails")) {
+                addInstructorsDTO.setSendEmail(node.get("sendEmails").booleanValue());
             }
 
             if (node.has("allowSubmissionAfterDueDate")) {
@@ -582,8 +583,8 @@ public class InstructionalSupportCallsController {
                 addStudentsDTO.setMinimumNumberOfPreferences(node.get("minimumNumberOfPreferences").longValue());
             }
 
-            if (node.has("sendEmail")) {
-                addStudentsDTO.setSendEmail(node.get("sendEmail").booleanValue());
+            if (node.has("sendEmails")) {
+                addStudentsDTO.setSendEmail(node.get("sendEmails").booleanValue());
             }
 
             if (node.has("allowSubmissionAfterDueDate")) {
