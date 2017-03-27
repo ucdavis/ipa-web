@@ -13,7 +13,7 @@ public interface InstructorSupportPreferenceService {
      */
     List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds);
 
-    InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long supportCallId, long sectionGroupId);
+    InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long sectionGroupId);
 
     void delete(Long studentInstructionalSupportPreferenceId);
 

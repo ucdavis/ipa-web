@@ -28,7 +28,7 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
     }
 
     @Override
-    public InstructorSupportPreference create(long instructionalSupportStaffId, long instructorId, long supportCallId, long sectionGroupId) {
+    public InstructorSupportPreference create(long instructionalSupportStaffId, long instructorId, long sectionGroupId) {
         SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
         Instructor instructor = instructorService.getOneById(instructorId);
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);

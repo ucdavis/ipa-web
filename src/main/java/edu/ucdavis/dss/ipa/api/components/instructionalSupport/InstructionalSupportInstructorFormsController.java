@@ -41,15 +41,15 @@ public class InstructionalSupportInstructorFormsController {
         return instructionalSupportViewFactory.createInstructorFormView(workgroupId, year, shortTermCode, instructor.getId());
     }
 
-    @RequestMapping(value = "/api/instructionalSupportInstructorFormView/supportCalls/{supportCallId}/sectionGroups/{sectionGroupId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportInstructorFormView/sectionGroups/{sectionGroupId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public InstructorSupportPreference addPreference(@PathVariable long supportCallId, @PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+    public InstructorSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
 
-        return instructorSupportPreferenceService.create(supportStaffId, instructor.getId(), supportCallId, sectionGroupId);
+        return instructorSupportPreferenceService.create(supportStaffId, instructor.getId(), sectionGroupId);
     }
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/instructorSupportCallResponses/{instructorSupportCallResponseId}", method = RequestMethod.PUT, produces = "application/json")
