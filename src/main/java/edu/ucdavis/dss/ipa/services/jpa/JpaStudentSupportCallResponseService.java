@@ -177,7 +177,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Schedule schedule = studentSupportCallResponse.getSchedule();
         long workgroupId = schedule.getWorkgroup().getId();
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/supportCalls/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -185,15 +185,15 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Long year = studentSupportCallResponse.getSchedule().getYear();
 
         // Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
-        messageSubject = "IPA: Teaching Call has started";
+        messageSubject = "IPA: Support Call has started";
         messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-        messageBody += "It is time to start thinking about teaching plans for <b>" + studentSupportCallResponse.getTermCode() + " " + year + "-" + (year+1) + "</b>.";
+        messageBody += "It is time to start thinking about teaching plans for <b>" + " " + year + "-" + (year+1) + "</b>.";
         messageBody += "<br />";
         messageBody += "<br />";
         messageBody += studentSupportCallResponse.getMessage();
         messageBody += "<br />";
         messageBody += "<br />";
-        messageBody += "<a href='" + supportCallUrl + "'>View Teaching Call</a>";
+        messageBody += "<a href='" + supportCallUrl + "'>View Support Call</a>";
         messageBody += "</td></tr></tbody></table>";
 
         if (Email.send(recipientEmail, messageBody, messageSubject)) {
@@ -233,7 +233,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Schedule schedule = studentSupportCallResponse.getSchedule();
         long workgroupId = schedule.getWorkgroup().getId();
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/supportCalls/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
