@@ -94,6 +94,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         // Get instructor support Calls
         List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
-        return new SummaryView(courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses);
+        return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses);
     }
 }
