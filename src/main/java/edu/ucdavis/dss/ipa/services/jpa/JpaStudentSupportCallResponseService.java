@@ -1,16 +1,22 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
-import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
+import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.StudentSupportCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.utilities.Email;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -18,6 +24,10 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
     @Inject StudentSupportCallResponseRepository studentSupportCallResponseRepository;
     @Inject SupportStaffService supportStaffService;
+    @Inject WorkgroupService workgroupService;
+    @Inject UserService userService;
+
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
     @Override
     public StudentSupportCallResponse findOneById(long studentInstructionalSupportCallResponseId) {
@@ -70,8 +80,182 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
     }
 
     @Override
+    @Transactional
     public void sendNotificationsByWorkgroupId(Long workgroupId) {
-        
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+        if (workgroup == null) {
+            log.error("studentSupportCallResponse sendNotificationsByWorkgroup() could not find workgroup with ID " + workgroupId);
+            return;
+        }
+
+        Calendar now = Calendar.getInstance();
+        int currentYear = now.get(Calendar.YEAR);
+
+        java.util.Date utilDate = now.getTime();
+        java.sql.Date currentDate = new Date(utilDate.getTime());
+
+        for (Schedule schedule : workgroup.getSchedules()) {
+            // Ignore historical schedules
+            if (schedule.getYear() >= currentYear) {
+
+                // Check teachingCallReceipts to see if messages need to be sent
+                for (StudentSupportCallResponse studentSupportCallResponse : schedule.getStudentSupportCallResponses()) {
+
+                    // Is an email scheduled to be sent?
+                    if (studentSupportCallResponse.getNextContactAt() != null) {
+                        long currentTime = currentDate.getTime();
+                        long contactAtTime = studentSupportCallResponse.getNextContactAt().getTime();
+
+                        // Is it time to send that email?
+                        if (currentTime > contactAtTime) {
+                            sendSupportCall(studentSupportCallResponse, currentDate);
+                        }
+                    }
+
+                    // Is a warning scheduled to be sent?
+                    if (studentSupportCallResponse.getDueDate() != null) {
+                        Long oneDayInMilliseconds = 86400000L;
+                        Long threeDaysInMilliseconds = 259200000L;
+
+                        Long currentTime = currentDate.getTime();
+                        Long dueDateTime = studentSupportCallResponse.getDueDate().getTime();
+                        Long warnTime = dueDateTime - threeDaysInMilliseconds;
+                        Long timeSinceLastContact = null;
+
+                        if (studentSupportCallResponse.getLastContactedAt() != null) {
+                            timeSinceLastContact = currentTime - studentSupportCallResponse.getLastContactedAt().getTime();
+                        }
+
+                        // Is it time to send a warning email?
+                        // Warning emails are sent 3 days before dueDate
+                        // To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
+                        // Warning emails are suppressed if the due Date has passed
+                        if (currentTime > warnTime) {
+                            if (timeSinceLastContact == null && currentTime < dueDateTime) {
+                                sendSupportCallWarning(studentSupportCallResponse, currentDate);
+                            } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+                                sendSupportCallWarning(studentSupportCallResponse, currentDate);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * Builds the email and triggers sending of the support Call.
+     * @param studentSupportCallResponse
+     * @param currentDate
+     */
+    private void sendSupportCall(StudentSupportCallResponse studentSupportCallResponse, Date currentDate) {
+        if (studentSupportCallResponse.isSubmitted()) {
+            return;
+        }
+
+        String loginId = studentSupportCallResponse.getSupportStaff().getLoginId();
+
+        // loginId is necessary to map to a user and email
+        if ( loginId == null) {
+            log.error("Attempted to send notification to supportStaff id '" + studentSupportCallResponse.getSupportStaff().getId() + "' but loginId was null.");
+            return;
+        }
+
+        User user = userService.getOneByLoginId(loginId);
+        if (user == null) {
+            log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
+            return;
+        }
+
+        String recipientEmail = user.getEmail();
+        String messageSubject = "";
+
+        Schedule schedule = studentSupportCallResponse.getSchedule();
+        long workgroupId = schedule.getWorkgroup().getId();
+
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/supportCalls/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String messageBody = "";
+
+        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+
+        Long year = studentSupportCallResponse.getSchedule().getYear();
+
+        // Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
+        messageSubject = "IPA: Teaching Call has started";
+        messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
+        messageBody += "It is time to start thinking about teaching plans for <b>" + studentSupportCallResponse.getTermCode() + " " + year + "-" + (year+1) + "</b>.";
+        messageBody += "<br />";
+        messageBody += "<br />";
+        messageBody += studentSupportCallResponse.getMessage();
+        messageBody += "<br />";
+        messageBody += "<br />";
+        messageBody += "<a href='" + supportCallUrl + "'>View Teaching Call</a>";
+        messageBody += "</td></tr></tbody></table>";
+
+        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+            studentSupportCallResponse.setLastContactedAt(currentDate);
+            studentSupportCallResponse.setNextContactAt(null);
+            this.update(studentSupportCallResponse);
+        }
+    }
+
+    /**
+     * Builds and sends the support call warning email
+     * @param studentSupportCallResponse
+     * @param currentDate
+     */
+    private void sendSupportCallWarning(StudentSupportCallResponse studentSupportCallResponse, Date currentDate) {
+        if (studentSupportCallResponse.isSubmitted()) {
+            return;
+        }
+
+        String loginId = studentSupportCallResponse.getSupportStaff().getLoginId();
+
+        // loginId is necessary to map to a user and email
+        if ( loginId == null) {
+            log.error("Attempted to send notification to supportStaff id '" + studentSupportCallResponse.getSupportStaff().getId() + "' but loginId was null.");
+            return;
+        }
+
+        User user = userService.getOneByLoginId(loginId);
+        if (user == null) {
+            log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
+            return;
+        }
+
+        String recipientEmail = user.getEmail();
+        String messageSubject = "";
+
+        Schedule schedule = studentSupportCallResponse.getSchedule();
+        long workgroupId = schedule.getWorkgroup().getId();
+
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/supportCalls/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String messageBody = "";
+
+        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+
+        Long year = studentSupportCallResponse.getSchedule().getYear();
+
+        // Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
+
+        messageSubject = "IPA: Action needed - Support Call closing soon";
+
+        messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
+        messageBody += "A support call will be closing soon. Please submit your preferences by <b>" + format.format(studentSupportCallResponse.getDueDate()) + "</b>.";
+        messageBody += "<br />";
+        messageBody += "<br />";
+        messageBody += "<h3><a href='" + supportCallUrl + "'>View Support Call</a></h3>";
+
+        messageBody += "</td></tr></tbody></table>";
+
+        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+            studentSupportCallResponse.setLastContactedAt(currentDate);
+            this.update(studentSupportCallResponse);
+        }
     }
 
     @Override
