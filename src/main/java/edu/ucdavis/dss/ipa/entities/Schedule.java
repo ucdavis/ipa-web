@@ -47,6 +47,9 @@ public class Schedule implements Serializable {
 	private Workgroup workgroup;
 	private List<Course> courses = new ArrayList<Course>();
 	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
+	private List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<StudentSupportCallResponse>();
+	private List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<InstructorSupportCallResponse>();
+
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
 	private boolean StudentSupportCallReviewOpen;
@@ -172,5 +175,25 @@ public class Schedule implements Serializable {
 
 	public void setInstructorSupportCallReviewOpen(boolean instructorSupportCallReviewOpen) {
 		InstructorSupportCallReviewOpen = instructorSupportCallReviewOpen;
+	}
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+		return studentSupportCallResponses;
+	}
+
+	public void setStudentSupportCallResponses(List<StudentSupportCallResponse> studentSupportCallResponses) {
+		this.studentSupportCallResponses = studentSupportCallResponses;
+	}
+
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {
+		return instructorSupportCallResponses;
+	}
+
+	public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+		this.instructorSupportCallResponses = instructorSupportCallResponses;
 	}
 }
