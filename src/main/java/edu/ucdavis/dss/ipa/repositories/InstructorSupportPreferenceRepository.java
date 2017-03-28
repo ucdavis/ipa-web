@@ -17,4 +17,6 @@ public interface InstructorSupportPreferenceRepository extends CrudRepository<In
     void deleteById(long studentSupportPreferenceId);
 
     List<InstructorSupportPreference> findByInstructorId(long instructorId);
+
+    InstructorSupportPreference findById(long preferenceId);
 }

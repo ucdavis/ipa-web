@@ -23,9 +23,22 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
     }
 
     @Override
-    public List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds) {
-        return null;
+    public List<Long> updatePriorities(List<Long> preferenceIds) {
+        for (int i = 0; i < preferenceIds.size(); i++) {
+            long preferenceId = preferenceIds.get(i);
+            if (preferenceId == 0) {
+                continue;
+            }
+
+            InstructorSupportPreference preference = this.findById(preferenceId);
+            preference.setPriority(i+1);
+            this.save(preference);
+        }
+
+        return preferenceIds;
     }
+
+
 
     @Override
     public InstructorSupportPreference create(long instructionalSupportStaffId, long instructorId, long sectionGroupId) {
@@ -78,5 +91,9 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
         }
 
         return preferences;
+    }
+
+    private InstructorSupportPreference findById(long preferenceId) {
+        return this.instructorSupportPreferenceRepository.findById(preferenceId);
     }
 }

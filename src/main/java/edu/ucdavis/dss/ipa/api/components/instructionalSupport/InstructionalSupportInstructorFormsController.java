@@ -67,7 +67,7 @@ public class InstructionalSupportInstructorFormsController {
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/schedules/{scheduleId}/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public List<Long> updatePreferencesOrder(@PathVariable long scheduleId, @PathVariable long sectionGroupId, @RequestBody List<Long> preferenceIdsParams, HttpServletResponse httpResponse) {
-        Long workgroupId = sectionGroupService.getOneById(scheduleId).getCourse().getSchedule().getWorkgroup().getId();
+        Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         instructorSupportPreferenceService.updatePriorities(preferenceIdsParams);
