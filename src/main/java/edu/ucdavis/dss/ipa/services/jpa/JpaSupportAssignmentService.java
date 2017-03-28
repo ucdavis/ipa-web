@@ -1,14 +1,8 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.SupportAssignment;
-import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.SupportAssignmentRepository;
-import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
-import edu.ucdavis.dss.ipa.services.SupportStaffService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -20,16 +14,34 @@ import java.util.Collection;
 @Service
 public class JpaSupportAssignmentService implements SupportAssignmentService {
 
-    @Inject
-    SupportAssignmentRepository supportAssignmentRepository;
+    @Inject SupportAssignmentRepository supportAssignmentRepository;
     @Inject SectionGroupService sectionGroupService;
-    @Inject
-    SupportStaffService supportStaffService;
+    @Inject SupportStaffService supportStaffService;
     @Inject ScheduleService scheduleService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject InstructorService instructorService;
 
     @Override
     public SupportAssignment save(SupportAssignment supportAssignment) {
-        return this.supportAssignmentRepository.save(supportAssignment);
+        supportAssignment = this.supportAssignmentRepository.save(supportAssignment);
+
+        // If assigning an associate instructor,
+        // Create a teaching assignment and instructor as well
+        if ("associateInstructor".equals(supportAssignment.getAppointmentType()) && supportAssignment.getSupportStaff() != null) {
+            String firstName = supportAssignment.getSupportStaff().getFirstName();
+            String lastName = supportAssignment.getSupportStaff().getLastName();
+            String email = supportAssignment.getSupportStaff().getEmail();
+            String loginId = supportAssignment.getSupportStaff().getLoginId();
+            Long workgroupId = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+
+            Instructor instructor = instructorService.findOrCreate(firstName, lastName, email, loginId, workgroupId);
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(supportAssignment.getSectionGroup(), instructor);
+
+            teachingAssignment.setApproved(true);
+            teachingAssignmentService.save(teachingAssignment);
+        }
+
+        return supportAssignment;
     }
 
     @Override
@@ -53,7 +65,9 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
         supportAssignment.setAppointmentPercentage(appointmentPercentage);
         supportAssignment.setAppointmentType(type);
 
-        return this.save(supportAssignment);
+        supportAssignment = this.save(supportAssignment);
+
+        return supportAssignment;
     }
 
     @Override

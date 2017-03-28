@@ -32,9 +32,7 @@ public class InstructionalSupportInstructorFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public InstructionalSupportCallInstructorFormView getInstructionalSupportCallStudentFormView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
-
+    public InstructionalSupportCallInstructorFormView getInstructionalSupportCallInstructorFormView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode, HttpServletResponse httpResponse) {
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
 
@@ -45,6 +43,7 @@ public class InstructionalSupportInstructorFormsController {
     @ResponseBody
     public InstructorSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
@@ -57,6 +56,7 @@ public class InstructionalSupportInstructorFormsController {
     public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO, HttpServletResponse httpResponse) {
         InstructorSupportCallResponse originalSupportCallResponse = instructorSupportCallResponseService.findOneById(instructorSupportCallResponseId);
         Long workgroupId = originalSupportCallResponse.getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());
@@ -68,6 +68,7 @@ public class InstructionalSupportInstructorFormsController {
     @ResponseBody
     public List<Long> updatePreferencesOrder(@PathVariable long scheduleId, @PathVariable long sectionGroupId, @RequestBody List<Long> preferenceIdsParams, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(scheduleId).getCourse().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         instructorSupportPreferenceService.updatePriorities(preferenceIdsParams);
 
