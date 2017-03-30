@@ -38,8 +38,6 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
         return preferenceIds;
     }
 
-
-
     @Override
     public InstructorSupportPreference create(long instructionalSupportStaffId, long instructorId, long sectionGroupId) {
         SupportStaff supportStaff = supportStaffService.findOneById(instructionalSupportStaffId);
@@ -51,15 +49,79 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
         instructorSupportPreference.setSupportStaff(supportStaff);
         instructorSupportPreference.setInstructor(instructor);
 
-        // TODO: Add logic to properly check sibling preferences, determine the current lowest priority, and set priority to one below that.
-        instructorSupportPreference.setPriority(1L);
+        // Set priority arbitrarily to a ceiling, to ensure recalculation places it at the end.
+        instructorSupportPreference.setPriority(999L);
 
-        return this.save(instructorSupportPreference);
+        instructorSupportPreference = this.save(instructorSupportPreference);
+
+        this.recalculatePriorities(instructor.getId(), sectionGroup.getId());
+
+        return this.findById(instructorSupportPreference.getId());
     }
 
     @Override
-    public void delete(Long instructorInstructionalSupportPreferenceId) {
-        this.instructorSupportPreferenceRepository.deleteById(instructorInstructionalSupportPreferenceId);
+    public Long delete(Long instructorSupportPreferenceId) {
+        InstructorSupportPreference instructorSupportPreference = this.findById(instructorSupportPreferenceId);
+
+        if (instructorSupportPreference == null) {
+            return null;
+        }
+
+        Long sectionGroupId = instructorSupportPreference.getSectionGroup().getId();
+        Long instructorId = instructorSupportPreference.getInstructor().getId();
+
+        this.instructorSupportPreferenceRepository.deleteById(instructorSupportPreferenceId);
+
+        this.recalculatePriorities(sectionGroupId, instructorId);
+
+        return instructorSupportPreferenceId;
+    }
+
+    private void recalculatePriorities(Long sectionGroupId, Long instructorId) {
+        List<InstructorSupportPreference> instructorPreferences = this.instructorSupportPreferenceRepository.findByInstructorIdAndSectionGroupId(instructorId, sectionGroupId);
+
+        List<InstructorSupportPreference> processedPreferences = new ArrayList<>();
+
+        // Assign each preference value
+        for (int priority = 1; priority <= instructorPreferences.size(); priority++) {
+
+            // Find the preference with the lowest priority (that hasn't already been processed)
+            InstructorSupportPreference lowestPriorityPreference = null;
+
+            for (InstructorSupportPreference preference : instructorPreferences) {
+                if (this.isInArray(processedPreferences, preference.getId())) {
+                    continue;
+                }
+
+                if (lowestPriorityPreference == null) {
+                    lowestPriorityPreference = preference;
+                    continue;
+                }
+
+                if (preference.getPriority() < lowestPriorityPreference.getPriority()) {
+                    lowestPriorityPreference = preference;
+                }
+            }
+
+            // Save the preference its new priority add it to the list of processed preferences
+            lowestPriorityPreference.setPriority(priority);
+            this.save(lowestPriorityPreference);
+            processedPreferences.add(lowestPriorityPreference);
+        }
+
+
+    }
+
+    private boolean isInArray(List<InstructorSupportPreference> preferences, long id) {
+        boolean isInArray = false;
+        for (InstructorSupportPreference preference: preferences) {
+            if (id == preference.getId()) {
+                isInArray = true;
+                break;
+            }
+        }
+
+        return isInArray;
     }
 
     @Override

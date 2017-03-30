@@ -19,4 +19,6 @@ public interface InstructorSupportPreferenceRepository extends CrudRepository<In
     List<InstructorSupportPreference> findByInstructorId(long instructorId);
 
     InstructorSupportPreference findById(long preferenceId);
+
+    List<InstructorSupportPreference> findByInstructorIdAndSectionGroupId(Long instructorId, Long sectionGroupId);
 }
