@@ -401,14 +401,14 @@ public class InstructionalSupportCallsController {
 
         studentResponseDTO.setAllowSubmissionAfterDueDate(addStudentsDTO.getAllowSubmissionAfterDueDate());
 
-        studentResponseDTO.setCollectEligibilityConfirmation(addStudentsDTO.getAllowSubmissionAfterDueDate());
-        studentResponseDTO.setCollectGeneralComments(addStudentsDTO.getAllowSubmissionAfterDueDate());
-        studentResponseDTO.setCollectPreferenceComments(addStudentsDTO.getAllowSubmissionAfterDueDate());
+        studentResponseDTO.setCollectEligibilityConfirmation(addStudentsDTO.getCollectEligibilityConfirmation());
+        studentResponseDTO.setCollectGeneralComments(addStudentsDTO.getCollectGeneralComments());
+        studentResponseDTO.setCollectPreferenceComments(addStudentsDTO.getCollectPreferenceComments());
         studentResponseDTO.setCollectTeachingQualifications(addStudentsDTO.getCollectTeachingQualifications());
 
-        studentResponseDTO.setCollectReaderPreferences(addStudentsDTO.getAllowSubmissionAfterDueDate());
-        studentResponseDTO.setCollectTeachingAssistantPreferences(addStudentsDTO.getAllowSubmissionAfterDueDate());
-        studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getAllowSubmissionAfterDueDate());
+        studentResponseDTO.setCollectReaderPreferences(addStudentsDTO.getCollectReaderPreferences());
+        studentResponseDTO.setCollectTeachingAssistantPreferences(addStudentsDTO.getCollectTeachingAssistantPreferences());
+        studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getCollectAssociateInstructorPreferences());
 
         if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());

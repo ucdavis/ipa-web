@@ -51,6 +51,7 @@ CREATE TABLE `StudentSupportCallResponses` (
   `Submitted` tinyint(1) NOT NULL DEFAULT '0',
   `SupportStaffId` int(11) NOT NULL,
   `GeneralComments` text,
+  `EligibilityConfirmed` tinyint(1),
   `TeachingQualifications` text,
   `ScheduleId` int(11) NOT NULL,
   `StartDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

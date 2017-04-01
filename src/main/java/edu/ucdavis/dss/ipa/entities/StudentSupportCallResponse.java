@@ -16,7 +16,7 @@ public class StudentSupportCallResponse implements Serializable {
     private long id, minimumNumberOfPreferences;
     private SupportStaff supportStaff;
     private Date nextContactAt, lastContactedAt, startDate, dueDate;
-    private boolean submitted, allowSubmissionAfterDueDate;
+    private boolean submitted, allowSubmissionAfterDueDate, eligibilityConfirmed;
     private String generalComments, teachingQualifications, message, termCode;
     private Schedule schedule;
 
@@ -204,6 +204,14 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setCollectAssociateInstructorPreferences(boolean collectAssociateInstructorPreferences) {
         this.collectAssociateInstructorPreferences = collectAssociateInstructorPreferences;
+    }
+
+    public boolean isEligibilityConfirmed() {
+        return eligibilityConfirmed;
+    }
+
+    public void setEligibilityConfirmed(boolean eligibilityConfirmed) {
+        this.eligibilityConfirmed = eligibilityConfirmed;
     }
 
     @JsonProperty("supportStaffId")

@@ -72,6 +72,7 @@ public class InstructionalSupportStudentFormsController {
         originalSupportCallResponse.setGeneralComments(studentSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setTeachingQualifications(studentSupportCallResponseDTO.getTeachingQualifications());
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
+        originalSupportCallResponse.setEligibilityConfirmed(studentSupportCallResponseDTO.isEligibilityConfirmed());
 
         return studentSupportCallResponseService.update(originalSupportCallResponse);
     }
