@@ -54,7 +54,7 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
 
         instructorSupportPreference = this.save(instructorSupportPreference);
 
-        this.recalculatePriorities(instructor.getId(), sectionGroup.getId());
+        this.recalculatePriorities(sectionGroup.getId(), instructor.getId());
 
         return this.findById(instructorSupportPreference.getId());
     }
