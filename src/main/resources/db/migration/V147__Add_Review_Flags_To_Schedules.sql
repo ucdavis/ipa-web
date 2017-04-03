@@ -1,2 +1,2 @@
-ALTER TABLE Schedules ADD COLUMN StudentSupportCallReviewOpen tinyint(1) NOT NULL DEFAULT '0';
-ALTER TABLE Schedules ADD COLUMN InstructorSupportCallReviewOpen tinyint(1) NOT NULL DEFAULT '0';
+ALTER TABLE Schedules ADD COLUMN SupportStaffSupportCallReviewOpen VARCHAR(10) DEFAULT '0000000000';
+ALTER TABLE Schedules ADD COLUMN InstructorSupportCallReviewOpen VARCHAR(10) DEFAULT '0000000000';

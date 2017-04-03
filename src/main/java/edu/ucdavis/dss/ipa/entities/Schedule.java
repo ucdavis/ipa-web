@@ -52,8 +52,8 @@ public class Schedule implements Serializable {
 
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
-	private boolean StudentSupportCallReviewOpen;
-	private boolean InstructorSupportCallReviewOpen;
+	private String supportStaffSupportCallReviewOpen;
+	private String instructorSupportCallReviewOpen;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -159,22 +159,28 @@ public class Schedule implements Serializable {
 		this.teachingAssignments = teachingAssignments;
 	}
 
+	/**
+	 * Terms are expected to be sorted ['01','02','03','04','05','06','07','08','09','10']
+	 */
 	@JsonProperty
-	public boolean isStudentSupportCallReviewOpen() {
-		return StudentSupportCallReviewOpen;
+	public String getSupportStaffSupportCallReviewOpen() {
+		return supportStaffSupportCallReviewOpen;
 	}
 
-	public void setStudentSupportCallReviewOpen(boolean studentSupportCallReviewOpen) {
-		StudentSupportCallReviewOpen = studentSupportCallReviewOpen;
+	public void setSupportStaffSupportCallReviewOpen(String supportStaffSupportCallReviewOpen) {
+		this.supportStaffSupportCallReviewOpen = supportStaffSupportCallReviewOpen;
 	}
 
+	/**
+	 * Terms are expected to be sorted ['01','02','03','04','05','06','07','08','09','10']
+	 */
 	@JsonProperty
-	public boolean isInstructorSupportCallReviewOpen() {
-		return InstructorSupportCallReviewOpen;
+	public String getInstructorSupportCallReviewOpen() {
+		return instructorSupportCallReviewOpen;
 	}
 
-	public void setInstructorSupportCallReviewOpen(boolean instructorSupportCallReviewOpen) {
-		InstructorSupportCallReviewOpen = instructorSupportCallReviewOpen;
+	public void setInstructorSupportCallReviewOpen(String instructorSupportCallReviewOpen) {
+		this.instructorSupportCallReviewOpen = instructorSupportCallReviewOpen;
 	}
 
 	@JsonIgnore
@@ -195,5 +201,46 @@ public class Schedule implements Serializable {
 
 	public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
 		this.instructorSupportCallResponses = instructorSupportCallResponses;
+	}
+
+	/**
+	 * Given a term, toggle the relevant flag in the termsBlob
+	 * @param term
+     */
+	public void toggleSupportStaffSupportCallReview(String term) {
+		int index = Integer.parseInt(term) - 1;
+
+		String currentTermsBlob = this.getSupportStaffSupportCallReviewOpen();
+		long currentTermValue = Integer.parseInt(String.valueOf(currentTermsBlob.charAt(index)));
+		long newTermValue = 1;
+
+		if (currentTermValue == 1) {
+			newTermValue = 0;
+		}
+
+		String beforeIndex = currentTermsBlob.substring(0,index);
+		String afterIndex = currentTermsBlob.substring(index + 1);
+		String newTermsBlob = beforeIndex + newTermValue + afterIndex;
+
+		this.setSupportStaffSupportCallReviewOpen(newTermsBlob);
+	}
+
+	public void toggleInstructorSupportCallReview(String term) {
+		int index = Integer.parseInt(term) - 1;
+
+		String currentTermsBlob = this.getInstructorSupportCallReviewOpen();
+
+		long currentTermValue = Integer.parseInt(String.valueOf(currentTermsBlob.charAt(index)));
+		long newTermValue = 1;
+
+		if (currentTermValue == 1) {
+			newTermValue = 0;
+		}
+
+		String beforeIndex = currentTermsBlob.substring(0,index);
+		String afterIndex = currentTermsBlob.substring(index + 1);
+		String newTermsBlob = beforeIndex + newTermValue + afterIndex;
+
+		this.setInstructorSupportCallReviewOpen(newTermsBlob);
 	}
 }

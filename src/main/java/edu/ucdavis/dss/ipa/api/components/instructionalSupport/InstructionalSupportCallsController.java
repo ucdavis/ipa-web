@@ -46,30 +46,26 @@ public class InstructionalSupportCallsController {
         return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year, term);
     }
 
-    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openStudentSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/terms/{term}/toggleSupportStaffSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Schedule openStudentSupportCallReview(@PathVariable long scheduleId, HttpServletResponse httpResponse) {
-
-
+    public Schedule toggleStudentSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
-        schedule.setStudentSupportCallReviewOpen(true);
+        schedule.toggleSupportStaffSupportCallReview(term);
 
         return scheduleService.saveSchedule(schedule);
     }
 
-    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/openInstructorSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/terms/{term}/toggleInstructorSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Schedule openInstructorSupportCallReview(@PathVariable long scheduleId, HttpServletResponse httpResponse) {
-
-
+    public Schedule toggleInstructorSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
-        schedule.setInstructorSupportCallReviewOpen(true);
+        schedule.toggleInstructorSupportCallReview(term);
 
         return scheduleService.saveSchedule(schedule);
     }
