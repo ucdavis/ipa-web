@@ -29,7 +29,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-mail")
-    compile("org.springframework.ldap:spring-ldap-ldif-core:2.0.2.RELEASE")
+    compile("org.springframework.ldap:spring-ldap-ldif-core:2.0.4.RELEASE")
     compile("io.jsonwebtoken:jjwt:0.6.0")
     compile("commons-io:commons-io:2.4")
     compile("org.springframework.security:spring-security-cas-client:3.0.8.RELEASE")
@@ -46,7 +46,7 @@ dependencies {
     runtime("mysql:mysql-connector-java:5.1.41")
     runtime("javax.annotation:javax.annotation-api:1.2")
     testCompile("junit:junit")
-    testCompile("com.h2database:h2:1.4.193")
+    testCompile("com.h2database:h2:1.4.194")
     testCompile("com.jayway.jsonpath:json-path:2.2.0")
 }
 
