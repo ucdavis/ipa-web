@@ -118,6 +118,23 @@ public class UserRole implements Serializable {
 		return isFederation || isSenate;
 	}
 
+	/**
+	 * Returns a boolean whether the role is a supportStaff
+	 *
+	 * @param userRole
+	 * @return
+	 */
+	@Transient
+	public static boolean isSupportStaff(UserRole userRole) {
+		if (userRole == null || userRole.getRoleToken() == null) { return false; }
+
+		boolean isMasters = userRole.getRoleToken().equals("studentMasters");
+		boolean isPhD = userRole.getRoleToken().equals("studentPhd");
+		boolean isInstructionalSupport = userRole.getRoleToken().equals("instructionalSupport");
+
+		return isMasters || isPhD || isInstructionalSupport;
+	}
+
 	@JsonProperty("userId")
 	@Transient
 	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})

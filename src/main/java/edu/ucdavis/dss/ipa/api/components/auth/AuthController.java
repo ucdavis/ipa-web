@@ -213,7 +213,7 @@ public class AuthController {
                         long workGroupId = userRole.getWorkgroup().getId();
 
                         for (UserRole targetUserRole : userRoles) {
-                            if (UserRole.isInstructor(targetUserRole) && (workGroupId == targetUserRole.getWorkgroup().getId()) ) {
+                            if ( (UserRole.isInstructor(targetUserRole) || UserRole.isSupportStaff(targetUserRole) ) && (workGroupId == targetUserRole.getWorkgroup().getId()) ) {
                                 allowedToImpersonate = true;
                             }
                         }
