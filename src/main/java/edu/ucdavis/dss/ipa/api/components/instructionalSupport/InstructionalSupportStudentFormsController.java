@@ -91,6 +91,22 @@ public class InstructionalSupportStudentFormsController {
         return preferenceIdsParams;
     }
 
+    @RequestMapping(value = "/api/instructionalSupportStudentFormView/schedules/{scheduleId}/preferences/{supportStaffPreferenceId}", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public StudentSupportPreference updatePreference(@PathVariable long scheduleId, @PathVariable long supportStaffPreferenceId, @RequestBody StudentSupportPreference preferenceDTO, HttpServletResponse httpResponse) {
+        Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
+
+        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
+
+        StudentSupportPreference preference = studentSupportPreferenceService.findById(supportStaffPreferenceId);
+
+        preference.setComment(preferenceDTO.getComment());
+
+        return studentSupportPreferenceService.save(preference);
+    }
+
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deletePreference(@PathVariable long studentPreferenceId, HttpServletResponse httpResponse) {

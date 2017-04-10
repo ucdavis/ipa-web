@@ -15,7 +15,11 @@ public interface StudentSupportPreferenceService {
 
     StudentSupportPreference create (StudentSupportPreference studentSupportPreferenceDTO);
 
+    StudentSupportPreference save (StudentSupportPreference studentSupportPreference);
+
     void delete(Long studentInstructionalSupportPreferenceId);
+
+    StudentSupportPreference findById(long id);
 
     List<StudentSupportPreference> findByScheduleIdAndTermCode(long id, String termCode);
 

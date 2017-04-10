@@ -18,6 +18,7 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     @Inject SupportStaffService supportStaffService;
     @Inject ScheduleService scheduleService;
 
+    @Override
     public StudentSupportPreference save(StudentSupportPreference studentSupportPreference) {
         return this.studentSupportPreferenceRepository.save(studentSupportPreference);
     }
@@ -78,7 +79,8 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         return filteredPreferences;
     }
 
-    private StudentSupportPreference findById(long preferenceId) {
+    @Override
+    public StudentSupportPreference findById(long preferenceId) {
         return studentSupportPreferenceRepository.findOneById(preferenceId);
     }
 }
