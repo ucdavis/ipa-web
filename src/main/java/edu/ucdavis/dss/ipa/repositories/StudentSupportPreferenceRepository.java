@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+        import edu.ucdavis.dss.ipa.entities.InstructorSupportPreference;
         import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
         import org.springframework.data.jpa.repository.Modifying;
         import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,6 @@ public interface StudentSupportPreferenceRepository extends CrudRepository<Stude
     void deleteById(long studentInstructionalSupportPreferenceId);
 
     StudentSupportPreference findOneById(long preferenceId);
+
+    List<StudentSupportPreference> findBySupportStaffId(Long supportStaffId);
 }

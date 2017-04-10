@@ -109,7 +109,6 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
             processedPreferences.add(lowestPriorityPreference);
         }
 
-
     }
 
     private boolean isInArray(List<InstructorSupportPreference> preferences, long id) {

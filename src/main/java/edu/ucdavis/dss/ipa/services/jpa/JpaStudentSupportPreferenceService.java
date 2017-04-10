@@ -23,6 +23,15 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         return this.studentSupportPreferenceRepository.save(studentSupportPreference);
     }
 
+    public StudentSupportPreference update(StudentSupportPreference studentSupportPreference) {
+        Long supportStaffId = studentSupportPreference.getSupportStaff().getId();
+
+        this.studentSupportPreferenceRepository.save(studentSupportPreference);
+        this.recalculatePriorities(supportStaffId);
+
+        return this.studentSupportPreferenceRepository.findOneById(studentSupportPreference.getId());
+    }
+
     @Override
     public List<Long> updatePriorities(List<Long> preferenceIds) {
         for (int i = 0; i < preferenceIds.size(); i++) {
@@ -38,10 +47,16 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
 
     @Override
     public StudentSupportPreference create(StudentSupportPreference studentSupportPreference) {
-        // TODO: Add logic to properly check sibling preferences, determine the current lowest priority, and set priority to one below that.
-        studentSupportPreference.setPriority(1L);
+        Long supportStaffId = studentSupportPreference.getSupportStaff().getId();
 
-        return this.save(studentSupportPreference);
+        // Set priority to arbitrarily high ceiling to ensure it is placed at the end
+        studentSupportPreference.setPriority(999L);
+
+        studentSupportPreference = this.save(studentSupportPreference);
+
+        this.recalculatePriorities(supportStaffId);
+
+        return this.findById(studentSupportPreference.getId());
     }
 
     @Override
@@ -82,5 +97,50 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     @Override
     public StudentSupportPreference findById(long preferenceId) {
         return studentSupportPreferenceRepository.findOneById(preferenceId);
+    }
+
+    private void recalculatePriorities(Long supportStaffId) {
+        List<StudentSupportPreference> studentSupportPreferences = this.studentSupportPreferenceRepository.findBySupportStaffId(supportStaffId);
+
+        List<StudentSupportPreference> processedPreferences = new ArrayList<>();
+
+        // Assign each preference value
+        for (int priority = 1; priority <= studentSupportPreferences.size(); priority++) {
+
+            // Find the preference with the lowest priority (that hasn't already been processed)
+            StudentSupportPreference lowestPriorityPreference = null;
+
+            for (StudentSupportPreference preference : studentSupportPreferences) {
+                if (this.isInArray(processedPreferences, preference.getId())) {
+                    continue;
+                }
+
+                if (lowestPriorityPreference == null) {
+                    lowestPriorityPreference = preference;
+                    continue;
+                }
+
+                if (preference.getPriority() < lowestPriorityPreference.getPriority()) {
+                    lowestPriorityPreference = preference;
+                }
+            }
+
+            // Save the preference its new priority add it to the list of processed preferences
+            lowestPriorityPreference.setPriority(priority);
+            this.save(lowestPriorityPreference);
+            processedPreferences.add(lowestPriorityPreference);
+        }
+    }
+
+    private boolean isInArray(List<StudentSupportPreference> preferences, long id) {
+        boolean isInArray = false;
+        for (StudentSupportPreference preference: preferences) {
+            if (id == preference.getId()) {
+                isInArray = true;
+                break;
+            }
+        }
+
+        return isInArray;
     }
 }
