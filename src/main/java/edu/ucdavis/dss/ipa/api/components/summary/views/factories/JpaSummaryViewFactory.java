@@ -24,7 +24,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId, long supportStaffId) {
-        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
         List<Course> courses = new ArrayList<Course>();
