@@ -177,7 +177,10 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Schedule schedule = studentSupportCallResponse.getSchedule();
         long workgroupId = schedule.getWorkgroup().getId();
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String termCode = studentSupportCallResponse.getTermCode();
+        String term = termCode.substring(termCode.length() - 2);
+
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -233,7 +236,10 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Schedule schedule = studentSupportCallResponse.getSchedule();
         long workgroupId = schedule.getWorkgroup().getId();
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + studentSupportCallResponse.getTermCode() + "/studentSupportCallForm";
+        String termCode = studentSupportCallResponse.getTermCode();
+        String term = termCode.substring(termCode.length() - 2);
+
+        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
