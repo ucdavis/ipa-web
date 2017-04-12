@@ -1,0 +1,2 @@
+ALTER TABLE `StudentSupportCallResponses` CHANGE COLUMN `DueDate` `DueDate` timestamp NULL DEFAULT NULL;
+ALTER TABLE `InstructorSupportCallResponses` CHANGE COLUMN `DueDate` `DueDate` timestamp NULL DEFAULT NULL;
