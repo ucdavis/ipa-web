@@ -13,7 +13,9 @@ public class InstructionalSupportAssignmentView {
     List<Long> phdStudentIds;
     List<Long> instructionalSupportIds;
     List<StudentSupportPreference> studentSupportPreferences;
+    List<InstructorSupportPreference> instructorSupportPreferences;
     List<StudentSupportCallResponse> studentSupportCallResponses;
+    List<InstructorSupportCallResponse> instructorSupportCallResponses;
     Schedule schedule;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
@@ -25,7 +27,9 @@ public class InstructionalSupportAssignmentView {
                                               List<Long> instructionalSupportIds,
                                               List<StudentSupportPreference> studentSupportPreferences,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
-                                              Schedule schedule) {
+                                              Schedule schedule,
+                                              List<InstructorSupportPreference> instructorSupportPreferences,
+                                              List<InstructorSupportCallResponse> instructorSupportCallResponses) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -36,6 +40,8 @@ public class InstructionalSupportAssignmentView {
         setStudentSupportPreferences(studentSupportPreferences);
         setStudentSupportCallResponses(studentSupportCallResponses);
         setSchedule(schedule);
+        setInstructorSupportCallResponses(instructorSupportCallResponses);
+        setInstructorSupportPreferences(instructorSupportPreferences);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -116,5 +122,21 @@ public class InstructionalSupportAssignmentView {
 
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
+    }
+
+    public List<InstructorSupportPreference> getInstructorSupportPreferences() {
+        return instructorSupportPreferences;
+    }
+
+    public void setInstructorSupportPreferences(List<InstructorSupportPreference> instructorSupportPreferences) {
+        this.instructorSupportPreferences = instructorSupportPreferences;
+    }
+
+    public List<InstructorSupportCallResponse> getInstructorSupportCallResponses() {
+        return instructorSupportCallResponses;
+    }
+
+    public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+        this.instructorSupportCallResponses = instructorSupportCallResponses;
     }
 }

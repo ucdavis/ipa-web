@@ -22,10 +22,8 @@ public class InstructionalSupportAssignmentsController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject
-    SupportAssignmentService supportAssignmentService;
-    @Inject
-    SupportStaffService supportStaffService;
+    @Inject SupportAssignmentService supportAssignmentService;
+    @Inject SupportStaffService supportStaffService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody

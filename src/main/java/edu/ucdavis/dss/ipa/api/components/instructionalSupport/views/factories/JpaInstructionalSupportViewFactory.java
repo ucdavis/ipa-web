@@ -29,6 +29,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject StudentSupportPreferenceService studentSupportPreferenceService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
+    @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -57,7 +58,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
         List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<InstructorSupportPreference> instructorSupportPreferences = instructorSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+
         for (SupportStaff supportStaff : mastersStudents) {
             mastersStudentIds.add(supportStaff.getId());
         }
@@ -70,7 +74,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructionalSupportIds.add(supportStaff.getId());
         }
 
-        return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList, mastersStudentIds, phdStudentIds, instructionalSupportIds, studentSupportPreferences, studentSupportCallResponses, schedule);
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList,
+                mastersStudentIds, phdStudentIds, instructionalSupportIds, studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses);
     }
 
     @Override
