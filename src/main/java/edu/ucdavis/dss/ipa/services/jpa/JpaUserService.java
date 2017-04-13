@@ -79,7 +79,7 @@ public class JpaUserService implements UserService {
 			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
 		}
 
-		if((dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
+		if((dwPerson != null) && (dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
 			user = new User();
 
 			user.setFirstName(dwPerson.getdFirstName());
