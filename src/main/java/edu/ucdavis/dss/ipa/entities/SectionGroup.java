@@ -24,7 +24,7 @@ import java.util.List;
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonDeserialize(using = SectionGroupDeserializer.class)
-public class SectionGroup implements Serializable {
+public class SectionGroup extends BaseEntity {
 	private long id;
 	private Course course;
 	private List<Section> sections;

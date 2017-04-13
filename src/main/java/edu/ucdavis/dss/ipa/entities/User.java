@@ -25,7 +25,7 @@ import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User extends BaseEntity {
 	private long id;
 	private String loginId, email, firstName, lastName, token;
 	private Date lastAccessed;

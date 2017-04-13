@@ -24,7 +24,7 @@ import java.util.Date;
 @Table(name = "Activities")
 @JsonDeserialize(using = ActivityDeserializer.class)
 @ValidActivity
-public class Activity implements Serializable {
+public class Activity extends BaseEntity {
 	private long id;
 
 	private Section section;
