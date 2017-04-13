@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 	getterVisibility = JsonAutoDetect.Visibility.NONE,
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class Course implements Serializable {
+public class Course extends BaseEntity {
 	private long id;
 	private String title, subjectCode, courseNumber, effectiveTermCode, sequencePattern;
 	private float unitsLow, unitsHigh;

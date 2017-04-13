@@ -1,15 +1,21 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.services.UserService;
 
+import javax.inject.Inject;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
+    @Inject UserService userService;
+
     Date createdAt, updatedAt;
-    User modifiedBy;
+    String modifiedBy;
 
     @JsonIgnore
     public Date getCreatedAt() {
@@ -20,14 +26,12 @@ public abstract class BaseEntity implements Serializable {
         this.createdAt = createdAt;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModifiedBy", nullable = true)
     @JsonIgnore
-    public User getModifiedBy() {
+    public String getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(User modifiedBy) {
+    public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
@@ -41,14 +45,15 @@ public abstract class BaseEntity implements Serializable {
     }
 
     /* Hibernate setters */
-
     @PreUpdate
     private void beforeUpdate() {
         this.updatedAt = new Date();
+        this.setModifiedBy(Authorization.getRealUserLoginId());
     }
 
     @PrePersist
     private void beforeCreation() {
         this.createdAt = new Date();
+        this.setModifiedBy(Authorization.getRealUserLoginId());
     }
 }

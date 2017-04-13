@@ -22,7 +22,7 @@ import java.util.Set;
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonDeserialize(using = WorkgroupDeserializer.class)
-public class Workgroup {
+public class Workgroup extends BaseEntity {
 	private long id;
 	private String name, code;
 	private Set<Schedule> schedules = new HashSet<Schedule>();

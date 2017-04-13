@@ -26,7 +26,7 @@ import edu.ucdavis.dss.ipa.api.views.UserViews;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "UserRoles")
-public class UserRole implements Serializable {
+public class UserRole extends BaseEntity {
 	private long id;
 	private User user;
 	private Workgroup workgroup;
