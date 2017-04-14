@@ -48,34 +48,17 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<UserRole> userRoles = workgroup.getUserRoles();
         List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
 
-        List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
-        List<Long> mastersStudentIds = new ArrayList<>();
-        List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
-        List<Long> phdStudentIds = new ArrayList<>();
-        List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
-        List<Long> instructionalSupportIds = new ArrayList<>();
+        List<SupportStaff> assignedSupportStaff = supportStaffService.findByScheduleId(schedule.getId());
+
         List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<InstructorSupportPreference> instructorSupportPreferences = instructorSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
-        for (SupportStaff supportStaff : mastersStudents) {
-            mastersStudentIds.add(supportStaff.getId());
-        }
-
-        for (SupportStaff supportStaff : phdStudents) {
-            phdStudentIds.add(supportStaff.getId());
-        }
-
-        for (SupportStaff supportStaff : instructionalSupport) {
-            instructionalSupportIds.add(supportStaff.getId());
-        }
-
-        return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList,
-                mastersStudentIds, phdStudentIds, instructionalSupportIds, studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses);
+        return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList, assignedSupportStaff,
+                studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses);
     }
 
     @Override

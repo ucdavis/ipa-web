@@ -14,4 +14,6 @@ public interface SupportStaffService {
     List<SupportStaff> findActiveByWorkgroupIdAndRoleToken(long workgroupId, String studentMasters);
 
     SupportStaff findByLoginId(String loginId);
+
+    List<SupportStaff> findByScheduleId(long id);
 }
