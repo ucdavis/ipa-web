@@ -9,6 +9,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +34,14 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
             year = Long.valueOf(year) + 1;
             termCode = year + shortTermCode;
         }
-        String fileName = "attachment; filename=ScheduleData-" + termCode + ".xls";
+
+        String workgroupName = "";
+        if (scheduleSummaryReportViewDTO.getCourses().size() > 0) {
+            workgroupName = scheduleSummaryReportViewDTO.getCourses().get(0).getSchedule().getWorkgroup().getName();
+        }
+
+        String dateOfDownload = new Date().toString();
+        String fileName = "attachment; filename=" + workgroupName + "-" + termCode + "-schedule_summary-" + dateOfDownload + ".xls";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
