@@ -9,9 +9,7 @@ public class InstructionalSupportAssignmentView {
     List<Course> courses;
     List<SupportAssignment> supportAssignments;
     List<SupportStaff> supportStaffList;
-    List<Long> mastersStudentIds;
-    List<Long> phdStudentIds;
-    List<Long> instructionalSupportIds;
+    List<SupportStaff> assignedSupportStaff;
     List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorSupportPreference> instructorSupportPreferences;
     List<StudentSupportCallResponse> studentSupportCallResponses;
@@ -22,9 +20,7 @@ public class InstructionalSupportAssignmentView {
                                               List<Course> courses,
                                               List<SupportAssignment> supportAssignments,
                                               List<SupportStaff> supportStaffList,
-                                              List<Long> mastersStudentsIds,
-                                              List<Long> phdStudentsIds,
-                                              List<Long> instructionalSupportIds,
+                                              List<SupportStaff> assignedSupportStaff,
                                               List<StudentSupportPreference> studentSupportPreferences,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
                                               Schedule schedule,
@@ -34,14 +30,12 @@ public class InstructionalSupportAssignmentView {
         setCourses(courses);
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
-        setMastersStudentIds(mastersStudentsIds);
-        setPhdStudentIds(phdStudentsIds);
-        setInstructionalSupportIds(instructionalSupportIds);
         setStudentSupportPreferences(studentSupportPreferences);
         setStudentSupportCallResponses(studentSupportCallResponses);
         setSchedule(schedule);
         setInstructorSupportCallResponses(instructorSupportCallResponses);
         setInstructorSupportPreferences(instructorSupportPreferences);
+        setAssignedSupportStaff(assignedSupportStaff);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -74,30 +68,6 @@ public class InstructionalSupportAssignmentView {
 
     public void setSupportStaffList(List<SupportStaff> supportStaffList) {
         this.supportStaffList = supportStaffList;
-    }
-
-    public List<Long> getMastersStudentIds() {
-        return mastersStudentIds;
-    }
-
-    public void setMastersStudentIds(List<Long> mastersStudentIds) {
-        this.mastersStudentIds = mastersStudentIds;
-    }
-
-    public List<Long> getPhdStudentIds() {
-        return phdStudentIds;
-    }
-
-    public void setPhdStudentIds(List<Long> phdStudentIds) {
-        this.phdStudentIds = phdStudentIds;
-    }
-
-    public List<Long> getInstructionalSupportIds() {
-        return instructionalSupportIds;
-    }
-
-    public void setInstructionalSupportIds(List<Long> instructionalSupportIds) {
-        this.instructionalSupportIds = instructionalSupportIds;
     }
 
     public List<StudentSupportPreference> getStudentSupportPreferences() {
@@ -138,5 +108,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setInstructorSupportCallResponses(List<InstructorSupportCallResponse> instructorSupportCallResponses) {
         this.instructorSupportCallResponses = instructorSupportCallResponses;
+    }
+
+    public List<SupportStaff> getAssignedSupportStaff() {
+        return assignedSupportStaff;
+    }
+
+    public void setAssignedSupportStaff(List<SupportStaff> assignedSupportStaff) {
+        this.assignedSupportStaff = assignedSupportStaff;
     }
 }

@@ -1,8 +1,8 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.SupportStaffRepository;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SupportStaffService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import org.springframework.stereotype.Service;
@@ -14,9 +14,9 @@ import java.util.List;
 @Service
 public class JpaSupportStaffService implements SupportStaffService {
 
-    @Inject
-    SupportStaffRepository supportStaffRepository;
+    @Inject SupportStaffRepository supportStaffRepository;
     @Inject UserRoleService userRoleService;
+    @Inject ScheduleService scheduleService;
 
     public SupportStaff save(SupportStaff supportStaff) {
         return this.supportStaffRepository.save(supportStaff);
@@ -93,5 +93,30 @@ public class JpaSupportStaffService implements SupportStaffService {
     @Override
     public SupportStaff findByLoginId(String loginId) {
         return this.supportStaffRepository.findByLoginIdIgnoreCase(loginId);
+    }
+
+    /**
+     * Returns a List of SupportStaff who have been assigned to sectionGroups in the specified schedule.
+     * @param scheduleId
+     * @return
+     */
+    @Override
+    public List<SupportStaff> findByScheduleId(long scheduleId) {
+        List<SupportStaff> supportStaffList = new ArrayList<>();
+
+        Schedule schedule = this.scheduleService.findById(scheduleId);
+
+        for (Course course : schedule.getCourses()) {
+            for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
+                    SupportStaff supportStaff = supportAssignment.getSupportStaff();
+                    if (supportStaff != null && supportStaffList.contains(supportStaff) == false) {
+                        supportStaffList.add(supportStaff);
+                    }
+                }
+            }
+        }
+
+        return supportStaffList;
     }
 }
