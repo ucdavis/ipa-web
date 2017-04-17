@@ -114,6 +114,13 @@ public class JpaSupportStaffService implements SupportStaffService {
                         supportStaffList.add(supportStaff);
                     }
                 }
+
+                for (StudentSupportPreference preference : sectionGroup.getStudentInstructionalSupportCallPreferences()) {
+                    SupportStaff supportStaff = preference.getSupportStaff();
+                    if (supportStaff != null && supportStaffList.contains(supportStaff) == false) {
+                        supportStaffList.add(supportStaff);
+                    }
+                }
             }
         }
 
