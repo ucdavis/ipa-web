@@ -112,6 +112,21 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		}
 	}
 
+	@Override
+	public List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
+		DwClient dwClient = null;
+		try {
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+
+			List<DwSection> dwSections = dwClient.getDetailedSectionsBySubjectCodeAndYear(subjectCode, year);
+
+			return dwSections;
+		} catch (Exception e) {
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			return null;
+		}
+	}
+
 	private List<List<String>> splitListIntoChunksOfSize(List<String> arr, int chunkSize) {
 		List<List<String>> chunks = new ArrayList<>();
 		int len = arr.size();

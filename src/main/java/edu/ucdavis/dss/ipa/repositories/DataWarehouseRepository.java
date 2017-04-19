@@ -25,4 +25,6 @@ public interface DataWarehouseRepository {
 	DwCourse searchCourses(String suggestedSubjectCode, String suggestedCourseNumber, String suggestedEffectiveTermCode);
 
 	List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys);
+
+	List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year);
 }
