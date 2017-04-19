@@ -311,5 +311,53 @@ public class DwClient {
 		}
 
 		return dwSections;
-    }
+	}
+
+	public List<DwSection> getDetailedSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
+		List<DwSection> dwSections = new ArrayList<>();
+
+		if (connect() && subjectCode != null && year != null) {
+			HttpGet httpget = null;
+			try {
+				httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+						"&year=" + URLEncoder.encode(String.valueOf(year), "UTF-8") +
+						"&token=" + ApiToken);
+			} catch (UnsupportedEncodingException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(
+						targetHost, httpget, context);
+
+				StatusLine line = response.getStatusLine();
+				if (line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+				if ((arrNode != null) && (arrNode.get(0) != null)) {
+					dwSections = mapper.readValue(
+							arrNode.toString(),
+							mapper.getTypeFactory().constructCollectionType(
+									List.class, DwSection.class));
+				} else {
+					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + year);
+				}
+
+				response.close();
+			} catch (IOException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else if (year == null) {
+			log.warn("No year given.");
+		} else if (subjectCode == null) {
+			log.warn("No subjectCode given.");
+		}
+
+		return dwSections;
+	}
 }
