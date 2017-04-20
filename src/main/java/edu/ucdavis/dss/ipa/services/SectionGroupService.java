@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Section;
@@ -27,4 +28,6 @@ public interface SectionGroupService {
 	List<SectionGroup> findVisibleByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallResponseId(long scheduleId, String termCode, long studentSupportCallResponseId);
+
+	SectionGroup findOrCreateByCourseIdAndTermCode(Long courseId, String termCode);
 }
