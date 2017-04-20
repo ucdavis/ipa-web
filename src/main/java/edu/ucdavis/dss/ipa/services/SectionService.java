@@ -20,4 +20,6 @@ public interface SectionService {
 	Section updateSequenceNumber(Long sectionid, String newSequence);
 
 	List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
+
+	Section findOrCreateBySectionGroupIdAndSequenceNumber(long id, String sequenceNumber);
 }
