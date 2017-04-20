@@ -10,7 +10,7 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DwSection {
-    private String crn, title, subjectCode, courseNumber, sequenceNumber;
+    private String crn, title, subjectCode, courseNumber, sequenceNumber, termCode;
     private long maximumEnrollment;
     private List<DwInstructor> instructors = new ArrayList<>();
     private List<DwActivity> activities = new ArrayList<>();
@@ -77,6 +77,14 @@ public class DwSection {
 
     public void setActivities(List<DwActivity> activities) {
         this.activities = activities;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
     }
 }
 
