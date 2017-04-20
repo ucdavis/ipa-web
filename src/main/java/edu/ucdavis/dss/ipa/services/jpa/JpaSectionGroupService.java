@@ -121,6 +121,25 @@ public class JpaSectionGroupService implements SectionGroupService {
 		return filteredSectionGroups;
 	}
 
+	@Override
+	public SectionGroup findOrCreateByCourseIdAndTermCode(Long courseId, String termCode) {
+		SectionGroup sectionGroup = sectionGroupRepository.findByCourseIdAndTermCode(courseId, termCode);
+		Course course = this.courseService.getOneById(courseId);
+
+		if (course == null) {
+			return null;
+		}
+
+		if (sectionGroup == null) {
+			sectionGroup = new SectionGroup();
+			sectionGroup.setTermCode(termCode);
+			sectionGroup.setCourse(course);
+			sectionGroup = sectionGroupRepository.save(sectionGroup);
+		}
+
+		return sectionGroup;
+	}
+
 	/**
 	 * Returns true if the assignment is a type of interest to the support call
 	 * @param studentSupportCallResponse

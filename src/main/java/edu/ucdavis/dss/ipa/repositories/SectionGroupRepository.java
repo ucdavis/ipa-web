@@ -122,4 +122,6 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 			@Param("workgroupId") long workgroupId,
 			@Param("year") long year,
 			@Param("termCode") String termCode);
+
+	SectionGroup findByCourseIdAndTermCode(Long courseId, String termCode);
 }
