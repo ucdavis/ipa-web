@@ -32,4 +32,13 @@ public interface SectionRepository extends CrudRepository<Section, Long> {
             @Param("workgroupId") long workgroupId,
             @Param("year") long year,
             @Param("termCode") String termCode);
+
+
+    @Query( " SELECT s" +
+            " FROM Section s" +
+            " WHERE s.sectionGroup.id = :sectionGroupId" +
+            " AND s.sequenceNumber = :sequenceNumber")
+    Section findBySectionGroupIdAndSequenceNumber(
+            @Param("sectionGroupId") long sectionGroupId,
+            @Param("sequenceNumber") String sequenceNumber);
 }
