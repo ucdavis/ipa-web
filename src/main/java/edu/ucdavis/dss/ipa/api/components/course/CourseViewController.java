@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
@@ -39,6 +40,8 @@ public class CourseViewController {
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
+	@Inject TermService termService;
+	@Inject ScheduleTermStateService scheduleTermStateService;
 
 	@Inject CourseValidator courseValidator;
 	@Inject DataWarehouseRepository dwRepository;
@@ -272,8 +275,40 @@ public class CourseViewController {
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 			for (DwSection dwSection : dwSections) {
+				String newTermCode = null;
+				String shortTermCode = dwSection.getTermCode().substring(4, 6);
+				if (Long.valueOf(shortTermCode) < 4) {
+					newTermCode = year + shortTermCode;
+				} else {
+					long nextYear = year++;
+					newTermCode = nextYear + shortTermCode;
+				}
+
+
+				Term term = termService.getOneByTermCode(sectionGroupImport.getTermCode());
+
+				// Don't import this dwSection if termState is locked
+				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
+
+				if (termState.scheduleTermLocked()) {
+					continue;
+				}
+
+				// Calculate sequencePattern from sequenceNumber
+				String dwSequencePattern = null;
+
+				Character c = dwSection.getSequenceNumber().charAt(0);
+				Boolean isLetter = Character.isLetter(c);
+				if (isLetter) {
+					dwSequencePattern = String.valueOf(c);
+				} else {
+					dwSequencePattern = dwSection.getSequenceNumber();
+				}
+
+				// Ensure this dwSection matches the sectionGroupImport (course) of interest
 				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
-				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() ) ) {
+				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
+				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )) {
 
 					String courseNumber = sectionGroupImport.getCourseNumber();
 
@@ -289,9 +324,9 @@ public class CourseViewController {
 					);
 
 					// Attempt to make a sectionGroup
-					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroupImport.getTermCode());
+					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
-					sectionGroupService.save(sectionGroup);
+					sectionGroup = sectionGroupService.save(sectionGroup);
 
 					// Attempt to make a section
 					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
@@ -312,7 +347,7 @@ public class CourseViewController {
 
 						String rawStartTime = dwActivity.getSsrmeet_begin_time();
 						String hours = rawStartTime.substring(0, 2);
-						String minutes = rawStartTime.substring(2, 2);
+						String minutes = rawStartTime.substring(2, 4);
 						String formattedStartTime = hours + ":" + minutes + ":00";
 						Time startTime = java.sql.Time.valueOf(formattedStartTime);
 
@@ -320,7 +355,7 @@ public class CourseViewController {
 
 						String rawEndTime = dwActivity.getSsrmeet_end_time();
 						hours = rawStartTime.substring(0, 2);
-						minutes = rawStartTime.substring(2, 2);
+						minutes = rawStartTime.substring(2, 4);
 						String formattedEndTime = hours + ":" + minutes + ":00";
 						Time endTime = java.sql.Time.valueOf(formattedStartTime);
 
@@ -328,13 +363,18 @@ public class CourseViewController {
 
 						activity.setDayIndicator(dayIndicator);
 
-						// TODO: Set begin and end dates
+						activity.setBeginDate(term.getStartDate());
+						activity.setEndDate(term.getEndDate());
+						activity.setActivityState(ActivityState.DRAFT);
 
+						activity.setSection(section);
 						activityService.saveActivity(activity);
 					}
 				}
 			}
 		}
+
+		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
