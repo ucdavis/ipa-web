@@ -4,10 +4,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TermService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -23,6 +20,7 @@ public class JpaSectionService implements SectionService {
 	@Inject CourseService courseService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TermService termService;
+	@Inject SectionGroupService sectionGroupService;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -83,6 +81,25 @@ public class JpaSectionService implements SectionService {
 	@Override
 	public List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode) {
 		return sectionRepository.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+	}
+
+	@Override
+	public Section findOrCreateBySectionGroupIdAndSequenceNumber(long sectionGroupId, String sequenceNumber) {
+		Section section = sectionRepository.findBySectionGroupIdAndSequenceNumber(sectionGroupId, sequenceNumber);
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+		if (sectionGroup == null) {
+			return null;
+		}
+
+		if (section == null) {
+			section = new Section();
+			section.setSequenceNumber(sequenceNumber);
+			section.setSectionGroup(sectionGroup);
+			section = sectionRepository.save(section);
+		}
+
+		return section;
 	}
 
 	private boolean isLocked(Section section) {
