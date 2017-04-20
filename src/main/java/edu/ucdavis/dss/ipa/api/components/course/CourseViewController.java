@@ -1,11 +1,15 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
+import edu.ucdavis.dss.dw.dto.DwActivity;
+import edu.ucdavis.dss.dw.dto.DwCourse;
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -18,6 +22,7 @@ import org.springframework.web.servlet.View;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Time;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +38,10 @@ public class CourseViewController {
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
+	@Inject ActivityService activityService;
 
 	@Inject CourseValidator courseValidator;
-
+	@Inject DataWarehouseRepository dwRepository;
 	/**
 	 * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
 	 *
@@ -255,25 +261,79 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		if (sectionGroupImportList.size() == 0) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
 
-		for (SectionGroupImport sectionGroupImport: sectionGroupImportList) {
-			Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					sectionGroupImport.getTitle(),
-					sectionGroupImport.getEffectiveTermCode(),
-					schedule,
-					true
-			);
+		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
-			SectionGroup sectionGroup = new SectionGroup();
-			sectionGroup.setCourse(course);
-			sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
-			sectionGroup.setTermCode(
-					Term.getTermCodeByYearAndTermCode(year, sectionGroupImport.getTermCode())
-			);
-			sectionGroupService.save(sectionGroup);
+		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+
+		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+			for (DwSection dwSection : dwSections) {
+				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
+				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() ) ) {
+
+					String courseNumber = sectionGroupImport.getCourseNumber();
+
+					// Attempt to make a course
+					Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+							sectionGroupImport.getSubjectCode(),
+							sectionGroupImport.getCourseNumber(),
+							sectionGroupImport.getSequencePattern(),
+							sectionGroupImport.getTitle(),
+							sectionGroupImport.getEffectiveTermCode(),
+							schedule,
+							true
+					);
+
+					// Attempt to make a sectionGroup
+					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroupImport.getTermCode());
+					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
+					sectionGroupService.save(sectionGroup);
+
+					// Attempt to make a section
+					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
+
+					section.setSeats(dwSection.getMaximumEnrollment());
+					section = sectionService.save(section);
+
+					// Make activities
+					for (DwActivity dwActivity : dwSection.getActivities()) {
+						Activity activity = new Activity();
+
+						ActivityType activityType = new ActivityType();
+						activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
+
+						activity.setActivityTypeCode(activityType);
+
+						String dayIndicator = dwActivity.getDay_indicator();
+
+						String rawStartTime = dwActivity.getSsrmeet_begin_time();
+						String hours = rawStartTime.substring(0, 2);
+						String minutes = rawStartTime.substring(2, 2);
+						String formattedStartTime = hours + ":" + minutes + ":00";
+						Time startTime = java.sql.Time.valueOf(formattedStartTime);
+
+						activity.setStartTime(startTime);
+
+						String rawEndTime = dwActivity.getSsrmeet_end_time();
+						hours = rawStartTime.substring(0, 2);
+						minutes = rawStartTime.substring(2, 2);
+						String formattedEndTime = hours + ":" + minutes + ":00";
+						Time endTime = java.sql.Time.valueOf(formattedStartTime);
+
+						activity.setEndTime(endTime);
+
+						activity.setDayIndicator(dayIndicator);
+
+						// TODO: Set begin and end dates
+
+						activityService.saveActivity(activity);
+					}
+				}
+			}
 		}
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
