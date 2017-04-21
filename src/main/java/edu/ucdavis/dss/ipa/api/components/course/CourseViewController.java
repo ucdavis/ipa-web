@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Time;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,11 +271,14 @@ public class CourseViewController {
 		}
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
+		Long yearToImportFrom = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0,4));
 
-		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+
 			for (DwSection dwSection : dwSections) {
+
 				String newTermCode = null;
 				String shortTermCode = dwSection.getTermCode().substring(4, 6);
 				if (Long.valueOf(shortTermCode) < 4) {
