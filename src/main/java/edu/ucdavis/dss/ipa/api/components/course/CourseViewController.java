@@ -278,10 +278,10 @@ public class CourseViewController {
 				String newTermCode = null;
 				String shortTermCode = dwSection.getTermCode().substring(4, 6);
 				if (Long.valueOf(shortTermCode) < 4) {
-					newTermCode = year + shortTermCode;
-				} else {
-					long nextYear = year++;
+					long nextYear = year + 1;
 					newTermCode = nextYear + shortTermCode;
+				} else {
+					newTermCode = year + shortTermCode;
 				}
 
 
