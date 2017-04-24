@@ -6,6 +6,7 @@ import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
+import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
@@ -381,6 +382,18 @@ public class CourseViewController {
 		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}years/{year}/queryCourses", method = RequestMethod.GET)
+	@ResponseBody
+	public List<JpaAnnualViewFactory.HistoricalCourse> queryCourses(@PathVariable long workgroupId,
+															   @PathVariable long year,
+															   @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+															   HttpServletRequest httpRequest) {
+
+		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+		return annualViewFactory.createCourseQueryView(workgroupId, year, showDoNotPrint);
 	}
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
