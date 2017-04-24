@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -47,4 +48,129 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		return new CourseExcelView(courseView);
     }
 
+	@Override
+	public List<HistoricalCourse> createCourseQueryView(long workgroupId, long year, Boolean showDoNotPrint) {
+		List<HistoricalCourse> queriedCourses = new ArrayList<>();
+
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+		List<Course> courses;
+		if (showDoNotPrint != null && showDoNotPrint) {
+			courses = schedule.getCourses();
+		} else {
+			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+		}
+
+		for (Course course : courses) {
+			for (SectionGroup sectionGroup : course.getSectionGroups()) {
+
+				// For each sectionGroup, build a 'historicalCourse' by combining the course and sectionGroup data.
+				HistoricalCourse historicalCourse = new HistoricalCourse();
+				historicalCourse.setCourseNumber(course.getCourseNumber());
+				historicalCourse.setCreditHoursHigh(course.getUnitsHigh());
+				historicalCourse.setCreditHoursLow(course.getUnitsLow());
+				historicalCourse.setEffectiveTermCode(course.getEffectiveTermCode());
+				historicalCourse.setSequencePattern(course.getSequencePattern());
+				historicalCourse.setSubjectCode(course.getSubjectCode());
+				historicalCourse.setTitle(course.getTitle());
+
+				historicalCourse.setTermCode(sectionGroup.getTermCode());
+				historicalCourse.setSeats(sectionGroup.getPlannedSeats());
+
+				queriedCourses.add(historicalCourse);
+			}
+		}
+
+
+
+		return queriedCourses;
+	}
+
+
+	public class HistoricalCourse {
+		private long id;
+
+		private String courseNumber, subjectCode, sequencePattern, termCode, effectiveTermCode, title;
+		private Integer seats;
+		private float creditHoursHigh, creditHoursLow;
+		public long getId() {
+			return id;
+		}
+
+		public void setId(long id) {
+			this.id = id;
+		}
+
+		public String getCourseNumber() {
+			return courseNumber;
+		}
+
+		public void setCourseNumber(String courseNumber) {
+			this.courseNumber = courseNumber;
+		}
+
+		public String getSubjectCode() {
+			return subjectCode;
+		}
+
+		public void setSubjectCode(String subjectCode) {
+			this.subjectCode = subjectCode;
+		}
+
+		public String getSequencePattern() {
+			return sequencePattern;
+		}
+
+		public void setSequencePattern(String sequencePattern) {
+			this.sequencePattern = sequencePattern;
+		}
+
+		public String getTermCode() {
+			return termCode;
+		}
+
+		public void setTermCode(String termCode) {
+			this.termCode = termCode;
+		}
+
+		public String getEffectiveTermCode() {
+			return effectiveTermCode;
+		}
+
+		public void setEffectiveTermCode(String effectiveTermCode) {
+			this.effectiveTermCode = effectiveTermCode;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public Integer getSeats() {
+			return seats;
+		}
+
+		public void setSeats(Integer seats) {
+			this.seats = seats;
+		}
+
+		public float getCreditHoursHigh() {
+			return creditHoursHigh;
+		}
+
+		public void setCreditHoursHigh(float creditHoursHigh) {
+			this.creditHoursHigh = creditHoursHigh;
+		}
+
+		public float getCreditHoursLow() {
+			return creditHoursLow;
+		}
+
+		public void setCreditHoursLow(float creditHoursLow) {
+			this.creditHoursLow = creditHoursLow;
+		}
+	}
 }
