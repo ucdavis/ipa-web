@@ -81,6 +81,11 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
+	public Course findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId) {
+		return courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(subjectCode, courseNumber, sequencePattern, scheduleId);
+	}
+
+	@Override
 	public boolean delete(Long id) {
 		Course course = this.getOneById(id);
 		
