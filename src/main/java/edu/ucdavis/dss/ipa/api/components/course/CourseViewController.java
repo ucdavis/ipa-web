@@ -384,13 +384,13 @@ public class CourseViewController {
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}years/{year}/queryCourses", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/queryCourses", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public List<JpaAnnualViewFactory.HistoricalCourse> queryCourses(@PathVariable long workgroupId,
-															   @PathVariable long year,
-															   @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-															   HttpServletRequest httpRequest) {
-
+	public List<JpaAnnualViewFactory.HistoricalCourse> queryCourses(
+									@PathVariable long workgroupId,
+									@PathVariable long year,
+									@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+									HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return annualViewFactory.createCourseQueryView(workgroupId, year, showDoNotPrint);
