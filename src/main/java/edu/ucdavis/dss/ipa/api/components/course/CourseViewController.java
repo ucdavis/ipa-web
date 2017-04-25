@@ -258,7 +258,7 @@ public class CourseViewController {
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/sectionGroups", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public CourseView createMultipleCourses(@RequestBody List<SectionGroupImport> sectionGroupImportList,
+	public CourseView createMultipleCoursesFromDW(@RequestBody List<SectionGroupImport> sectionGroupImportList,
 											@PathVariable Long workgroupId, @PathVariable Long year,
 											@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 											HttpServletResponse httpResponse) {
@@ -290,7 +290,7 @@ public class CourseViewController {
 				}
 
 
-				Term term = termService.getOneByTermCode(sectionGroupImport.getTermCode());
+				Term term = termService.getOneByTermCode(newTermCode);
 
 				// Don't import this dwSection if termState is locked
 				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
@@ -380,6 +380,96 @@ public class CourseViewController {
 		}
 
 		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
+
+		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/createCourses", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public CourseView createMultipleCoursesFromIPA(@RequestBody List<SectionGroupImport> sectionGroupImportList,
+												  @PathVariable Long workgroupId, @PathVariable Long year,
+												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+												  HttpServletResponse httpResponse) {
+
+		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		if (sectionGroupImportList.size() == 0) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
+		Long yearToImportFrom = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0,4));
+
+		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+
+
+			String newTermCode = null;
+			String shortTermCode = sectionGroupImport.getTermCode().substring(4, 6);
+			if (Long.valueOf(shortTermCode) < 4) {
+				long nextYear = year + 1;
+				newTermCode = nextYear + shortTermCode;
+			} else {
+				newTermCode = year + shortTermCode;
+			}
+
+
+			Term term = termService.getOneByTermCode(newTermCode);
+
+			// Don't import this dwSection if termState is locked
+			ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
+
+			if (termState.scheduleTermLocked()) {
+				continue;
+			}
+
+			// Find course referenced by this sectionGroup
+			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					schedule.getId());
+
+			if (historicalCourse == null) {
+				continue;
+			}
+
+			// Make a newCourse in the current term based on the historical course
+			Course newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					sectionGroupImport.getTitle(),
+					sectionGroupImport.getEffectiveTermCode(),
+					schedule,
+					true);
+
+			// Find its sectionGroups, and find/create new versions of them
+			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
+				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
+
+				for (Section historicalSection : historicalSectionGroup.getSections()) {
+					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
+					newSection.setSeats(historicalSection.getSeats());
+					newSection = sectionService.save(newSection);
+
+					for (Activity historicalActivity : historicalSection.getActivities()) {
+						Activity newActivity = new Activity();
+
+						newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
+						newActivity.setSection(newSection);
+						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
+						newActivity.setStartTime(historicalActivity.getStartTime());
+						newActivity.setEndTime(historicalActivity.getEndTime());
+						newActivity.setBeginDate(term.getStartDate());
+						newActivity.setEndDate(term.getEndDate());
+						newActivity.setActivityState(ActivityState.DRAFT);
+						activityService.saveActivity(newActivity);
+					}
+				}
+			}
+		}
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
