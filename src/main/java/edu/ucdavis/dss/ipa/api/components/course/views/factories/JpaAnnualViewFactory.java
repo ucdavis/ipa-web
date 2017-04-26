@@ -75,7 +75,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 				historicalCourse.setTitle(course.getTitle());
 
 				historicalCourse.setTermCode(sectionGroup.getTermCode());
-				historicalCourse.setSeats(sectionGroup.getPlannedSeats());
+				historicalCourse.setPlannedSeats(sectionGroup.getPlannedSeats());
 
 				queriedCourses.add(historicalCourse);
 			}
@@ -91,7 +91,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		private long id;
 
 		private String courseNumber, subjectCode, sequencePattern, termCode, effectiveTermCode, title;
-		private Integer seats;
+		private Integer plannedSeats;
 		private float creditHoursHigh, creditHoursLow;
 		public long getId() {
 			return id;
@@ -149,12 +149,12 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 			this.title = title;
 		}
 
-		public Integer getSeats() {
-			return seats;
+		public Integer getPlannedSeats() {
+			return plannedSeats;
 		}
 
-		public void setSeats(Integer seats) {
-			this.seats = seats;
+		public void setPlannedSeats(Integer plannedSeats) {
+			this.plannedSeats = plannedSeats;
 		}
 
 		public float getCreditHoursHigh() {
