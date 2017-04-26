@@ -107,7 +107,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 //						Section newSection = new Section();
 //
 //						newSection.setSectionGroup(newSg);
-//						newSection.setSeats(section.getSeats());
+//						newSection.setPlannedSeats(section.getPlannedSeats());
 //						newSection.setSequenceNumber(section.getSequenceNumber());
 //						newSection.setVisible(section.isVisible());
 //						newSection.setCrnRestricted(section.isCrnRestricted());
