@@ -393,20 +393,19 @@ public class CourseViewController {
 
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
 
-		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
-		Long yearToImportFrom = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0,4));
+		String importYear = sectionGroupImportList.get(0).getTermCode().substring(0, 4);
+		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, Long.valueOf(importYear));
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
-
 			String newTermCode = null;
 			String shortTermCode = sectionGroupImport.getTermCode().substring(4, 6);
+
 			if (Long.valueOf(shortTermCode) < 4) {
 				long nextYear = year + 1;
 				newTermCode = nextYear + shortTermCode;
@@ -429,7 +428,7 @@ public class CourseViewController {
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
-					schedule.getId());
+					importSchedule.getId());
 
 			if (historicalCourse == null) {
 				continue;
