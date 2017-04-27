@@ -70,6 +70,8 @@ public class JpaCourseService implements CourseService {
 		}
 
 		originalCourse.setTitle(newCourse.getTitle());
+		originalCourse.setUnitsLow(newCourse.getUnitsLow());
+		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
 		originalCourse.setSequencePattern(newCourse.getSequencePattern());
 
 		return this.save(originalCourse);

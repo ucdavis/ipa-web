@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.course.views;
 public class SectionGroupImport {
 	private String subjectCode, courseNumber, sequencePattern, termCode, title, effectiveTermCode;
 	private int plannedSeats;
+	private Long unitsLow, unitsHigh;
 
 	public String getSubjectCode()
 	{
@@ -59,5 +60,21 @@ public class SectionGroupImport {
 
 	public void setEffectiveTermCode(String effectiveTermCode) {
 		this.effectiveTermCode = effectiveTermCode;
+	}
+
+	public Long getUnitsLow() {
+		return unitsLow;
+	}
+
+	public void setUnitsLow(Long unitsLow) {
+		this.unitsLow = unitsLow;
+	}
+
+	public Long getUnitsHigh() {
+		return unitsHigh;
+	}
+
+	public void setUnitsHigh(Long unitsHigh) {
+		this.unitsHigh = unitsHigh;
 	}
 }
