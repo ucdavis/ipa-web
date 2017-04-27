@@ -39,4 +39,6 @@ public interface CourseService {
 	Course create(Course course);
 
 	Course findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long id);
+
+	List<Course> getAllCourses();
 }

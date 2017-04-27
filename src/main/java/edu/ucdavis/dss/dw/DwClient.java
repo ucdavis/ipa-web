@@ -265,7 +265,47 @@ public class DwClient {
 
 	}
 
-    public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) {
+	public List<DwCourse> queryCourses(String query) throws ClientProtocolException, IOException {
+		DwCourse dwCourse = new DwCourse();
+		List<DwCourse> dwCourses = null;
+
+		if (connect() && query != null) {
+			HttpGet httpget = new HttpGet("/courses/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
+
+			try {
+				CloseableHttpResponse response = httpclient.execute(
+						targetHost, httpget, context);
+
+				StatusLine line = response.getStatusLine();
+				if(line.getStatusCode() != 200) {
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				}
+
+				HttpEntity entity = response.getEntity();
+
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+				if (arrNode != null) {
+					dwCourses = mapper.readValue(
+							arrNode.toString(),
+							mapper.getTypeFactory().constructCollectionType(
+									List.class, DwCourse.class));
+				} else {
+					log.warn("searchUsers Response from DW returned null, for criterion = " + query);
+				}
+
+				response.close();
+			} catch (JsonParseException e) {
+				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			}
+		} else if (query == null) {
+			log.warn("No query given.");
+		}
+
+		return dwCourses;
+	}
+
+	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) {
 		List<DwSection> dwSections = new ArrayList<>();
 
 		if (connect() && termCode != null && sectionUniqueKeys != null) {
