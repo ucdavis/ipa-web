@@ -259,8 +259,9 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/sectionGroups", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public CourseView createMultipleCoursesFromDW(@RequestBody List<SectionGroupImport> sectionGroupImportList,
-											@PathVariable Long workgroupId, @PathVariable Long year,
-											@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+												  @PathVariable Long workgroupId, @PathVariable Long year,
+												  @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
+												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 											HttpServletResponse httpResponse) {
 
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
@@ -348,25 +349,27 @@ public class CourseViewController {
 
 						activity.setActivityTypeCode(activityType);
 
-						String dayIndicator = dwActivity.getDay_indicator();
+						if (importTimes) {
+							String dayIndicator = dwActivity.getDay_indicator();
 
-						String rawStartTime = dwActivity.getSsrmeet_begin_time();
-						String hours = rawStartTime.substring(0, 2);
-						String minutes = rawStartTime.substring(2, 4);
-						String formattedStartTime = hours + ":" + minutes + ":00";
-						Time startTime = java.sql.Time.valueOf(formattedStartTime);
+							String rawStartTime = dwActivity.getSsrmeet_begin_time();
+							String hours = rawStartTime.substring(0, 2);
+							String minutes = rawStartTime.substring(2, 4);
+							String formattedStartTime = hours + ":" + minutes + ":00";
+							Time startTime = java.sql.Time.valueOf(formattedStartTime);
 
-						activity.setStartTime(startTime);
+							activity.setStartTime(startTime);
 
-						String rawEndTime = dwActivity.getSsrmeet_end_time();
-						hours = rawStartTime.substring(0, 2);
-						minutes = rawStartTime.substring(2, 4);
-						String formattedEndTime = hours + ":" + minutes + ":00";
-						Time endTime = java.sql.Time.valueOf(formattedStartTime);
+							String rawEndTime = dwActivity.getSsrmeet_end_time();
+							hours = rawStartTime.substring(0, 2);
+							minutes = rawStartTime.substring(2, 4);
+							String formattedEndTime = hours + ":" + minutes + ":00";
+							Time endTime = java.sql.Time.valueOf(formattedStartTime);
 
-						activity.setEndTime(endTime);
+							activity.setEndTime(endTime);
 
-						activity.setDayIndicator(dayIndicator);
+							activity.setDayIndicator(dayIndicator);
+						}
 
 						activity.setBeginDate(term.getStartDate());
 						activity.setEndDate(term.getEndDate());
@@ -388,6 +391,7 @@ public class CourseViewController {
 	@ResponseBody
 	public CourseView createMultipleCoursesFromIPA(@RequestBody List<SectionGroupImport> sectionGroupImportList,
 												  @PathVariable Long workgroupId, @PathVariable Long year,
+												   @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 												  HttpServletResponse httpResponse) {
 
@@ -398,30 +402,20 @@ public class CourseViewController {
 			return null;
 		}
 
-		String importYear = sectionGroupImportList.get(0).getTermCode().substring(0, 4);
-		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, Long.valueOf(importYear));
+		Long DTOterm = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(4, 6));
+		Long DTOyear = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0, 4));
+		Long importYear = null;
+
+		if (DTOterm < 4) {
+			importYear = DTOyear - 1;
+		} else {
+			importYear = DTOyear;
+		}
+
+		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-			String newTermCode = null;
-			String shortTermCode = sectionGroupImport.getTermCode().substring(4, 6);
-
-			if (Long.valueOf(shortTermCode) < 4) {
-				long nextYear = year + 1;
-				newTermCode = nextYear + shortTermCode;
-			} else {
-				newTermCode = year + shortTermCode;
-			}
-
-
-			Term term = termService.getOneByTermCode(newTermCode);
-
-			// Don't import this dwSection if termState is locked
-			ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-			if (termState.scheduleTermLocked()) {
-				continue;
-			}
 
 			// Find course referenced by this sectionGroup
 			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
@@ -434,8 +428,19 @@ public class CourseViewController {
 				continue;
 			}
 
+			// If course already exists, do nothing
+			Course newCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					schedule.getId());
+
+			if (newCourse != null) {
+				continue;
+			}
+
 			// Make a newCourse in the current term based on the historical course
-			Course newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
@@ -446,9 +451,32 @@ public class CourseViewController {
 
 			// Find its sectionGroups, and find/create new versions of them
 			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
+
+				String newTermCode = null;
+				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
+
+				if (Long.valueOf(shortTermCode) < 4) {
+					long nextYear = year + 1;
+					newTermCode = nextYear + shortTermCode;
+				} else {
+					newTermCode = year + shortTermCode;
+				}
+
+				Term term = termService.getOneByTermCode(newTermCode);
+
+				// Don't create a sectionGroup in a locked term
+				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
+
+				if (termState.scheduleTermLocked()) {
+					continue;
+				}
+
 				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
+				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
+				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
 				for (Section historicalSection : historicalSectionGroup.getSections()) {
+
 					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
 					newSection.setSeats(historicalSection.getSeats());
 					newSection = sectionService.save(newSection);
@@ -458,9 +486,13 @@ public class CourseViewController {
 
 						newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
 						newActivity.setSection(newSection);
-						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
-						newActivity.setStartTime(historicalActivity.getStartTime());
-						newActivity.setEndTime(historicalActivity.getEndTime());
+
+						if (importTimes) {
+							newActivity.setDayIndicator(historicalActivity.getDayIndicator());
+							newActivity.setStartTime(historicalActivity.getStartTime());
+							newActivity.setEndTime(historicalActivity.getEndTime());
+						}
+
 						newActivity.setBeginDate(term.getStartDate());
 						newActivity.setEndDate(term.getEndDate());
 						newActivity.setActivityState(ActivityState.DRAFT);
