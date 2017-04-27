@@ -86,6 +86,20 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	@Override
+	public List<DwCourse> queryCourses(String query) {
+		DwClient dwClient = null;
+		try {
+			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+
+			return dwClient.queryCourses(query);
+		} catch (Exception e) {
+			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			return null;
+		}
+	}
+
+
+	@Override
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
 		DwClient dwClient = null;
 		try {

@@ -88,6 +88,11 @@ public class JpaCourseService implements CourseService {
 	}
 
 	@Override
+	public List<Course> getAllCourses() {
+		return (List<Course>) this.courseRepository.findAll();
+	}
+
+	@Override
 	public boolean delete(Long id) {
 		Course course = this.getOneById(id);
 		
