@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
-import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
@@ -26,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Time;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -329,6 +327,16 @@ public class CourseViewController {
 							true
 					);
 
+					if (sectionGroupImport.getUnitsHigh() != null) {
+						course.setUnitsHigh(Long.valueOf(sectionGroupImport.getUnitsHigh()));
+					}
+
+					if (sectionGroupImport.getUnitsLow() != null) {
+						course.setUnitsLow(Long.valueOf(sectionGroupImport.getUnitsLow()));
+					}
+
+					course = courseService.update(course);
+
 					// Attempt to make a sectionGroup
 					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
@@ -350,24 +358,29 @@ public class CourseViewController {
 						activity.setActivityTypeCode(activityType);
 
 						if (importTimes) {
-							String dayIndicator = dwActivity.getDay_indicator();
-
 							String rawStartTime = dwActivity.getSsrmeet_begin_time();
-							String hours = rawStartTime.substring(0, 2);
-							String minutes = rawStartTime.substring(2, 4);
-							String formattedStartTime = hours + ":" + minutes + ":00";
-							Time startTime = java.sql.Time.valueOf(formattedStartTime);
 
-							activity.setStartTime(startTime);
+							if (rawStartTime != null) {
+								String hours = rawStartTime.substring(0, 2);
+								String minutes = rawStartTime.substring(2, 4);
+								String formattedStartTime = hours + ":" + minutes + ":00";
+								Time startTime = java.sql.Time.valueOf(formattedStartTime);
+
+								activity.setStartTime(startTime);
+							}
 
 							String rawEndTime = dwActivity.getSsrmeet_end_time();
-							hours = rawStartTime.substring(0, 2);
-							minutes = rawStartTime.substring(2, 4);
-							String formattedEndTime = hours + ":" + minutes + ":00";
-							Time endTime = java.sql.Time.valueOf(formattedStartTime);
 
-							activity.setEndTime(endTime);
+							if (rawEndTime != null) {
+								String hours = rawStartTime.substring(0, 2);
+								String minutes = rawStartTime.substring(2, 4);
+								String formattedEndTime = hours + ":" + minutes + ":00";
+								Time endTime = java.sql.Time.valueOf(formattedEndTime);
 
+								activity.setEndTime(endTime);
+							}
+
+							String dayIndicator = dwActivity.getDay_indicator();
 							activity.setDayIndicator(dayIndicator);
 						}
 
