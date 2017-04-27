@@ -499,6 +499,25 @@ public class CourseViewController {
 						activityService.saveActivity(newActivity);
 					}
 				}
+
+				for (Activity historicalActivity : historicalSectionGroup.getActivities()) {
+					Activity newActivity = new Activity();
+
+					newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
+					newActivity.setSectionGroup(newSectionGroup);
+
+					if (importTimes) {
+						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
+						newActivity.setStartTime(historicalActivity.getStartTime());
+						newActivity.setEndTime(historicalActivity.getEndTime());
+					}
+
+					newActivity.setBeginDate(term.getStartDate());
+					newActivity.setEndDate(term.getEndDate());
+					newActivity.setActivityState(ActivityState.DRAFT);
+					activityService.saveActivity(newActivity);
+				}
+
 			}
 		}
 
