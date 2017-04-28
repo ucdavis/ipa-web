@@ -9,9 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface CourseRepository extends CrudRepository<Course, Long> {
-
-	Course findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, Long scheduleId);
-
     /**
      *
      * @param workgroupId
@@ -62,7 +59,7 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
             @Param("effectiveTermCode") String effectiveTermCode,
             @Param("workgroupId") long workgroupId);
 
-    List<Course> findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCode(String subjectCode, String courseNumber, String sequencePattern, String effectiveTermCode);
+    List<Course> findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
 
     Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
 }
