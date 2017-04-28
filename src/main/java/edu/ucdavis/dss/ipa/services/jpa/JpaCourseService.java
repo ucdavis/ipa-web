@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JpaCourseService implements CourseService {
@@ -43,6 +44,7 @@ public class JpaCourseService implements CourseService {
 	 * @param newCourse
 	 * @return
      */
+	@Transactional
 	public Course update (Course newCourse) {
 		Course originalCourse = this.getOneById(newCourse.getId());
 
@@ -50,14 +52,10 @@ public class JpaCourseService implements CourseService {
 		if (originalCourse.getSequencePattern() != newCourse.getSequencePattern()) {
 
 			// Ensure the sequencePattern is unique within relevant courses
-			List<Course> duplicateCourses = this.courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCode(
-					newCourse.getSubjectCode(),
-					newCourse.getCourseNumber(),
-					newCourse.getSequencePattern(),
-					newCourse.getEffectiveTermCode()
-			);
+			List<Course> duplicateCourses = this.courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+					newCourse.getSubjectCode(), newCourse.getCourseNumber(), newCourse.getSequencePattern(), newCourse.getSchedule().getId());
 
-			if (duplicateCourses.size() > 0) {
+			if (duplicateCourses.size() > 1) {
 				return null;
 			}
 
@@ -74,7 +72,7 @@ public class JpaCourseService implements CourseService {
 		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
 		originalCourse.setSequencePattern(newCourse.getSequencePattern());
 
-		return this.save(originalCourse);
+		return this.courseRepository.save(originalCourse);
 	}
 
 	@Override
