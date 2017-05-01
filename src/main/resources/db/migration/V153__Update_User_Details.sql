@@ -1,0 +1,1 @@
+ALTER TABLE `Users` ADD COLUMN `IamId` INT(11) NULL;

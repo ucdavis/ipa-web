@@ -31,6 +31,7 @@ public class User extends BaseEntity {
 	private Date lastAccessed;
 	private List<UserRole> userRoles = new ArrayList<UserRole>(0);
 	private boolean placeholder;
+	private Long iamId;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -191,7 +192,17 @@ public class User extends BaseEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
+	@Basic
+	@Column(name="IamId")
+	public Long getIamId() {
+		return iamId;
+	}
+
+	public void setIamId(Long iamId) {
+		this.iamId = iamId;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("User[id=%d,loginId=%s,email=%s,firstName=%s,lastName=%s]", this.getId(), this.getLoginId(), this.getEmail(), this.getFirstName(), this.getLastName());
