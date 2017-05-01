@@ -27,7 +27,7 @@ import org.hibernate.annotations.BatchSize;
 @Table(name = "Users")
 public class User extends BaseEntity {
 	private long id;
-	private String loginId, email, firstName, lastName, token;
+	private String loginId, email, firstName, lastName, token, displayName;
 	private Date lastAccessed;
 	private List<UserRole> userRoles = new ArrayList<UserRole>(0);
 	private boolean placeholder;
@@ -192,6 +192,17 @@ public class User extends BaseEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+	@Basic
+	@Column(name="DisplayName")
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 
 	@Basic
 	@Column(name="IamId")
