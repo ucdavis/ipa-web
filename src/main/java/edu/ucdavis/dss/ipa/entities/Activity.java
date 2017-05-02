@@ -349,6 +349,12 @@ public class Activity extends BaseEntity {
 		return null;
 	}
 
+	/**
+	 * Flag defaults to true, will allow banner location data to override local data.
+	 * If a user sets a location manually, the flag should be set to false.
+	 * If a user in the banner diff view accepts a banner location value, the flag should be set to true.
+	 * @return
+     */
 	@JsonIgnore
 	public boolean isSyncLocation() {
 		return syncLocation;
