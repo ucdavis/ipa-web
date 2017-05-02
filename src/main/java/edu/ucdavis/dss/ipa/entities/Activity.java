@@ -35,7 +35,7 @@ public class Activity extends BaseEntity {
 	private String dayIndicator, bannerLocation;
 	private ActivityState activityState;
 	private int frequency;
-	private boolean virtual;
+	private boolean virtual, syncLocation;
 	private Location location;
 	private ActivityType activityTypeCode;
 	
@@ -347,6 +347,15 @@ public class Activity extends BaseEntity {
 		}
 
 		return null;
+	}
+
+	@JsonIgnore
+	public boolean isSyncLocation() {
+		return syncLocation;
+	}
+
+	public void setSyncLocation(boolean syncLocation) {
+		this.syncLocation = syncLocation;
 	}
 
 	@JsonIgnore
