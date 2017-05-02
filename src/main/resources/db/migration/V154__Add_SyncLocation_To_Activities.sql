@@ -1,0 +1,1 @@
+ALTER TABLE `Activities` ADD COLUMN `SyncLocation` TINYINT(1) NOT NULL DEFAULT '1';
