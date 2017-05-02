@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import edu.ucdavis.dss.dw.dto.DwSection;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
@@ -36,4 +37,12 @@ public interface ActivityService {
     List<Activity> findByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
 	List<Activity> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
+
+	/**
+	 * Looks for matching activities and will sync location data from the DwSection.
+	 * Respects the syncLocation flag on Activities.
+	 * @param dwSection
+	 * @param activities
+     */
+	void syncActivityLocations(DwSection dwSection, List<Activity> activities);
 }
