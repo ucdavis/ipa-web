@@ -41,7 +41,12 @@ public class UpdateUsersTask {
             String iamId = dwPerson.getIamId();
             String firstName = dwPerson.getdFirstName();
             String lastName = dwPerson.getdLastName();
-            String displayName = dwPerson.getdFullName()
+            String displayName = dwPerson.getdFullName();
+
+            if (displayName != null && displayName.length() > 0) {
+                user.setDisplayName(displayName);
+            }
+
             if (firstName != null && firstName.length() > 0) {
                 user.setFirstName(firstName);
             }
