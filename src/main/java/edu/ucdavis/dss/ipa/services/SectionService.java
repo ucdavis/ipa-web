@@ -22,4 +22,6 @@ public interface SectionService {
 	List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
 	Section findOrCreateBySectionGroupIdAndSequenceNumber(long id, String sequenceNumber);
+
+	void updateSectionsFromDW();
 }

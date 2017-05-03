@@ -1,8 +1,10 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -11,7 +13,9 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JpaSectionService implements SectionService {
@@ -21,6 +25,8 @@ public class JpaSectionService implements SectionService {
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TermService termService;
 	@Inject SectionGroupService sectionGroupService;
+	@Inject RestDataWarehouseRepository restDataWarehouseRepository;
+	@Inject ActivityService activityService;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -102,6 +108,65 @@ public class JpaSectionService implements SectionService {
 		return section;
 	}
 
+	@Transactional
+	@Override
+	public void updateSectionsFromDW() {
+
+		// Update Courses to have the proper units value
+		List<Course> courses = this.courseService.getAllCourses();
+
+		// Map Keys will look like allDwSections.get(PSC-2017);
+		Map<String, List<DwSection>> allDwSections = new HashMap<>();
+
+		for (Course course : courses) {
+
+			Long year = course.getSchedule().getYear();
+			String subjectCode = course.getSubjectCode();
+			String dwSectionKey = subjectCode + "-" + year;
+
+			// Query the subjectCode/year pair if necessary
+			if (allDwSections.get(dwSectionKey) == null) {
+				List<DwSection> dwSections = restDataWarehouseRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+				allDwSections.put(dwSectionKey, dwSections);
+			}
+
+			// Loop through course children
+			for (SectionGroup sectionGroup : course.getSectionGroups()) {
+				for (Section section : sectionGroup.getSections()) {
+
+					// Find relevant dwSections to sync from
+					for (DwSection dwSection : allDwSections.get(dwSectionKey)) {
+						// Ensure dwSection identification data is valid
+						if (dwSection.getTermCode() == null || dwSection.getTermCode().length() == 0
+								|| dwSection.getSequenceNumber() == null || dwSection.getSequenceNumber().length() == 0) {
+							continue;
+						}
+
+						// Check termCode matches
+						if (sectionGroup.getTermCode().equals(dwSection.getTermCode()) == false) {
+							continue;
+						}
+
+						// Check sequenceNumber matches
+						if (section.getSequenceNumber().equals(dwSection.getSequenceNumber()) == false) {
+							continue;
+						}
+
+						// Sync crn if DW data is valid and different
+						if (dwSection.getCrn() != null && dwSection.getCrn().length() > 0
+								&& dwSection.getCrn().equals(section.getCrn()) == false) {
+							section.setCrn(dwSection.getCrn());
+							section = this.sectionRepository.save(section);
+						}
+
+						activityService.syncActivityLocations(dwSection, section.getActivities());
+						activityService.syncActivityLocations(dwSection, sectionGroup.getActivities());
+					}
+				}
+			}
+		}
+	}
+
 	private boolean isLocked(Section section) {
 		SectionGroup sectionGroup = section.getSectionGroup();
 		if (sectionGroup == null) { return true; }
@@ -122,5 +187,4 @@ public class JpaSectionService implements SectionService {
 
 		return false;
 	}
-
 }
