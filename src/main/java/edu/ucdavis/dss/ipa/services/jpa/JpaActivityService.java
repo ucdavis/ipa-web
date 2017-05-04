@@ -71,24 +71,46 @@ public class JpaActivityService implements ActivityService {
 				continue;
 			}
 
-			String dayIndicator = activity.getDayIndicator();
-			Time startTime = activity.getStartTime();
-			Time endTime = activity.getEndTime();
-			char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
+			String dayIndicator = "";
+			if (activity.getDayIndicator() != null) {
+				dayIndicator = activity.getDayIndicator().toString();
+			}
+
+			String startTime = "";
+			if (activity.getStartTime() != null) {
+				startTime = activity.getStartTime().toString();
+			}
+
+			String endTime = "";
+			if (activity.getEndTime() != null) {
+				endTime = activity.getEndTime().toString();
+			}
+
+			String typeCode = String.valueOf(activity.getActivityTypeCode().getActivityTypeCode());
 
 			for (DwActivity dwActivity : dwSection.getActivities()) {
 				String dwDayIndicator = dwActivity.getDay_indicator();
 				String dwStartTime = dwActivity.getSsrmeet_begin_time();
 				String dwEndTime = dwActivity.getSsrmeet_end_time();
-				char dwTypeCode = dwActivity.getSsrmeet_schd_code();
+				String dwTypeCode = String.valueOf(dwActivity.getSsrmeet_schd_code());
 
-				if (dayIndicator.equals(dwDayIndicator) && startTime.equals(dwStartTime) && endTime.equals(dwEndTime) && typeCode == dwTypeCode) {
-					String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
-					activity.setBannerLocation(bannerLocation);
-					this.saveActivity(activity);
+				// Ensure DW location data is valid
+				if (dwActivity.getSsrmeet_bldg_code() == null || dwActivity.getSsrmeet_bldg_code().length() > 0
+						|| dwActivity.getSsrmeet_room_code() == null || dwActivity.getSsrmeet_room_code().length() > 0) {
+					continue;
+				}
+
+				// Ensure DW data is referring to the same activity
+				if (dayIndicator.equals(dwDayIndicator)
+				&& startTime.equals(dwStartTime)
+				&& endTime.equals(dwEndTime)
+				&& typeCode.equals(dwTypeCode) ) {
+						// Update location data
+						String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
+						activity.setBannerLocation(bannerLocation);
+						this.saveActivity(activity);
 				}
 			}
 		}
 	}
-
 }
