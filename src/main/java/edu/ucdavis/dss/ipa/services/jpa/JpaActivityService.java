@@ -3,8 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Location;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.SectionService;
@@ -12,9 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -26,8 +22,34 @@ public class JpaActivityService implements ActivityService {
 	@Transactional
 	public Activity saveActivity(Activity activity)
 	{
+
+		Activity originalActivity = this.findOneById(activity.getId());
+
+		Long originalLocationId = null;
+		if (originalActivity.getLocation() != null) {
+			originalLocationId = originalActivity.getLocation().getId();
+		}
+
+		Long newlocationId = null;
+		if (activity.getLocation() != null) {
+			newlocationId = activity.getLocation().getId();
+		}
+
+		// Case 1: Activity is saved and location is changed by user
+		if (newlocationId != null && (originalLocationId == null || newlocationId != originalLocationId)) {
+			activity.setBannerLocation(null);
+			activity.setSyncLocation(true);
+		}
+
+		// Case 2: BannerLocation is set via sync or diff view
+		if (activity.getBannerLocation() != null && activity.getBannerLocation().length() > 0) {
+			activity.setSyncLocation(true);
+			activity.setLocation(null);
+		}
+
 		return this.activityRepository.save(activity);
 	}
+
 
 	@Override
 	public Activity findOneById(Long id) {
@@ -96,7 +118,7 @@ public class JpaActivityService implements ActivityService {
 
 				// Ensure DW location data is valid
 				if (dwActivity.getSsrmeet_bldg_code() == null || dwActivity.getSsrmeet_bldg_code().length() > 0
-						|| dwActivity.getSsrmeet_room_code() == null || dwActivity.getSsrmeet_room_code().length() > 0) {
+				|| dwActivity.getSsrmeet_room_code() == null || dwActivity.getSsrmeet_room_code().length() > 0) {
 					continue;
 				}
 
@@ -105,10 +127,10 @@ public class JpaActivityService implements ActivityService {
 				&& startTime.equals(dwStartTime)
 				&& endTime.equals(dwEndTime)
 				&& typeCode.equals(dwTypeCode) ) {
-						// Update location data
-						String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
-						activity.setBannerLocation(bannerLocation);
-						this.saveActivity(activity);
+					// Update location data
+					String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
+					activity.setBannerLocation(bannerLocation);
+					this.saveActivity(activity);
 				}
 			}
 		}
