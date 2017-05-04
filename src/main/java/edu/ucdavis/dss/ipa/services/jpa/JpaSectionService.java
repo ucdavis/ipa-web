@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.validation.ValidSection;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +125,14 @@ public class JpaSectionService implements SectionService {
 			// Query the subjectCode/year pair if necessary
 			if (allDwSections.get(dwSectionKey) == null) {
 				List<DwSection> dwSections = restDataWarehouseRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+
+				if (dwSections == null) {
+					continue;
+				}
+
 				allDwSections.put(dwSectionKey, dwSections);
 			}
+
 
 			// Loop through course children
 			for (SectionGroup sectionGroup : course.getSectionGroups()) {
