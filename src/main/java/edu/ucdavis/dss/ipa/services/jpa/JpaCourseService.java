@@ -49,7 +49,7 @@ public class JpaCourseService implements CourseService {
 		Course originalCourse = this.getOneById(newCourse.getId());
 
 		// If changing the course sequencePattern
-		if (originalCourse.getSequencePattern() != newCourse.getSequencePattern()) {
+		if (originalCourse.getSequencePattern().equals(newCourse.getSequencePattern()) == false) {
 
 			// Ensure the sequencePattern is unique within relevant courses
 			List<Course> duplicateCourses = this.courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
