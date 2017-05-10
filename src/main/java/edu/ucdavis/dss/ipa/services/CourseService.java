@@ -41,4 +41,6 @@ public interface CourseService {
 	Course findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long id);
 
 	List<Course> getAllCourses();
+
+	Course syncUnits(Course course);
 }

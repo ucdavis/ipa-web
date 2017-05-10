@@ -75,6 +75,21 @@ public class JpaCourseService implements CourseService {
 		return this.courseRepository.save(originalCourse);
 	}
 
+	/**
+	 * Only updates units for use in syncing tasks where modification of historical courses may be appropriate.
+	 * @param newCourse
+	 * @return
+     */
+	@Transactional
+	public Course syncUnits (Course newCourse) {
+		Course originalCourse = this.getOneById(newCourse.getId());
+
+		originalCourse.setUnitsLow(newCourse.getUnitsLow());
+		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
+
+		return this.courseRepository.save(originalCourse);
+	}
+
 	@Override
 	public Course create(Course course) {
 		return this.save(course);

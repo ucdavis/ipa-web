@@ -62,7 +62,7 @@ public class UpdateCourseTask {
                     if (dwCourse.getCreditHoursHigh() != 0 || dwCourse.getCreditHoursLow() != 0) {
                         course.setUnitsHigh(dwCourse.getCreditHoursHigh());
                         course.setUnitsLow(dwCourse.getCreditHoursLow());
-                        courseService.update(course);
+                        courseService.syncUnits(course);
                     }
                 }
             }
