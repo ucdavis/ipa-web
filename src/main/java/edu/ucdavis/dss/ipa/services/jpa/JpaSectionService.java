@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,6 @@ public class JpaSectionService implements SectionService {
 	@Transactional
 	@Override
 	public void updateSectionsFromDW() {
-
 		// Update Courses to have the proper units value
 		List<Course> courses = this.courseService.getAllCourses();
 
@@ -125,6 +125,10 @@ public class JpaSectionService implements SectionService {
 			// Query the subjectCode/year pair if necessary
 			if (allDwSections.get(dwSectionKey) == null) {
 				List<DwSection> dwSections = restDataWarehouseRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+				if (dwSections == null) {
+					// If query fails to return results for the query, don't attempt to requery on a later section
+					allDwSections.put(dwSectionKey, new ArrayList<DwSection>());
+				}
 
 				if (dwSections == null) {
 					continue;
