@@ -20,14 +20,13 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	@Transactional
-	public Activity saveActivity(Activity activity)
-	{
+	public Activity saveActivity(Activity activity) {
 
 		Activity originalActivity = this.findOneById(activity.getId());
 
 		Long originalLocationId = null;
-		if (originalActivity.getLocation() != null) {
-			originalLocationId = originalActivity.getLocation().getId();
+		if (originalActivity != null && originalActivity.getLocation() != null) {
+				originalLocationId = originalActivity.getLocation().getId();
 		}
 
 		Long newlocationId = null;
@@ -45,6 +44,11 @@ public class JpaActivityService implements ActivityService {
 		if (activity.getBannerLocation() != null && activity.getBannerLocation().length() > 0) {
 			activity.setSyncLocation(true);
 			activity.setLocation(null);
+		}
+
+		if (activity.getDayIndicator() == null) {
+			// Ensure default dayIndicator pattern is set
+			activity.setDayIndicator("0000000");
 		}
 
 		return this.activityRepository.save(activity);
