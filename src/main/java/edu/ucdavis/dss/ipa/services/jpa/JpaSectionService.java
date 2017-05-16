@@ -107,10 +107,12 @@ public class JpaSectionService implements SectionService {
 		return section;
 	}
 
+	/**
+	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
+	 */
 	@Transactional
 	@Override
 	public void updateSectionsFromDW() {
-		// Update Courses to have the proper units value
 		List<Course> courses = this.courseService.getAllCourses();
 
 		// Map Keys will look like allDwSections.get(PSC-2017);
@@ -164,7 +166,11 @@ public class JpaSectionService implements SectionService {
 						if (dwSection.getCrn() != null && dwSection.getCrn().length() > 0
 								&& dwSection.getCrn().equals(section.getCrn()) == false) {
 							section.setCrn(dwSection.getCrn());
-							section = this.sectionRepository.save(section);
+
+							if (hasValidSequenceNumber(section)) {
+								section = this.sectionRepository.save(section);
+							}
+
 						}
 
 						activityService.syncActivityLocations(dwSection, section.getActivities());
@@ -194,5 +200,26 @@ public class JpaSectionService implements SectionService {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns true if the sequenceNumber of the section is unique within the sectionGroup
+	 * @param section
+	 * @return
+     */
+	private boolean hasValidSequenceNumber (Section section) {
+		String potentialSequenceNumber = section.getSequenceNumber();
+
+		if (section.getSectionGroup() == null) {
+			return false;
+		}
+
+		for (Section slotSection : section.getSectionGroup().getSections()) {
+			if (slotSection.getSequenceNumber().equals(potentialSequenceNumber) && section.getId() != slotSection.getId()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

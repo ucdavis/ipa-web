@@ -12,12 +12,12 @@ import java.util.*;
 public class UpdateSectionsTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-    @Inject
-    SectionService sectionService;
+    @Inject SectionService sectionService;
+
     /**
-     * Finds Courses with zero units and Queries Data Warehouse for term information and updates the local
+     * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
      */
-    @Scheduled( fixedDelay = 43200000 ) // every 12 hours
+    @Scheduled( fixedDelay = 86400000 ) // every 24 hours
     @Async
     public void updateSectionsTaskFromDW() {
 

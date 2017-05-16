@@ -28,7 +28,7 @@ public class UpdateCourseTask {
     /**
      * Finds Courses with zero units and Queries Data Warehouse for term information and updates the local
      */
-    @Scheduled( fixedDelay = 43200000 ) // every 12 hours
+    @Scheduled( fixedDelay = 86400000 ) // every 24 hours
     @Async
     public void updateCourseTaskFromDW() {
 

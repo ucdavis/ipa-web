@@ -18,7 +18,6 @@ import java.util.List;
 @Table(name = "Sections")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = SectionDeserializer.class)
-@ValidSection
 public class Section extends BaseEntity {
 	private long id;
 	private Long seats;
