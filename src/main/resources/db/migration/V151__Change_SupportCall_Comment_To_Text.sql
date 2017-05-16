@@ -1,0 +1,1 @@
+ALTER TABLE `StudentSupportPreferences` CHANGE COLUMN `Comment` `Comment` text NULL;
