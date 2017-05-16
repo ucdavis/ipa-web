@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -31,20 +32,18 @@ public class SummaryViewController {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        // TODO: Determine if user is an academic coordinator, and get notices/events/etc data
-
-
         // Determine if user is an instructor
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         long instructorId = 0;
-        // Academic coordinators will not have instructors associated to their user
+
         if (instructor != null) {
             instructorId = instructor.getId();
         }
 
-        // Determine if user is an instructional support staff
-        long supportStaffId = 0;
+        // Determine if user is support staff
         SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
+        long supportStaffId = 0;
+
         if (supportStaff != null) {
             supportStaffId = supportStaff.getId();
         }

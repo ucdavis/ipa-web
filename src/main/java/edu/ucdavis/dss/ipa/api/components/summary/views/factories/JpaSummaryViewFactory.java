@@ -33,10 +33,12 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         List<Activity> activities = new ArrayList<Activity>();
 
         List<TeachingAssignment> teachingAssignmentsToAdd = new ArrayList<TeachingAssignment>();
+        List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
 
         if (schedule != null && instructorId > 0) {
             teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
 
+            // Get assignments data
             for (TeachingAssignment teachingAssignment : teachingAssignments) {
                 if (teachingAssignment.isApproved() == false) {
                     continue;
@@ -74,6 +76,9 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
                     }
                 }
             }
+
+            // Get instructor support call data
+            instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
         }
 
 
@@ -88,11 +93,12 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             teachingCallReceipts = instructor.getTeachingCallReceipts();
         }
 
-        // Get student support Calls
-        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
+        // Get support staff support Calls
+        List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<>();
 
-        // Get instructor support Calls
-        List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+        if (schedule != null && supportStaffId > 0) {
+            studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
+        }
 
         return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses);
     }
