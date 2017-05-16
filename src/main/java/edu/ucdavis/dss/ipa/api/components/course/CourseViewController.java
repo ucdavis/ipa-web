@@ -309,10 +309,15 @@ public class CourseViewController {
 					dwSequencePattern = dwSection.getSequenceNumber();
 				}
 
+				// Compare termCode endings
+				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
+				String dwSectionShortTerm = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
+
 				// Ensure this dwSection matches the sectionGroupImport (course) of interest
 				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
 				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
-				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )) {
+				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
+				&& sectionGroupImportShortTerm.equals(sectionGroupImportShortTerm)) {
 
 					String courseNumber = sectionGroupImport.getCourseNumber();
 
