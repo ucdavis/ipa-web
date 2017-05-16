@@ -43,12 +43,12 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 			activity.setEndDate(date);
 		}
 
-		if (node.has("startTime") && !node.get("startTime").isNull()) {
+		if (node.has("startTime") && !node.get("startTime").isNull() && !node.get("startTime").equals("Invalid date")) {
 			Time startTime = convertToTime(node.get("startTime").textValue());
 			activity.setStartTime(startTime);
 		}
 
-		if (node.has("endTime") && !node.get("endTime").isNull()) {
+		if (node.has("endTime") && !node.get("endTime").isNull() && !node.get("startTime").equals("Invalid date")) {
 			Time endTime = convertToTime(node.get("endTime").textValue());
 			activity.setEndTime(endTime);
 		}
