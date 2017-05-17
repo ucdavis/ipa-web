@@ -271,7 +271,10 @@ public class CourseViewController {
 		}
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
-		Long yearToImportFrom = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0,4));
+
+		// Calculate academicYear from the termCode of the first sectionGroupImport
+		String termCode = sectionGroupImportList.get(0).getTermCode();
+		Long yearToImportFrom = termService.getAcademicYearFromTermCode(termCode);
 
 		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
 
