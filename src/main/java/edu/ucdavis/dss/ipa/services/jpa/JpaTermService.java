@@ -100,4 +100,27 @@ public class JpaTermService implements TermService {
 	public List<Term> findActiveTermCodesByWorkgroupId(long workgroupId) {
 		return termRepository.findActiveTermCodesByWorkgroupId(workgroupId);
 	}
+
+	/**
+	 * Calculates the academic year for a termCode
+	 * Example: '201801'
+	 * Returns: 2017
+	 * @param termCode
+	 * @return
+     */
+	@Override
+	public Long getAcademicYearFromTermCode(String termCode) {
+		if (termCode == null || termCode.length() != 6) {
+			return null;
+		}
+
+		Long termYear = Long.valueOf(termCode.substring(0,4));
+		Long shortTermCode = Long.valueOf(termCode.substring(termCode.length() - 2));
+
+		if (shortTermCode < 4) {
+			return termYear - 1;
+		} else {
+			return termYear;
+		}
+	}
 }

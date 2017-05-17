@@ -32,4 +32,6 @@ public interface TermService {
 	Boolean isHistoricalByTermCode(String termCode);
 
     List<Term> findActiveTermCodesByWorkgroupId(long workgroupId);
+
+	Long getAcademicYearFromTermCode(String termCode);
 }
