@@ -42,6 +42,7 @@ public class CourseViewController {
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
+	@Inject TeachingAssignmentService teachingAssignmentService;
 
 	@Inject CourseValidator courseValidator;
 	@Inject DataWarehouseRepository dwRepository;
@@ -518,6 +519,21 @@ public class CourseViewController {
 						newActivity.setEndDate(term.getEndDate());
 						newActivity.setActivityState(ActivityState.DRAFT);
 						activityService.saveActivity(newActivity);
+					}
+				}
+
+				if (importAssignments) {
+					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
+						if (historicalTeachingAssignment.isApproved()) {
+							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
+							newTeachingAssignment.setApproved(true);
+							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
+							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
+							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
+							newTeachingAssignment.setSectionGroup(newSectionGroup);
+							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
+							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
+						}
 					}
 				}
 
