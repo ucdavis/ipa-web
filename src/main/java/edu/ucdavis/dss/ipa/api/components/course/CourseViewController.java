@@ -321,7 +321,7 @@ public class CourseViewController {
 				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
 				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
 				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
-				&& sectionGroupImportShortTerm.equals(sectionGroupImportShortTerm)) {
+				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
 
 					String courseNumber = sectionGroupImport.getCourseNumber();
 
