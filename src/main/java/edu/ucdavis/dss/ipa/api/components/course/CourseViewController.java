@@ -424,15 +424,8 @@ public class CourseViewController {
 			return null;
 		}
 
-		Long DTOterm = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(4, 6));
-		Long DTOyear = Long.valueOf(sectionGroupImportList.get(0).getTermCode().substring(0, 4));
-		Long importYear = null;
-
-		if (DTOterm < 4) {
-			importYear = DTOyear - 1;
-		} else {
-			importYear = DTOyear;
-		}
+		String termCode = sectionGroupImportList.get(0).getTermCode();
+		Long importYear = termService.getAcademicYearFromTermCode(termCode);
 
 		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
