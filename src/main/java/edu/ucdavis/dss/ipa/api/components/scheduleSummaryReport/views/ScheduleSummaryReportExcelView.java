@@ -9,9 +9,7 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ScheduleSummaryReportExcelView extends AbstractXlsView {
@@ -54,7 +52,27 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
 
         int row = 1;
 
-        for(Course course : scheduleSummaryReportViewDTO.getCourses()) {
+        List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
+
+        // Sort courses by subjectCode, course number, and sequence pattern
+        Collections.sort(courses, new Comparator<Course>() {
+            @Override
+            public int compare(Course course1, Course course2) {
+                if (course1.getSubjectCode().equals(course2.getSubjectCode())) {
+                    if (course1.getCourseNumber().equals(course2.getCourseNumber())) {
+                        // Compare by sequence pattern
+                        return course1.getSequencePattern().compareTo(course2.getSequencePattern());
+                    }
+
+                    // Compare by course number
+                    return course1.getCourseNumber().compareTo(course2.getCourseNumber());
+                }
+
+                return course1.getSubjectCode().compareTo(course2.getSubjectCode());
+            }
+        });
+
+        for(Course course : courses) {
 
             // Set course column
             int col = 0;
