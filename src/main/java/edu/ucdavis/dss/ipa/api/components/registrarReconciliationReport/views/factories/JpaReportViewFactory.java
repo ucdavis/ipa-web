@@ -92,7 +92,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				.map(a -> new ActivityDiffDto(
 								a.getId(),
 								a.getActivityTypeCode().getActivityTypeCode(),
-								a.getBannerLocation(),
+								a.getLocationDescription(),
 								a.getDayIndicator(),
 								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
 								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
@@ -109,7 +109,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				.map(a -> new ActivityDiffDto(
 								a.getId(),
 								a.getActivityTypeCode().getActivityTypeCode(),
-								a.getBannerLocation(),
+								a.getLocationDescription(),
 								a.getDayIndicator(),
 								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
 								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
