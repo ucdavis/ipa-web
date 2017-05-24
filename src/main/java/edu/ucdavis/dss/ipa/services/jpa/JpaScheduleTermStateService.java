@@ -6,11 +6,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.UserService;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
-import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.enums.TermState;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
@@ -20,6 +19,7 @@ import edu.ucdavis.dss.ipa.services.TermService;
 public class JpaScheduleTermStateService implements ScheduleTermStateService {
 	@Inject ScheduleService scheduleService;
 	@Inject TermService termService;
+	@Inject UserService userService;
 
 	public ScheduleTermState createScheduleTermState(Term term) {
 		ScheduleTermState state = new ScheduleTermState();
@@ -54,7 +54,22 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 
 	@Override
 	public List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId) {
-		List<Term> terms = termService.findByLoginId(loginId);
+
+		List<Term> terms = new ArrayList<>();
+
+		User user = userService.getOneByLoginId(loginId);
+
+		for (UserRole userRole : user.getUserRoles()) {
+			for (Schedule schedule : userRole.getWorkgroup().getSchedules()) {
+				for (Course course : schedule.getCourses()) {
+					for (SectionGroup sectionGroup : course.getSectionGroups()) {
+						Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+						terms.add(term);
+					}
+				}
+			}
+		}
+
 		List<ScheduleTermState> states = new ArrayList<>();
 
 		for(Term term : terms) {
@@ -63,4 +78,17 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 
 		return states;
 	}
+
+	@Override
+	public List<ScheduleTermState> findAll() {
+		List<Term> terms = termService.findAll();
+		List<ScheduleTermState> states = new ArrayList<>();
+
+		for(Term term : terms) {
+			states.add(this.createScheduleTermState(term));
+		}
+
+		return states;
+	}
+
 }

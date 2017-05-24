@@ -33,5 +33,7 @@ public interface TermService {
 
     List<Term> findActiveTermCodesByWorkgroupId(long workgroupId);
 
+	List<Term> findAll();
+
 	Long getAcademicYearFromTermCode(String termCode);
 }
