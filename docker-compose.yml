@@ -4,6 +4,8 @@ services:
     image: mysql:5.7
     env_file:
       - ipa-web.env
+    ports:
+      - 3306:3306
   spring:
     build:
       context: ./
@@ -22,6 +24,7 @@ services:
         - ./certs/api_ipa_nginx.cer:/etc/ssl/private/api_ipa_nginx.cer
         - ./certs/api_ipa_nginx.key:/etc/ssl/private/api_ipa_nginx.key
     ports:
-      - 443
+      - 80:80
+      - 443:443
     depends_on:
       - spring
