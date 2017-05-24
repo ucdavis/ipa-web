@@ -60,11 +60,13 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 		User user = userService.getOneByLoginId(loginId);
 
 		for (UserRole userRole : user.getUserRoles()) {
-			for (Schedule schedule : userRole.getWorkgroup().getSchedules()) {
-				for (Course course : schedule.getCourses()) {
-					for (SectionGroup sectionGroup : course.getSectionGroups()) {
-						Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
-						terms.add(term);
+			if (userRole.getWorkgroup() != null) {
+				for (Schedule schedule : userRole.getWorkgroup().getSchedules()) {
+					for (Course course : schedule.getCourses()) {
+						for (SectionGroup sectionGroup : course.getSectionGroups()) {
+							Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+							terms.add(term);
+						}
 					}
 				}
 			}
