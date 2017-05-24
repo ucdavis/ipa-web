@@ -48,12 +48,23 @@ public abstract class BaseEntity implements Serializable {
     @PreUpdate
     private void beforeUpdate() {
         this.updatedAt = new Date();
-        this.setModifiedBy(Authorization.getRealUserLoginId());
+        String realUserLoginId = Authorization.getRealUserLoginId();
+        if (realUserLoginId != null) {
+            this.setModifiedBy("user:" + realUserLoginId);
+        } else {
+            this.setModifiedBy("system");
+        }
     }
 
     @PrePersist
     private void beforeCreation() {
         this.createdAt = new Date();
-        this.setModifiedBy(Authorization.getRealUserLoginId());
+
+        String realUserLoginId = Authorization.getRealUserLoginId();
+        if (realUserLoginId != null) {
+            this.setModifiedBy("user:" + realUserLoginId);
+        } else {
+            this.setModifiedBy("system");
+        }
     }
 }
