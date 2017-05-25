@@ -59,6 +59,7 @@ public abstract class BaseEntity implements Serializable {
     @PrePersist
     private void beforeCreation() {
         this.createdAt = new Date();
+        this.updatedAt = new Date();
 
         String realUserLoginId = Authorization.getRealUserLoginId();
         if (realUserLoginId != null) {
