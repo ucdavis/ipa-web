@@ -92,5 +92,4 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 
 		return states;
 	}
-
 }
