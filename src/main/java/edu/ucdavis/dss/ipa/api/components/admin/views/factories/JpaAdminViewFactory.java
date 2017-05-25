@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.admin.views.factories;
 import edu.ucdavis.dss.ipa.api.components.admin.views.AdminView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
+import org.hibernate.jdbc.Work;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -15,6 +16,9 @@ public class JpaAdminViewFactory implements AdminViewFactory {
 	@Override
 	public AdminView createAdminView() {
 		List<Workgroup> workgroups = workgroupService.findAll();
+		for (Workgroup workgroup : workgroups) {
+			workgroupService.getLastActive(workgroup);
+		}
 
 		return new AdminView(workgroups);
 	}

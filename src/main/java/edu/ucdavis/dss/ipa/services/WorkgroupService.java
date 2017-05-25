@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -27,4 +28,6 @@ public interface WorkgroupService {
 	Workgroup findOneByCode(String string);
 
 	List<Tag> getActiveTags(Workgroup workgroup);
+
+	Date getLastActive(Workgroup workgroup);
 }
