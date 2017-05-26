@@ -7,6 +7,7 @@ import org.hibernate.jdbc.Work;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,11 +17,15 @@ public class JpaAdminViewFactory implements AdminViewFactory {
 	@Override
 	public AdminView createAdminView() {
 		List<Workgroup> workgroups = workgroupService.findAll();
+		List<String> lastActiveDates = new ArrayList<>();
+
 		for (Workgroup workgroup : workgroups) {
-			workgroupService.getLastActive(workgroup);
+			String date = String.valueOf(workgroupService.getLastActive(workgroup));
+			String serializedActiveDate = workgroup.getId() + "," + date;
+			lastActiveDates.add(serializedActiveDate);
 		}
 
-		return new AdminView(workgroups);
+		return new AdminView(workgroups, lastActiveDates);
 	}
 
 }

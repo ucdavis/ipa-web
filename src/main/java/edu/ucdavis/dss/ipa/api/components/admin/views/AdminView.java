@@ -7,9 +7,11 @@ import java.util.List;
 
 public class AdminView {
 	private List<Workgroup> workgroups = new ArrayList<>();
+	private List<String> lastActiveDates = new ArrayList<>();
 
-	public AdminView(List<Workgroup> workgroups) {
+	public AdminView(List<Workgroup> workgroups, List<String> lastActiveDates) {
 		setWorkgroups(workgroups);
+		setLastActiveDates(lastActiveDates);
 	}
 
 	public List<Workgroup> getWorkgroups() {
@@ -18,5 +20,13 @@ public class AdminView {
 
 	public void setWorkgroups(List<Workgroup> workgroups) {
 		this.workgroups = workgroups;
+	}
+
+	public List<String> getLastActiveDates() {
+		return lastActiveDates;
+	}
+
+	public void setLastActiveDates(List<String> lastActiveDates) {
+		this.lastActiveDates = lastActiveDates;
 	}
 }
