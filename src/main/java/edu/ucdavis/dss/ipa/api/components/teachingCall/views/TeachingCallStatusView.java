@@ -9,19 +9,22 @@ public class TeachingCallStatusView {
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<Long> senateInstructorIds = new ArrayList<Long>();
     List<Long> federationInstructorIds = new ArrayList<Long>();
+    List<Long> lecturerInstructorIds = new ArrayList<>();
     long scheduleId;
 
     public TeachingCallStatusView(List<Instructor> instructors,
                                   List<TeachingCallReceipt> teachingCallReceipts,
                                   long scheduleId,
                                   List<Long> senateInstructorIds,
-                                  List<Long> federationInstructorIds) {
+                                  List<Long> federationInstructorIds,
+                                  List<Long> lecturerInstructorIds) {
 
         setInstructors(instructors);
         setTeachingCallReceipts(teachingCallReceipts);
         setFederationInstructorIds(federationInstructorIds);
         setSenateInstructorIds(senateInstructorIds);
         setScheduleId(scheduleId);
+        setLecturerInstructorIds(lecturerInstructorIds);
     }
 
     public List<Instructor> getInstructors() {
@@ -62,5 +65,13 @@ public class TeachingCallStatusView {
 
     public void setScheduleId(long scheduleId) {
         this.scheduleId = scheduleId;
+    }
+
+    public List<Long> getLecturerInstructorIds() {
+        return lecturerInstructorIds;
+    }
+
+    public void setLecturerInstructorIds(List<Long> lecturerInstructorIds) {
+        this.lecturerInstructorIds = lecturerInstructorIds;
     }
 }
