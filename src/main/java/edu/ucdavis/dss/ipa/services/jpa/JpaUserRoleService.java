@@ -215,7 +215,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public List<Instructor> getInstructorsByWorkgroupId(long workgroupId) {
-		String[] INSTRUCTOR_ROLES = {"federationInstructor", "senateInstructor"};
+		String[] INSTRUCTOR_ROLES = {"federationInstructor", "senateInstructor", "lecturer"};
 
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
