@@ -29,6 +29,11 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 		StringBuffer buffer = new StringBuffer();
 
+		// Ignore ClientAbortException, there's nothing we can do about it.
+		if(ex instanceof org.apache.catalina.connector.ClientAbortException) {
+			return super.doResolveException(request, response, handler, ex);
+		}
+
 		// Basic information
 		buffer.append("Unhandled MVC exception at " + dateFormat.format(new Date().getTime()));
 		buffer.append("\n");
