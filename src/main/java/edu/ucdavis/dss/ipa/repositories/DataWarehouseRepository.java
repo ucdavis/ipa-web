@@ -29,4 +29,6 @@ public interface DataWarehouseRepository {
 	List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys);
 
 	List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year);
+
+	List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode);
 }
