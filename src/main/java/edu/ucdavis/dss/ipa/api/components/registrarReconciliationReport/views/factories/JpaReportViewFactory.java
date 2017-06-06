@@ -5,10 +5,9 @@ import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.Ac
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SyncAction;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.SyncActionService;
@@ -33,6 +32,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject SyncActionService syncActionService;
+	@Inject ScheduleService scheduleService;
 
 	@Override
 	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
@@ -42,6 +42,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				.build();
 		List<SectionDiffView> diffView = new ArrayList<>();
 
+		// 1) Create diffDtos for sections in IPA, that may or may not have a matching dwSection
 		List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
 		// Create a string of comma delimited list of section unique keys (i.e. ECS-010-A01) for dw query
@@ -68,6 +69,36 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions()));
 			}
 		}
+
+		// 2) Create diffDtos for sectionGroups in IPA that don't have any sections, and have matching dwSections
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		List<SectionGroup> sectionGroupsInTerm = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+		List<SectionGroup> emptySectionGroups = new ArrayList<>();
+		List<String> subjectCodesToQuery = new ArrayList<>();
+		dwSections = new ArrayList<>();
+
+		// Record the sectionGroups of interest, and unique subjectCodes that will need to be queried against DW
+		for (SectionGroup sectionGroup : sectionGroupsInTerm) {
+			if (sectionGroup.getSections().size() == 0) {
+				emptySectionGroups.add(sectionGroup);
+
+				// Add subjectCode to list for later querying against DW
+				if (dwSections.indexOf(sectionGroup.getCourse().getSubjectCode()) == -1) {
+					subjectCodesToQuery.add(sectionGroup.getCourse().getSubjectCode());
+				}
+			}
+		}
+
+		// Query DW for potentially matching sections
+		for (String subjectCode : subjectCodesToQuery) {
+			List<DwSection> slotDwSections = dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode);
+			dwSections.addAll(slotDwSections);
+		}
+
+		// TODO: Identify which dwSections match an IPA emptySectionGroup
+
+		// TODO: Generate diffViews from them
 
 		return diffView;
 	}
