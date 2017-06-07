@@ -25,6 +25,8 @@ public class SectionDiffDto {
 	private Set<InstructorDiffDto> instructors = new HashSet<>();
 	private List<ActivityDiffDto> activities = new ArrayList<>();
 
+	public SectionDiffDto() {}
+
 	public SectionDiffDto(
 			long sectionId,
 			long sectionGroupId,

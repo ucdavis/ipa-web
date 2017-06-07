@@ -84,7 +84,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				emptySectionGroups.add(sectionGroup);
 
 				// Add subjectCode to list for later querying against DW
-				if (dwSections.indexOf(sectionGroup.getCourse().getSubjectCode()) == -1) {
+				if (subjectCodesToQuery.indexOf(sectionGroup.getCourse().getSubjectCode()) == -1) {
 					subjectCodesToQuery.add(sectionGroup.getCourse().getSubjectCode());
 				}
 			}
@@ -96,14 +96,54 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			dwSections.addAll(slotDwSections);
 		}
 
-		// TODO: Identify which dwSections match an IPA emptySectionGroup
+		// Identify which dwSections match an IPA emptySectionGroup
+		List<DwSection> dwSectionMatches = new ArrayList<>();
 
+			for (SectionGroup sectionGroup : emptySectionGroups) {
+				String ipaSubjectCode = sectionGroup.getCourse().getSubjectCode();
+				String ipaCourseNumber = sectionGroup.getCourse().getCourseNumber();
+				String ipaSequencePattern = sectionGroup.getCourse().getSequencePattern();
+
+				for (DwSection dwSection : dwSections) {
+					String dwSectionSubjectCode = dwSection.getSubjectCode();
+					String dwSectionCourseNumber = dwSection.getCourseNumber();
+					String dwSequenceNumber = dwSection.getSequenceNumber();
+					Character dwSequenceNumberStart = dwSequenceNumber.charAt(0);
+
+					if (dwSectionSubjectCode.equals(ipaSubjectCode)
+				&& dwSectionCourseNumber.equals(ipaCourseNumber)) {
+					// If the sequence pattern is letter based like 'A01', and also matches the ipa pattern, example: 'A01' and 'A'
+					if (Character.isLetter(dwSequenceNumberStart) && ipaSequencePattern.equals(dwSequenceNumberStart)) {
+						// This dwSection matches this ipa sectionGroup
+
+						// Make a dummy section to match a particular dwSection
+						Section placeholderSection = new Section();
+						placeholderSection.setSectionGroup(sectionGroup);
+						placeholderSection.setSequenceNumber(dwSequenceNumber);
+
+						SectionDiffDto ipaSectionDiff = getIpaSectionDiff(null);
+						SectionDiffDto dwSectionDiff = getDwSectionDiff(placeholderSection, dwSection);
+
+						diffView.add(new SectionDiffView(null, null, null, placeholderSection.getSyncActions()));
+					}
+					// If the sequence pattern is numeric like '002' and matches the ipa pattern exactly
+					else if (dwSequenceNumber.equals(ipaSequencePattern) == true) {
+						// TODO: This dwSection matches this ipa sectionGroup
+						System.out.println("stuff");
+					}
+				}
+			}
+		}
 		// TODO: Generate diffViews from them
 
 		return diffView;
 	}
 
 	private SectionDiffDto getIpaSectionDiff(Section section) {
+		if (section == null) {
+			return new SectionDiffDto();
+		}
+
 		// Section instructors
 		Set<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
 				.getTeachingAssignments().stream()
@@ -224,6 +264,56 @@ public class JpaReportViewFactory implements ReportViewFactory {
 					dwActivities
 			);
 		}
+
+		return dwSectionDiff;
+	}
+
+	private SectionDiffDto getDwSectionDiff(Section section, DwSection dwSection) {
+		SectionDiffDto dwSectionDiff = null;
+
+		// DW Section instructors
+		Set<InstructorDiffDto> dwInstructors = dwSection.getInstructors().stream()
+				.filter(dwInstructor -> dwInstructor.getLoginId() != null)
+				.map(instructor -> new InstructorDiffDto(
+								instructor.getFirstName(),
+								instructor.getLastName(),
+								instructor.getLoginId(),
+								instructor.getEmployeeId()
+						)
+				)
+				.collect(Collectors.toSet());
+
+		// DW Section activities
+		List<ActivityDiffDto> dwActivities = dwSection
+				.getActivities().stream()
+				.map(a -> new ActivityDiffDto(
+						0,
+						a.getSsrmeet_schd_code(),
+						a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
+						a.getDay_indicator(),
+						a.getSsrmeet_begin_time(),
+						a.getSsrmeet_end_time(),
+						dwSection.getSubjectCode(),
+						dwSection.getCourseNumber(),
+						dwSection.getSequenceNumber()
+				))
+				.collect(Collectors.toList());
+
+		// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
+		dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
+
+		dwSectionDiff = new SectionDiffDto(
+				0, // No sectionId in DW
+				0, // No sectionGroupId in DW
+				dwSection.getCrn(),
+				dwSection.getTitle(),
+				dwSection.getSubjectCode(),
+				dwSection.getCourseNumber(),
+				dwSection.getSequenceNumber(),
+				dwSection.getMaximumEnrollment(),
+				dwInstructors,
+				dwActivities
+		);
 
 		return dwSectionDiff;
 	}
