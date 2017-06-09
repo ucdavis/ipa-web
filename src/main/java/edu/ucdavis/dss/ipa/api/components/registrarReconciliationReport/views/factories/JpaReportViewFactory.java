@@ -7,10 +7,7 @@ import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.Se
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.SyncActionService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -33,6 +30,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject SyncActionService syncActionService;
 	@Inject ScheduleService scheduleService;
+	@Inject CourseService courseService;
 
 	@Override
 	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
@@ -70,23 +68,18 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			}
 		}
 
-		// 2) Create diffDtos for sectionGroups in IPA that don't have any sections, and have matching dwSections
+		// 2) Create diffDtos for dwSections that don't have a matching section, but do have a matching sectionGroup
 		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		List<SectionGroup> sectionGroupsInTerm = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-		List<SectionGroup> emptySectionGroups = new ArrayList<>();
 		List<String> subjectCodesToQuery = new ArrayList<>();
 		dwSections = new ArrayList<>();
 
 		// Record the sectionGroups of interest, and unique subjectCodes that will need to be queried against DW
 		for (SectionGroup sectionGroup : sectionGroupsInTerm) {
-			if (sectionGroup.getSections().size() == 0) {
-				emptySectionGroups.add(sectionGroup);
-
-				// Add subjectCode to list for later querying against DW
-				if (subjectCodesToQuery.indexOf(sectionGroup.getCourse().getSubjectCode()) == -1) {
-					subjectCodesToQuery.add(sectionGroup.getCourse().getSubjectCode());
-				}
+			// Add subjectCode to list for later querying against DW
+			if (subjectCodesToQuery.indexOf(sectionGroup.getCourse().getSubjectCode()) == -1) {
+				subjectCodesToQuery.add(sectionGroup.getCourse().getSubjectCode());
 			}
 		}
 
@@ -99,42 +92,54 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		// Identify which dwSections match an IPA emptySectionGroup
 		List<DwSection> dwSectionMatches = new ArrayList<>();
 
-			for (SectionGroup sectionGroup : emptySectionGroups) {
-				String ipaSubjectCode = sectionGroup.getCourse().getSubjectCode();
-				String ipaCourseNumber = sectionGroup.getCourse().getCourseNumber();
-				String ipaSequencePattern = sectionGroup.getCourse().getSequencePattern();
+		for (DwSection dwSection : dwSections) {
 
-				for (DwSection dwSection : dwSections) {
-					String dwSectionSubjectCode = dwSection.getSubjectCode();
-					String dwSectionCourseNumber = dwSection.getCourseNumber();
-					String dwSequenceNumber = dwSection.getSequenceNumber();
-					Character dwSequenceNumberStart = dwSequenceNumber.charAt(0);
+			// Convert sequenceNumber to sequencePattern
+			Character dwSequenceNumberStart = dwSection.getSequenceNumber().charAt(0);
+			String sequencePattern = null;
 
-					if (dwSectionSubjectCode.equals(ipaSubjectCode)
-				&& dwSectionCourseNumber.equals(ipaCourseNumber)) {
-					// If the sequence pattern is letter based like 'A01', and also matches the ipa pattern, example: 'A01' and 'A'
-					if (Character.isLetter(dwSequenceNumberStart) && ipaSequencePattern.equals(dwSequenceNumberStart)) {
-						// This dwSection matches this ipa sectionGroup
+			if (Character.isLetter(dwSequenceNumberStart)) {
+				sequencePattern = String.valueOf(dwSequenceNumberStart);
+			} else {
+				sequencePattern = dwSection.getSequenceNumber();
+			}
 
-						// Make a dummy section to match a particular dwSection
-						Section placeholderSection = new Section();
-						placeholderSection.setSectionGroup(sectionGroup);
-						placeholderSection.setSequenceNumber(dwSequenceNumber);
+			Course matchingCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(dwSection.getSubjectCode(), dwSection.getCourseNumber(), sequencePattern, schedule.getId());
+			SectionGroup matchingSectionGroup = null;
 
-						SectionDiffDto ipaSectionDiff = getIpaSectionDiff(null);
-						SectionDiffDto dwSectionDiff = getDwSectionDiff(placeholderSection, dwSection);
+			// If no IPA course matches the subj/course/seq, dwSection is not relevant
+			if (matchingCourse == null) {
+				continue;
+			}
 
-						diffView.add(new SectionDiffView(null, null, null, placeholderSection.getSyncActions()));
-					}
-					// If the sequence pattern is numeric like '002' and matches the ipa pattern exactly
-					else if (dwSequenceNumber.equals(ipaSequencePattern) == true) {
-						// TODO: This dwSection matches this ipa sectionGroup
-						System.out.println("stuff");
-					}
+			for (SectionGroup slotSectionGroup : matchingCourse.getSectionGroups()) {
+				if (slotSectionGroup.getTermCode().equals(dwSection.getTermCode())) {
+					matchingSectionGroup = slotSectionGroup;
 				}
 			}
+
+			if (matchingSectionGroup == null) {
+				continue;
+			}
+
+			Section matchingSection = null;
+
+			for (Section section : matchingSectionGroup.getSections()) {
+				if (section.getSequenceNumber().equals(dwSection.getSequenceNumber())) {
+					matchingSection = section;
+				}
+			}
+
+			if (matchingSection != null) {
+				continue;
+			}
+
+			Section placeholderSection = new Section();
+
+			SectionDiffDto dwSectionDiff = getDwSectionDiff(placeholderSection, dwSection);
+
+			diffView.add(new SectionDiffView(null, dwSectionDiff, null, placeholderSection.getSyncActions()));
 		}
-		// TODO: Generate diffViews from them
 
 		return diffView;
 	}
