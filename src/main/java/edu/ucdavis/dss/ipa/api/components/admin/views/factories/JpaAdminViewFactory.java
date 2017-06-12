@@ -20,7 +20,7 @@ public class JpaAdminViewFactory implements AdminViewFactory {
 		List<String> lastActiveDates = new ArrayList<>();
 
 		for (Workgroup workgroup : workgroups) {
-			String date = String.valueOf(workgroupService.getLastActive(workgroup));
+			String date = workgroupService.getLastActive(workgroup);
 			String serializedActiveDate = workgroup.getId() + "," + date;
 			lastActiveDates.add(serializedActiveDate);
 		}

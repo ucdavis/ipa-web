@@ -29,5 +29,5 @@ public interface WorkgroupService {
 
 	List<Tag> getActiveTags(Workgroup workgroup);
 
-	Date getLastActive(Workgroup workgroup);
+	String getLastActive(Workgroup workgroup);
 }
