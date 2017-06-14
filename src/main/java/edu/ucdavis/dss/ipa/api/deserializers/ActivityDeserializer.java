@@ -108,7 +108,8 @@ public class ActivityDeserializer extends JsonDeserializer<Object> {
 	}
 
 	private Time convertToTime(String textTime) {
-		if (textTime == null || textTime.length() == 0) {
+		// Should follow format '10:00:00'
+		if (textTime == null || textTime.length() != 8) {
 			return null;
 		}
 
