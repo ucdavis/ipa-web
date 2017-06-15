@@ -87,13 +87,15 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 					}
 
 					// Is a warning scheduled to be sent?
-					if (teachingCallReceipt.getDueDate() != null) {
+					if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
+						// Form hasn't been submitted and it has a due date
 						Long oneDayInMilliseconds = 86400000L;
 						Long threeDaysInMilliseconds = 259200000L;
 
 						Long currentTime = currentDate.getTime();
 						Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
 						Long warnTime = dueDateTime - threeDaysInMilliseconds;
+
 						Long timeSinceLastContact = null;
 
 						if (teachingCallReceipt.getLastContactedAt() != null) {
@@ -102,15 +104,14 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 						// Is it time to send a warning email?
 						// Warning emails are sent 3 days before dueDate
-						// To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
+						// To avoid spamming, warning email cannot happen within 3 days of previous contact.
 						// Warning emails are suppressed if the due Date has passed
-						if (currentTime > warnTime) {
-							if (timeSinceLastContact == null && currentTime < dueDateTime) {
-								sendTeachingCallWarning(teachingCallReceipt, currentDate);
-							} else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+						if (currentTime > warnTime && currentTime < dueDateTime) {
+							// Valid time to send a warning
+							if (timeSinceLastContact == null || timeSinceLastContact > threeDaysInMilliseconds) {
+								// Haven't contacted them recently, and we haven't passed the due date
 								sendTeachingCallWarning(teachingCallReceipt, currentDate);
 							}
-
 						}
 					}
 				}
@@ -124,10 +125,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	 * @param currentDate
 	 */
 	private void sendTeachingCall(TeachingCallReceipt teachingCallReceipt, Date currentDate) {
-		if (teachingCallReceipt.getIsDone()) {
-			return;
-		}
-
 		String loginId = teachingCallReceipt.getInstructor().getLoginId();
 
 		// loginId is necessary to map to a user and email
@@ -159,8 +156,8 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
 		messageSubject = "IPA: Teaching Call has started";
-		messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-		messageBody = "Faculty,";
+		messageBody = "<table><tbody><tr><td style='width: 20px;'></td><td>";
+		messageBody += "Faculty,";
 		messageBody += "<br /><br />";
 		messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>.";
 		messageBody += "<br />";
