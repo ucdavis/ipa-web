@@ -12,6 +12,11 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 
 	List<SectionGroup> findByCourseScheduleWorkgroupIdAndCourseScheduleYear(long workgroupId, long year);
 
+	@Query( " SELECT DISTINCT sg" +
+			" FROM SectionGroup sg" +
+			" WHERE sg.id NOT IN (SELECT sg.id FROM SectionGroup sg, Section s WHERE s.sectionGroup = sg)")
+	List<SectionGroup> findEmpty();
+
 	/**
 	 * Finds sectionGroups that have no sections
 	 * @param workgroupId

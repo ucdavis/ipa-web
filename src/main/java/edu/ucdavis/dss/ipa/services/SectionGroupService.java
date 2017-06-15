@@ -16,6 +16,8 @@ public interface SectionGroupService {
 
 	void delete(Long id);
 
+	List<SectionGroup> findEmpty();
+
 	List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode);
 
 	List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year);

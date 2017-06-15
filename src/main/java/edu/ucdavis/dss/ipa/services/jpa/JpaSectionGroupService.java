@@ -45,6 +45,11 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
+	public List<SectionGroup> findEmpty() {
+		return this.sectionGroupRepository.findEmpty();
+	}
+
+	@Override
 	public List<SectionGroup> findByScheduleIdAndTermCode(long scheduleId, String termCode) {
 		Schedule schedule = this.scheduleService.findById(scheduleId);
 		List<SectionGroup> sectionGroups = schedule.getCourses()
