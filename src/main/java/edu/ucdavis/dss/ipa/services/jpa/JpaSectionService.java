@@ -3,9 +3,14 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import org.hibernate.mapping.UniqueKey;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -26,6 +31,9 @@ public class JpaSectionService implements SectionService {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject RestDataWarehouseRepository restDataWarehouseRepository;
 	@Inject ActivityService activityService;
+	@Inject NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	@Inject DataWarehouseRepository dwRepository;
+	@Inject JdbcTemplate jdbcTemplate;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -113,6 +121,7 @@ public class JpaSectionService implements SectionService {
 	@Transactional
 	@Override
 	public void updateSectionsFromDW() {
+/*
 		List<Course> courses = this.courseService.getAllCourses();
 
 		// Map Keys will look like allDwSections.get(PSC-2017);
@@ -176,6 +185,70 @@ public class JpaSectionService implements SectionService {
 						activityService.syncActivityLocations(dwSection, section.getActivities());
 						activityService.syncActivityLocations(dwSection, sectionGroup.getActivities());
 					}
+				}
+			}
+		}
+*/
+		// Sync data from banner into empty ipa SectionGroups
+		this.updateEmptySectionGroups();
+	}
+
+	private class QueryParam {
+		public String subjectCode;
+		public String termCode;
+
+		QueryParam (String subjectCode, String termCode) {
+			this.subjectCode = subjectCode;
+			this.termCode = termCode;
+		}
+	}
+
+	private void updateEmptySectionGroups() {
+		// Find emptySectionGroups in IPA
+		List<SectionGroup> emptySectionGroups = sectionGroupService.findEmpty();
+
+		// Generate termCode+subjectCode pairs to query DW for to get relevant sections
+		List<QueryParam> queryParams = jdbcTemplate.query("SELECT DISTINCT sg.TermCode, c.SubjectCode" +
+				" FROM SectionGroups sg" +
+				" LEFT JOIN Courses c ON sg.CourseId = c.Id" +
+				" LEFT JOIN Sections st ON sg.Id = st.sectionGroupId" +
+				" WHERE st.Id IS NULL;",
+				(rs, rowNum) -> new QueryParam(
+									rs.getString("SubjectCode"),
+									rs.getString("TermCode")
+								)
+		);
+
+		// Query DW for potentially matching sections
+		List<DwSection> allDwSections = new ArrayList<>();
+
+		for (QueryParam queryParam : queryParams) {
+			List<DwSection> slotDwSections = dwRepository.getSectionsBySubjectCodeAndTermCode(queryParam.subjectCode, queryParam.termCode);
+			allDwSections.addAll(slotDwSections);
+		}
+
+		// Identify which dwSections match an IPA emptySectionGroup, and persist section/activities
+		for (DwSection dwSection : allDwSections) {
+			// Convert dw sequenceNumber to sequencePattern
+			Character dwSequenceNumberStart = dwSection.getSequenceNumber().charAt(0);
+			String sequencePattern = null;
+
+			if (Character.isLetter(dwSequenceNumberStart)) {
+				sequencePattern = String.valueOf(dwSequenceNumberStart);
+			} else {
+				sequencePattern = dwSection.getSequenceNumber();
+			}
+
+			// Generate matchingKey for dwSection, example: '201610-ART-001-A'
+			String dwMatchingKey = dwSection.getTermCode() + "-" + dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" + sequencePattern;
+
+			// Find matching ipa sectionGroup
+			for (SectionGroup sectionGroup : emptySectionGroups) {
+				String ipaMatchingKey = sectionGroup.getTermCode() + "-" + sectionGroup.getCourse().getSubjectCode() + "-" + sectionGroup.getCourse().getCourseNumber() + "-" + sectionGroup.getCourse().getSequencePattern();
+
+				if (ipaMatchingKey.equals(dwMatchingKey)) {
+					// TODO: Found a match, create sections/activities from the dw data
+
 				}
 			}
 		}
