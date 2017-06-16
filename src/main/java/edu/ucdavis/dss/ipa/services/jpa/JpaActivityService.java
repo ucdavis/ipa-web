@@ -3,7 +3,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.Location;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.SectionService;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 
 @Service
@@ -138,5 +142,46 @@ public class JpaActivityService implements ActivityService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Activity createFromDwActivity(DwActivity dwActivity) {
+		Activity activity = new Activity();
+
+		ActivityType activityType = new ActivityType();
+		activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
+
+		activity.setActivityTypeCode(activityType);
+
+		String rawStartTime = dwActivity.getSsrmeet_begin_time();
+
+		if (rawStartTime != null) {
+			String minutes = rawStartTime.substring(2, 4);
+			String hours = rawStartTime.substring(0, 2);
+			String formattedStartTime = hours + ":" + minutes + ":00";
+			Time startTime = java.sql.Time.valueOf(formattedStartTime);
+
+			activity.setStartTime(startTime);
+		}
+
+		String rawEndTime = dwActivity.getSsrmeet_end_time();
+
+		if (rawEndTime != null) {
+			String minutes = rawStartTime.substring(2, 4);
+			String hours = rawStartTime.substring(0, 2);
+			String formattedEndTime = hours + ":" + minutes + ":00";
+			Time endTime = java.sql.Time.valueOf(formattedEndTime);
+
+			activity.setEndTime(endTime);
+		}
+
+		String dayIndicator = dwActivity.getDay_indicator();
+		activity.setDayIndicator(dayIndicator);
+
+		activity.setBeginDate( Date.valueOf(dwActivity.getSsrmeet_begin_time()) );
+		activity.setEndDate( Date.valueOf(dwActivity.getSsrmeet_end_time()) );
+		activity.setActivityState(ActivityState.DRAFT);
+
+		return activity;
 	}
 }

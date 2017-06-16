@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import org.springframework.validation.annotation.Validated;
 
@@ -45,4 +46,6 @@ public interface ActivityService {
 	 * @param activities
      */
 	void syncActivityLocations(DwSection dwSection, List<Activity> activities);
+
+	Activity createFromDwActivity(DwActivity dwActivity);
 }
