@@ -257,11 +257,16 @@ public class JpaSectionService implements SectionService {
 					section.setSequenceNumber(dwSection.getSequenceNumber());
 					section.setSeats(dwSection.getMaximumEnrollment());
 
-					section = sectionService.save(section);
+					// Using sectionRepository as this sync needs to bypass the 'term lock' validation
+					section = sectionRepository.save(section);
 
 					// Create activities
 					for (DwActivity dwActivity : dwSection.getActivities()) {
 						Activity activity = activityService.createFromDwActivity(dwActivity);
+
+						Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+						activity.setEndDate(term.getEndDate());
+						activity.setBeginDate(term.getStartDate());
 						activity.setSection(section);
 						activityService.saveActivity(activity);
 					}

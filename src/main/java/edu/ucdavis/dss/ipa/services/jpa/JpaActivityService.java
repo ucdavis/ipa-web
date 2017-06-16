@@ -178,8 +178,6 @@ public class JpaActivityService implements ActivityService {
 		String dayIndicator = dwActivity.getDay_indicator();
 		activity.setDayIndicator(dayIndicator);
 
-		activity.setBeginDate( Date.valueOf(dwActivity.getSsrmeet_begin_time()) );
-		activity.setEndDate( Date.valueOf(dwActivity.getSsrmeet_end_time()) );
 		activity.setActivityState(ActivityState.DRAFT);
 
 		return activity;
