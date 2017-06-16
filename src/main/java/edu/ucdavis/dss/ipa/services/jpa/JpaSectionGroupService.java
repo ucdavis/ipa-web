@@ -26,6 +26,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject TermService termService;
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
+	@Inject ActivityService activityService;
 
 	@Override
 	@Transactional
@@ -140,6 +141,94 @@ public class JpaSectionGroupService implements SectionGroupService {
 			sectionGroup.setTermCode(termCode);
 			sectionGroup.setCourse(course);
 			sectionGroup = sectionGroupRepository.save(sectionGroup);
+		}
+
+		return sectionGroup;
+	}
+
+	/**
+	 * Look through the sectionGroup for activities that exist on every section, remove them, and put them on the sharedActivities list
+	 * @param sectionGroup
+     */
+	@Override
+	public SectionGroup identifyAndCondenseSharedActivities(SectionGroup sectionGroup) {
+
+		List<String> potentialSharedActivityKeys = new ArrayList<>();
+		Boolean isFirstSection = true;
+
+		// Identify activities that are shared among all sections
+		for (Section section : sectionGroup.getSections()) {
+			List<String> sectionKeys = new ArrayList<>();
+
+			for (Activity activity : section.getActivities()) {
+				// Example 'D-0101100-13:10:00-14:00:00'
+				String sectionKey = activity.getActivityTypeCode().getActivityTypeCode() + "-" +
+						activity.getDayIndicator() + "-" +
+						activity.getStartTime() + "-" +
+						activity.getEndTime();
+				sectionKeys.add(sectionKey);
+			}
+
+			if (isFirstSection) {
+				// On first section all sectionKeys are potential
+				potentialSharedActivityKeys.addAll(sectionKeys);
+				isFirstSection = false;
+			} else {
+				// Loop over potentialSharedActivityKeys and ensure each exists in sectionKeys
+				List<String> verifiedKeys = new ArrayList<>();
+
+				for (String potentialKey : potentialSharedActivityKeys) {
+					for (String sectionKey : sectionKeys) {
+						if (sectionKey.equals(potentialKey)) {
+							verifiedKeys.add(potentialKey);
+						}
+					}
+				}
+
+				potentialSharedActivityKeys = verifiedKeys;
+			}
+		}
+
+		// Remove sharedActivities from each section, and add it to the sectionGroup
+		for (String key : potentialSharedActivityKeys) {
+			Activity sharedActivity = null;
+
+			for (Section section : sectionGroup.getSections()) {
+				for (Activity activity : section.getActivities()) {
+					// Example 'D-0101100-13:10:00-14:00:00'
+					String activityKey = activity.getActivityTypeCode().getActivityTypeCode() + "-" +
+							activity.getDayIndicator() + "-" +
+							activity.getStartTime() + "-" +
+							activity.getEndTime();
+
+					if (activityKey.equals(key)) {
+						if (sharedActivity == null) {
+							// Create shared activity on the sectionGroup
+							sharedActivity = new Activity();
+							sharedActivity.setSectionGroup(sectionGroup);
+							sharedActivity.setDayIndicator(activity.getDayIndicator());
+							sharedActivity.setStartTime(activity.getStartTime());
+							sharedActivity.setEndTime(activity.getEndTime());
+							sharedActivity.setBeginDate(activity.getBeginDate());
+							sharedActivity.setEndDate(activity.getEndDate());
+							sharedActivity.setBannerLocation(activity.getBannerLocation());
+							sharedActivity.setLocation(activity.getLocation());
+							sharedActivity.setActivityTypeCode(activity.getActivityTypeCode());
+							sharedActivity = activityService.saveActivity(sharedActivity);
+						}
+
+						// Remove activity from section
+						List<Activity> activities = section.getActivities();
+						int index = activities.indexOf(activity);
+						activities.remove(index);
+						section.setActivities(activities);
+						sectionService.save(section);
+
+						// Delete activity
+						activityService.deleteActivityById(activity.getId());
+					}
+				}
+			}
 		}
 
 		return sectionGroup;

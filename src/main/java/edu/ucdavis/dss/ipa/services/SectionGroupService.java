@@ -31,4 +31,6 @@ public interface SectionGroupService {
 	List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallResponseId(long scheduleId, String termCode, long studentSupportCallResponseId);
 
 	SectionGroup findOrCreateByCourseIdAndTermCode(Long courseId, String termCode);
+
+	SectionGroup identifyAndCondenseSharedActivities(SectionGroup sectionGroup);
 }
