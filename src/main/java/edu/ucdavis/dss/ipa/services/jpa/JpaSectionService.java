@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
@@ -34,6 +35,7 @@ public class JpaSectionService implements SectionService {
 	@Inject NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject JdbcTemplate jdbcTemplate;
+	@Inject SectionService sectionService;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -121,7 +123,7 @@ public class JpaSectionService implements SectionService {
 	@Transactional
 	@Override
 	public void updateSectionsFromDW() {
-/*
+
 		List<Course> courses = this.courseService.getAllCourses();
 
 		// Map Keys will look like allDwSections.get(PSC-2017);
@@ -188,7 +190,7 @@ public class JpaSectionService implements SectionService {
 				}
 			}
 		}
-*/
+
 		// Sync data from banner into empty ipa SectionGroups
 		this.updateEmptySectionGroups();
 	}
@@ -247,10 +249,29 @@ public class JpaSectionService implements SectionService {
 				String ipaMatchingKey = sectionGroup.getTermCode() + "-" + sectionGroup.getCourse().getSubjectCode() + "-" + sectionGroup.getCourse().getCourseNumber() + "-" + sectionGroup.getCourse().getSequencePattern();
 
 				if (ipaMatchingKey.equals(dwMatchingKey)) {
-					// TODO: Found a match, create sections/activities from the dw data
+					// Create section
+					Section section = new Section();
+					section.setSectionGroup(sectionGroup);
 
+					section.setCrn(dwSection.getCrn());
+					section.setSequenceNumber(dwSection.getSequenceNumber());
+					section.setSeats(dwSection.getMaximumEnrollment());
+
+					section = sectionService.save(section);
+
+					// Create activities
+					for (DwActivity dwActivity : dwSection.getActivities()) {
+						Activity activity = activityService.createFromDwActivity(dwActivity);
+						activity.setSection(section);
+						activityService.saveActivity(activity);
+					}
 				}
 			}
+		}
+
+		// Identify activities that exist on all sections, and move them to the sectionGroup sharedActivities
+		for (SectionGroup sectionGroup : emptySectionGroups) {
+			sectionGroupService.identifyAndCondenseSharedActivities(sectionGroup);
 		}
 	}
 
