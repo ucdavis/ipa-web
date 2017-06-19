@@ -23,6 +23,7 @@ public class SyncAction {
 	private long id;
 	private String sectionProperty, childProperty, childUniqueKey;
 	private Section section;
+	private SectionGroup sectionGroup;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,8 +73,7 @@ public class SyncAction {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SectionId", nullable = false)
-	@NotNull
+	@JoinColumn(name = "SectionId")
 	@JsonIgnore
 	public Section getSection() {
 		return section;
@@ -81,6 +81,17 @@ public class SyncAction {
 
 	public void setSection(Section section) {
 		this.section = section;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SectionGroupId")
+	@JsonIgnore
+	public SectionGroup getSectionGroup() {
+		return sectionGroup;
+	}
+
+	public void setSectionGroup(SectionGroup sectionGroup) {
+		this.sectionGroup = sectionGroup;
 	}
 
 	@Transient
@@ -92,4 +103,12 @@ public class SyncAction {
 		return this.getSection().getId();
 	}
 
+	@Transient
+	@JsonProperty("sectionGroupId")
+	public long getSectionGroupIdentification() {
+		if (this.getSectionGroup() == null) {
+			return 0L;
+		}
+		return this.getSectionGroup().getId();
+	}
 }

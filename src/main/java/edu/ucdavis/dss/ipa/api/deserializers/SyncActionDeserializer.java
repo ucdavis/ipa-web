@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SyncAction;
 
 import java.io.IOException;
@@ -42,6 +43,12 @@ public class SyncActionDeserializer extends JsonDeserializer<Object> {
 			Section section = new Section();
 			section.setId(node.get("sectionId").longValue());
 			syncAction.setSection(section);
+		}
+
+		if (node.has("sectionGroupId") && node.get("sectionGroupId").longValue() > 0) {
+			SectionGroup sectionGroup = new SectionGroup();
+			sectionGroup.setId(node.get("sectionGroupId").longValue());
+			syncAction.setSectionGroup(sectionGroup);
 		}
 
 		return syncAction;

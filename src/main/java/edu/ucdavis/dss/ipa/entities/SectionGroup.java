@@ -28,6 +28,7 @@ public class SectionGroup extends BaseEntity {
 	private long id;
 	private Course course;
 	private List<Section> sections;
+	private List<SyncAction> syncActions = new ArrayList<>();
 	private List<SupportAssignment> supportAssignments;
 	private List<StudentSupportPreference> studentInstructionalSupportCallPreferences;
 	private List<InstructorSupportPreference> instructorSupportPreferences;
@@ -69,6 +70,16 @@ public class SectionGroup extends BaseEntity {
 
 	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
 		this.teachingAssignments = teachingAssignments;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sectionGroup", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<SyncAction> getSyncActions() {
+		return syncActions;
+	}
+
+	public void setSyncActions(List<SyncAction> syncActions) {
+		this.syncActions = syncActions;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
