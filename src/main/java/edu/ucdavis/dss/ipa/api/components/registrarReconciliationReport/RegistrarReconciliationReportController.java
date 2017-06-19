@@ -278,6 +278,7 @@ public class RegistrarReconciliationReportController {
 									 HttpServletResponse httpResponse) {
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
@@ -285,6 +286,9 @@ public class RegistrarReconciliationReportController {
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		section.setSectionGroup(sectionGroup);
+		section = this.sectionService.save(section);
 
 		return section;
 	}
