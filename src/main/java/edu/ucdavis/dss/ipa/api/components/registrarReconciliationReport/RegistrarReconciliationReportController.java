@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport;
 
+import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories.ReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -272,10 +274,10 @@ public class RegistrarReconciliationReportController {
 
 	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/sections/{sequenceNumber}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public Section createSection( @PathVariable long sectionGroupId,
-									 @PathVariable String sequenceNumber,
-									 @RequestBody Section section,
-									 HttpServletResponse httpResponse) {
+	public SectionDiffView createSection(@PathVariable long sectionGroupId,
+										@PathVariable String sequenceNumber,
+										@RequestBody Section sectionDto,
+										HttpServletResponse httpResponse) {
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
@@ -287,10 +289,39 @@ public class RegistrarReconciliationReportController {
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
+		Section section = new Section();
+		section.setSeats(sectionDto.getSeats());
+		section.setSequenceNumber(sectionDto.getSequenceNumber());
+		section.setCrn(sectionDto.getCrn());
 		section.setSectionGroup(sectionGroup);
 		section = this.sectionService.save(section);
 
-		return section;
+		List<Activity> activities = new ArrayList<>();
+		for (Activity activityDto : sectionDto.getActivities()) {
+			// Make activities
+			Activity activity = new Activity();
+			activity.setSection(section);
+			activity.setActivityState(ActivityState.DRAFT);
+
+			activity.setBannerLocation(activityDto.getBannerLocation());
+			activity.setActivityTypeCode(activityDto.getActivityTypeCode());
+			activity.setDayIndicator(activityDto.getDayIndicator());
+			activity.setStartTime(activityDto.getStartTime());
+			activity.setEndTime(activityDto.getEndTime());
+			activity.setBeginDate(activityDto.getBeginDate());
+			activity.setEndDate(activityDto.getEndDate());
+			activity = activityService.saveActivity(activity);
+
+			activities.add(activity);
+		}
+
+		section.setActivities(activities);
+
+		// TODO: Make teaching assignments
+		List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+		// TODO: Make instructors if necessary
+
+		return reportViewFactory.createDiffView(section, sectionDto);
 	}
 
 	@RequestMapping(value = "/api/reportView/syncActions/{syncActionId}", method = RequestMethod.DELETE, produces="application/json")

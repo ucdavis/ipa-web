@@ -145,6 +145,11 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		return diffView;
 	}
 
+	@Override
+	public SectionDiffView createDiffView(Section section, Section dwSection) {
+		return null;
+	}
+
 	private SectionDiffDto getIpaSectionDiff(Section section) {
 		if (section == null) {
 			return new SectionDiffDto();
