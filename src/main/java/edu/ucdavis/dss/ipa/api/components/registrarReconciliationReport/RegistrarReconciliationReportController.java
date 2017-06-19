@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import org.hibernate.jdbc.Work;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -252,14 +253,40 @@ public class RegistrarReconciliationReportController {
 	public SyncAction createSyncAction(@RequestBody SyncAction syncAction,
 									   HttpServletResponse httpResponse) {
 		Section section = sectionService.getOneById(syncAction.getSectionIdentification());
-		if (section == null) {
+		SectionGroup sectionGroup = sectionGroupService.getOneById(syncAction.getSectionGroupIdentification());
+		Workgroup workgroup = null;
+
+		if (section != null) {
+			workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		} else if (sectionGroup != null) {
+			workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		} else {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		return syncActionService.save(syncAction);
+	}
+
+	@RequestMapping(value = "/api/reportView/sectionGroups/{sectionGroupId}/sections/{sequenceNumber}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Section createSection( @PathVariable long sectionGroupId,
+									 @PathVariable String sequenceNumber,
+									 @RequestBody Section section,
+									 HttpServletResponse httpResponse) {
+
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		return section;
 	}
 
 	@RequestMapping(value = "/api/reportView/syncActions/{syncActionId}", method = RequestMethod.DELETE, produces="application/json")
@@ -270,7 +297,17 @@ public class RegistrarReconciliationReportController {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return;
 		}
-		Workgroup workgroup = syncAction.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+
+		Workgroup workgroup = null;
+
+		if (syncAction.getSection() != null) {
+			workgroup = syncAction.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		}
+
+		if (syncAction.getSectionGroup() != null) {
+			workgroup = syncAction.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+		}
+
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		syncActionService.delete(syncActionId);

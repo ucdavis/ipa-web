@@ -137,8 +137,9 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			Section placeholderSection = new Section();
 
 			SectionDiffDto dwSectionDiff = getDwSectionDiff(placeholderSection, dwSection);
+			dwSectionDiff.setSectionGroupId(matchingSectionGroup.getId());
 
-			diffView.add(new SectionDiffView(null, dwSectionDiff, null, placeholderSection.getSyncActions()));
+			diffView.add(new SectionDiffView(null, dwSectionDiff, null, matchingSectionGroup.getSyncActions()));
 		}
 
 		return diffView;
