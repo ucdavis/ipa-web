@@ -306,6 +306,9 @@ public class RegistrarReconciliationReportController {
 			activity.setBannerLocation(activityDto.getBannerLocation());
 			activity.setActivityTypeCode(activityDto.getActivityTypeCode());
 			activity.setDayIndicator(activityDto.getDayIndicator());
+			Character taco = activityDto.getDayIndicator().charAt(0);
+			int length = activityDto.getDayIndicator().length();
+
 			activity.setStartTime(activityDto.getStartTime());
 			activity.setEndTime(activityDto.getEndTime());
 			activity.setBeginDate(activityDto.getBeginDate());
@@ -317,9 +320,24 @@ public class RegistrarReconciliationReportController {
 
 		section.setActivities(activities);
 
-		// TODO: Make teaching assignments
-		List<TeachingAssignment> teachingAssignments = new ArrayList<>();
-		// TODO: Make instructors if necessary
+		// Make user, userRoles, instructor and teachingAssignment if necessary
+		if (sectionDto.getSectionGroup() != null) {
+			for (TeachingAssignment teachingAssignmentDto : sectionDto.getSectionGroup().getTeachingAssignments()) {
+				Instructor instructorDto = teachingAssignmentDto.getInstructor();
+
+				if (instructorDto == null || instructorDto.getLoginId() == null || instructorDto.getLoginId().length() == 0) {
+					continue;
+				}
+
+				User user = userService.findOrCreateByLoginId(instructorDto.getLoginId());
+
+				// Ensure they are an instructor
+				Instructor instructor = instructorService.findOrAddActiveInstructor(workgroup, user);
+
+				// Make a teachingAssignment for that instructor
+				teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+			}
+		}
 
 		return reportViewFactory.createDiffView(section, sectionDto);
 	}
