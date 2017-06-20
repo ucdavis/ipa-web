@@ -306,8 +306,6 @@ public class RegistrarReconciliationReportController {
 			activity.setBannerLocation(activityDto.getBannerLocation());
 			activity.setActivityTypeCode(activityDto.getActivityTypeCode());
 			activity.setDayIndicator(activityDto.getDayIndicator());
-			Character taco = activityDto.getDayIndicator().charAt(0);
-			int length = activityDto.getDayIndicator().length();
 
 			activity.setStartTime(activityDto.getStartTime());
 			activity.setEndTime(activityDto.getEndTime());
