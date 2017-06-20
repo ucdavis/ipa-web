@@ -115,7 +115,8 @@ public class UserRole extends BaseEntity {
 
 		boolean isFederation = userRole.getRoleToken().equals("federationInstructor");
 		boolean isSenate = userRole.getRoleToken().equals("senateInstructor");
-		return isFederation || isSenate;
+		boolean isLecturer = userRole.getRoleToken().equals("lecturer");
+		return isFederation || isSenate || isLecturer;
 	}
 
 	/**
