@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import edu.ucdavis.dss.ipa.entities.User;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -36,4 +37,11 @@ public interface UserRoleService {
 	List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgropuId, String roleToken);
 
 	List<UserRole> findByLoginId(String loginId);
+
+	/**
+	 * If the user does not already have an 'instructor' type role (senate/fed/lect), they will be assiged a senate role
+	 * @param workgroup
+	 * @param user
+	 */
+	UserRole findOrAddInstructorRoleToWorkgroup(Workgroup workgroup, User user);
 }

@@ -299,5 +299,28 @@ public class JpaUserRoleService implements UserRoleService {
 		//return userRoleRepository.findByLoginId(loginId);
 	}
 
+	@Override
+	public UserRole findOrAddInstructorRoleToWorkgroup(Workgroup workgroup, User user) {
+		List<UserRole> userRoles = this.findByLoginIdAndWorkgroup(user.getLoginId(), workgroup);
+
+		// Look through current roles for instructor roles
+		for (UserRole userRole : userRoles) {
+			if (UserRole.isInstructor(userRole) == true) {
+				return userRole;
+			}
+		}
+
+		// Make instructor role
+		UserRole userRole = new UserRole();
+		userRole.setUser(user);
+		userRole.setWorkgroup(workgroup);
+		Role role = roleService.findOneByName("senateInstructor");
+		userRole.setRole(role);
+
+		this.save(userRole);
+
+		return userRole;
+	}
+
 }
 

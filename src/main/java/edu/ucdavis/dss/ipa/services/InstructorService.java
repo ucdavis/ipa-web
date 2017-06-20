@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -33,4 +34,11 @@ public interface InstructorService {
 	List<Instructor> findByScheduleId(long scheduleId);
 
 	List<Instructor> findActiveByWorkgroupId(long workgroupId);
+
+	/**
+	 * Creates instructors and userRoles if necessary.
+	 * @param workgroup
+	 * @param user
+	 */
+	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
 }
