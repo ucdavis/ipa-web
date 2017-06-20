@@ -14,10 +14,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
@@ -64,11 +61,14 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 				Activity activity = new Activity();
 				activity.setActivityState(ActivityState.DRAFT);
 
-				String bannerLocation = String.valueOf(objNode.get("bannerLocation"));
-				activity.setBannerLocation(bannerLocation);
-
-				String dayIndicator = String.valueOf(objNode.get("dayIndicator"));
-				activity.setDayIndicator(dayIndicator);
+				if (objNode.has("bannerLocation") && !objNode.get("bannerLocation").isNull()) {
+					activity.setBannerLocation(objNode.get("bannerLocation").textValue());
+				}
+				if (objNode.has("dayIndicator")) {
+					activity.setDayIndicator(objNode.get("dayIndicator").textValue());
+				} else {
+					activity.setDayIndicator("0000000");
+				}
 
 				if (objNode.has("startTime") && !objNode.get("startTime").isNull() && !objNode.get("startTime").equals("Invalid date")) {
 					Time startTime = convertToTime(objNode.get("startTime").textValue());
@@ -86,8 +86,53 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 				}
 
 				activities.add(activity);
-				section.setActivities(activities);
 			}
+
+			section.setActivities(activities);
+		}
+
+		arrNode = node.get("instructors");
+
+		List<Instructor> instructors = new ArrayList<>();
+
+		if (arrNode.isArray()) {
+			// SectionGroup is needed to attach teaching assignments, which is needed to attach instructors
+			SectionGroup sectionGroup = new SectionGroup();
+			List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+
+			for (final JsonNode objNode : arrNode) {
+				Instructor instructor = new Instructor();
+
+				if (objNode.has("firstName") && !objNode.get("firstName").isNull()) {
+					instructor.setFirstName(objNode.get("firstName").textValue());
+				}
+
+				if (objNode.has("lastName") && !objNode.get("lastName").isNull()) {
+					instructor.setLastName(objNode.get("lastName").textValue());
+				}
+
+				if (objNode.has("loginId") && !objNode.get("loginId").isNull()) {
+					instructor.setLoginId(objNode.get("loginId").textValue());
+				}
+
+				if (objNode.has("ucdStudentSID") && !objNode.get("ucdStudentSID").isNull()) {
+					instructor.setUcdStudentSID(objNode.get("ucdStudentSID").textValue());
+				}
+
+				if (objNode.has("email") && !objNode.get("email").isNull()) {
+					instructor.setEmail(objNode.get("email").textValue());
+				}
+
+				instructors.add(instructor);
+
+				// Scaffolding out structure to tie sections to instructors
+				TeachingAssignment teachingAssignment = new TeachingAssignment();
+				teachingAssignment.setInstructor(instructor);
+				teachingAssignments.add(teachingAssignment);
+			}
+
+			sectionGroup.setTeachingAssignments(teachingAssignments);
+			section.setSectionGroup(sectionGroup);
 		}
 
 		return section;
