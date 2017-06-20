@@ -56,7 +56,7 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 
 		List<Activity> activities = new ArrayList<>();
 
-		if (arrNode.isArray()) {
+		if (arrNode != null && arrNode.isArray()) {
 			for (final JsonNode objNode : arrNode) {
 				Activity activity = new Activity();
 				activity.setActivityState(ActivityState.DRAFT);
@@ -95,7 +95,7 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 
 		List<Instructor> instructors = new ArrayList<>();
 
-		if (arrNode.isArray()) {
+		if (arrNode != null && arrNode.isArray()) {
 			// SectionGroup is needed to attach teaching assignments, which is needed to attach instructors
 			SectionGroup sectionGroup = new SectionGroup();
 			List<TeachingAssignment> teachingAssignments = new ArrayList<>();
