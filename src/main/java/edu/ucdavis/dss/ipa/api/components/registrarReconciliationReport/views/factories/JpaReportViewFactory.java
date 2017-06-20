@@ -147,7 +147,41 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 	@Override
 	public SectionDiffView createDiffView(Section section, Section dwSection) {
-		return null;
+
+		Javers javers = JaversBuilder
+				.javers()
+				.withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
+				.build();
+
+		String termCode = section.getSectionGroup().getTermCode();
+
+		// Generate uniqueKey for section to query DW
+		List<String> uniqueKeys = new ArrayList<>();
+
+		String subjectCode = section.getSectionGroup().getCourse().getSubjectCode();
+		String courseNumber = section.getSectionGroup().getCourse().getCourseNumber();
+		String sequenceNumber = section.getSequenceNumber();
+
+		String uniqueKey = subjectCode + "-" + courseNumber + "-" + sequenceNumber;
+		uniqueKeys.add(uniqueKey);
+
+		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
+
+		SectionDiffDto ipaSectionDiff = getIpaSectionDiff(section);
+		SectionDiffDto dwSectionDiff = getDwSectionDiff(section, dwSections);
+
+		if (dwSectionDiff == null) {
+			// Section does not exist in DataWarehouse
+
+			return new SectionDiffView(ipaSectionDiff, null, null, section.getSyncActions());
+		} else {
+			// Section exists on both ends, calculate the differences
+			Diff diff = javers.compare(ipaSectionDiff, dwSectionDiff);
+			// Delete the sync actions that don't make sense anymore
+			deleteObsoleteSyncActions(section, diff);
+
+			return new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions());
+		}
 	}
 
 	private SectionDiffDto getIpaSectionDiff(Section section) {

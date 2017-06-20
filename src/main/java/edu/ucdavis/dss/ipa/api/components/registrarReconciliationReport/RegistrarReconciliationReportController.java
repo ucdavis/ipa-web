@@ -335,7 +335,9 @@ public class RegistrarReconciliationReportController {
 				Instructor instructor = instructorService.findOrAddActiveInstructor(workgroup, user);
 
 				// Make a teachingAssignment for that instructor
-				teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+				TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+				teachingAssignment.setApproved(true);
+				teachingAssignmentService.save(teachingAssignment);
 			}
 		}
 
