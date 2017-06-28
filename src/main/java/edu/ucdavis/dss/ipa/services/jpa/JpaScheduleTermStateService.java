@@ -23,39 +23,45 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 
 	public ScheduleTermState createScheduleTermState(Term term) {
 		ScheduleTermState state = new ScheduleTermState();
-		
+
 		state.setTermCode(term.getTermCode());
-		
+
 		if(term != null && term.getEndDate() != null && term.getEndDate().before(new Date())) {
 			state.setState(TermState.COMPLETED);
 			return state;
 		}
 
 		state.setState(TermState.ANNUAL_DRAFT);
-		
+
 		return state;
 	}
 
 	@Override
 	public List<ScheduleTermState> getScheduleTermStatesBySchedule(Schedule schedule) {
 		if(schedule == null) return null;
-		
+
 		List<Term> terms = this.scheduleService.getActiveTermCodesForSchedule(schedule);
 		if(terms == null) return null;
-		
+
 		List<ScheduleTermState> states = new ArrayList<>();
-		
+
 		for(Term term : terms) {
 			states.add(this.createScheduleTermState(term));
 		}
-		
+
 		return states;
 	}
 
 	@Override
 	public List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId) {
+		User user = userService.getOneByLoginId(loginId);
+		List<Term> terms = new ArrayList<>();
 
-		List<Term> terms = termService.findByLoginId(loginId);
+		for (Workgroup workgroup : user.getWorkgroups()) {
+			List<Term> workgroupTerms = termService.findActiveTermCodesByWorkgroupId(workgroup.getId());
+			terms.addAll(workgroupTerms);
+		}
+
 		List<ScheduleTermState> states = new ArrayList<>();
 
 		for(Term term : terms) {
