@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -22,7 +20,7 @@ public class SectionGroupCost {
     SectionGroup sectionGroup;
     private long enrollment, taCount, sectionCount, readerCount, instructorCost;
     Instructor instructor;
-    Instructor replacementInstructor;
+    Instructor originalInstructor;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,11 +98,11 @@ public class SectionGroupCost {
     }
 
     @JsonIgnore
-    public Instructor getReplacementInstructor() {
-        return replacementInstructor;
+    public Instructor getOriginalInstructor() {
+        return originalInstructor;
     }
 
-    public void setReplacementInstructor(Instructor replacementInstructor) {
-        this.replacementInstructor = replacementInstructor;
+    public void setOriginalInstructor(Instructor originalInstructor) {
+        this.originalInstructor = originalInstructor;
     }
 }
