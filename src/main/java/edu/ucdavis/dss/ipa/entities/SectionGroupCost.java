@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SectionGroupCost {
     private long id;
     SectionGroup sectionGroup;
+    BudgetScenario budgetScenario;
     private long enrollment, taCount, sectionCount, readerCount, instructorCost;
     Instructor instructor;
     Instructor originalInstructor;
@@ -104,5 +105,17 @@ public class SectionGroupCost {
 
     public void setOriginalInstructor(Instructor originalInstructor) {
         this.originalInstructor = originalInstructor;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BudgetScenarioId", nullable = false)
+    @NotNull
+    @JsonIgnore
+    public BudgetScenario getBudgetScenario() {
+        return budgetScenario;
+    }
+
+    public void setBudgetScenario(BudgetScenario budgetScenario) {
+        this.budgetScenario = budgetScenario;
     }
 }

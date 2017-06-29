@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +23,7 @@ public class Budget {
     private long id;
     private Schedule schedule;
     private long taCost, readerCost, lecturerCost;
+    private List<BudgetScenario> budgetScenarios;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,5 +73,15 @@ public class Budget {
 
     public void setLecturerCost(long lecturerCost) {
         this.lecturerCost = lecturerCost;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<BudgetScenario> getBudgetScenarios() {
+        return budgetScenarios;
+    }
+
+    public void setBudgetScenarios(List<BudgetScenario> budgetScenarios) {
+        this.budgetScenarios = budgetScenarios;
     }
 }
