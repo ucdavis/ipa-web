@@ -35,6 +35,9 @@ import java.util.Map;
 @CrossOrigin // TODO: make CORS more specific depending on profile
 public class BudgetViewController {
     @Inject BudgetViewFactory budgetViewFactory;
+    @Inject BudgetService budgetService;
+    @Inject BudgetScenarioService budgetScenarioService;
+
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
      *
@@ -43,13 +46,39 @@ public class BudgetViewController {
      * @param httpResponse
      * @return
      */
-    @RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public BudgetView showBudgetView(@PathVariable long workgroupId, @PathVariable long year,
-                                     @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+    public BudgetView showBudgetView(@PathVariable long workgroupId,
+                                     @PathVariable long year,
                                      HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        return budgetViewFactory.createBudgetView(workgroupId, year);
+        // Ensure budget exists
+        Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        return budgetViewFactory.createBudgetView(workgroupId, year, budget);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public BudgetView createBudgetScenario(@PathVariable long budgetId,
+                                           @RequestBody String budgetScenarioName,
+                                           HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        Budget budget = budgetService.findById(budgetId);
+
+        if (budget == null || budgetScenarioName == null || budgetScenarioName.length() == 0) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budget.getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        BudgetScenario budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioName);
+
+        return budgetScenario;
     }
 }
