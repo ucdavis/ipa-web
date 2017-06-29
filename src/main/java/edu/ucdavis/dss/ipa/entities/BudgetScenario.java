@@ -67,4 +67,14 @@ public class BudgetScenario {
     public void setSectionGroupCosts(List<SectionGroupCost> sectionGroupCosts) {
         this.sectionGroupCosts = sectionGroupCosts;
     }
+
+    @JsonProperty("budgetIdentification")
+    @Transient
+    public long getBudgetIdentification() {
+        if(budget != null) {
+            return budget.getId();
+        } else {
+            return 0;
+        }
+    }
 }

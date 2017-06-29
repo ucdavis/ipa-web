@@ -61,7 +61,7 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public BudgetView createBudgetScenario(@PathVariable long budgetId,
+    public BudgetScenario createBudgetScenario(@PathVariable long budgetId,
                                            @RequestBody String budgetScenarioName,
                                            HttpServletResponse httpResponse) {
 

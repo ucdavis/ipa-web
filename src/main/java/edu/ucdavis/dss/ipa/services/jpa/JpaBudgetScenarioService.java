@@ -31,5 +31,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(budget);
         budgetScenario.setName(budgetScenarioName);
+        budgetScenario = budgetScenarioRepository.save(budgetScenario);
+
+        return budgetScenario;
     }
 }

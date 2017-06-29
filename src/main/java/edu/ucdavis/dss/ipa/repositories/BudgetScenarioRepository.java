@@ -8,7 +8,5 @@ public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario,
 
     Budget findById(Long id);
 
-    Budget findByScheduleId(Long scheduleId);
-
     BudgetScenario findByBudgetIdAndName(long id, String budgetScenarioName);
 }

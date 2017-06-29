@@ -10,7 +10,7 @@ import java.util.List;
 public interface LineItemRepository extends CrudRepository<LineItem, Long> {
 
     @Query( " SELECT DISTINCT li" +
-            " FROM Budget b, BudgetScenaro bs, LineItem li" +
+            " FROM Budget b, BudgetScenario bs, LineItem li" +
             " WHERE li.budgetScenario = bs" +
             " AND bs.budget = b" +
             " AND b.id = :budgetId ")

@@ -10,7 +10,7 @@ import java.util.List;
 public interface SectionGroupCostRepository extends CrudRepository<SectionGroupCost, Long> {
 
     @Query( " SELECT DISTINCT sgc" +
-            " FROM Budget b, BudgetScenaro bs, SectionGroupCost sgc" +
+            " FROM Budget b, BudgetScenario bs, SectionGroupCost sgc" +
             " WHERE sgc.budgetScenario = bs" +
             " AND bs.budget = b" +
             " AND b.id = :budgetId ")
