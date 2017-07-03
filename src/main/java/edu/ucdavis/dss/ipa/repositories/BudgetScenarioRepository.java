@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario, Long> {
 
-    Budget findById(Long id);
+    BudgetScenario findById(Long id);
 
     BudgetScenario findByBudgetIdAndName(long id, String budgetScenarioName);
 }

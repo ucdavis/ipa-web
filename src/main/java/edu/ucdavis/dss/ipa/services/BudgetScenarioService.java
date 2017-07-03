@@ -8,4 +8,8 @@ import org.springframework.validation.annotation.Validated;
 public interface BudgetScenarioService {
 
     BudgetScenario findOrCreate(Budget budget, String budgetScenarioName);
+
+    BudgetScenario findById(long budgetScenarioId);
+
+    void deleteById(long budgetScenarioId);
 }

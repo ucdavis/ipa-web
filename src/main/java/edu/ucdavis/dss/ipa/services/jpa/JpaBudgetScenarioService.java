@@ -35,4 +35,14 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         return budgetScenario;
     }
+
+    @Override
+    public BudgetScenario findById(long budgetScenarioId) {
+        return budgetScenarioRepository.findById(budgetScenarioId);
+    }
+
+    @Override
+    public void deleteById(long budgetScenarioId) {
+        budgetScenarioRepository.delete(budgetScenarioId);
+    }
 }
