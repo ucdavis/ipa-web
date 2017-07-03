@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "Budgets")
+@Table(name = "LineItems")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class LineItem {
     private long id;

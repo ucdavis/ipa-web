@@ -32,6 +32,7 @@ CREATE TABLE `LineItems` (
   `Amount` int(11) NOT NULL,
   `Description` varchar(50) NOT NULL,
   `Notes` varchar(50) NULL,
+  `BudgetScenarioId` int(11) NOT NULL,
   `LineItemCategoryId` int(11) NULL
 );
 
@@ -42,7 +43,6 @@ CREATE TABLE `LineItemCategories` (
 
 CREATE TABLE `LineItemComments` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `LineItemId` int(11) NOT NULL,
   `Comment` varchar(200) NOT NULL,
   `UserId` int(11) NOT NULL,
   `AuthorName` varchar(50) NOT NULL
@@ -50,7 +50,8 @@ CREATE TABLE `LineItemComments` (
 
 CREATE TABLE `SectionGroupCostComments` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `SectionGroupCostId` int(11) NOT NULL,
+  `BudgetScenarioId` int(11) NOT NULL,
+  `SectionGroupId` int(11) NOT NULL,
   `Comment` varchar(200) NOT NULL,
   `UserId` int(11) NOT NULL,
   `AuthorName` varchar(50) NOT NULL
@@ -58,6 +59,7 @@ CREATE TABLE `SectionGroupCostComments` (
 
 CREATE TABLE `InstructorCosts` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `BudgetId` int(11) NOT NULL,
   `InstructorId` int(11) NOT NULL,
   `Cost` int(11) NULL,
   `Lecturer` int(11) DEFAULT 0 NOT NULL

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "Budgets")
+@Table(name = "SectionGroupCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class SectionGroupCost {
     private long id;
@@ -89,6 +89,9 @@ public class SectionGroupCost {
         this.instructorCost = instructorCost;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorId", nullable = false)
+    @NotNull
     @JsonIgnore
     public Instructor getInstructor() {
         return instructor;
@@ -98,6 +101,9 @@ public class SectionGroupCost {
         this.instructor = instructor;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OriginalInstructorId", nullable = false)
+    @NotNull
     @JsonIgnore
     public Instructor getOriginalInstructor() {
         return originalInstructor;

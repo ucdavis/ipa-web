@@ -68,7 +68,7 @@ public class BudgetScenario {
         this.sectionGroupCosts = sectionGroupCosts;
     }
 
-    @JsonProperty("budgetIdentification")
+    @JsonProperty("budgetId")
     @Transient
     public long getBudgetIdentification() {
         if(budget != null) {
