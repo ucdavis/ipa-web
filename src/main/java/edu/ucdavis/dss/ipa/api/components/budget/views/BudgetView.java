@@ -12,16 +12,19 @@ public class BudgetView {
     List<SectionGroupCost> sectionGroupCosts;
     List<LineItem> lineItems;
     Budget budget;
+    List<LineItemCategory> lineItemCategories;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
             List<SectionGroupCost> sectionGroupCosts,
             List<LineItem> lineItems,
-            Budget budget) {
+            Budget budget,
+            List<LineItemCategory> lineItemCategories) {
         setBudgetScenarios(budgetScenarios);
         setSectionGroupCosts(sectionGroupCosts);
         setLineItems(lineItems);
         setBudget(budget);
+        setLineItemCategories(lineItemCategories);
     }
 
     public String getWorkgroupId() {
@@ -62,5 +65,13 @@ public class BudgetView {
 
     public void setBudget(Budget budget) {
         this.budget = budget;
+    }
+
+    public List<LineItemCategory> getLineItemCategories() {
+        return lineItemCategories;
+    }
+
+    public void setLineItemCategories(List<LineItemCategory> lineItemCategories) {
+        this.lineItemCategories = lineItemCategories;
     }
 }
