@@ -37,6 +37,7 @@ public class BudgetViewController {
     @Inject BudgetViewFactory budgetViewFactory;
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioService budgetScenarioService;
+    @Inject LineItemService lineItemService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -59,7 +60,7 @@ public class BudgetViewController {
         return budgetViewFactory.createBudgetView(workgroupId, year, budget);
     }
 
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/budgets/{budgetId}", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public BudgetScenario createBudgetScenario(@PathVariable long budgetId,
                                                @RequestBody BudgetScenario budgetScenarioDTO,
@@ -102,5 +103,50 @@ public class BudgetViewController {
         budgetScenarioService.deleteById(budgetScenarioId);
 
         return budgetScenarioId;
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public LineItem createLineItem(@PathVariable long budgetScenarioId,
+                                               @RequestBody LineItem lineItemDTO,
+                                               HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        LineItem lineItem = lineItemService.findOrCreate(lineItemDTO);
+
+        return lineItem;
+    }
+
+    @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public Long deleteLineItem(@PathVariable long lineItemId,
+                                     HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        LineItem lineItem = lineItemService.findById(lineItemId);
+
+        if (lineItem == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        lineItemService.deleteById(lineItemId);
+
+        return lineItemId;
     }
 }

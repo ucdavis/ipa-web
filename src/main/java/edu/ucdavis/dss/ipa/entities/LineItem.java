@@ -9,10 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Budget is used to record information common to all budget scenarios.
- */
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "LineItems")
@@ -21,7 +17,7 @@ public class LineItem {
     private long id;
     private BudgetScenario budgetScenario;
     private long amount, description;
-    private String category;
+    private LineItemCategory lineItemCategory;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,4 +45,41 @@ public class LineItem {
         this.budgetScenario = budgetScenario;
     }
 
+    public long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(long amount) {
+        this.amount = amount;
+    }
+
+    public long getDescription() {
+        return description;
+    }
+
+    public void setDescription(long description) {
+        this.description = description;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LineItemCategoryId", nullable = false)
+    @NotNull
+    @JsonIgnore
+    public LineItemCategory getLineItemCategory() {
+        return lineItemCategory;
+    }
+
+    public void setLineItemCategory(LineItemCategory lineItemCategory) {
+        this.lineItemCategory = lineItemCategory;
+    }
+
+    @JsonProperty("lineItemCategoryId")
+    @Transient
+    public long getLineItemCategoryId() {
+        if(lineItemCategory != null) {
+            return lineItemCategory.getId();
+        } else {
+            return 0;
+        }
+    }
 }
