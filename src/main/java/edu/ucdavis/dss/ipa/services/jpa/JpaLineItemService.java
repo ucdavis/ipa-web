@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.repositories.LineItemRepository;
 import edu.ucdavis.dss.ipa.services.LineItemService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -23,6 +24,7 @@ public class JpaLineItemService implements LineItemService {
     }
 
     @Override
+    @Transactional
     public void deleteById(long lineItemId) {
         lineItemRepository.deleteById(lineItemId);
     }

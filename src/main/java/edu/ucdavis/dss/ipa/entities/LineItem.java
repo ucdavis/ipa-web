@@ -16,7 +16,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LineItem {
     private long id;
     private BudgetScenario budgetScenario;
-    private long amount, description;
+    private long amount;
+    private String description, notes;
     private LineItemCategory lineItemCategory;
 
     @Id
@@ -53,12 +54,20 @@ public class LineItem {
         this.amount = amount;
     }
 
-    public long getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(long description) {
+    public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -78,6 +87,16 @@ public class LineItem {
     public long getLineItemCategoryId() {
         if(lineItemCategory != null) {
             return lineItemCategory.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("budgetScenarioId")
+    @Transient
+    public long getBudgetScenarioId() {
+        if(budgetScenario != null) {
+            return budgetScenario.getId();
         } else {
             return 0;
         }
