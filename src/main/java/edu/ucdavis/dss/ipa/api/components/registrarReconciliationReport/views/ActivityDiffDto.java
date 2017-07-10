@@ -30,10 +30,6 @@ public class ActivityDiffDto {
 		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode);
 		setTypeCode(typeCode);
 
-		if ("null null".equals(bannerLocation)) {
-			bannerLocation = null;
-		}
-
 		setBannerLocation(bannerLocation);
 		setDayIndicator(dayIndicator);
 		setStartTime(startTime);
