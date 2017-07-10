@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import org.springframework.stereotype.Service;
@@ -33,5 +32,57 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setInstructorCost(originalSectionGroupCost.getInstructorCost());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
+    }
+
+    @Override
+    public SectionGroupCost createFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
+        SectionGroupCost sectionGroupCost = new SectionGroupCost();
+
+        sectionGroupCost.setBudgetScenario(budgetScenario);
+        sectionGroupCost.setSectionGroup(sectionGroup);
+
+        // Set instructor
+        Instructor instructor = null;
+        for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+            Instructor instructorDTO = teachingAssignment.getInstructor();
+            if (instructorDTO != null) {
+                instructor = instructorDTO;
+            }
+        }
+
+        sectionGroupCost.setInstructor(instructor);
+
+        // Set sectionCount
+        Integer sectionCount = sectionGroup.getSections().size();
+        sectionGroupCost.setSectionCount(sectionCount);
+
+        // set enrollment
+        Long enrollment = 0L;
+
+        for (Section section : sectionGroup.getSections()) {
+            enrollment += section.getSeats();
+        }
+
+        sectionGroupCost.setEnrollment(enrollment);
+
+        // Set reader and ta count
+        Long readerCount = 0L;
+        Long taCount = 0L;
+
+        for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
+            if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {
+                Long taAmount = supportAssignment.getAppointmentPercentage() / 50;
+                taCount += taAmount;
+            }
+            if (supportAssignment.getAppointmentType().equals("reader")) {
+                Long readerAmount = supportAssignment.getAppointmentPercentage() / 50;
+                readerCount += readerAmount;
+            }
+        }
+
+        sectionGroupCost.setReaderCount(readerCount);
+        sectionGroupCost.setTaCount(taCount);
+
+        return sectionGroupCostRepository.save(sectionGroupCost);
     }
 }

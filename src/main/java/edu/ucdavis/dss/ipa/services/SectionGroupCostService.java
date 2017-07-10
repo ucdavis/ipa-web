@@ -10,4 +10,6 @@ public interface SectionGroupCostService {
     List<SectionGroupCost> findByBudgetId(Long budgetId);
 
     SectionGroupCost createFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario);
+
+    SectionGroupCost createFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario);
 }
