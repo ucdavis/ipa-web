@@ -28,6 +28,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -98,7 +99,7 @@ public class DwClient {
 						targetHost, httpget, context);
 				
 				StatusLine line = response.getStatusLine();
-				if(line.getStatusCode() != 200) {
+				if(line.getStatusCode() != HttpStatus.OK.value()) {
 					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 				}
 
