@@ -46,8 +46,15 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("amount")) {
+            Long amount = null;
+
             String stringAmount = node.get("amount").textValue();
-            Long amount = Long.valueOf(stringAmount);
+            if (stringAmount == null) {
+                amount = node.get("amount").longValue();
+            } else {
+                amount = Long.valueOf(stringAmount);
+            }
+
             lineItem.setAmount(amount);
         }
         return lineItem;
