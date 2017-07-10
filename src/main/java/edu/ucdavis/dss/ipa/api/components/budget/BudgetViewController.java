@@ -173,4 +173,27 @@ public class BudgetViewController {
 
         return lineItemId;
     }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems/{lineItemId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public LineItem updateLineItem(@PathVariable long budgetScenarioId,
+                                   @PathVariable long lineItemId,
+                                   @RequestBody LineItem lineItemDTO,
+                                   HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+        LineItem lineItem = lineItemService.findById(lineItemDTO.getId());
+
+        if (budgetScenario == null || lineItem == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return lineItemService.update(lineItemDTO);
+    }
 }
