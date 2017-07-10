@@ -38,6 +38,7 @@ public class BudgetViewController {
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject LineItemService lineItemService;
+    @Inject LineItemCategoryService lineItemCategoryService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -113,7 +114,7 @@ public class BudgetViewController {
 
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-
+        LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategoryId());
         if (budgetScenario == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
@@ -123,6 +124,9 @@ public class BudgetViewController {
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
+        // Build lineItem
+        lineItemDTO.setBudgetScenario(budgetScenario);
+        lineItemDTO.setLineItemCategory(lineItemCategory);
         LineItem lineItem = lineItemService.findOrCreate(lineItemDTO);
 
         return lineItem;

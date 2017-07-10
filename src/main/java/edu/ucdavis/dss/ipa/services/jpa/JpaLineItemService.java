@@ -39,7 +39,10 @@ public class JpaLineItemService implements LineItemService {
 
         lineItem = new LineItem();
         lineItem.setBudgetScenario(lineItemDTO.getBudgetScenario());
-
+        lineItem.setLineItemCategory(lineItemDTO.getLineItemCategory());
+        lineItem.setAmount(lineItemDTO.getAmount());
+        lineItem.setNotes(lineItemDTO.getNotes());
+        lineItem.setDescription(lineItemDTO.getDescription());
         return lineItemRepository.save(lineItem);
     }
 }

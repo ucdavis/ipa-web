@@ -11,4 +11,6 @@ import java.util.List;
 @Validated
 public interface LineItemCategoryService {
     List<LineItemCategory> findAll();
+
+    LineItemCategory findById(long lineItemCategoryId);
 }
