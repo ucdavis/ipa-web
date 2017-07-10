@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
@@ -71,12 +72,12 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 				}
 
 				if (objNode.has("startTime") && !objNode.get("startTime").isNull() && !objNode.get("startTime").equals("Invalid date")) {
-					Time startTime = convertToTime(objNode.get("startTime").textValue());
+					Time startTime = Utilities.convertToTime(objNode.get("startTime").textValue());
 					activity.setStartTime(startTime);
 				}
 
 				if (objNode.has("endTime") && !objNode.get("endTime").isNull() && !objNode.get("endTime").equals("Invalid date")) {
-					Time endTime = convertToTime(objNode.get("endTime").textValue());
+					Time endTime = Utilities.convertToTime(objNode.get("endTime").textValue());
 					activity.setEndTime(endTime);
 				}
 
@@ -136,18 +137,5 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 		}
 
 		return section;
-	}
-
-	private Time convertToTime(String textTime) {
-		if (textTime == null || textTime.length() == 0) {
-			return null;
-		}
-
-		try {
-			return java.sql.Time.valueOf(textTime);
-		} catch ( IllegalArgumentException e ) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		}
-		return null;
 	}
 }
