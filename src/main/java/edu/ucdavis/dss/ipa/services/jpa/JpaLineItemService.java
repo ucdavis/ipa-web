@@ -45,4 +45,19 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setDescription(lineItemDTO.getDescription());
         return lineItemRepository.save(lineItem);
     }
+
+    @Override
+    public LineItem update(LineItem lineItem) {
+        LineItem originalLineItem = this.findById(lineItem.getId());
+
+        if(originalLineItem == null) {
+            return null;
+        }
+
+        originalLineItem.setDescription(lineItem.getDescription());
+        originalLineItem.setAmount(lineItem.getAmount());
+        originalLineItem.setNotes(lineItem.getNotes());
+
+        return this.lineItemRepository.save(originalLineItem);
+    }
 }

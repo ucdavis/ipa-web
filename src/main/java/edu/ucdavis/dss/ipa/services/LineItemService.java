@@ -16,4 +16,6 @@ public interface LineItemService {
     void deleteById(long lineItemId);
 
     LineItem findOrCreate(LineItem lineItemDTO);
+
+    LineItem update(LineItem lineItem);
 }
