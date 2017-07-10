@@ -1,14 +1,12 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -21,6 +19,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject ScheduleService scheduleService;
     @Inject BudgetScenarioRepository budgetScenarioRepository;
     @Inject SectionGroupCostService sectionGroupCostService;
+    @Inject SectionGroupService sectionGroupService;
 
     @Override
     public BudgetScenario findOrCreate(Budget budget, String budgetScenarioName) {
@@ -38,7 +37,19 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setName(budgetScenarioName);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        return budgetScenario;
+        // Create sectionGroupCosts
+        Schedule schedule = budget.getSchedule();
+        List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(schedule.getWorkgroup().getId(), schedule.getYear());
+        List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
+
+        for (SectionGroup sectionGroup : sectionGroups) {
+            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
+            sectionGroupCosts.add(sectionGroupCost);
+        }
+
+        budgetScenario.setSectionGroupCosts(sectionGroupCosts);
+
+        return this.budgetScenarioRepository.save(budgetScenario);
     }
 
 
