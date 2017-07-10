@@ -254,6 +254,12 @@ public class RegistrarReconciliationReportController {
 	@ResponseBody
 	public SyncAction createSyncAction(@RequestBody SyncAction syncAction,
 									   HttpServletResponse httpResponse) {
+
+		if (syncAction == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
 		Section section = sectionService.getOneById(syncAction.getSectionIdentification());
 		SectionGroup sectionGroup = sectionGroupService.getOneById(syncAction.getSectionGroupIdentification());
 		Workgroup workgroup = null;
