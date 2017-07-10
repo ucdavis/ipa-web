@@ -61,11 +61,19 @@ public class BudgetViewController {
         return budgetViewFactory.createBudgetView(workgroupId, year, budget);
     }
 
+    /**
+     * @param budgetId
+     * @param budgetScenarioDTO
+     * @param httpResponse
+     * @return
+     */
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public BudgetScenario createBudgetScenario(@PathVariable long budgetId,
+                                               @RequestParam(value="scenarioId") Long scenarioId,
                                                @RequestBody BudgetScenario budgetScenarioDTO,
                                                HttpServletResponse httpResponse) {
+
 
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
@@ -79,7 +87,19 @@ public class BudgetViewController {
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        BudgetScenario budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioDTO.getName());
+        BudgetScenario budgetScenario = null;
+
+        // If a budget scenario id was supplied, copy data, else create from schedule
+        if (scenarioId != 0) {
+            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName());
+        } else {
+            budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioDTO.getName());
+        }
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
 
         return budgetScenario;
     }
