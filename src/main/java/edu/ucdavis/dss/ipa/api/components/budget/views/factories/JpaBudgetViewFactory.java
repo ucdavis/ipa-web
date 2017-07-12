@@ -26,10 +26,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
         List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-        List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 
-        BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories);
+        BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories, sectionGroups, sections);
         return budgetView;
     }
 }
