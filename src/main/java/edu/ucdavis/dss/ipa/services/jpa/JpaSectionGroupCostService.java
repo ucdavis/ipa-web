@@ -52,6 +52,16 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         sectionGroupCost.setInstructor(instructor);
 
+        // Set course meta data
+        sectionGroupCost.setCourseNumber(sectionGroup.getCourse().getCourseNumber());
+        sectionGroupCost.setSubjectCode(sectionGroup.getCourse().getSubjectCode());
+        sectionGroupCost.setEffectiveTermCode(sectionGroup.getCourse().getEffectiveTermCode());
+        sectionGroupCost.setTitle(sectionGroup.getCourse().getTitle());
+        sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
+        sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsHigh());
+        sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+        sectionGroupCost.setSequencePattern(sectionGroup.getCourse().getSequencePattern());
+
         // Set sectionCount
         Integer sectionCount = sectionGroup.getSections().size();
         sectionGroupCost.setSectionCount(sectionCount);
@@ -60,7 +70,9 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         Long enrollment = 0L;
 
         for (Section section : sectionGroup.getSections()) {
-            enrollment += section.getSeats();
+            if (section.getSeats() != null) {
+                enrollment += section.getSeats();
+            }
         }
 
         sectionGroupCost.setEnrollment(enrollment);

@@ -22,7 +22,8 @@ public class SectionGroupCost {
     private long enrollment = 0, taCount = 0, sectionCount = 0, readerCount = 0, instructorCost = 0;
     private Instructor instructor;
     private Instructor originalInstructor;
-
+    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern;
+    private float unitsHigh, unitsLow;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
@@ -38,7 +39,7 @@ public class SectionGroupCost {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SectionGroupId", nullable = false)
+    @JoinColumn(name = "SectionGroupId", nullable = true)
     @NotNull
     @JsonIgnore
     public SectionGroup getSectionGroup() {
@@ -121,5 +122,69 @@ public class SectionGroupCost {
 
     public void setBudgetScenario(BudgetScenario budgetScenario) {
         this.budgetScenario = budgetScenario;
+    }
+
+    public float getUnitsHigh() {
+        return unitsHigh;
+    }
+
+    public void setUnitsHigh(float unitsHigh) {
+        this.unitsHigh = unitsHigh;
+    }
+
+    public float getUnitsLow() {
+        return unitsLow;
+    }
+
+    public void setUnitsLow(float unitsLow) {
+        this.unitsLow = unitsLow;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
+
+    public String getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
+    }
+
+    public String getEffectiveTermCode() {
+        return effectiveTermCode;
+    }
+
+    public void setEffectiveTermCode(String effectiveTermCode) {
+        this.effectiveTermCode = effectiveTermCode;
+    }
+
+    public String getSequencePattern() {
+        return sequencePattern;
+    }
+
+    public void setSequencePattern(String sequencePattern) {
+        this.sequencePattern = sequencePattern;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
     }
 }
