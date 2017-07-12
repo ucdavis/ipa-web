@@ -181,6 +181,11 @@ public class JpaSectionService implements SectionService {
 		}
 	}
 
+	@Override
+	public List<Section> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
+		return sectionRepository.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+	}
+
 	private boolean isLocked(Section section) {
 		SectionGroup sectionGroup = section.getSectionGroup();
 		if (sectionGroup == null) { return true; }

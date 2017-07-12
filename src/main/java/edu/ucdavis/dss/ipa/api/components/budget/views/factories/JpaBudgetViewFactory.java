@@ -2,9 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -16,13 +14,20 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
+    @Inject SectionGroupService sectionGroupService;
+    @Inject CourseService courseService;
+    @Inject SectionService sectionService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
+
         List<BudgetScenario> budgetScenarios = budget.getBudgetScenarios();
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
+        List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+        List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 
         BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories);
         return budgetView;
