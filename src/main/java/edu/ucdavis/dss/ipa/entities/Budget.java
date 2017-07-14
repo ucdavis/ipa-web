@@ -23,7 +23,7 @@ public class Budget {
     private long id;
     private Schedule schedule;
     private long taCost, readerCost, lecturerCost;
-    private List<BudgetScenario> budgetScenarios;
+    private List<BudgetScenario> budgetScenarios = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
