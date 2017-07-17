@@ -8,4 +8,6 @@ public interface BudgetService {
     Budget findOrCreateByWorkgroupIdAndYear(long workgroupId, long year);
 
     Budget findById(long budgetId);
+
+    Budget update(Budget budgetDTO);
 }

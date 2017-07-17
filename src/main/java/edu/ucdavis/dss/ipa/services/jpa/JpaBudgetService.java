@@ -48,6 +48,21 @@ public class JpaBudgetService implements BudgetService {
         return budgetRepository.findById(budgetId);
     }
 
+    @Override
+    public Budget update(Budget budgetDTO) {
+        Budget originalBudget = this.findById(budgetDTO.getId());
+
+        if(originalBudget == null) {
+            return null;
+        }
+
+        originalBudget.setTaCost(budgetDTO.getTaCost());
+        originalBudget.setReaderCost(budgetDTO.getReaderCost());
+        originalBudget.setLecturerCost(budgetDTO.getLecturerCost());
+
+        return this.budgetRepository.save(originalBudget);
+    }
+
     private Budget createBudgetBySchedule(Schedule schedule) {
         Budget budget = new Budget();
         budget.setSchedule(schedule);

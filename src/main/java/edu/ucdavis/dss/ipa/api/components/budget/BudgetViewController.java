@@ -196,4 +196,25 @@ public class BudgetViewController {
 
         return lineItemService.update(lineItemDTO);
     }
+
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public Budget updateBudget(@PathVariable long budgetId,
+                                   @RequestBody Budget budgetDTO,
+                                   HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        Budget budget = budgetService.findById(budgetId);
+
+        if (budget == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budget.getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return budgetService.update(budgetDTO);
+    }
 }
