@@ -12,4 +12,8 @@ public interface SectionGroupCostService {
     SectionGroupCost createFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario);
 
     SectionGroupCost createFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario);
+
+    SectionGroupCost findById(long sectionGroupCostId);
+
+    SectionGroupCost update(SectionGroupCost sectionGroupCostDTO);
 }

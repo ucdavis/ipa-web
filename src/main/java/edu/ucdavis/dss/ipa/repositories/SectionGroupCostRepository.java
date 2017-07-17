@@ -16,4 +16,5 @@ public interface SectionGroupCostRepository extends CrudRepository<SectionGroupC
             " AND b.id = :budgetId ")
     List<SectionGroupCost> findByBudgetId(@Param("budgetId") Long budgetId);
 
+    SectionGroupCost findById(long sectionGroupCostId);
 }

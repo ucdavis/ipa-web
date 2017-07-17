@@ -39,6 +39,7 @@ public class BudgetViewController {
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
+    @Inject SectionGroupCostService sectionGroupCostService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -216,5 +217,26 @@ public class BudgetViewController {
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return budgetService.update(budgetDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public SectionGroupCost updateSectionGroupCost(@PathVariable long sectionGroupCostId,
+                               @RequestBody SectionGroupCost sectionGroupCostDTO,
+                               HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        SectionGroupCost originalSectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
+
+        if (originalSectionGroupCost == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = originalSectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return sectionGroupCostService.update(sectionGroupCostDTO);
     }
 }

@@ -97,4 +97,25 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         return sectionGroupCostRepository.save(sectionGroupCost);
     }
+
+    @Override
+    public SectionGroupCost findById(long sectionGroupCostId) {
+        return this.sectionGroupCostRepository.findById(sectionGroupCostId);
+    }
+
+    @Override
+    public SectionGroupCost update(SectionGroupCost sectionGroupCostDTO) {
+        SectionGroupCost originalSectionGroupCost = this.findById(sectionGroupCostDTO.getId());
+
+        if(originalSectionGroupCost == null) {
+            return null;
+        }
+
+        originalSectionGroupCost.setTaCount(sectionGroupCostDTO.getTaCount());
+        originalSectionGroupCost.setReaderCount(sectionGroupCostDTO.getReaderCount());
+        originalSectionGroupCost.setEnrollment(sectionGroupCostDTO.getEnrollment());
+        originalSectionGroupCost.setSectionCount(sectionGroupCostDTO.getSectionCount());
+
+        return this.sectionGroupCostRepository.save(originalSectionGroupCost);
+    }
 }
