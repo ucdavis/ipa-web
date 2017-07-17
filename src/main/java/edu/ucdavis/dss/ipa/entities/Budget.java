@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Budget {
     private long id;
     private Schedule schedule;
-    private long taCost, readerCost, lecturerCost;
+    private float taCost, readerCost, lecturerCost;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
 
     @Id
@@ -51,27 +51,27 @@ public class Budget {
         this.schedule = schedule;
     }
 
-    public long getTaCost() {
+    public float getTaCost() {
         return taCost;
     }
 
-    public void setTaCost(long taCost) {
+    public void setTaCost(float taCost) {
         this.taCost = taCost;
     }
 
-    public long getReaderCost() {
+    public float getReaderCost() {
         return readerCost;
     }
 
-    public void setReaderCost(long readerCost) {
+    public void setReaderCost(float readerCost) {
         this.readerCost = readerCost;
     }
 
-    public long getLecturerCost() {
+    public float getLecturerCost() {
         return lecturerCost;
     }
 
-    public void setLecturerCost(long lecturerCost) {
+    public void setLecturerCost(float lecturerCost) {
         this.lecturerCost = lecturerCost;
     }
 

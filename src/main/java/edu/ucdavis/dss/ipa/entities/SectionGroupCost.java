@@ -19,11 +19,12 @@ public class SectionGroupCost {
     private long id;
     private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
-    private long enrollment = 0, taCount = 0, sectionCount = 0, readerCount = 0, instructorCost = 0;
+    private long enrollment = 0, taCount = 0, sectionCount = 0, readerCount = 0;
     private Instructor instructor;
     private Instructor originalInstructor;
     private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern;
-    private float unitsHigh, unitsLow;
+    private float unitsHigh, unitsLow, instructorCost = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
@@ -82,11 +83,11 @@ public class SectionGroupCost {
         this.readerCount = readerCount;
     }
 
-    public long getInstructorCost() {
+    public float getInstructorCost() {
         return instructorCost;
     }
 
-    public void setInstructorCost(long instructorCost) {
+    public void setInstructorCost(float instructorCost) {
         this.instructorCost = instructorCost;
     }
 
