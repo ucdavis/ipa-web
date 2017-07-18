@@ -66,7 +66,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         Integer sectionCount = sectionGroup.getSections().size();
         sectionGroupCost.setSectionCount(sectionCount);
 
-        // set enrollment
+        // Set enrollment
         Long enrollment = 0L;
 
         for (Section section : sectionGroup.getSections()) {

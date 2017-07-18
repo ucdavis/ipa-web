@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 public interface BudgetScenarioService {
-
     BudgetScenario findOrCreate(Budget budget, String budgetScenarioName);
 
     BudgetScenario findById(long budgetScenarioId);

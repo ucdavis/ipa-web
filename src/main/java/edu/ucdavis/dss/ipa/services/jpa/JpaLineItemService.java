@@ -43,6 +43,7 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setAmount(lineItemDTO.getAmount());
         lineItem.setNotes(lineItemDTO.getNotes());
         lineItem.setDescription(lineItemDTO.getDescription());
+
         return lineItemRepository.save(lineItem);
     }
 

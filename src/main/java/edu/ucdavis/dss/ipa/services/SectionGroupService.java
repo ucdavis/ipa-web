@@ -10,7 +10,6 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 
 @Validated
 public interface SectionGroupService {
-
 	SectionGroup getOneById(Long id);
 
 	SectionGroup save(SectionGroup sectionGroup);

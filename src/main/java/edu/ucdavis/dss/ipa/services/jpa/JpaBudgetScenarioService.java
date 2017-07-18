@@ -23,11 +23,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public BudgetScenario findOrCreate(Budget budget, String budgetScenarioName) {
-
         BudgetScenario budgetScenario = budgetScenarioRepository.findByBudgetIdAndName(budget.getId(), budgetScenarioName);
 
         if (budgetScenario != null) {
-            // Matching budgetScenario already existed
+            // Matching budgetScenario already exists
             return budgetScenario;
         }
 
@@ -52,9 +51,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return this.budgetScenarioRepository.save(budgetScenario);
     }
 
-
     /**
-     * Create a new budget scenario as a 'fork' of the supplied scenario
+     * Duplicate the supplied scenario
      * @param scenarioId
      * @param name
      * @return

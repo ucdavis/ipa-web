@@ -20,7 +20,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
-
         List<BudgetScenario> budgetScenarios = budget.getBudgetScenarios();
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
@@ -29,6 +28,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 
         BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories, sectionGroups, sections);
+
         return budgetView;
     }
 }

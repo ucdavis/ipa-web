@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LineItemRepository extends CrudRepository<LineItem, Long> {
-
     @Query( " SELECT DISTINCT li" +
             " FROM Budget b, BudgetScenario bs, LineItem li" +
             " WHERE li.budgetScenario = bs" +
