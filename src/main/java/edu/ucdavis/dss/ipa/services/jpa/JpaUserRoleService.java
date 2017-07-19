@@ -103,7 +103,7 @@ public class JpaUserRoleService implements UserRoleService {
 						user.getLoginId());
 			}
 
-			if (roleName.equals("senateInstructor") || roleName.equals("federationInstructor")) {
+			if (roleName.equals("senateInstructor") || roleName.equals("federationInstructor") || roleName.equals("lecturer")) {
 				log.info("Creating instructor for user '" + user.getLoginId() + "'");
 				Instructor instructor = instructorService.findOrCreate(
 					user.getFirstName(),
@@ -223,16 +223,22 @@ public class JpaUserRoleService implements UserRoleService {
 			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
 			for (UserRole userRole: instructorRoles) {
 				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
-				if (instructor != null) {
-					// Add to list of instructors if not already there. This should never happen since
-					// an instructor should be either Senate OR Federation, but not both.
-					// Prevents getting the AJS dupes error
-					if (!workgroupInstructors.contains(instructor)) {
-						workgroupInstructors.add(instructor);
-					}
-				} else {
-					Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
-					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+
+				if (instructor == null) {
+					// Create instructor if it does not exist
+					String firstName = userRole.getUser().getFirstName();
+					String lastName = userRole.getUser().getLastName();
+					String email = userRole.getUser().getEmail();
+					String loginId = userRole.getUser().getLoginId();
+
+					instructor = instructorService.findOrCreate(firstName, lastName, email, loginId, workgroupId);
+				}
+
+				// Add to list of instructors if not already there. This should never happen since
+				// an instructor should be either Senate OR Federation, but not both.
+				// Prevents getting the AJS dupes error
+				if (!workgroupInstructors.contains(instructor)) {
+					workgroupInstructors.add(instructor);
 				}
 			}
 		}
