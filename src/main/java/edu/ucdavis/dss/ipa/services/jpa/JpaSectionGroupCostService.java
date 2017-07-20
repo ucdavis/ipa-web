@@ -30,6 +30,15 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setTaCount(originalSectionGroupCost.getTaCount());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
         sectionGroupCost.setInstructorCost(originalSectionGroupCost.getInstructorCost());
+        sectionGroupCost.setSubjectCode(originalSectionGroupCost.getSubjectCode());
+        sectionGroupCost.setCourseNumber(originalSectionGroupCost.getCourseNumber());
+        sectionGroupCost.setTitle(originalSectionGroupCost.getTitle());
+        sectionGroupCost.setEffectiveTermCode(originalSectionGroupCost.getEffectiveTermCode());
+        sectionGroupCost.setUnitsHigh(originalSectionGroupCost.getUnitsHigh());
+        sectionGroupCost.setUnitsLow(originalSectionGroupCost.getUnitsLow());
+        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
+        sectionGroupCost.setSequencePattern(originalSectionGroupCost.getSequencePattern());
+        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
