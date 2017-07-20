@@ -188,4 +188,14 @@ public class SectionGroupCost {
     public void setTermCode(String termCode) {
         this.termCode = termCode;
     }
+
+    @JsonProperty("budgetScenarioId")
+    @Transient
+    public long getBudgetScenarioId() {
+        if(budgetScenario != null) {
+            return budgetScenario.getId();
+        } else {
+            return 0;
+        }
+    }
 }
