@@ -3,10 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -20,6 +17,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject BudgetScenarioRepository budgetScenarioRepository;
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject SectionGroupService sectionGroupService;
+    @Inject LineItemService lineItemService;
 
     @Override
     public BudgetScenario findOrCreate(Budget budget, String budgetScenarioName) {
@@ -73,13 +71,25 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         List<SectionGroupCost> sectionGroupCostList = new ArrayList<>();
 
-        // Clone sectionGroupCosts from one scenario to another
+        // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
             SectionGroupCost sectionGroupCost = sectionGroupCostService.createFrom(originalSectionGroupCost, budgetScenario);
             sectionGroupCostList.add(sectionGroupCost);
         }
 
         budgetScenario.setSectionGroupCosts(sectionGroupCostList);
+        budgetScenario = budgetScenarioRepository.save(budgetScenario);
+
+        // Clone lineItems
+        List<LineItem> lineItems = new ArrayList<>();
+
+        // Clone sectionGroupCosts from one scenario to another
+        for(LineItem originalLineItem : originalBudgetScenario.getLineItems()) {
+            LineItem lineItem = lineItemService.createDuplicate(originalLineItem, budgetScenario);
+            lineItems.add(lineItem);
+        }
+
+        budgetScenario.setLineItems(lineItems);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
         return budgetScenario;

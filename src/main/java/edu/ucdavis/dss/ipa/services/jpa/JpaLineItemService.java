@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.repositories.LineItemRepository;
 import edu.ucdavis.dss.ipa.services.LineItemService;
@@ -60,5 +61,19 @@ public class JpaLineItemService implements LineItemService {
         originalLineItem.setNotes(lineItem.getNotes());
 
         return this.lineItemRepository.save(originalLineItem);
+    }
+
+    @Override
+    public LineItem createDuplicate(LineItem originalLineItem, BudgetScenario budgetScenario) {
+        LineItem lineItem = new LineItem();
+
+        lineItem.setBudgetScenario(budgetScenario);
+
+        lineItem.setNotes(originalLineItem.getNotes());
+        lineItem.setAmount(originalLineItem.getAmount());
+        lineItem.setDescription(originalLineItem.getDescription());
+        lineItem.setLineItemCategory(originalLineItem.getLineItemCategory());
+
+        return this.lineItemRepository.save(lineItem);
     }
 }

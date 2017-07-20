@@ -18,4 +18,6 @@ public interface LineItemService {
     LineItem findOrCreate(LineItem lineItemDTO);
 
     LineItem update(LineItem lineItem);
+
+    LineItem createDuplicate(LineItem originalLineItem, BudgetScenario budgetScenario);
 }

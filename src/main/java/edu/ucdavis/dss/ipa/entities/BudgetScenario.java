@@ -23,6 +23,7 @@ public class BudgetScenario {
     private Budget budget;
     private String name;
     private List<SectionGroupCost> sectionGroupCosts;
+    private List<LineItem> lineItems;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +67,16 @@ public class BudgetScenario {
 
     public void setSectionGroupCosts(List<SectionGroupCost> sectionGroupCosts) {
         this.sectionGroupCosts = sectionGroupCosts;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budgetScenario", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<LineItem> getLineItems() {
+        return lineItems;
+    }
+
+    public void setLineItems(List<LineItem> lineItems) {
+        this.lineItems = lineItems;
     }
 
     @JsonProperty("budgetId")
