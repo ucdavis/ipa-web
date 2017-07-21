@@ -50,6 +50,10 @@ public class InstructorCost {
         this.budget = budget;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorId", nullable = false)
+    @NotNull
+    @JsonIgnore
     public Instructor getInstructor() {
         return instructor;
     }
@@ -76,7 +80,7 @@ public class InstructorCost {
 
     @JsonProperty("instructorId")
     @Transient
-    public long getInstructorId() {
+    public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
         } else {
@@ -86,7 +90,7 @@ public class InstructorCost {
 
     @JsonProperty("budgetId")
     @Transient
-    public long getBudgetId() {
+    public long getBudgetIdentification() {
         if(budget != null) {
             return budget.getId();
         } else {
