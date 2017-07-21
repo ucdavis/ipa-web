@@ -33,6 +33,11 @@ public interface InstructorService {
 
 	List<Instructor> findByScheduleId(long scheduleId);
 
+	/**
+	 * Find all instructors associated to active 'instructor' type users in the workgroup.
+	 * @param workgroupId
+	 * @return
+	 */
 	List<Instructor> findActiveByWorkgroupId(long workgroupId);
 
 	/**
@@ -41,4 +46,8 @@ public interface InstructorService {
 	 * @param user
 	 */
 	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
+
+	List<Instructor> findAssignedByScheduleId(long scheduleId);
+
+	List<Instructor> findActiveByWorkgroupIdAndLecturer(long id, boolean b);
 }

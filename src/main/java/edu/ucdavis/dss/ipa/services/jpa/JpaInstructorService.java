@@ -148,6 +148,11 @@ public class JpaInstructorService implements InstructorService {
 		return uniqueInstructors;
 	}
 
+	/**
+	 * Find all instructors associated to active 'instructor' type users in the workgroup.
+	 * @param workgroupId
+	 * @return
+     */
 	public List<Instructor> findActiveByWorkgroupId(long workgroupId) {
 		List<Instructor> activeInstructors = new ArrayList<Instructor>();
 
@@ -156,7 +161,7 @@ public class JpaInstructorService implements InstructorService {
 		List<UserRole> userRoles = workgroup.getUserRoles();
 
 		for (UserRole userRole : userRoles) {
-			if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor")) {
+			if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor") || userRole.getRoleToken().equals("lecturer")) {
 				String loginId = userRole.getUser().getLoginId();
 
 				Instructor slotInstructor = this.getOneByLoginId(loginId);
@@ -176,5 +181,51 @@ public class JpaInstructorService implements InstructorService {
 		userRoleService.findOrAddInstructorRoleToWorkgroup(workgroup, user);
 
 		return instructor;
+	}
+
+	@Override
+	public List<Instructor> findAssignedByScheduleId(long scheduleId) {
+		Schedule schedule = scheduleService.findById(scheduleId);
+
+		if (schedule == null) {
+			return null;
+		}
+
+		List<Instructor> instructors = new ArrayList<>();
+
+		for (TeachingAssignment teachingAssignment : schedule.getTeachingAssignments()) {
+			if (teachingAssignment.isApproved()) {
+				instructors.add(teachingAssignment.getInstructor());
+			}
+		}
+
+		return instructors;
+	}
+
+	@Override
+	public List<Instructor> findActiveByWorkgroupIdAndLecturer(long workgroupId, boolean isLecturer) {
+		List<Instructor> activeInstructors = new ArrayList<Instructor>();
+		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		List<UserRole> userRoles = workgroup.getUserRoles();
+
+		for (UserRole userRole : userRoles) {
+			if (isLecturer) {
+				if (userRole.getRoleToken().equals("lecturer")) {
+					String loginId = userRole.getUser().getLoginId();
+
+					Instructor slotInstructor = this.getOneByLoginId(loginId);
+					activeInstructors.add(slotInstructor);
+				}
+			} else {
+				if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor") || userRole.getRoleToken().equals("lecturer")) {
+					String loginId = userRole.getUser().getLoginId();
+
+					Instructor slotInstructor = this.getOneByLoginId(loginId);
+					activeInstructors.add(slotInstructor);
+				}
+			}
+		}
+
+		return activeInstructors;
 	}
 }
