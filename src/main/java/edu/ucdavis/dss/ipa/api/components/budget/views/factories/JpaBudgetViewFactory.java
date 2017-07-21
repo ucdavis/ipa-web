@@ -17,6 +17,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
     @Inject SectionService sectionService;
+    @Inject InstructorCostService instructorCostService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -26,8 +27,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
         List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+        List<InstructorCost> instructorCosts = budget.getInstructorCosts();
 
-        BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories, sectionGroups, sections);
+        BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, lineItems, budget, lineItemCategories, sectionGroups, sections, instructorCosts);
 
         return budgetView;
     }

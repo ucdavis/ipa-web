@@ -15,6 +15,7 @@ public class BudgetView {
     List<LineItemCategory> lineItemCategories;
     List<SectionGroup> sectionGroups;
     List<Section> sections;
+    List<InstructorCost> instructorCosts;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -23,7 +24,8 @@ public class BudgetView {
             Budget budget,
             List<LineItemCategory> lineItemCategories,
             List<SectionGroup> sectionGroups,
-            List<Section> sections) {
+            List<Section> sections,
+            List<InstructorCost> instructorCosts) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -31,6 +33,7 @@ public class BudgetView {
         setLineItems(lineItems);
         setBudget(budget);
         setLineItemCategories(lineItemCategories);
+        setInstructorCosts(instructorCosts);
     }
 
     public String getWorkgroupId() {
@@ -95,5 +98,13 @@ public class BudgetView {
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
     }
 }
