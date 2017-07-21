@@ -16,4 +16,6 @@ public interface InstructorCostService {
     void deleteById(long instructorCostId);
 
     InstructorCost update(InstructorCost instructorCost);
+
+    List<InstructorCost> findOrCreateManyFromWorkgroupAndYear(Workgroup workgroup, long year);
 }
