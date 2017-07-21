@@ -21,8 +21,8 @@ public class InstructorCost {
     private long id;
     private Budget budget;
     private Instructor instructor;
-    private float cost;
-    private Boolean lecturer;
+    private float cost = 0f;
+    private Boolean lecturer = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
