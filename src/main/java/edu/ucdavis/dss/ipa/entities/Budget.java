@@ -24,6 +24,7 @@ public class Budget {
     private Schedule schedule;
     private float taCost, readerCost, lecturerCost;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
+    private List<InstructorCost> instructorCosts = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,5 +84,15 @@ public class Budget {
 
     public void setBudgetScenarios(List<BudgetScenario> budgetScenarios) {
         this.budgetScenarios = budgetScenarios;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
     }
 }
