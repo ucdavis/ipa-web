@@ -60,10 +60,7 @@ public class JpaInstructorCostService implements InstructorCostService {
             return null;
         }
 
-        originalInstructorCost.setBudget(instructorCostDTO.getBudget());
         originalInstructorCost.setCost(instructorCostDTO.getCost());
-        originalInstructorCost.setInstructor(instructorCostDTO.getInstructor());
-        originalInstructorCost.setLecturer(instructorCostDTO.getLecturer());
 
         return this.instructorCostRepository.save(originalInstructorCost);
     }
@@ -96,12 +93,40 @@ public class JpaInstructorCostService implements InstructorCostService {
      */
     private List<InstructorCost> findOrCreateFromWorkgroup(Workgroup workgroup, Budget budget) {
         List<InstructorCost> instructorCosts = new ArrayList<>();
+        List<Long> instructorCostIdsHash = new ArrayList<>();
 
+        // Find existing instructorCosts
+        List<InstructorCost> existingInstructorCosts = budget.getInstructorCosts();
+
+        // Only add unique occurrences of the instructorCost
+        for (InstructorCost instructorCost : existingInstructorCosts) {
+            if (instructorCostIdsHash.indexOf(instructorCost.getId()) == -1) {
+                instructorCosts.add(instructorCost);
+                instructorCostIdsHash.add(instructorCost.getId());
+            }
+        }
+
+        // Add instructorCosts from lecturers
         List<Instructor> lecturers = instructorService.findActiveByWorkgroupIdAndLecturer(workgroup.getId(), true);
-        instructorCosts.addAll(this.findOrCreateFromInstructors(lecturers, budget, true));
+        List<InstructorCost> lecturerInstructorCosts = this.findOrCreateFromInstructors(lecturers, budget, true);
 
+        for (InstructorCost instructorCost : lecturerInstructorCosts) {
+            if (instructorCostIdsHash.indexOf(instructorCost.getId()) == -1) {
+                instructorCosts.add(instructorCost);
+                instructorCostIdsHash.add(instructorCost.getId());
+            }
+        }
+
+        // Add non lecturer instructorCosts
         List<Instructor> nonLecturers = instructorService.findActiveByWorkgroupIdAndLecturer(workgroup.getId(), false);
-        instructorCosts.addAll(this.findOrCreateFromInstructors(nonLecturers, budget, true));
+        List<InstructorCost> nonLecturerInstructorCosts = this.findOrCreateFromInstructors(nonLecturers, budget, false);
+
+        for (InstructorCost instructorCost : nonLecturerInstructorCosts) {
+            if (instructorCostIdsHash.indexOf(instructorCost.getId()) == -1) {
+                instructorCosts.add(instructorCost);
+                instructorCostIdsHash.add(instructorCost.getId());
+            }
+        }
 
         return instructorCosts;
     }

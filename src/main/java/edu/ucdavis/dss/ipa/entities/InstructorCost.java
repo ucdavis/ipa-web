@@ -10,13 +10,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorCostDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "InstructorCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonDeserialize(using = LineItemDeserializer.class)
+@JsonDeserialize(using = InstructorCostDeserializer.class)
 public class InstructorCost {
     private long id;
     private Budget budget;
