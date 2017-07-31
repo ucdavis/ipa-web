@@ -13,7 +13,8 @@ public class Utilities {
      * @return
      */
     public static Time convertToTime(String textTime) {
-        if (textTime == null || textTime.length() == 0) {
+        // textTime is expected to be in the format of '12:34:56'
+        if (textTime == null || textTime.length() != 8) {
             return null;
         }
 
