@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
@@ -50,4 +51,6 @@ public interface InstructorService {
 	List<Instructor> findAssignedByScheduleId(long scheduleId);
 
 	List<Instructor> findActiveByWorkgroupIdAndLecturer(long id, boolean b);
+
+	List<Instructor> findByInstructorCosts(List<InstructorCost> instructorCosts);
 }

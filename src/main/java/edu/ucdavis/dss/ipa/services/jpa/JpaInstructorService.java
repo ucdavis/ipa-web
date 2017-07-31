@@ -228,4 +228,15 @@ public class JpaInstructorService implements InstructorService {
 
 		return activeInstructors;
 	}
+
+	@Override
+	public List<Instructor> findByInstructorCosts(List<InstructorCost> instructorCosts) {
+		List<Instructor> instructors = new ArrayList<>();
+
+		for (InstructorCost instructorCost : instructorCosts) {
+			instructors.add(instructorCost.getInstructor());
+		}
+
+		return instructors;
+	}
 }
