@@ -6,6 +6,8 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
 /**
  * Budget is used to record information common to all budget scenarios.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "SectionGroupCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonDeserialize(using = SectionGroupCostDeserializer.class)
 public class SectionGroupCost {
     private long id;
     private SectionGroup sectionGroup;
@@ -22,7 +25,7 @@ public class SectionGroupCost {
     private long enrollment = 0, taCount = 0, sectionCount = 0, readerCount = 0;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern;
+    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
     private float unitsHigh, unitsLow, instructorCost = 0;
 
     @Id
@@ -189,11 +192,39 @@ public class SectionGroupCost {
         this.termCode = termCode;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     @JsonProperty("budgetScenarioId")
     @Transient
     public long getBudgetScenarioId() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorId")
+    @Transient
+    public long getInstructorId() {
+        if(instructor != null) {
+            return instructor.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("originalInstructorId")
+    @Transient
+    public long getOriginalInstructorId() {
+        if(originalInstructor != null) {
+            return originalInstructor.getId();
         } else {
             return 0;
         }

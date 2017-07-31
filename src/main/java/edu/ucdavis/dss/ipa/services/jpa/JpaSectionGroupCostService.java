@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostRepository;
+import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Service
 public class JpaSectionGroupCostService implements SectionGroupCostService {
     @Inject SectionGroupCostRepository sectionGroupCostRepository;
+    @Inject InstructorService instructorService;
 
     @Override
     public List<SectionGroupCost> findByBudgetId(Long budgetId) {
@@ -124,6 +126,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setReaderCount(sectionGroupCostDTO.getReaderCount());
         originalSectionGroupCost.setEnrollment(sectionGroupCostDTO.getEnrollment());
         originalSectionGroupCost.setSectionCount(sectionGroupCostDTO.getSectionCount());
+        originalSectionGroupCost.setInstructorCost(sectionGroupCostDTO.getInstructorCost());
+        originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
+
+        originalSectionGroupCost.setInstructor(instructorService.getOneById(sectionGroupCostDTO.getInstructorId()));
+        originalSectionGroupCost.setOriginalInstructor(instructorService.getOneById(sectionGroupCostDTO.getOriginalInstructorId()));
 
         return this.sectionGroupCostRepository.save(originalSectionGroupCost);
     }

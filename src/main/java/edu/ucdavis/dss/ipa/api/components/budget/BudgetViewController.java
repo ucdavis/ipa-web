@@ -40,6 +40,7 @@ public class BudgetViewController {
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject SectionGroupCostService sectionGroupCostService;
+    @Inject InstructorCostService instructorCostService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -217,6 +218,27 @@ public class BudgetViewController {
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return budgetService.update(budgetDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/instructorCosts/{instructorCostId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public InstructorCost updateInstructorCost(@PathVariable long instructorCostId,
+                               @RequestBody InstructorCost instructorCostDTO,
+                               HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        InstructorCost originalInstructorCost = instructorCostService.findById(instructorCostId);
+
+        if (originalInstructorCost == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return instructorCostService.update(instructorCostDTO);
     }
 
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}", method = RequestMethod.PUT, produces="application/json")

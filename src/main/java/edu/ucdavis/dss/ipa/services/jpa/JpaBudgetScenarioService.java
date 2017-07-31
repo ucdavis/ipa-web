@@ -80,10 +80,9 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setSectionGroupCosts(sectionGroupCostList);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        // Clone lineItems
+        // Clone lineItems from one scenario to another
         List<LineItem> lineItems = new ArrayList<>();
 
-        // Clone sectionGroupCosts from one scenario to another
         for(LineItem originalLineItem : originalBudgetScenario.getLineItems()) {
             LineItem lineItem = lineItemService.createDuplicate(originalLineItem, budgetScenario);
             lineItems.add(lineItem);
