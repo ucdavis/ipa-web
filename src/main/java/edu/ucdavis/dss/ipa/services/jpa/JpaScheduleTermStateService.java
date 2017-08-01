@@ -56,13 +56,17 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 	public List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId) {
 		User user = userService.getOneByLoginId(loginId);
 		List<Term> terms = new ArrayList<>();
+		List<ScheduleTermState> states = new ArrayList<>();
+
+		if (user == null) {
+			return states;
+		}
 
 		for (Workgroup workgroup : user.getWorkgroups()) {
 			List<Term> workgroupTerms = termService.findActiveTermCodesByWorkgroupId(workgroup.getId());
 			terms.addAll(workgroupTerms);
 		}
 
-		List<ScheduleTermState> states = new ArrayList<>();
 
 		for(Term term : terms) {
 			states.add(this.createScheduleTermState(term));
