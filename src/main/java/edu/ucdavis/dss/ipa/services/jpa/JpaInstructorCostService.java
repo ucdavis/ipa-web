@@ -143,6 +143,7 @@ public class JpaInstructorCostService implements InstructorCostService {
             InstructorCost instructorCost = new InstructorCost();
             instructorCost.setInstructor(instructor);
             instructorCost.setBudget(budget);
+
             instructorCost.setLecturer(isLecturer);
 
             instructorCost = this.findOrCreate(instructorCost);

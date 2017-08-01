@@ -26,7 +26,7 @@ public class SectionGroupCost {
     private Instructor instructor;
     private Instructor originalInstructor;
     private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
-    private float unitsHigh, unitsLow, instructorCost = 0;
+    private Float unitsHigh, unitsLow, instructorCost;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,11 +86,11 @@ public class SectionGroupCost {
         this.readerCount = readerCount;
     }
 
-    public float getInstructorCost() {
+    public Float getInstructorCost() {
         return instructorCost;
     }
 
-    public void setInstructorCost(float instructorCost) {
+    public void setInstructorCost(Float instructorCost) {
         this.instructorCost = instructorCost;
     }
 

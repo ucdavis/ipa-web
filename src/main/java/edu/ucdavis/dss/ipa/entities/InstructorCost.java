@@ -22,7 +22,7 @@ public class InstructorCost {
     private long id;
     private Budget budget;
     private Instructor instructor;
-    private float cost = 0f;
+    private Float cost;
     private Boolean lecturer = false;
 
     @Id
@@ -63,11 +63,11 @@ public class InstructorCost {
         this.instructor = instructor;
     }
 
-    public float getCost() {
+    public Float getCost() {
         return cost;
     }
 
-    public void setCost(float cost) {
+    public void setCost(Float cost) {
         this.cost = cost;
     }
 
