@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Budget {
     private long id;
     private Schedule schedule;
-    private float taCost, readerCost, lecturerCost;
+    private float taCost = 0f, readerCost = 0f, lecturerCost = 0f;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
     private List<InstructorCost> instructorCosts = new ArrayList<>();
 
