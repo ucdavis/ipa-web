@@ -20,7 +20,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 public class LineItem {
     private long id;
     private BudgetScenario budgetScenario;
-    private long amount;
+    private float amount = 0f;
     private String description, notes;
     private LineItemCategory lineItemCategory;
 
@@ -50,11 +50,11 @@ public class LineItem {
         this.budgetScenario = budgetScenario;
     }
 
-    public long getAmount() {
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 

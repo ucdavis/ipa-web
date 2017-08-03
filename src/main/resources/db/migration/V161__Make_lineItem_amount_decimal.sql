@@ -1,0 +1,1 @@
+ALTER TABLE `LineItems` CHANGE COLUMN `Amount` `Amount` FLOAT NOT NULL;
