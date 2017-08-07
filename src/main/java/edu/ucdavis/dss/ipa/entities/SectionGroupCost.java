@@ -9,10 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
-/**
- * Budget is used to record information common to all budget scenarios.
- */
-
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "SectionGroupCosts")

@@ -41,6 +41,9 @@ public class BudgetViewController {
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject InstructorCostService instructorCostService;
+    @Inject UserService userService;
+    @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
+    @Inject LineItemCommentService lineItemCommentService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -260,5 +263,62 @@ public class BudgetViewController {
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return sectionGroupCostService.update(sectionGroupCostDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostComments", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public SectionGroupCostComment createSectionGroupCostComment(@PathVariable long sectionGroupCostId,
+                                   @RequestBody SectionGroupCostComment sectionGroupCostCommentDTO,
+                                   HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
+        User user = userService.getOneById(sectionGroupCostCommentDTO.getUser().getId());
+        if (user == null || sectionGroupCost == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = sectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        SectionGroupCostComment sectionGroupCostComment = sectionGroupCostCommentService.create(sectionGroupCostCommentDTO);
+
+        if (sectionGroupCostComment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        return sectionGroupCostComment;
+    }
+
+    @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}/lineItemComments", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public LineItemComment createLineItemComment(@PathVariable long lineItemId,
+                                                                 @RequestBody LineItemComment lineItemCommentDTO,
+                                                                 HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        LineItem lineItem = lineItemService.findById(lineItemCommentDTO.getLineItem().getId());
+        User user = userService.getOneById(lineItemCommentDTO.getUser().getId());
+
+        if (user == null || lineItem == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        LineItemComment lineItemComment = lineItemCommentService.create(lineItemCommentDTO);
+
+        if (lineItemComment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        return lineItemComment;
     }
 }
