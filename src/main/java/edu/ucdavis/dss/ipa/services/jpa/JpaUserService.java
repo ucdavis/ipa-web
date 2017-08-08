@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -81,11 +82,24 @@ public class JpaUserService implements UserService {
 
 		if((dwPerson != null) && (dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
 			user = new User();
-
-			user.setFirstName(dwPerson.getdFirstName());
-			user.setLastName(dwPerson.getdLastName() );
 			user.setLoginId(loginId);
 			user.setEmail(dwPerson.getEmail());
+
+			if (dwPerson.getdFirstName() != null && dwPerson.getdFirstName().length() > 0) {
+				user.setFirstName(dwPerson.getdFirstName());
+			} else {
+				// oFirstName is always full caps, ex: 'SMITH'
+				String firstName = Utilities.titleize(dwPerson.getoFirstName());
+				user.setFirstName(firstName);
+			}
+
+			if (dwPerson.getdLastName() != null && dwPerson.getdLastName().length() > 0) {
+				user.setLastName(dwPerson.getdLastName());
+			} else {
+				// oLastName is always full caps, ex: 'SMITH'
+				String lastName = Utilities.titleize(dwPerson.getoLastName());
+				user.setLastName(lastName);
+			}
 
 			user = this.userRepository.save(user);
 

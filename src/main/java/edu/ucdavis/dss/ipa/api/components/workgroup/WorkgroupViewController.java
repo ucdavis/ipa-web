@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.workgroup;
 
 import edu.ucdavis.dss.ipa.api.components.workgroup.views.WorkgroupView;
 import edu.ucdavis.dss.ipa.api.components.workgroup.views.factories.WorkgroupViewFactory;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.security.access.prepost.PreAuthorize;
