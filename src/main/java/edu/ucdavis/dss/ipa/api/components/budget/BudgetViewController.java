@@ -301,11 +301,9 @@ public class BudgetViewController {
     public LineItemComment createLineItemComment(@PathVariable long lineItemId,
                                                                  @RequestBody LineItemComment lineItemCommentDTO,
                                                                  HttpServletResponse httpResponse) {
-
         // Ensure valid params
-        LineItem lineItem = lineItemService.findById(lineItemCommentDTO.getLineItem().getId());
-        User user = userService.getOneById(lineItemCommentDTO.getUser().getId());
-
+        LineItem lineItem = lineItemService.findById(lineItemId);
+        User user = userService.getOneByLoginId(lineItemCommentDTO.getUser().getLoginId());
         if (user == null || lineItem == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
@@ -314,6 +312,9 @@ public class BudgetViewController {
         // Authorization check
         Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        lineItemCommentDTO.setUser(user);
+        lineItemCommentDTO.setLineItem(lineItem);
 
         LineItemComment lineItemComment = lineItemCommentService.create(lineItemCommentDTO);
 
