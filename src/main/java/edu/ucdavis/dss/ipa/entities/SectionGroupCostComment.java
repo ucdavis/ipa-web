@@ -7,12 +7,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostCommentDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "SectionGroupCostComments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonDeserialize(using = SectionGroupCostCommentDeserializer.class)
 public class SectionGroupCostComment {
     private long id;
     private User user;

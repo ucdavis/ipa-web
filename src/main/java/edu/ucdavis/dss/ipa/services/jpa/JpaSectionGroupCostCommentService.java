@@ -7,6 +7,8 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JpaSectionGroupCostCommentService implements SectionGroupCostCommentService {
@@ -19,7 +21,7 @@ public class JpaSectionGroupCostCommentService implements SectionGroupCostCommen
         SectionGroupCostComment sectionGroupCostComment = new SectionGroupCostComment();
 
         User user = userService.getOneById(sectionGroupCostCommentDTO.getUser().getId());
-        SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostComment.getSectionGroupCost().getId());
+        SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostCommentDTO.getSectionGroupCost().getId());
 
         sectionGroupCostComment.setSectionGroupCost(sectionGroupCost);
         sectionGroupCostComment.setUser(user);
@@ -29,5 +31,16 @@ public class JpaSectionGroupCostCommentService implements SectionGroupCostCommen
         sectionGroupCostComment = this.sectionGroupCostCommentRepository.save(sectionGroupCostComment);
 
         return sectionGroupCostComment;
+    }
+
+    @Override
+    public List<SectionGroupCostComment> findBySectionGroupCosts(List<SectionGroupCost> sectionGroupCosts) {
+        List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
+
+        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            sectionGroupCostComments.addAll(sectionGroupCost.getSectionGroupCostComments());
+        }
+
+        return sectionGroupCostComments;
     }
 }

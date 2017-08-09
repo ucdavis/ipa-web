@@ -273,7 +273,7 @@ public class BudgetViewController {
 
         // Ensure valid params
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
-        User user = userService.getOneById(sectionGroupCostCommentDTO.getUser().getId());
+        User user = userService.getOneByLoginId(sectionGroupCostCommentDTO.getUser().getLoginId());
         if (user == null || sectionGroupCost == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
@@ -282,6 +282,9 @@ public class BudgetViewController {
         // Authorization check
         Long workGroupId = sectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        sectionGroupCostCommentDTO.setUser(user);
+        sectionGroupCostCommentDTO.setSectionGroupCost(sectionGroupCost);
 
         SectionGroupCostComment sectionGroupCostComment = sectionGroupCostCommentService.create(sectionGroupCostCommentDTO);
 

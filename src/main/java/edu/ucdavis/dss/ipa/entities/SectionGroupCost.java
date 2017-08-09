@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "SectionGroupCosts")
@@ -23,6 +26,7 @@ public class SectionGroupCost {
     private Instructor originalInstructor;
     private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
     private Float unitsHigh, unitsLow, instructorCost;
+    private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -122,6 +126,16 @@ public class SectionGroupCost {
 
     public void setBudgetScenario(BudgetScenario budgetScenario) {
         this.budgetScenario = budgetScenario;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy="sectionGroupCost", cascade=CascadeType.ALL, orphanRemoval = true)
+    public List<SectionGroupCostComment> getSectionGroupCostComments() {
+        return sectionGroupCostComments;
+    }
+
+    public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
+        this.sectionGroupCostComments = sectionGroupCostComments;
     }
 
     public float getUnitsHigh() {

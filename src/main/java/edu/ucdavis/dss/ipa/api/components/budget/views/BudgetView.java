@@ -17,10 +17,12 @@ public class BudgetView {
     List<Section> sections;
     List<InstructorCost> instructorCosts;
     List<Instructor> instructors;
+    List<SectionGroupCostComment> sectionGroupCostComments;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
             List<SectionGroupCost> sectionGroupCosts,
+            List<SectionGroupCostComment> sectionGroupCostComments,
             List<LineItem> lineItems,
             Budget budget,
             List<LineItemCategory> lineItemCategories,
@@ -37,6 +39,7 @@ public class BudgetView {
         setLineItemCategories(lineItemCategories);
         setInstructorCosts(instructorCosts);
         setInstructors(instructors);
+        setSectionGroupCostComments(sectionGroupCostComments);
     }
 
     public String getWorkgroupId() {
@@ -117,5 +120,13 @@ public class BudgetView {
 
     public void setInstructors(List<Instructor> instructors) {
         this.instructors = instructors;
+    }
+
+    public List<SectionGroupCostComment> getSectionGroupCostComments() {
+        return sectionGroupCostComments;
+    }
+
+    public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
+        this.sectionGroupCostComments = sectionGroupCostComments;
     }
 }
