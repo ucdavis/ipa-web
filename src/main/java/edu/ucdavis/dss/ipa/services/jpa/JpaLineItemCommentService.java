@@ -6,6 +6,8 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class JpaLineItemCommentService implements LineItemCommentService {
@@ -28,5 +30,16 @@ public class JpaLineItemCommentService implements LineItemCommentService {
         lineItemComment = this.lineItemCommentRepository.save(lineItemComment);
 
         return lineItemComment;
+    }
+
+    @Override
+    public List<LineItemComment> findByLineItems(List<LineItem> lineItems) {
+        List<LineItemComment> lineItemComments = new ArrayList<>();
+
+        for (LineItem lineItem : lineItems) {
+            lineItemComments.addAll(lineItem.getLineItemComments());
+        }
+
+        return lineItemComments;
     }
 }

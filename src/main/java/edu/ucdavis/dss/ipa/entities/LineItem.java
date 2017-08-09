@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -23,6 +25,7 @@ public class LineItem {
     private float amount = 0f;
     private String description, notes;
     private LineItemCategory lineItemCategory;
+    private List<LineItemComment> lineItemComments = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,6 +87,16 @@ public class LineItem {
 
     public void setLineItemCategory(LineItemCategory lineItemCategory) {
         this.lineItemCategory = lineItemCategory;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy="lineItem", cascade=CascadeType.ALL, orphanRemoval = true)
+    public List<LineItemComment> getLineItemComments() {
+        return lineItemComments;
+    }
+
+    public void setLineItemComments(List<LineItemComment> lineItemComments) {
+        this.lineItemComments = lineItemComments;
     }
 
     @JsonProperty("lineItemCategoryId")

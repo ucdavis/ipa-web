@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.LineItemCommentDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "LineItemComments")
+@JsonDeserialize(using = LineItemCommentDeserializer.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class LineItemComment {
     private long id;
@@ -34,7 +35,7 @@ public class LineItemComment {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SectionGroupCostId", nullable = true)
+    @JoinColumn(name = "lineItemId", nullable = true)
     @NotNull
     @JsonIgnore
     public LineItem getLineItem() {
