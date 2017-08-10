@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -117,5 +118,17 @@ public class LineItem extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("lastModifiedBy")
+    @Transient
+    public String getLastModifiedBy() {
+        return modifiedBy;
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }
