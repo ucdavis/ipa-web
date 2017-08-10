@@ -14,7 +14,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemCommentDeserializer;
 @Table(name = "LineItemComments")
 @JsonDeserialize(using = LineItemCommentDeserializer.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class LineItemComment {
+public class LineItemComment extends BaseEntity {
     private long id;
     private User user;
     private LineItem lineItem;

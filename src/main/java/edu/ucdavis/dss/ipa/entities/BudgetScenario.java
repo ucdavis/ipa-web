@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "BudgetScenarios")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class BudgetScenario {
+public class BudgetScenario extends BaseEntity {
     private long id;
     private Budget budget;
     private String name;

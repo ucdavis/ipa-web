@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "SectionGroupCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = SectionGroupCostDeserializer.class)
-public class SectionGroupCost {
+public class SectionGroupCost extends BaseEntity {
     private long id;
     private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;

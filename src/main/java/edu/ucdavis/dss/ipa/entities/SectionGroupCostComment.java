@@ -15,7 +15,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 @Table(name = "SectionGroupCostComments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = SectionGroupCostCommentDeserializer.class)
-public class SectionGroupCostComment {
+public class SectionGroupCostComment extends BaseEntity {
     private long id;
     private User user;
     private SectionGroupCost sectionGroupCost;

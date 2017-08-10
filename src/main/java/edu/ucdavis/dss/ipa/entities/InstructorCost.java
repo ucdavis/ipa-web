@@ -18,7 +18,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 @Table(name = "InstructorCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = InstructorCostDeserializer.class)
-public class InstructorCost {
+public class InstructorCost extends BaseEntity {
     private long id;
     private Budget budget;
     private Instructor instructor;

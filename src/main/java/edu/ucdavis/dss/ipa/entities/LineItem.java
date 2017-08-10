@@ -19,7 +19,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 @Table(name = "LineItems")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = LineItemDeserializer.class)
-public class LineItem {
+public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
     private float amount = 0f;
