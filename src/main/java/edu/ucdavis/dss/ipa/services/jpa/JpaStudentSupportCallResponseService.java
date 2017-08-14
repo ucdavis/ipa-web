@@ -115,6 +115,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
                     // Is a warning scheduled to be sent?
                     if (studentSupportCallResponse.getDueDate() != null) {
+                        Long halfDayInMilliseconds = 43200000L;
                         Long oneDayInMilliseconds = 86400000L;
                         Long threeDaysInMilliseconds = 259200000L;
 
@@ -132,9 +133,15 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
                         // To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
                         // Warning emails are suppressed if the due Date has passed
                         if (currentTime > warnTime) {
-                            if (timeSinceLastContact == null && currentTime < dueDateTime) {
+                            if (timeSinceLastContact == null && currentTime < dueDateTime && currentTime < (warnTime + halfDayInMilliseconds)) {
+                                // First email during the warning period
                                 sendSupportCallWarning(studentSupportCallResponse, currentDate);
-                            } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+                            } else if (
+                                    timeSinceLastContact != null
+                                    && timeSinceLastContact > oneDayInMilliseconds
+                                    && currentTime < dueDateTime
+                                    && currentTime < (warnTime + halfDayInMilliseconds)) {
+                                // Ensure we haven't contacted in last 24 hours, we have entered the 'send warning' window of time, we have not passed the 'send warning' window of time (first 12 hours), and we have not passed the dueDate
                                 sendSupportCallWarning(studentSupportCallResponse, currentDate);
                             }
 
@@ -143,9 +150,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
                 }
             }
         }
-
     }
-
 
     /**
      * Builds the email and triggers sending of the support Call.
