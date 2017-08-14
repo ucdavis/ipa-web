@@ -8,3 +8,4 @@ build/
 .gradle
 ipa-web.env
 certs/
+out/
