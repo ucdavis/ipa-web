@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.budget;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
@@ -74,10 +75,10 @@ public class BudgetViewController {
      */
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public BudgetScenario createBudgetScenario(@PathVariable long budgetId,
-                                               @RequestParam(value="scenarioId", required = false) Long scenarioId,
-                                               @RequestBody BudgetScenario budgetScenarioDTO,
-                                               HttpServletResponse httpResponse) {
+    public BudgetScenarioView createBudgetScenario(@PathVariable long budgetId,
+                                                   @RequestParam(value="scenarioId", required = false) Long scenarioId,
+                                                   @RequestBody BudgetScenario budgetScenarioDTO,
+                                                   HttpServletResponse httpResponse) {
 
 
         // Ensure valid params
@@ -106,7 +107,7 @@ public class BudgetViewController {
             return null;
         }
 
-        return budgetScenario;
+        return budgetViewFactory.createBudgetScenarioView(budgetScenario);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.DELETE, produces="application/json")

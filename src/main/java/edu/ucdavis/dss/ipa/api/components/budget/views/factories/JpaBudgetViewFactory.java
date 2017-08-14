@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
@@ -40,5 +41,16 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments, budget, lineItemCategories, sectionGroups, sections, instructorCosts, instructors);
 
         return budgetView;
+    }
+
+    public BudgetScenarioView createBudgetScenarioView(BudgetScenario budgetScenario) {
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
+        List<LineItem> lineItems = budgetScenario.getLineItems();
+        List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
+        List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
+
+        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments);
+
+        return budgetScenarioView;
     }
 }
