@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -22,8 +23,8 @@ public class BudgetScenario extends BaseEntity {
     private long id;
     private Budget budget;
     private String name;
-    private List<SectionGroupCost> sectionGroupCosts;
-    private List<LineItem> lineItems;
+    private List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
+    private List<LineItem> lineItems = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
