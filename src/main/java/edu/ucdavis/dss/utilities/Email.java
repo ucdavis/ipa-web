@@ -13,7 +13,8 @@ import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 public class Email {
-	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
+	private static final Logger log = LoggerFactory.getLogger("EmailUtility");
+	private static final String exceptionRecipientEmail = "dssit-devs-exceptions@ucdavis.edu";
 
 	/**
 	 * Sends email if runningMode is production, else email is suppressed.
@@ -25,15 +26,7 @@ public class Email {
 	 * @param messageSubject message subject
 	 */
 	public static boolean send(String recipientEmail, String messageBody, String messageSubject) {
-		if(SettingsConfiguration.runningModeIsProduction()) {
-			log.info("Initiating email to '" + recipientEmail + "' email subject '" + messageSubject + "' email contents '" + messageBody + "'");
-			return sendEmail(recipientEmail, messageBody, messageSubject, true);
-		} else {
-			// TODO: Why does this message not appear even if logging level is set to INFO?
-			log.info("Suppressed e-mail as server is not in production mode. To: '" + recipientEmail + "', Subject: '" + messageSubject + "'.");
-		}
-
-		return true;
+		return sendEmail(recipientEmail, messageBody, messageSubject, true);
 	}
 
 	/**
@@ -45,72 +38,68 @@ public class Email {
 	 * @param messageSubject message subject
 	 */
 	public static boolean reportException(String messageBody, String messageSubject) {
-		String recipientEmail = "dssit-devs-exceptions@ucdavis.edu";
-
-		if(SettingsConfiguration.runningModeIsProduction() || SettingsConfiguration.runningModeIsStaging()) {
-			log.info("reportException will send e-mail with subject: " + messageSubject);
-			if(sendEmail(recipientEmail, messageBody, messageSubject, false) == false) {
-				return false;
-			}
-			return true;
-		}
-
-		log.info("Suppressed emailing exception to '" + recipientEmail + "', subject '" + messageSubject + "' - Server is not in production or staging mode");
-
-		return true;
+		return sendEmail(exceptionRecipientEmail, messageBody, messageSubject, false);
 	}
 
 	private static boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode) {
-		JavaMailSenderImpl sender = new JavaMailSenderImpl();
+		if(SettingsConfiguration.runningModeIsProduction() || SettingsConfiguration.runningModeIsStaging()) {
+			JavaMailSenderImpl sender = new JavaMailSenderImpl();
 
-		sender.setHost(SettingsConfiguration.getEmailHost());
-		sender.setPort(SettingsConfiguration.getEmailPort());
+			log.info("To: '" + recipientEmail + "', subject '" + messageSubject + "', body: '" + messageBody + "'");
 
-		Properties mailProperties = new Properties();
-		mailProperties.setProperty("mail.transport.protocol", SettingsConfiguration.getEmailProtocol());
-		mailProperties.setProperty("mail.smtp.auth", SettingsConfiguration.getEmailAuth());
-		mailProperties.setProperty("mail.debug", SettingsConfiguration.getEmailDebug());
+			sender.setHost(SettingsConfiguration.getEmailHost());
+			sender.setPort(SettingsConfiguration.getEmailPort());
 
-		sender.setJavaMailProperties(mailProperties);
+			Properties mailProperties = new Properties();
+			mailProperties.setProperty("mail.transport.protocol", SettingsConfiguration.getEmailProtocol());
+			mailProperties.setProperty("mail.smtp.auth", SettingsConfiguration.getEmailAuth());
+			mailProperties.setProperty("mail.debug", SettingsConfiguration.getEmailDebug());
 
-		if(htmlMode) {
-			MimeMessage message = sender.createMimeMessage();
-	
-			try {
-				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-				helper.setTo(recipientEmail);
-				helper.setFrom(SettingsConfiguration.getEmailFrom());
-				helper.setSubject(messageSubject);
-				helper.setText(messageBody, true);
-	
-				sender.send(message);
+			sender.setJavaMailProperties(mailProperties);
 
-				log.info("Sending e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
-			} catch (MailException e) {
-				log.error("A MailException occurred while sending email to '" + recipientEmail + "'", e);
-				return false;
-			} catch (MessagingException e) {
-				log.error("A MessagingException occurred while sending email to '" + recipientEmail + "'", e);
-				return false;
+			if (htmlMode) {
+				MimeMessage message = sender.createMimeMessage();
+
+				try {
+					MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+					helper.setTo(recipientEmail);
+					helper.setFrom(SettingsConfiguration.getEmailFrom());
+					helper.setSubject(messageSubject);
+					helper.setText(messageBody, true);
+
+					sender.send(message);
+				} catch (MailException e) {
+					log.error("MailException while sending email to '" + recipientEmail + "'", e);
+					return false;
+				} catch (MessagingException e) {
+					log.error("MessagingException while sending email to '" + recipientEmail + "'", e);
+					return false;
+				}
+
+				log.info("Success on e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
+
+				return true;
+			} else {
+				SimpleMailMessage message = new SimpleMailMessage();
+
+				message.setTo(recipientEmail);
+				message.setFrom(SettingsConfiguration.getEmailFrom());
+				message.setSubject(messageSubject);
+				message.setText(messageBody);
+
+				try {
+					sender.send(message);
+				} catch (MailException e) {
+					log.error("MailException while sending email to '" + recipientEmail + "'", e);
+					return false;
+				}
+
+				log.info("Success on e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
+
+				return true;
 			}
-	
-			return true;
 		} else {
-			SimpleMailMessage message = new SimpleMailMessage();
-
-			message.setTo(recipientEmail);
-			message.setFrom(SettingsConfiguration.getEmailFrom());
-			message.setSubject(messageSubject);
-			message.setText(messageBody);
-		
-			try {
-				sender.send(message);
-				log.info("Sending e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
-			} catch (MailException e) {
-				log.error("A MailException occurred while sending email to '" + recipientEmail + "'", e);
-				return false;
-			}
-
+			log.info("Suppressing e-mail due to running mode. To: '" + exceptionRecipientEmail + "', subject '" + messageSubject + "'");
 			return true;
 		}
 	}
