@@ -1,8 +1,8 @@
 package edu.ucdavis.dss.ipa.config;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows enabling/disabling certain program features.
@@ -19,9 +19,7 @@ public class SettingsConfiguration {
 	private static String jwtSigningKey, downloadSecretKey;
 	private static String dwUrl, dwToken, dwPort;
 
-	//private static HashMap<String,Object> settings;
-
-	private static final Logger log = LogManager.getLogger();
+	private static final Logger log = LoggerFactory.getLogger("SettingsConfiguration");
 
 	/**
 	 * Ensures environment variables required by application.properties are set.

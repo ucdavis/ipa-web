@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ldap;
 
 import edu.ucdavis.dss.ldap.dto.LdapPerson;
 import edu.ucdavis.dss.ldap.mappers.LdapPersonMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class LdapClient {
     private LdapTemplate ldapTemplate = null;
-    private static final Logger log = LogManager.getLogger("LdapLogger");
+    private static final Logger log = LoggerFactory.getLogger("LdapLogger");
     private String url, base, user, password;
 
     public LdapClient(String url, String base, String user, String password) {

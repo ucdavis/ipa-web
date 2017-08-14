@@ -1,13 +1,12 @@
 package edu.ucdavis.dss.utilities;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserLogger {
-	private static final Logger log = LogManager.getLogger("UserLogger");
-	
+	private static final Logger log = LoggerFactory.getLogger("UserLogger");
+
 	public static void log(CurrentUser currentUser, String message) {
 		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
 		StackTraceElement e = stacktrace[2];

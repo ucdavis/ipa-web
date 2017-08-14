@@ -8,8 +8,8 @@ import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.utilities.Email;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class JpaUserService implements UserService {
-	private static final Logger log = LogManager.getLogger();
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Inject UserRepository userRepository;
 	@Inject DataWarehouseRepository dwRepository;

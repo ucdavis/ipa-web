@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ipa.config;
 
 import java.util.concurrent.Executor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,8 +19,8 @@ import edu.ucdavis.dss.ipa.exceptions.handlers.AsyncExceptionHandler;
 @Configuration
 @ComponentScan(basePackages = {"edu.ucdavis.dss.ipa.tasks"})
 public class TaskConfiguration implements AsyncConfigurer, SchedulingConfigurer {
-	private static final Logger log = LogManager.getLogger();
-	private static final Logger schedulingLogger = LogManager.getLogger(log.getName() + ".[scheduling]");
+
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Bean
 	public ThreadPoolTaskScheduler taskScheduler()
@@ -32,11 +32,11 @@ public class TaskConfiguration implements AsyncConfigurer, SchedulingConfigurer 
 		scheduler.setThreadNamePrefix("ipa-task-");
 		scheduler.setAwaitTerminationSeconds(5);
 		scheduler.setWaitForTasksToCompleteOnShutdown(false);
-		scheduler.setErrorHandler(t -> schedulingLogger.error(
+		scheduler.setErrorHandler(t -> log.error(
 				"Unknown error occurred while executing task.", t
 				));
 		scheduler.setRejectedExecutionHandler(
-				(r, e) -> schedulingLogger.error(
+				(r, e) -> log.error(
 						"Execution of task {} was rejected for unknown reasons.", r
 						)
 				);

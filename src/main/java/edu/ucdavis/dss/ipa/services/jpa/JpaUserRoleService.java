@@ -7,8 +7,8 @@ import javax.transaction.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
@@ -16,7 +16,7 @@ import edu.ucdavis.dss.ipa.repositories.UserRoleRepository;
 
 @Service
 public class JpaUserRoleService implements UserRoleService {
-	private static final Logger log = LogManager.getLogger();
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Inject UserRoleRepository userRoleRepository;
 	@Inject UserService userService;

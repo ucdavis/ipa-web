@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.utilities;
 
-
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
