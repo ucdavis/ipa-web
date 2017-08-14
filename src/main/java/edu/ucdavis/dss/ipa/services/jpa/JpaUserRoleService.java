@@ -23,8 +23,7 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject WorkgroupService workgroupService;
 	@Inject RoleService roleService;
 	@Inject InstructorService instructorService;
-	@Inject
-	SupportStaffService supportStaffService;
+	@Inject SupportStaffService supportStaffService;
 
 	@Override
 	@Transactional
@@ -111,29 +110,6 @@ public class JpaUserRoleService implements UserRoleService {
 					user.getEmail(),
 					user.getLoginId(),
 					userRole.getWorkgroup().getId());
-
-				// Attempt to get employeeId from DW
-//				DwClient dwClient = null;
-//				List<DwInstructor> dwInstructors = new ArrayList<DwInstructor>();
-//
-//				try {
-//					dwClient = new DwClient();
-//					dwInstructors = dwClient.searchInstructors(user.getLastName());
-//
-//					for (DwInstructor dwInstructor : dwInstructors) {
-//
-//						if (dwInstructor.getLoginId() != null &&
-//							dwInstructor.getEmployeeId() != null &&
-//							dwInstructor.getLoginId().equals(user.getLoginId())	) {
-//
-//							instructor.setUcdStudentSID(dwInstructor.getEmployeeId());
-//							log.info("Queried Data Warehouse for employeeId on instructor '" + instructor.getLoginId() + "'");
-//							instructorService.save(instructor);
-//						}
-//					}
-//				} catch (Exception e) {
-//					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-//				}
 			}
 
 			return userRole;
