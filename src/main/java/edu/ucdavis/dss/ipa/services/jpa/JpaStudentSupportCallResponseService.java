@@ -132,16 +132,12 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
                         // Warning emails are sent 3 days before dueDate
                         // To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
                         // Warning emails are suppressed if the due Date has passed
-                        if (currentTime > warnTime) {
-                            if (timeSinceLastContact == null && currentTime < dueDateTime && currentTime < (warnTime + halfDayInMilliseconds)) {
+                        if (currentTime > warnTime && currentTime < dueDateTime && currentTime < (warnTime + halfDayInMilliseconds)) {
+                            // Ensure we haven't contacted in last 24 hours, we have entered the 'send warning' window of time, we have not passed the 'send warning' window of time (first 12 hours), and we have not passed the dueDate
+                            if (timeSinceLastContact == null) {
                                 // First email during the warning period
                                 sendSupportCallWarning(studentSupportCallResponse, currentDate);
-                            } else if (
-                                    timeSinceLastContact != null
-                                    && timeSinceLastContact > oneDayInMilliseconds
-                                    && currentTime < dueDateTime
-                                    && currentTime < (warnTime + halfDayInMilliseconds)) {
-                                // Ensure we haven't contacted in last 24 hours, we have entered the 'send warning' window of time, we have not passed the 'send warning' window of time (first 12 hours), and we have not passed the dueDate
+                            } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds) {
                                 sendSupportCallWarning(studentSupportCallResponse, currentDate);
                             }
 
