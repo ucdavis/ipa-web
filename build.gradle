@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.5.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.7.RELEASE")
     }
 }
 
@@ -29,25 +29,25 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-mail")
-    compile("org.springframework.ldap:spring-ldap-ldif-core:2.0.4.RELEASE")
+    compile("org.springframework.ldap:spring-ldap-ldif-core:2.3.1.RELEASE")
     compile("io.jsonwebtoken:jjwt:0.6.0")
     compile("commons-io:commons-io:2.4")
     compile("org.springframework.security:spring-security-cas-client:3.0.8.RELEASE")
-    compile("org.hibernate:hibernate-validator-annotation-processor:5.2.4.Final")
+    compile("org.hibernate:hibernate-validator-annotation-processor:5.2.5.Final")
     compile("org.apache.poi:poi:3.15")
     compile("javax.inject:javax.inject:1")
-    compile("org.apache.logging.log4j:log4j-api:2.5")
-    compile("org.apache.logging.log4j:log4j-core:2.5")
-    compile("org.apache.commons:commons-lang3:3.4")
+    compile("org.apache.logging.log4j:log4j-api:2.8.2")
+    compile("org.apache.logging.log4j:log4j-core:2.8.2")
+    compile("org.apache.commons:commons-lang3:3.6")
     compile("javax.mail:mail:1.4.7")
     compile("org.flywaydb:flyway-core:3.2.1")
     compile("org.apache.httpcomponents:httpclient:4.5.3")
     compile("org.javers:javers-core:2.4.1")
-    runtime("mysql:mysql-connector-java:5.1.41")
+    runtime("mysql:mysql-connector-java:5.1.43")
     runtime("javax.annotation:javax.annotation-api:1.2")
     testCompile("junit:junit")
-    testCompile("com.h2database:h2:1.4.194")
-    testCompile("com.jayway.jsonpath:json-path:2.2.0")
+    testCompile("com.h2database:h2:1.4.196")
+    testCompile("com.jayway.jsonpath:json-path:2.4.0")
 }
 
 task wrapper(type: Wrapper) {
