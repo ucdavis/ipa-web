@@ -3,8 +3,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -24,7 +24,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaScheduleOpsService implements ScheduleOpsService {
-	private static final Logger log = LogManager.getLogger("ScheduleOps");
+	private static final Logger log = LoggerFactory.getLogger("ScheduleOps");
 
 	@Inject ScheduleRepository scheduleRepository;
 	@Inject ScheduleService scheduleService;

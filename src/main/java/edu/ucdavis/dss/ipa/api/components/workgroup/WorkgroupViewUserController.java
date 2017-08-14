@@ -7,8 +7,6 @@ import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.exceptions.DwResponseException;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.RoleService;
@@ -16,8 +14,8 @@ import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.utilities.UserLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +32,7 @@ public class WorkgroupViewUserController {
      */
     private static final int PEOPLE_SEARCH_RESULT_LIMIT = 20;
 
-    private static final Logger log = LogManager.getLogger();
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Inject WorkgroupService workgroupService;
     @Inject UserService userService;

@@ -6,14 +6,14 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
 import edu.ucdavis.dss.utilities.Email;
 
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
-	private static final Logger log = LogManager.getLogger("ExceptionLogger");
+	private static final Logger log = LoggerFactory.getLogger("ExceptionLogger");
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
 	@Override
@@ -35,7 +35,7 @@ public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 		
 		buffer.append("\n\tStack trace      :\n\n" + sw.toString());
 		
-		log.error(buffer);
+		log.error(buffer.toString());
 
 		String messageSubject = "IPA Exception: " + method.getName();
 		Email.reportException(buffer.toString(), messageSubject);

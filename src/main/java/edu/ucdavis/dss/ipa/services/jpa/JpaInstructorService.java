@@ -7,8 +7,8 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
@@ -25,7 +25,7 @@ public class JpaInstructorService implements InstructorService {
 	@Inject ScheduleService scheduleService;
 	@Inject UserRoleService userRoleService;
 
-	private static final Logger log = LogManager.getLogger();
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public Instructor save(Instructor instructor) {

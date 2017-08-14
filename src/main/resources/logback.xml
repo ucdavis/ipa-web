@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <target>System.out</target>
+        <filter class="edu.ucdavis.dss.logging.LogbackStdOutFilter" />
+    </appender>
+
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <target>System.err</target>
+        <filter class="edu.ucdavis.dss.logging.LogbackStdErrFilter" />
+    </appender>
+
+    <logger name="org.springframework.web.context" level="INFO" />
+
+    <root level="WARN">
+        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

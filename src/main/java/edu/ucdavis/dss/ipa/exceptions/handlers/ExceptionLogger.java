@@ -8,11 +8,11 @@ import java.util.Date;
 
 import edu.ucdavis.dss.ipa.entities.AuthenticationPrincipal;
 import edu.ucdavis.dss.ipa.entities.AuthenticationUser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.utilities.Email;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -33,7 +33,7 @@ public class ExceptionLogger {
 			return;
 		}
 
-		Logger log = LogManager.getLogger("ExceptionLogger");
+		final Logger log = LoggerFactory.getLogger("ExceptionLogger");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 		StringBuffer buffer = new StringBuffer();
@@ -66,7 +66,7 @@ public class ExceptionLogger {
 		
 		buffer.append("\n\tStack trace      :\n\n" + sw.toString());
 		
-		log.error(buffer);
+		log.error(buffer.toString());
 		
 		String messageSubject = "IPA Exception: " + callingClassName;
 		Email.reportException(buffer.toString(), messageSubject);
