@@ -37,8 +37,13 @@ public class InstructionalSupportStudentFormsController {
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
         SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
+        Long supportStaffId = 0L;
 
-        return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaff.getId());
+        if (supportStaff != null) {
+            supportStaffId = supportStaff.getId();
+        }
+
+        return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaffId);
     }
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")

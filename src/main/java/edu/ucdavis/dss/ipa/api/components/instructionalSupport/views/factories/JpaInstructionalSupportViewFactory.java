@@ -117,11 +117,6 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         // Does the user have an associated supportStaff entity?
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 
-        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
-        if (supportStaff == null) {
-            return null;
-        }
-
         // Calculate termcode from shortTermCode
         String termCode = "";
 
@@ -131,7 +126,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             termCode = String.valueOf(year + 1) + shortTermCode;
         }
 
-        StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findByScheduleIdAndSupportStaffIdAndTermCode(schedule.getId(), supportStaff.getId(), termCode);
+        StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findByScheduleIdAndSupportStaffIdAndTermCode(schedule.getId(), supportStaffId, termCode);
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
