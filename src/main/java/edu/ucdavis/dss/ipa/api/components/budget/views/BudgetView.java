@@ -19,6 +19,7 @@ public class BudgetView {
     List<Instructor> instructors;
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<LineItemComment> lineItemComments;
+    List<Course> courses;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -31,7 +32,8 @@ public class BudgetView {
             List<SectionGroup> sectionGroups,
             List<Section> sections,
             List<InstructorCost> instructorCosts,
-            List<Instructor> instructors) {
+            List<Instructor> instructors,
+            List<Course> courses) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -43,6 +45,7 @@ public class BudgetView {
         setInstructors(instructors);
         setSectionGroupCostComments(sectionGroupCostComments);
         setLineItemComments(lineItemComments);
+        setCourses(courses);
     }
 
     public String getWorkgroupId() {
@@ -139,5 +142,13 @@ public class BudgetView {
 
     public void setLineItemComments(List<LineItemComment> lineItemComments) {
         this.lineItemComments = lineItemComments;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }
