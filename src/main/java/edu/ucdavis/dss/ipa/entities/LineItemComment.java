@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.LineItemCommentDeserializer;
 
+import java.util.Date;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "LineItemComments")
@@ -92,5 +94,17 @@ public class LineItemComment extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("lastModifiedBy")
+    @Transient
+    public String getLastModifiedBy() {
+        return modifiedBy;
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }

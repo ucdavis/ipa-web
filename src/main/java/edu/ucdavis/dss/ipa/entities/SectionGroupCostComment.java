@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostCommentDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
+import java.util.Date;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "SectionGroupCostComments")
@@ -93,5 +95,17 @@ public class SectionGroupCostComment extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("lastModifiedBy")
+    @Transient
+    public String getLastModifiedBy() {
+        return modifiedBy;
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }
