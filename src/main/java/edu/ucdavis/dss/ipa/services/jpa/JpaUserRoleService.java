@@ -93,7 +93,7 @@ public class JpaUserRoleService implements UserRoleService {
 			user.setUserRoles(userRoles);
 			userService.save(user);
 
-			if (roleName.equals("instructionalSupport")) {
+			if (roleName.equals("instructionalSupport") || roleName.equals("studentMasters") || roleName.equals("studentPhd")) {
 				log.info("Creating Instructional Support Staff for user '" + user.getLoginId() + "'");
 				SupportStaff SupportStaff = supportStaffService.findOrCreate(
 						user.getFirstName(),
