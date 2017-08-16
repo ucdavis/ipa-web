@@ -31,8 +31,17 @@ public class AssignmentViewTeachingAssignmentController {
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
+        // Ensure Authorization
+        Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        // Ensure teachingAssignment has either a buyout/release/sabbatical OR a SectionGroup/Instructor pair
+        Workgroup workgroup = schedule.getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        // Ensure valid params
+        // Either:
+        // 1) teachingAssignment is a buyout/release/sabbatical/in-residence
+        // 2) teachingAssignment has a sectionGroup
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false
@@ -41,34 +50,7 @@ public class AssignmentViewTeachingAssignmentController {
             return null;
         }
 
-        SectionGroup sectionGroup = null;
-        Long sectionGroupId = -1L;
-
-        if (teachingAssignment.getSectionGroup() != null) {
-            sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
-            sectionGroupId = sectionGroup.getId();
-        }
-
-        Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
-        Schedule schedule = scheduleService.findById(scheduleId);
-
-        Workgroup workgroup = schedule.getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        // If a Teaching Assignment already exists, update it instead.
-        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
-                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence());
-
-        if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
-            existingTeachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
-            existingTeachingAssignment.setInstructor(instructor);
-
-            existingTeachingAssignment.setApproved(teachingAssignment.isApproved());
-
-            return teachingAssignmentService.save(existingTeachingAssignment);
-        }
-
-        // Handle non sectionGroup based preference
+        // Handle buyout/release/sabbatical/in-residence based preferences
         if (teachingAssignment.isBuyout() == true
                 || teachingAssignment.isCourseRelease() == true
                 || teachingAssignment.isInResidence() == true
@@ -76,13 +58,39 @@ public class AssignmentViewTeachingAssignmentController {
 
             teachingAssignment.setInstructor(instructor);
             teachingAssignment.setSchedule(schedule);
-        } else {
-            teachingAssignment.setSectionGroup(sectionGroup);
-            teachingAssignment.setInstructor(instructor);
-            teachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
+
+            return teachingAssignmentService.save(teachingAssignment);
         }
 
+        // Handle sectionGroup based preferences
+        // Get sectionGroupId
+        Long sectionGroupId = -1L;
+        SectionGroup sectionGroup = null;
+
+        if (teachingAssignment.getSectionGroup() != null) {
+            sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
+            sectionGroupId = sectionGroup.getId();
+        }
+
+        // If a Teaching Assignment already exists, update it instead.
+        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
+                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence());
+
+        if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
+            existingTeachingAssignment.setSchedule(schedule);
+            existingTeachingAssignment.setInstructor(instructor);
+
+            existingTeachingAssignment.setApproved(teachingAssignment.isApproved());
+
+            return teachingAssignmentService.save(existingTeachingAssignment);
+        }
+
+        // Create a new Teaching Assignment
+        teachingAssignment.setSectionGroup(sectionGroup);
+        teachingAssignment.setInstructor(instructor);
+        teachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
         return teachingAssignmentService.save(teachingAssignment);
+
     }
 
     @RequestMapping(value = "/api/assignmentView/teachingAssignments/{teachingAssignmentId}", method = RequestMethod.PUT, produces="application/json")
