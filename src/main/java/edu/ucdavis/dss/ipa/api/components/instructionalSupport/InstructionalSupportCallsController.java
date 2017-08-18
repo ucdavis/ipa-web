@@ -617,7 +617,13 @@ public class InstructionalSupportCallsController {
 
             if (node.has("dueDate") && !node.get("dueDate").isNull()) {
                 long epochDate = node.get("dueDate").longValue();
-                Date dueDate = new Date(epochDate);
+
+                // 23 hours in milliseconds
+                long timeOffset = 82800000L;
+
+                long dueDateTime = epochDate + timeOffset;
+                Date dueDate = new Date(dueDateTime);
+
                 addStudentsDTO.setDueDate(dueDate);
             }
 
