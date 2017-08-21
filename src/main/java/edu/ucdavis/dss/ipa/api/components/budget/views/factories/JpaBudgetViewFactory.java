@@ -23,10 +23,14 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject InstructorService instructorService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
     @Inject LineItemCommentService lineItemCommentService;
+    @Inject ScheduleService scheduleService;
+    @Inject SupportAssignmentService supportAssignmentService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
+        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
         List<BudgetScenario> budgetScenarios = budget.getBudgetScenarios();
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
@@ -39,7 +43,24 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Instructor> instructors = instructorService.findByInstructorCosts(instructorCosts);
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
-        BudgetView budgetView = new BudgetView(budgetScenarios, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments, budget, lineItemCategories, sectionGroups, sections, instructorCosts, instructors, courses);
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
+
+        BudgetView budgetView = new BudgetView(
+                budgetScenarios,
+                sectionGroupCosts,
+                sectionGroupCostComments,
+                lineItems,
+                lineItemComments,
+                budget,
+                lineItemCategories,
+                sectionGroups,
+                sections,
+                instructorCosts,
+                instructors,
+                courses,
+                teachingAssignments,
+                supportAssignments);
 
         return budgetView;
     }

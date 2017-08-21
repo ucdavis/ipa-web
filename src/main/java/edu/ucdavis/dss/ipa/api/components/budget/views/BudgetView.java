@@ -20,6 +20,8 @@ public class BudgetView {
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<LineItemComment> lineItemComments;
     List<Course> courses;
+    List<TeachingAssignment> teachingAssignments;
+    List<SupportAssignment> supportAssignments;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -33,7 +35,9 @@ public class BudgetView {
             List<Section> sections,
             List<InstructorCost> instructorCosts,
             List<Instructor> instructors,
-            List<Course> courses) {
+            List<Course> courses,
+            List<TeachingAssignment> teachingAssignments,
+            List<SupportAssignment> supportAssignments) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -46,6 +50,8 @@ public class BudgetView {
         setSectionGroupCostComments(sectionGroupCostComments);
         setLineItemComments(lineItemComments);
         setCourses(courses);
+        setTeachingAssignments(teachingAssignments);
+        setSupportAssignments(supportAssignments);
     }
 
     public String getWorkgroupId() {
@@ -150,5 +156,21 @@ public class BudgetView {
 
     public void setCourses(List<Course> courses) {
         this.courses = courses;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
+    }
+
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
+    }
+
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
     }
 }

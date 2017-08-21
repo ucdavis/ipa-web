@@ -45,6 +45,17 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
     }
 
     @Override
+    public List<SupportAssignment> findBySectionGroups(List<SectionGroup> sectionGroups) {
+        List<SupportAssignment> supportAssignments = new ArrayList<>();
+
+        for (SectionGroup sectionGroup : sectionGroups) {
+            supportAssignments.addAll(sectionGroup.getSupportAssignments());
+        }
+
+        return supportAssignments;
+    }
+
+    @Override
     public SupportAssignment findOneById(Long instructionalSupportAssignmentId) {
         return this.supportAssignmentRepository.findById(instructionalSupportAssignmentId);
     }
