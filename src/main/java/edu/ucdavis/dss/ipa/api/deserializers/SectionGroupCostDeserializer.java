@@ -26,13 +26,7 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("instructorCost")) {
-            Float instructorCost = null;
-
-            String stringAmount = node.get("instructorCost").textValue();
-            if (stringAmount != null) {
-                instructorCost = Float.valueOf(stringAmount);
-            }
-
+            float instructorCost = node.get("instructorCost").floatValue();
             sectionGroupCost.setInstructorCost(instructorCost);
         }
 
