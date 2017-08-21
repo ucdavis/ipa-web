@@ -91,7 +91,7 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("taCount")) {
-            sectionGroupCost.setTaCount(node.get("taCount").longValue());
+            sectionGroupCost.setTaCount(node.get("taCount").floatValue());
         }
 
         if (node.has("sectionCount")) {
@@ -99,7 +99,7 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("readerCount")) {
-            sectionGroupCost.setReaderCount(node.get("readerCount").longValue());
+            sectionGroupCost.setReaderCount(node.get("readerCount").floatValue());
         }
 
         if (node.has("instructorId")) {
