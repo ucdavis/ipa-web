@@ -5,12 +5,9 @@ import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.*;
-import org.hibernate.mapping.UniqueKey;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +27,7 @@ public class JpaSectionService implements SectionService {
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TermService termService;
 	@Inject SectionGroupService sectionGroupService;
-	@Inject RestDataWarehouseRepository restDataWarehouseRepository;
+	@Inject DataWarehouseRepository dataWarehouseRepository;
 	@Inject ActivityService activityService;
 	@Inject NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	@Inject DataWarehouseRepository dwRepository;
@@ -137,7 +134,7 @@ public class JpaSectionService implements SectionService {
 
 			// Query the subjectCode/year pair if necessary
 			if (allDwSections.get(dwSectionKey) == null) {
-				List<DwSection> dwSections = restDataWarehouseRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+				List<DwSection> dwSections = dataWarehouseRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
 				if (dwSections == null) {
 					// If query fails to return results for the query, don't attempt to requery on a later section
 					allDwSections.put(dwSectionKey, new ArrayList<DwSection>());

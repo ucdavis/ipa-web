@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.tasks;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +16,7 @@ public class UpdateUsersTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
     @Inject
-    RestDataWarehouseRepository restDataWarehouseRepository;
+    DataWarehouseRepository dataWarehouseRepository;
     @Inject UserService userService;
 
     /**
@@ -32,7 +32,7 @@ public class UpdateUsersTask {
         List<User> users = this.userService.getAllUsers();
 
         for (User user : users) {
-            DwPerson dwPerson = restDataWarehouseRepository.getPersonByLoginId(user.getLoginId());
+            DwPerson dwPerson = dataWarehouseRepository.getPersonByLoginId(user.getLoginId());
 
             if (dwPerson == null) {
                 continue;

@@ -1,13 +1,8 @@
 package edu.ucdavis.dss.ipa.tasks;
 
-import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwCourse;
-import edu.ucdavis.dss.dw.dto.DwSection;
-import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import org.springframework.scheduling.annotation.Async;
@@ -21,7 +16,8 @@ import java.util.*;
 public class UpdateCourseTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-    @Inject RestDataWarehouseRepository restDataWarehouseRepository;
+    @Inject
+    DataWarehouseRepository dataWarehouseRepository;
     @Inject CourseService courseService;
     @Inject ActivityService activityService;
 
@@ -48,7 +44,7 @@ public class UpdateCourseTask {
             // Query DW for courses of this subject code, if necessary
             String subjectCode = course.getSubjectCode();
             if (allDwCourses.get(subjectCode) == null) {
-                List<DwCourse> dwCourses = restDataWarehouseRepository.queryCourses(subjectCode);
+                List<DwCourse> dwCourses = dataWarehouseRepository.queryCourses(subjectCode);
                 allDwCourses.put(subjectCode, dwCourses);
             }
 

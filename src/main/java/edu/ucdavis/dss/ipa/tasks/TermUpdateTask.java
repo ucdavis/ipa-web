@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.tasks;
 
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.repositories.RestDataWarehouseRepository;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.TermService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,10 +21,9 @@ public class TermUpdateTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
     @Inject
-    RestDataWarehouseRepository restDataWarehouseRepository;
+    DataWarehouseRepository dataWarehouseRepository;
 
-    @Inject
-    TermService termService;
+    @Inject TermService termService;
 
     /**
      * Queries Data Warehouse for term information and updates the local
@@ -39,7 +38,7 @@ public class TermUpdateTask {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-        List<DwTerm> dwTerms = restDataWarehouseRepository.getTerms();
+        List<DwTerm> dwTerms = dataWarehouseRepository.getTerms();
 
         // Loop through DW terms and update our local terms, creating them
         // if necessary.
