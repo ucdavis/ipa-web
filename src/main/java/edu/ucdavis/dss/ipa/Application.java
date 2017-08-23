@@ -45,6 +45,7 @@ public class Application {
 
     // Configure CAS
     @Bean
+    @Profile({"production", "staging", "development"})
     public FilterRegistrationBean cas20Registration() {
         FilterRegistrationBean cas20 = new FilterRegistrationBean();
 
