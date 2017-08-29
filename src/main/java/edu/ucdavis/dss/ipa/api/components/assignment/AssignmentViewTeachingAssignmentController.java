@@ -40,12 +40,13 @@ public class AssignmentViewTeachingAssignmentController {
 
         // Ensure valid params
         // Either:
-        // 1) teachingAssignment is a buyout/release/sabbatical/in-residence
+        // 1) teachingAssignment is a buyout/release/sabbatical/in-residence/work-life-balance
         // 2) teachingAssignment has a sectionGroup
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false
             && teachingAssignment.isInResidence() == false
+            && teachingAssignment.isWorkLifeBalance() == false
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
@@ -54,6 +55,7 @@ public class AssignmentViewTeachingAssignmentController {
         if (teachingAssignment.isBuyout() == true
                 || teachingAssignment.isCourseRelease() == true
                 || teachingAssignment.isInResidence() == true
+                || teachingAssignment.isWorkLifeBalance() == true
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
@@ -341,7 +343,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // Make a single teaching Preference if its a buyout/sab/release
-        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence()) {
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance()) {
 
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);
