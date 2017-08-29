@@ -60,6 +60,10 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             teachingAssignment.setInResidence(node.get("inResidence").booleanValue());
         }
 
+        if (node.has("workLifeBalance")) {
+            teachingAssignment.setWorkLifeBalance(node.get("workLifeBalance").booleanValue());
+        }
+
         if (node.has("courseRelease")) {
             teachingAssignment.setCourseRelease(node.get("courseRelease").booleanValue());
         }

@@ -1,0 +1,1 @@
+ALTER TABLE `TeachingAssignments` ADD COLUMN `WorkLifeBalance` TINYINT(1) NOT NULL DEFAULT '0';

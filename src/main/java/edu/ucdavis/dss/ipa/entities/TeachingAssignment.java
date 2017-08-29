@@ -25,6 +25,7 @@ public class TeachingAssignment implements Serializable {
 	private boolean courseRelease;
 	private boolean sabbatical;
 	private boolean inResidence;
+	private boolean workLifeBalance;
 	private boolean approved;
 	private boolean fromInstructor;
 	private String suggestedSubjectCode;
@@ -138,6 +139,15 @@ public class TeachingAssignment implements Serializable {
 
 	public void setApproved(boolean approved) {
 		this.approved = approved;
+	}
+
+	@JsonProperty
+	public boolean isWorkLifeBalance() {
+		return workLifeBalance;
+	}
+
+	public void setWorkLifeBalance(boolean workLifeBalance) {
+		this.workLifeBalance = workLifeBalance;
 	}
 
 	@Transient
