@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.services;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -24,8 +25,8 @@ public interface TeachingAssignmentService {
 
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
-	TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
-		Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence);
+	TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
+			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance);
 
 	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 

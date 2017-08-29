@@ -103,8 +103,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
-	public TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
-			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence) {
+	public TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
+			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance) {
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		Instructor instructor = instructorService.getOneById(instructorId);
@@ -116,7 +116,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 				return teachingAssignment;
 			}
 		} else {
-			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidence(instructorId, scheduleId, termCode, buyout, courseRelease, sabbatical, inResidence);
+			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(instructorId, scheduleId, termCode, buyout, courseRelease, sabbatical, inResidence, workLifeBalance);
 			if (teachingAssignment != null) {
 				return teachingAssignment;
 			}

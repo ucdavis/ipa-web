@@ -75,8 +75,8 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // If a Teaching Assignment already exists, update it instead.
-        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidence(
-                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence());
+        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
+                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence(), teachingAssignment.isWorkLifeBalance());
 
         if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
             existingTeachingAssignment.setSchedule(schedule);
