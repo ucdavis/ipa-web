@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Time;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -397,7 +399,13 @@ public class CourseViewController {
 						activity.setEndDate(term.getEndDate());
 						activity.setActivityState(ActivityState.DRAFT);
 
-						activity.setSection(section);
+						// Activities in numeric sectionGroups should always be 'shared' activities
+						if (Utilities.isNumeric(dwSequencePattern)) {
+							activity.setSectionGroup(sectionGroup);
+						} else {
+							activity.setSection(section);
+						}
+
 						activityService.saveActivity(activity);
 					}
 				}
