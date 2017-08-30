@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -27,11 +26,6 @@ public class TestConfiguration {
         });
 
         cas20.setFilter(filter);
-//        cas20.setFilter(new Cas20ProxyReceivingTicketValidationFilter());
-//        cas20.addUrlPatterns("/login", "/post-login");
-//        cas20.addInitParameter("casServerUrlPrefix", "https://cas.ucdavis.edu/cas");
-//        cas20.addInitParameter("serverName", SettingsConfiguration.getIpaApiURL());
-//        cas20.addInitParameter("encoding", "UTF-8");
 
         return cas20;
     }

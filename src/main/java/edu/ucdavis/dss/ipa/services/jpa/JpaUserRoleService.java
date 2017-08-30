@@ -7,11 +7,11 @@ import javax.transaction.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.UserRoleRepository;
 
 @Service
@@ -24,6 +24,7 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject RoleService roleService;
 	@Inject InstructorService instructorService;
 	@Inject SupportStaffService supportStaffService;
+	@Inject EmailService emailService;
 
 	@Override
 	@Transactional
@@ -243,7 +244,7 @@ public class JpaUserRoleService implements UserRoleService {
 					}
 				} else {
 					Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
-					ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+					emailService.reportException(e, this.getClass().getName());
 				}
 			}
 		}

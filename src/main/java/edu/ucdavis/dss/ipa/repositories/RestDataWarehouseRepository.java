@@ -5,18 +5,30 @@ import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 @Profile({"development", "production", "staging"})
 public class RestDataWarehouseRepository implements DataWarehouseRepository {
+	@Inject EmailService emailService;
+
+	@Value("${dw.url}")
+	String dwUrl;
+
+	@Value("${dw.token}")
+	String dwToken;
+
+	@Value("${dw.port}")
+	String dwPort;
+
 	/**
 	 * Returns a list of people from DW or null on error.
 	 *
@@ -27,11 +39,11 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		DwClient dwClient = null;
 
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 			
 			return dwClient.searchPeople(query);
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -44,11 +56,11 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		DwClient dwClient = null;
 
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			return dwClient.getTerms();
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -63,11 +75,11 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		DwClient dwClient = null;
 
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			return dwClient.getPersonByLoginId(loginId);
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -76,11 +88,11 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) {
 		DwClient dwClient = null;
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			return dwClient.searchCourses(subjectCode, courseNumber, effectiveTermCode);
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -89,11 +101,11 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	public List<DwCourse> queryCourses(String query) {
 		DwClient dwClient = null;
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			return dwClient.queryCourses(query);
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -103,7 +115,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
 		DwClient dwClient = null;
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			List<DwSection> dwSections = new ArrayList<>();
 
@@ -121,7 +133,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 			return dwSections;
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -130,13 +142,13 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	public List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
 		DwClient dwClient = null;
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			List<DwSection> dwSections = dwClient.getDetailedSectionsBySubjectCodeAndYear(subjectCode, year);
 
 			return dwSections;
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
@@ -145,13 +157,13 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	public List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) {
 		DwClient dwClient = null;
 		try {
-			dwClient = new DwClient(SettingsConfiguration.getDwUrl(), SettingsConfiguration.getDwToken(), SettingsConfiguration.getDwPort());
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
 			List<DwSection> dwSections = dwClient.getDetailedSectionsBySubjectCodeAndTermCode(subjectCode, termCode);
 
 			return dwSections;
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}

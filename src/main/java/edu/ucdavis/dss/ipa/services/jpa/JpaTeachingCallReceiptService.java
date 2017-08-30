@@ -10,17 +10,17 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallReceiptRepository;
-import edu.ucdavis.dss.utilities.Email;
 
 @Service
 public class JpaTeachingCallReceiptService implements TeachingCallReceiptService {
@@ -31,6 +31,10 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
 	@Inject ScheduleService scheduleService;
+	@Inject EmailService emailService;
+
+	@Value("${ipa.url.frontend}")
+	String ipaUrlFrontend;
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
@@ -145,7 +149,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
+		String teachingCallUrl = ipaUrlFrontend + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -166,7 +170,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
 		messageBody += "</td></tr></tbody></table>";
 
-		if (Email.send(recipientEmail, messageBody, messageSubject)) {
+		if (emailService.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			teachingCallReceipt.setNextContactAt(null);
 			this.save(teachingCallReceipt);
@@ -200,7 +204,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
+		String teachingCallUrl = ipaUrlFrontend + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
 		String messageBody = "";
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -221,7 +225,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		messageBody += "</td></tr></tbody></table>";
 
-		if (Email.send(recipientEmail, messageBody, messageSubject)) {
+		if (emailService.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			this.save(teachingCallReceipt);
 		}

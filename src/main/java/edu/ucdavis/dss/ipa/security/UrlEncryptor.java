@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.security;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.crypto.Cipher;
@@ -18,6 +18,9 @@ import java.util.List;
  */
 
 public class UrlEncryptor {
+    // FIXME: downloadSecretKey does not survive reboots. Do we need this stuff anymore?
+    private static String downloadSecretKey = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
     public static String encrypt(String salt, String IpAddress) {
         try {
             Date now = new Date();
@@ -26,8 +29,7 @@ public class UrlEncryptor {
 
             IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
 
-            String secret = SettingsConfiguration.getDownloadSecretKey();
-            SecretKeySpec skeySpec = new SecretKeySpec(secret.getBytes("UTF-8"),
+            SecretKeySpec skeySpec = new SecretKeySpec(downloadSecretKey.getBytes("UTF-8"),
                     "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
@@ -44,8 +46,7 @@ public class UrlEncryptor {
         try {
             IvParameterSpec iv = new IvParameterSpec(salt.getBytes("UTF-8"));
 
-            String secret = SettingsConfiguration.getDownloadSecretKey();
-            SecretKeySpec skeySpec = new SecretKeySpec(secret.getBytes("UTF-8"),
+            SecretKeySpec skeySpec = new SecretKeySpec(downloadSecretKey.getBytes("UTF-8"),
                     "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);

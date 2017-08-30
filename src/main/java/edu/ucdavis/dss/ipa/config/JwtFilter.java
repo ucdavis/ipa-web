@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtFilter extends GenericFilterBean {
+    private String jwtSigningKey;
 
     @Override
     public void doFilter(final ServletRequest req,
@@ -38,7 +40,7 @@ public class JwtFilter extends GenericFilterBean {
             final String token = authHeader.substring(7); // The part after "Bearer "
 
             try {
-                final Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
+                final Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                         .parseClaimsJws(token).getBody();
 
                 Authorization.setLoginId((String) claims.get("loginId"));
@@ -69,7 +71,6 @@ public class JwtFilter extends GenericFilterBean {
                     return;
                 }
             } catch (final SignatureException e) {
-                //throw new ServletException("Invalid token.");
                 response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
                 response.getWriter().flush();
                 response.getWriter().close();
@@ -85,4 +86,7 @@ public class JwtFilter extends GenericFilterBean {
         chain.doFilter(req, res);
     }
 
+    public void setJwtSigningKey(String jwtSigningKey) {
+        this.jwtSigningKey = jwtSigningKey;
+    }
 }

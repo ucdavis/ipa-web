@@ -1,12 +1,10 @@
 package edu.ucdavis.dss.ipa.api.components.site;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.utilities.Email;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,6 +28,7 @@ public class SiteController {
 
 	@Inject UserService userService;
 	@Inject AuthenticationService authenticationService;
+	@Inject EmailService emailService;
 
 	/**
 	 * Provide /status.json for uptime checks. Designed to return
@@ -43,31 +42,9 @@ public class SiteController {
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {
 		HashMap<String,String> status = new HashMap<>();
-		Connection connection = null;
-		Statement statement = null;
 
-		try {
-			connection = DriverManager
-					.getConnection(
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.url"),
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.username"),
-						SettingsConfiguration.findOrWarnSetting("ipa.datasource.password")
-					);
-			statement = connection.createStatement();
-			statement.execute("SELECT 1 = 1");
-
-			// Set status
-			status.put("status", "ok");
-			httpResponse.setStatus(HttpStatus.OK.value());
-
-			connection.close();
-			statement.close();
-		} catch (SQLException e) {
-			log.warn("MySQL connection failed.");
-			status.put("status", "fail");
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		}
+		status.put("status", "ok");
+		httpResponse.setStatus(HttpStatus.OK.value());
 
 		return status;
 	}
@@ -128,7 +105,7 @@ public class SiteController {
 		log.error(messageSubject);
 		log.error(messageBody);
 
-		Email.reportException(messageBody, messageSubject);
+		emailService.send("dssit-devs-exceptions@ucdavis.edu", messageBody, messageSubject);
 	}
 
 	/**
@@ -168,6 +145,6 @@ public class SiteController {
 
 		String messageBody = String.join("\n\n", body);
 
-		Email.send("dssit-devs@ucdavis.edu", messageBody, "IPA Public Contact Form Submission");
+		emailService.send("dssit-devs@ucdavis.edu", messageBody, "IPA Public Contact Form Submission");
 	}
 }

@@ -1,12 +1,9 @@
 package edu.ucdavis.dss.ipa.api.components.auth;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.UserRole;
-import org.apache.poi.hssf.record.chart.SeriesChartGroupIndexRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +15,9 @@ public class SecurityDTO {
     public List<UserRoleDTO> userRoles;
     public List<ScheduleTermState> termStates;
 
-    public SecurityDTO() {
-        if(redirect == null) { redirect = "https://cas.ucdavis.edu/cas/login?service=" + SettingsConfiguration.getIpaApiURL() + "/post-login"; }
-    }
+    public SecurityDTO() { }
 
     public SecurityDTO(String token) {
-        this(); // to set this.redirect
         this.token = token;
     }
 
@@ -55,6 +49,8 @@ public class SecurityDTO {
     }
 
     public String getRedirect() { return redirect; }
+
+    public void setRedirect(String redirect) { this.redirect = redirect; }
 
     public void setRealUserDisplayName(String realUserDisplayName) {
         this.realUserDisplayName = realUserDisplayName;

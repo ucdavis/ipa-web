@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
@@ -11,6 +10,7 @@ import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
@@ -29,6 +29,9 @@ public class AssignmentViewController {
     @Inject AssignmentViewFactory assignmentViewFactory;
     @Inject UserService userService;
     @Inject InstructorService instructorService;
+
+    @Value("${ipa.url.api}")
+    String ipaUrlApi;
 
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
@@ -53,7 +56,7 @@ public class AssignmentViewController {
                                              HttpServletRequest httpRequest) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        String url = SettingsConfiguration.getIpaApiURL() + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+        String url = ipaUrlApi + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");

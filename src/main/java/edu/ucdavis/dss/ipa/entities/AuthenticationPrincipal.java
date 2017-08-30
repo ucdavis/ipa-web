@@ -1,11 +1,11 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 public class AuthenticationPrincipal implements UserDetails {
 	private AuthenticationUser user, impersonatedUser;
@@ -116,20 +114,10 @@ public class AuthenticationPrincipal implements UserDetails {
 	}
 	
 	@JsonIgnore
-	public String getToJson() {
+	public String getToJson() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 
-		try {
-			return mapper.writeValueAsString(this);
-		} catch (JsonGenerationException e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		} catch (JsonMappingException e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		} catch (IOException e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-		}
-
-		return null;
+		return mapper.writeValueAsString(this);
 	}
 
 }

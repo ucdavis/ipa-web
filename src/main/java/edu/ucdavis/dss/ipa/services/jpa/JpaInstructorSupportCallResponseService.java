@@ -1,23 +1,23 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-        import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
-        import edu.ucdavis.dss.ipa.entities.*;
-        import edu.ucdavis.dss.ipa.repositories.InstructorSupportCallResponseRepository;
-        import edu.ucdavis.dss.ipa.services.InstructorService;
-        import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
-        import edu.ucdavis.dss.ipa.services.UserService;
-        import edu.ucdavis.dss.ipa.services.WorkgroupService;
-        import edu.ucdavis.dss.utilities.Email;
-        import org.slf4j.LoggerFactory;
-        import org.springframework.stereotype.Service;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.InstructorSupportCallResponseRepository;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-        import javax.inject.Inject;
-        import javax.transaction.Transactional;
-        import java.sql.Date;
-        import java.text.SimpleDateFormat;
-        import java.util.ArrayList;
-        import java.util.Calendar;
-        import java.util.List;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class JpaInstructorSupportCallResponseService implements InstructorSupportCallResponseService {
@@ -26,6 +26,10 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
     @Inject InstructorService instructorService;
     @Inject WorkgroupService workgroupService;
     @Inject UserService userService;
+    @Inject EmailService emailService;
+
+    @Value("${ipa.url.frontend}")
+    String ipaUrlFrontend;
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
@@ -168,7 +172,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         String termCode = instructorSupportCallResponse.getTermCode();
         String term = termCode.substring(termCode.length() - 2);
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + year + "/" + term + "/instructorSupportCallForm";
+        String supportCallUrl = ipaUrlFrontend + "/instructionalSupport/" + workgroupId + "/" + year + "/" + term + "/instructorSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -186,7 +190,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         messageBody += "<a href='" + supportCallUrl + "'>View Support Call</a>";
         messageBody += "</td></tr></tbody></table>";
 
-        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+        if (emailService.send(recipientEmail, messageBody, messageSubject)) {
             instructorSupportCallResponse.setLastContactedAt(currentDate);
             instructorSupportCallResponse.setNextContactAt(null);
             this.update(instructorSupportCallResponse);
@@ -226,7 +230,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         String termCode = instructorSupportCallResponse.getTermCode();
         String term = termCode.substring(termCode.length() - 2);
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/instructorSupportCallForm";
+        String supportCallUrl = ipaUrlFrontend + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/instructorSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -243,7 +247,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
 
         messageBody += "</td></tr></tbody></table>";
 
-        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+        if (emailService.send(recipientEmail, messageBody, messageSubject)) {
             instructorSupportCallResponse.setLastContactedAt(currentDate);
             this.update(instructorSupportCallResponse);
         }

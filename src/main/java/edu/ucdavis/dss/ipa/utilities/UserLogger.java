@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.utilities;
+package edu.ucdavis.dss.ipa.utilities;
 
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import org.slf4j.Logger;

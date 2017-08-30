@@ -1,14 +1,14 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.StudentSupportCallResponseRepository;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.SupportStaffService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import edu.ucdavis.dss.utilities.Email;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -26,6 +26,10 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
     @Inject SupportStaffService supportStaffService;
     @Inject WorkgroupService workgroupService;
     @Inject UserService userService;
+    @Inject EmailService emailService;
+
+    @Value("${ipa.url.frontend}")
+    String ipaUrlFrontend;
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
@@ -181,7 +185,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         String termCode = studentSupportCallResponse.getTermCode();
         String term = termCode.substring(termCode.length() - 2);
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
+        String supportCallUrl = ipaUrlFrontend + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -200,7 +204,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         messageBody += "<a href='" + supportCallUrl + "'>View Support Call</a>";
         messageBody += "</td></tr></tbody></table>";
 
-        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+        if (emailService.send(recipientEmail, messageBody, messageSubject)) {
             studentSupportCallResponse.setLastContactedAt(currentDate);
             studentSupportCallResponse.setNextContactAt(null);
             this.update(studentSupportCallResponse);
@@ -240,7 +244,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         String termCode = studentSupportCallResponse.getTermCode();
         String term = termCode.substring(termCode.length() - 2);
 
-        String supportCallUrl = SettingsConfiguration.getIpaFrontendURL() + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
+        String supportCallUrl = ipaUrlFrontend + "/instructionalSupport/" + workgroupId + "/" + schedule.getYear() + "/" + term + "/studentSupportCallForm";
         String messageBody = "";
 
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -259,7 +263,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
         messageBody += "</td></tr></tbody></table>";
 
-        if (Email.send(recipientEmail, messageBody, messageSubject)) {
+        if (emailService.send(recipientEmail, messageBody, messageSubject)) {
             studentSupportCallResponse.setLastContactedAt(currentDate);
             this.update(studentSupportCallResponse);
         }

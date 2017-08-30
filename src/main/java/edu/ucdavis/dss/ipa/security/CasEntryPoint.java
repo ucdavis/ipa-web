@@ -19,7 +19,9 @@ public class CasEntryPoint implements AuthenticationEntryPoint {
     private final String casLoginUrl;
     private final String returnUrl;
 
-    public CasEntryPoint(String casLoginUrl, String returnUrl) { this(null, casLoginUrl, returnUrl); }
+    public CasEntryPoint(String casLoginUrl, String returnUrl) {
+        this(null, casLoginUrl, returnUrl);
+    }
 
     public CasEntryPoint(String preLoginPath, String casLoginUrl, String returnUrl) {
         this.preLoginPath = preLoginPath;

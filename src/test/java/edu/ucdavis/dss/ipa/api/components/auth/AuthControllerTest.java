@@ -53,7 +53,7 @@ public class AuthControllerTest {
     @Test
     public void login() throws Exception {
 
-        String securityDto = "{token: 'asdkljasdlkajsd'}";
+        String securityDto = "{\"token\": \"asdkljasdlkajsd\"}";
 
         mockMvc.perform(post("/login")
                 .contentType(contentType)

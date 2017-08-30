@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
@@ -16,6 +15,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,15 @@ public class AuthController {
     @Inject UserRoleService userRoleService;
     @Inject UserService userService;
     @Inject ScheduleTermStateService scheduleTermStateService;
+
+    @Value("${ipa.jwt.signingkey}")
+    String jwtSigningKey;
+
+    @Value("${ipa.jwt.timeout}")
+    String jwtTimeout;
+
+    @Value("${ipa.url.api}")
+    String ipaUrlApi;
 
     /**
      * Returns successful JWT token if logged into CAS, else
@@ -51,16 +60,15 @@ public class AuthController {
         String loginId = null;
         String realUserLoginId = null;
 
-        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtTimeout);
+        calendarNow.add(Calendar.MINUTE, Integer.parseInt(jwtTimeout));
 
         Date expirationDate = calendarNow.getTime();
 
         // Check if the token exists, else check for CAS
         if (securityDTO.token != null) {
             try {
-                Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
+                Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                         .parseClaimsJws(securityDTO.token).getBody();
 
                 // Ensure token is not expired before we refresh it
@@ -118,14 +126,16 @@ public class AuthController {
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
                     .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, SettingsConfiguration.getJwtSigningKey()).compact();
+                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
             securityDTO.setLoginId(loginId);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             securityDTO.setRealUserDisplayName(realUser.getFirstName() + " " + realUser.getLastName());
-
+        } else {
+            // Looks like we need to redirect to CAS
+            securityDTO.setRedirect("https://cas.ucdavis.edu/cas/login?service=" + ipaUrlApi + "/post-login");
         }
 
         return securityDTO;
@@ -179,14 +189,13 @@ public class AuthController {
             return null;
         }
 
-        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtTimeout);
+        calendarNow.add(Calendar.MINUTE, Integer.parseInt(jwtTimeout));
 
         Date expirationDate = calendarNow.getTime();
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
+            Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                     .parseClaimsJws(securityDTO.token).getBody();
 
             // Deserialize tokens
@@ -230,7 +239,7 @@ public class AuthController {
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
                     .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, SettingsConfiguration.getJwtSigningKey()).compact();
+                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
             securityDTO.setLoginId(loginIdToImpersonate);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);
@@ -259,14 +268,13 @@ public class AuthController {
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
 
-        int jwtTimeout = SettingsConfiguration.getJwtTimeout();
         Calendar calendarNow = Calendar.getInstance();
-        calendarNow.add(Calendar.MINUTE, jwtTimeout);
+        calendarNow.add(Calendar.MINUTE, Integer.parseInt(jwtTimeout));
 
         Date expirationDate = calendarNow.getTime();
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(SettingsConfiguration.getJwtSigningKey())
+            Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                     .parseClaimsJws(securityDTO.token).getBody();
 
             // Deserialize token
@@ -285,7 +293,7 @@ public class AuthController {
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
                     .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, SettingsConfiguration.getJwtSigningKey()).compact();
+                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
             securityDTO.setLoginId(realUserLoginId);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);

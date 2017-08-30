@@ -8,6 +8,7 @@ import java.util.List;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
@@ -36,9 +37,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
-@Service("DwClientService")
+import javax.inject.Inject;
+
 public class DwClient {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.dw.DwClient");
 
@@ -94,32 +95,28 @@ public class DwClient {
 		if (connect() && query != null) {
 			HttpGet httpget = new HttpGet("/people/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
-				
-				StatusLine line = response.getStatusLine();
-				if(line.getStatusCode() != HttpStatus.OK.value()) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
 
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if (arrNode != null) {
-					dwPeople = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwPerson.class));
-				} else {
-					log.warn("searchUsers Response from DW returned null, for criterion = " + query);
-				}
-
-				response.close();
-			} catch (JsonParseException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			StatusLine line = response.getStatusLine();
+			if(line.getStatusCode() != HttpStatus.OK.value()) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if (arrNode != null) {
+				dwPeople = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwPerson.class));
+			} else {
+				log.warn("searchUsers Response from DW returned null, for criterion = " + query);
+			}
+
+			response.close();
 		} else if (query == null) {
 			log.warn("No query given.");
 		}
@@ -134,31 +131,27 @@ public class DwClient {
 			// https://beta.dw.dss.ucdavis.edu/terms?token=dssit
 			HttpGet httpGet = new HttpGet("/terms?token=" + ApiToken);
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(targetHost, httpGet, context);
-				StatusLine line = response.getStatusLine();
+			CloseableHttpResponse response = httpclient.execute(targetHost, httpGet, context);
+			StatusLine line = response.getStatusLine();
 
-				if(line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
-
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-
-				if (arrNode != null) {
-					dwTerms = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(List.class, DwTerm.class));
-				} else {
-					log.warn("getTerms Reponse from DW returned null");
-				}
-
-				response.close();
-			} catch (JsonParseException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			if(line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+
+			if (arrNode != null) {
+				dwTerms = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(List.class, DwTerm.class));
+			} else {
+				log.warn("getTerms Reponse from DW returned null");
+			}
+
+			response.close();
 		} else {
 			log.warn("Could not connect to DW");
 		}
@@ -166,16 +159,11 @@ public class DwClient {
 		return dwTerms;
 	}
 
-	public DwPerson getPersonByLoginId(String loginId)  {
+	public DwPerson getPersonByLoginId(String loginId) throws UnsupportedEncodingException {
 		DwPerson dwPerson = null;
 
 		if (connect() && loginId != null) {
-			HttpGet httpget = null;
-			try {
-				httpget = new HttpGet("/people/details?loginid=" + URLEncoder.encode(loginId, "UTF-8") + "&token=" + ApiToken);
-			} catch (UnsupportedEncodingException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
-			}
+			HttpGet httpget = new HttpGet("/people/details?loginid=" + URLEncoder.encode(loginId, "UTF-8") + "&token=" + ApiToken);
 
 			try {
 				CloseableHttpResponse response = httpclient.execute(
@@ -225,32 +213,28 @@ public class DwClient {
 		if (connect() && query != null) {
 			HttpGet httpget = new HttpGet("/courses/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
 
-				StatusLine line = response.getStatusLine();
-				if(line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
-
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if (arrNode != null) {
-					dwCourses = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwCourse.class));
-				} else {
-					log.warn("searchUsers Response from DW returned null, for criterion = " + query);
-				}
-
-				response.close();
-			} catch (JsonParseException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			StatusLine line = response.getStatusLine();
+			if(line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if (arrNode != null) {
+				dwCourses = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwCourse.class));
+			} else {
+				log.warn("searchUsers Response from DW returned null, for criterion = " + query);
+			}
+
+			response.close();
 		} else if (query == null) {
 			log.warn("No query given.");
 		}
@@ -273,32 +257,28 @@ public class DwClient {
 		if (connect() && query != null) {
 			HttpGet httpget = new HttpGet("/courses/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
 
-				StatusLine line = response.getStatusLine();
-				if(line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
-
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if (arrNode != null) {
-					dwCourses = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwCourse.class));
-				} else {
-					log.warn("searchUsers Response from DW returned null, for criterion = " + query);
-				}
-
-				response.close();
-			} catch (JsonParseException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			StatusLine line = response.getStatusLine();
+			if(line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if (arrNode != null) {
+				dwCourses = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwCourse.class));
+			} else {
+				log.warn("searchUsers Response from DW returned null, for criterion = " + query);
+			}
+
+			response.close();
 		} else if (query == null) {
 			log.warn("No query given.");
 		}
@@ -306,45 +286,36 @@ public class DwClient {
 		return dwCourses;
 	}
 
-	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) {
+	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) throws IOException {
 		List<DwSection> dwSections = new ArrayList<>();
 
 		if (connect() && termCode != null && sectionUniqueKeys != null) {
-			HttpGet httpget = null;
-			try {
-				httpget = new HttpGet("/sections/details?termCode=" + URLEncoder.encode(termCode, "UTF-8") +
-						"&sections=" + URLEncoder.encode(sectionUniqueKeys, "UTF-8") +
-						"&token=" + ApiToken);
-			} catch (UnsupportedEncodingException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			HttpGet httpget = new HttpGet("/sections/details?termCode=" + URLEncoder.encode(termCode, "UTF-8") +
+					"&sections=" + URLEncoder.encode(sectionUniqueKeys, "UTF-8") +
+					"&token=" + ApiToken);
+
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
+
+			StatusLine line = response.getStatusLine();
+			if (line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
+			HttpEntity entity = response.getEntity();
 
-				StatusLine line = response.getStatusLine();
-				if (line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
-
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if ((arrNode != null) && (arrNode.get(0) != null)) {
-					dwSections = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwSection.class));
-				} else {
-					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + termCode + ", " + sectionUniqueKeys);
-				}
-
-				response.close();
-			} catch (IOException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if ((arrNode != null) && (arrNode.get(0) != null)) {
+				dwSections = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwSection.class));
+			} else {
+				log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + termCode + ", " + sectionUniqueKeys);
 			}
+
+			response.close();
 		} else if (termCode == null) {
 			log.warn("No termCode given.");
 		} else if (sectionUniqueKeys == null) {
@@ -354,45 +325,36 @@ public class DwClient {
 		return dwSections;
 	}
 
-	public List<DwSection> getDetailedSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
+	public List<DwSection> getDetailedSectionsBySubjectCodeAndYear(String subjectCode, Long year) throws IOException {
 		List<DwSection> dwSections = new ArrayList<>();
 
 		if (connect() && subjectCode != null && year != null) {
-			HttpGet httpget = null;
-			try {
-				httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
-						"&year=" + URLEncoder.encode(String.valueOf(year), "UTF-8") +
-						"&token=" + ApiToken);
-			} catch (UnsupportedEncodingException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			HttpGet httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+					"&year=" + URLEncoder.encode(String.valueOf(year), "UTF-8") +
+					"&token=" + ApiToken);
+
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
+
+			StatusLine line = response.getStatusLine();
+			if (line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
+			HttpEntity entity = response.getEntity();
 
-				StatusLine line = response.getStatusLine();
-				if (line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
-
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-				if ((arrNode != null) && (arrNode.get(0) != null)) {
-					dwSections = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwSection.class));
-				} else {
-					log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + year);
-				}
-
-				response.close();
-			} catch (IOException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if ((arrNode != null) && (arrNode.get(0) != null)) {
+				dwSections = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwSection.class));
+			} else {
+				log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + year);
 			}
+
+			response.close();
 		} else if (year == null) {
 			log.warn("No year given.");
 		} else if (subjectCode == null) {
@@ -402,46 +364,37 @@ public class DwClient {
 		return dwSections;
 	}
 
-	public List<DwSection> getDetailedSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) {
+	public List<DwSection> getDetailedSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) throws IOException {
 		List<DwSection> dwSections = new ArrayList<>();
 
 		if (connect() && subjectCode != null && termCode != null) {
-			HttpGet httpget = null;
-			try {
-				httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
-						"&termCode=" + URLEncoder.encode(String.valueOf(termCode), "UTF-8") +
-						"&token=" + ApiToken);
-			} catch (UnsupportedEncodingException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			HttpGet httpget = new HttpGet("/sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+					"&termCode=" + URLEncoder.encode(String.valueOf(termCode), "UTF-8") +
+					"&token=" + ApiToken);
+
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
+
+			StatusLine line = response.getStatusLine();
+			if (line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 			}
 
-			try {
-				CloseableHttpResponse response = httpclient.execute(
-						targetHost, httpget, context);
+			HttpEntity entity = response.getEntity();
 
-				StatusLine line = response.getStatusLine();
-				if (line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
-				}
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
 
-				HttpEntity entity = response.getEntity();
-
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-
-				if ((arrNode != null) && (arrNode.get(0) != null)) {
-					dwSections = mapper.readValue(
-							arrNode.toString(),
-							mapper.getTypeFactory().constructCollectionType(
-									List.class, DwSection.class));
-				} else {
-					log.warn("getSectionBySubjectCodeAndTermCode Response from DW returned null, for criterion = " + subjectCode + ", " + termCode);
-				}
-
-				response.close();
-			} catch (IOException e) {
-				ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			if ((arrNode != null) && (arrNode.get(0) != null)) {
+				dwSections = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwSection.class));
+			} else {
+				log.warn("getSectionBySubjectCodeAndTermCode Response from DW returned null, for criterion = " + subjectCode + ", " + termCode);
 			}
+
+			response.close();
 		} else if (termCode == null) {
 			log.warn("No termCode given.");
 		} else if (subjectCode == null) {

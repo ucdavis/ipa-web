@@ -3,11 +3,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.utilities.Email;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ public class JpaUserService implements UserService {
 
 	@Inject UserRepository userRepository;
 	@Inject DataWarehouseRepository dwRepository;
+	@Inject EmailService emailService;
 
 	@Override
 	public User save(User user)
@@ -77,7 +77,7 @@ public class JpaUserService implements UserService {
 		try {
 			dwPerson = dwRepository.getPersonByLoginId(loginId);
 		} catch (Exception e) {
-			ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+			emailService.reportException(e, this.getClass().getName());
 		}
 
 		if((dwPerson != null) && (dwPerson.getUserId() != null) && (dwPerson.getUserId().equalsIgnoreCase(loginId))) {
@@ -119,7 +119,7 @@ public class JpaUserService implements UserService {
 			return;
 		}
 
-		Email.send(email, messageBody, subject);
+		emailService.send(email, messageBody, subject);
 	}
 
 	@Override

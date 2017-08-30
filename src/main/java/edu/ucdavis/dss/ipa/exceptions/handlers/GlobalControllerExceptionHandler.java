@@ -1,11 +1,13 @@
 package edu.ucdavis.dss.ipa.exceptions.handlers;
 
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
+    @Inject EmailService emailService;
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
@@ -21,6 +24,6 @@ public class GlobalControllerExceptionHandler {
         if(e instanceof org.springframework.security.access.AccessDeniedException) {
             return;
         }
-        ExceptionLogger.logAndMailException(this.getClass().getName(), e);
+        emailService.reportException(e, this.getClass().getName());
     }
 }

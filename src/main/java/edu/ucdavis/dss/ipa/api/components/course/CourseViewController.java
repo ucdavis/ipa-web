@@ -6,7 +6,6 @@ import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
@@ -15,6 +14,7 @@ import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +46,10 @@ public class CourseViewController {
 
 	@Inject CourseValidator courseValidator;
 	@Inject DataWarehouseRepository dwRepository;
+
+	@Value("${ipa.url.api}")
+	String ipaUrlApi;
+
 	/**
 	 * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
 	 *
@@ -573,7 +577,7 @@ public class CourseViewController {
 							 HttpServletRequest httpRequest) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-		String url = SettingsConfiguration.getIpaApiURL() + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
 		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");

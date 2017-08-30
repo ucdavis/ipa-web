@@ -3,10 +3,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -33,6 +33,7 @@ public class JpaSectionService implements SectionService {
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject JdbcTemplate jdbcTemplate;
 	@Inject SectionService sectionService;
+	@Inject EmailService emailService;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -293,10 +294,7 @@ public class JpaSectionService implements SectionService {
 		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
 
 		if (termState != null && termState.scheduleTermLocked()) {
-			ExceptionLogger.logAndMailException(
-					this.getClass().getName(),
-					new UnsupportedOperationException("Term " + term.getTermCode() + " is locked")
-					);
+			emailService.reportException(new UnsupportedOperationException("Term " + term.getTermCode() + " is locked"), this.getClass().getName());
 			return true;
 		}
 

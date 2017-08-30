@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 public class SectionDeserializer extends JsonDeserializer<Object> {
 

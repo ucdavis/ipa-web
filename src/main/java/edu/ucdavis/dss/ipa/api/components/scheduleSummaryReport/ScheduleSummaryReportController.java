@@ -2,11 +2,10 @@ package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport;
 
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.factories.ScheduleSummaryViewFactory;
-import edu.ucdavis.dss.ipa.config.SettingsConfiguration;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
@@ -24,6 +23,9 @@ public class ScheduleSummaryReportController {
 
     @Inject ScheduleSummaryViewFactory scheduleSummaryViewFactory;
 
+    @Value("${ipa.url.api}")
+    String ipaUrlApi;
+
     @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/terms/{termCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public ScheduleSummaryReportView getScheduleSummaryView(@PathVariable long workgroupId, @PathVariable long year,
@@ -40,7 +42,7 @@ public class ScheduleSummaryReportController {
                                              HttpServletRequest httpRequest) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        String url = SettingsConfiguration.getIpaApiURL() + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/terms/" + termCode + "/excel";
+        String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/terms/" + termCode + "/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");

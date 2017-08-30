@@ -1,9 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +27,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
 	@Inject ActivityService activityService;
+	@Inject EmailService emailService;
 
 	@Override
 	@Transactional
@@ -270,10 +271,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
 
 		if (termState != null && termState.scheduleTermLocked()) {
-			ExceptionLogger.logAndMailException(
-					this.getClass().getName(),
-					new UnsupportedOperationException("Term " + sectionGroup.getTermCode() + " is locked")
-			);
+			emailService.reportException(new UnsupportedOperationException("Term " + sectionGroup.getTermCode() + " is locked"), this.getClass().getName());
 			return true;
 		}
 

@@ -12,7 +12,6 @@ import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.Location;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.exceptions.handlers.ExceptionLogger;
 
 import java.io.IOException;
 import java.sql.Time;
