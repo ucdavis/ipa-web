@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject LineItemService lineItemService;
 
     @Override
+    @Transactional
     public BudgetScenario findOrCreate(Budget budget, String budgetScenarioName) {
         BudgetScenario budgetScenario = budgetScenarioRepository.findByBudgetIdAndName(budget.getId(), budgetScenarioName);
 
@@ -34,19 +36,24 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setName(budgetScenarioName);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        // Create sectionGroupCosts
+        // Create relevant sectionGroupCosts
         Schedule schedule = budget.getSchedule();
         List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(schedule.getWorkgroup().getId(), schedule.getYear());
-        List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
+        List<SectionGroupCost> newSectionGroupCosts = new ArrayList<>();
 
         for (SectionGroup sectionGroup : sectionGroups) {
             SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
-            sectionGroupCosts.add(sectionGroupCost);
+            newSectionGroupCosts.add(sectionGroupCost);
         }
 
+        // Bind sectionGroupCosts to the current entity
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
+        sectionGroupCosts.addAll(newSectionGroupCosts);
         budgetScenario.setSectionGroupCosts(sectionGroupCosts);
 
-        return this.budgetScenarioRepository.save(budgetScenario);
+        budgetScenario = budgetScenarioRepository.save(budgetScenario);
+
+        return budgetScenario;
     }
 
     /**
@@ -55,6 +62,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
      * @param name
      * @return
      */
+    @Transactional
     @Override
     public BudgetScenario createFromExisting(Long scenarioId, String name) {
         BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
@@ -80,10 +88,9 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setSectionGroupCosts(sectionGroupCostList);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        // Clone lineItems
+        // Clone lineItems from one scenario to another
         List<LineItem> lineItems = new ArrayList<>();
 
-        // Clone sectionGroupCosts from one scenario to another
         for(LineItem originalLineItem : originalBudgetScenario.getLineItems()) {
             LineItem lineItem = lineItemService.createDuplicate(originalLineItem, budgetScenario);
             lineItems.add(lineItem);

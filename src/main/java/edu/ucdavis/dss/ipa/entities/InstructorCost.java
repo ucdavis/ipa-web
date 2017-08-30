@@ -10,19 +10,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorCostDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "InstructorCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonDeserialize(using = LineItemDeserializer.class)
-public class InstructorCost {
+@JsonDeserialize(using = InstructorCostDeserializer.class)
+public class InstructorCost extends BaseEntity {
     private long id;
     private Budget budget;
     private Instructor instructor;
-    private float cost;
-    private Boolean lecturer;
+    private Float cost;
+    private Boolean lecturer = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,11 +63,11 @@ public class InstructorCost {
         this.instructor = instructor;
     }
 
-    public float getCost() {
+    public Float getCost() {
         return cost;
     }
 
-    public void setCost(float cost) {
+    public void setCost(Float cost) {
         this.cost = cost;
     }
 

@@ -1,6 +1,9 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,12 +20,13 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 @Table(name = "LineItems")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = LineItemDeserializer.class)
-public class LineItem {
+public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
-    private long amount;
+    private float amount = 0f;
     private String description, notes;
     private LineItemCategory lineItemCategory;
+    private List<LineItemComment> lineItemComments = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +54,11 @@ public class LineItem {
         this.budgetScenario = budgetScenario;
     }
 
-    public long getAmount() {
+    public float getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(float amount) {
         this.amount = amount;
     }
 
@@ -86,6 +90,16 @@ public class LineItem {
         this.lineItemCategory = lineItemCategory;
     }
 
+    @JsonIgnore
+    @OneToMany(mappedBy="lineItem", cascade=CascadeType.ALL, orphanRemoval = true)
+    public List<LineItemComment> getLineItemComments() {
+        return lineItemComments;
+    }
+
+    public void setLineItemComments(List<LineItemComment> lineItemComments) {
+        this.lineItemComments = lineItemComments;
+    }
+
     @JsonProperty("lineItemCategoryId")
     @Transient
     public long getLineItemCategoryId() {
@@ -104,5 +118,17 @@ public class LineItem {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("lastModifiedBy")
+    @Transient
+    public String getLastModifiedBy() {
+        return modifiedBy;
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroupCosts` ADD COLUMN `Reason` VARCHAR(30) NULL;

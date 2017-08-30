@@ -6,24 +6,27 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
-/**
- * Budget is used to record information common to all budget scenarios.
- */
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "SectionGroupCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class SectionGroupCost {
+@JsonDeserialize(using = SectionGroupCostDeserializer.class)
+public class SectionGroupCost extends BaseEntity {
     private long id;
     private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
-    private long enrollment = 0, taCount = 0, sectionCount = 0, readerCount = 0;
+    private long enrollment = 0, sectionCount = 0;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern;
-    private float unitsHigh, unitsLow, instructorCost = 0;
+    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
+    private Float unitsHigh, unitsLow, instructorCost, taCount = 0f, readerCount = 0f;
+    private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,11 +62,11 @@ public class SectionGroupCost {
         this.enrollment = enrollment;
     }
 
-    public long getTaCount() {
+    public float getTaCount() {
         return taCount;
     }
 
-    public void setTaCount(long taCount) {
+    public void setTaCount(float taCount) {
         this.taCount = taCount;
     }
 
@@ -75,19 +78,19 @@ public class SectionGroupCost {
         this.sectionCount = sectionCount;
     }
 
-    public long getReaderCount() {
+    public float getReaderCount() {
         return readerCount;
     }
 
-    public void setReaderCount(long readerCount) {
+    public void setReaderCount(float readerCount) {
         this.readerCount = readerCount;
     }
 
-    public float getInstructorCost() {
+    public Float getInstructorCost() {
         return instructorCost;
     }
 
-    public void setInstructorCost(float instructorCost) {
+    public void setInstructorCost(Float instructorCost) {
         this.instructorCost = instructorCost;
     }
 
@@ -123,6 +126,16 @@ public class SectionGroupCost {
 
     public void setBudgetScenario(BudgetScenario budgetScenario) {
         this.budgetScenario = budgetScenario;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy="sectionGroupCost", cascade=CascadeType.ALL, orphanRemoval = true)
+    public List<SectionGroupCostComment> getSectionGroupCostComments() {
+        return sectionGroupCostComments;
+    }
+
+    public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
+        this.sectionGroupCostComments = sectionGroupCostComments;
     }
 
     public float getUnitsHigh() {
@@ -189,11 +202,39 @@ public class SectionGroupCost {
         this.termCode = termCode;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     @JsonProperty("budgetScenarioId")
     @Transient
     public long getBudgetScenarioId() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorId")
+    @Transient
+    public long getInstructorId() {
+        if(instructor != null) {
+            return instructor.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("originalInstructorId")
+    @Transient
+    public long getOriginalInstructorId() {
+        if(originalInstructor != null) {
+            return originalInstructor.getId();
         } else {
             return 0;
         }

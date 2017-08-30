@@ -15,15 +15,29 @@ public class BudgetView {
     List<LineItemCategory> lineItemCategories;
     List<SectionGroup> sectionGroups;
     List<Section> sections;
+    List<InstructorCost> instructorCosts;
+    List<Instructor> instructors;
+    List<SectionGroupCostComment> sectionGroupCostComments;
+    List<LineItemComment> lineItemComments;
+    List<Course> courses;
+    List<TeachingAssignment> teachingAssignments;
+    List<SupportAssignment> supportAssignments;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
             List<SectionGroupCost> sectionGroupCosts,
+            List<SectionGroupCostComment> sectionGroupCostComments,
             List<LineItem> lineItems,
+            List<LineItemComment> lineItemComments,
             Budget budget,
             List<LineItemCategory> lineItemCategories,
             List<SectionGroup> sectionGroups,
-            List<Section> sections) {
+            List<Section> sections,
+            List<InstructorCost> instructorCosts,
+            List<Instructor> instructors,
+            List<Course> courses,
+            List<TeachingAssignment> teachingAssignments,
+            List<SupportAssignment> supportAssignments) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -31,6 +45,13 @@ public class BudgetView {
         setLineItems(lineItems);
         setBudget(budget);
         setLineItemCategories(lineItemCategories);
+        setInstructorCosts(instructorCosts);
+        setInstructors(instructors);
+        setSectionGroupCostComments(sectionGroupCostComments);
+        setLineItemComments(lineItemComments);
+        setCourses(courses);
+        setTeachingAssignments(teachingAssignments);
+        setSupportAssignments(supportAssignments);
     }
 
     public String getWorkgroupId() {
@@ -95,5 +116,61 @@ public class BudgetView {
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
+    }
+
+    public List<Instructor> getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(List<Instructor> instructors) {
+        this.instructors = instructors;
+    }
+
+    public List<SectionGroupCostComment> getSectionGroupCostComments() {
+        return sectionGroupCostComments;
+    }
+
+    public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
+        this.sectionGroupCostComments = sectionGroupCostComments;
+    }
+
+    public List<LineItemComment> getLineItemComments() {
+        return lineItemComments;
+    }
+
+    public void setLineItemComments(List<LineItemComment> lineItemComments) {
+        this.lineItemComments = lineItemComments;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
+    }
+
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
+    }
+
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
     }
 }

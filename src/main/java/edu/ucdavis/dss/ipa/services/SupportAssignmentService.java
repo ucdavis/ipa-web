@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
@@ -26,4 +27,6 @@ public interface SupportAssignmentService {
     List<SupportAssignment> findByScheduleIdAndTermCodeAndSupportStaffId(long id, String termCode, long supportStaffId);
 
     SupportAssignment save(SupportAssignment supportAssignment);
+
+    List<SupportAssignment> findBySectionGroups(List<SectionGroup> sectionGroups);
 }

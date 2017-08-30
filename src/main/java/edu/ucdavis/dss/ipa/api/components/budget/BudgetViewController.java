@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
@@ -20,6 +21,10 @@ public class BudgetViewController {
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject SectionGroupCostService sectionGroupCostService;
+    @Inject InstructorCostService instructorCostService;
+    @Inject UserService userService;
+    @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
+    @Inject LineItemCommentService lineItemCommentService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -50,10 +55,10 @@ public class BudgetViewController {
      */
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public BudgetScenario createBudgetScenario(@PathVariable long budgetId,
-                                               @RequestParam(value="scenarioId", required = false) Long scenarioId,
-                                               @RequestBody BudgetScenario budgetScenarioDTO,
-                                               HttpServletResponse httpResponse) {
+    public BudgetScenarioView createBudgetScenario(@PathVariable long budgetId,
+                                                   @RequestParam(value="scenarioId", required = false) Long scenarioId,
+                                                   @RequestBody BudgetScenario budgetScenarioDTO,
+                                                   HttpServletResponse httpResponse) {
 
 
         // Ensure valid params
@@ -82,7 +87,7 @@ public class BudgetViewController {
             return null;
         }
 
-        return budgetScenario;
+        return budgetViewFactory.createBudgetScenarioView(budgetScenario);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.DELETE, produces="application/json")
@@ -199,6 +204,27 @@ public class BudgetViewController {
         return budgetService.update(budgetDTO);
     }
 
+    @RequestMapping(value = "/api/budgetView/instructorCosts/{instructorCostId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public InstructorCost updateInstructorCost(@PathVariable long instructorCostId,
+                               @RequestBody InstructorCost instructorCostDTO,
+                               HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        InstructorCost originalInstructorCost = instructorCostService.findById(instructorCostId);
+
+        if (originalInstructorCost == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return instructorCostService.update(instructorCostDTO);
+    }
+
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public SectionGroupCost updateSectionGroupCost(@PathVariable long sectionGroupCostId,
@@ -218,5 +244,66 @@ public class BudgetViewController {
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return sectionGroupCostService.update(sectionGroupCostDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostComments", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public SectionGroupCostComment createSectionGroupCostComment(@PathVariable long sectionGroupCostId,
+                                   @RequestBody SectionGroupCostComment sectionGroupCostCommentDTO,
+                                   HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
+        User user = userService.getOneByLoginId(sectionGroupCostCommentDTO.getUser().getLoginId());
+        if (user == null || sectionGroupCost == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = sectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        sectionGroupCostCommentDTO.setUser(user);
+        sectionGroupCostCommentDTO.setSectionGroupCost(sectionGroupCost);
+
+        SectionGroupCostComment sectionGroupCostComment = sectionGroupCostCommentService.create(sectionGroupCostCommentDTO);
+
+        if (sectionGroupCostComment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        return sectionGroupCostComment;
+    }
+
+    @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}/lineItemComments", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public LineItemComment createLineItemComment(@PathVariable long lineItemId,
+                                                                 @RequestBody LineItemComment lineItemCommentDTO,
+                                                                 HttpServletResponse httpResponse) {
+        // Ensure valid params
+        LineItem lineItem = lineItemService.findById(lineItemId);
+        User user = userService.getOneByLoginId(lineItemCommentDTO.getUser().getLoginId());
+        if (user == null || lineItem == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        lineItemCommentDTO.setUser(user);
+        lineItemCommentDTO.setLineItem(lineItem);
+
+        LineItemComment lineItemComment = lineItemCommentService.create(lineItemCommentDTO);
+
+        if (lineItemComment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        return lineItemComment;
     }
 }

@@ -19,11 +19,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "Budgets")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Budget {
+public class Budget extends BaseEntity {
     private long id;
     private Schedule schedule;
-    private float taCost, readerCost, lecturerCost;
+    private float taCost = 0f, readerCost = 0f, lecturerCost = 0f;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
+    private List<InstructorCost> instructorCosts = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,5 +84,15 @@ public class Budget {
 
     public void setBudgetScenarios(List<BudgetScenario> budgetScenarios) {
         this.budgetScenarios = budgetScenarios;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
     }
 }

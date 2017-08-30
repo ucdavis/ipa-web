@@ -90,6 +90,44 @@ public class InstructionalSupportAssignmentsController {
         return supportAssignmentService.save(supportAssignment);
     }
 
+    @RequestMapping(value = "/api/instructionalSupportView/sectionGroups/{sectionGroupId}/assignmentType/{type}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public SupportAssignment assignStaffToSectionGroupSlot(@PathVariable long sectionGroupId, @PathVariable String type, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+        Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
+
+        if (supportStaff == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        SupportAssignment supportAssignment = null;
+
+        // Find a supportAssignment of specified type, that is not already filled
+        for (SupportAssignment slotSupportAssignment : sectionGroup.getSupportAssignments()) {
+            if (type.equals(slotSupportAssignment.getAppointmentType()) && slotSupportAssignment.getSupportStaff() == null) {
+                supportAssignment = slotSupportAssignment;
+            }
+        }
+
+        // If one is not found, make a new slot
+        if (supportAssignment == null) {
+            supportAssignment = new SupportAssignment();
+            supportAssignment.setAppointmentPercentage(50);
+            supportAssignment.setAppointmentType(type);
+            supportAssignment.setSectionGroup(sectionGroup);
+        }
+
+
+        supportAssignment.setSupportStaff(supportStaff);
+
+        return supportAssignmentService.save(supportAssignment);
+    }
+
     @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}/unassign", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public SupportAssignment removeStaffFromSlot(@PathVariable long instructionalSupportAssignmentId, HttpServletResponse httpResponse) {
