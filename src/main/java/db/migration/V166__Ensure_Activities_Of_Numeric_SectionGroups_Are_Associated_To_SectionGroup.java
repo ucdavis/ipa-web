@@ -5,7 +5,7 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
 import java.sql.*;
 
-public class V165__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_SectionGroup implements JdbcMigration {
+public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_SectionGroup implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
