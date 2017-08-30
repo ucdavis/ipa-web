@@ -167,6 +167,11 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
             if (termCode.equals(teachingAssignment.getTermCode()) && teachingAssignment.isApproved()) {
+                // Skip non-sectionGroup assignments
+                if (teachingAssignment.getSectionGroup() == null) {
+                    continue;
+                }
+
                 sectionGroups.add(teachingAssignment.getSectionGroup());
 
                 // Only add unique courses
