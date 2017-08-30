@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.services;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
