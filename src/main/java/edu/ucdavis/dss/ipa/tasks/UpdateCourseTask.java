@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.CourseService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 @Service
+@Profile({"production", "staging", "development"})
 public class UpdateCourseTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 

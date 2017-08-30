@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
  *
  */
 @Service
+@Profile({"production", "staging", "development"})
 public class EmailNotificationTask {
 	@Inject WorkgroupService workgroupService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;

@@ -4,9 +4,11 @@ import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.TermService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.inject.Inject;
 import java.text.DateFormat;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
+@Profile({"production", "staging", "development"})
 public class TermUpdateTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
