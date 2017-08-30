@@ -1,16 +1,12 @@
 package edu.ucdavis.dss.ipa;
 
-import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.core.Authentication;
 
-@SpringBootConfiguration
 @Profile("test")
 public class TestConfiguration {
     // Configure CAS

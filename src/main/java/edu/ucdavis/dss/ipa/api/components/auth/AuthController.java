@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthController {
-
     @Inject UserRoleService userRoleService;
     @Inject UserService userService;
     @Inject ScheduleTermStateService scheduleTermStateService;
@@ -46,13 +45,9 @@ public class AuthController {
      * @param request HTTP request which may contain CAS principal (username)
      * @return JSON body with either 'token' or 'redirect' field set.
      */
-    @CrossOrigin // TODO: make CORS more specific depending on profile
+    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
-
-        Enumeration<String> headers = request.getHeaderNames();
-        Cookie[] cookies = request.getCookies();
-
         List<UserRole> userRoles = null;
         List<ScheduleTermState> termStates = null;
         User user = null;
@@ -62,7 +57,6 @@ public class AuthController {
 
         Calendar calendarNow = Calendar.getInstance();
         calendarNow.add(Calendar.MINUTE, Integer.parseInt(jwtTimeout));
-
         Date expirationDate = calendarNow.getTime();
 
         // Check if the token exists, else check for CAS
@@ -80,8 +74,8 @@ public class AuthController {
                     // Instead of a 440, we'll be returning the CAS redirect
                     securityDTO.token = null;
                 } else {
-                    loginId = (String) claims.get("loginId");
-                    realUserLoginId = (String) claims.get("realUserLoginId");
+                    loginId = (String)claims.get("loginId");
+                    realUserLoginId = (String)claims.get("realUserLoginId");
                     userRoles = userRoleService.findByLoginId(loginId);
                     termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
                     user = userService.getOneByLoginId(loginId);
@@ -115,7 +109,6 @@ public class AuthController {
             }
         }
 
-        // May not be set if we need to redirect to CAS
         if(userRoles != null) {
             // Update the user lastAccessed value
             userService.updateLastAccessed(user);
@@ -148,9 +141,6 @@ public class AuthController {
     @RequestMapping(value = "/post-login", method = RequestMethod.GET)
     public ResponseEntity processCAS(HttpServletRequest request,
                                      @RequestParam(value = "ref", required = false) String ref) {
-        Enumeration<String> requestHeaders = request.getHeaderNames();
-        Cookie[] cookies = request.getCookies();
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", ref);
 
@@ -161,6 +151,7 @@ public class AuthController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ResponseEntity logout(HttpSession session, HttpServletRequest request){
         session.invalidate();
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "https://cas.ucdavis.edu/cas/logout");
 
@@ -176,7 +167,7 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin // TODO: make CORS more specific depending on profile
+    @CrossOrigin
     @RequestMapping(value = "/impersonate/{loginIdToImpersonate}", method = RequestMethod.POST)
     public SecurityDTO impersonate(@PathVariable String loginIdToImpersonate, @RequestBody SecurityDTO securityDTO,
                                                 HttpServletRequest request,
@@ -262,7 +253,7 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin // TODO: make CORS more specific depending on profile
+    @CrossOrigin
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.POST)
     public SecurityDTO unimpersonate(@RequestBody SecurityDTO securityDTO,
                                    HttpServletRequest request,
@@ -284,7 +275,6 @@ public class AuthController {
             List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(realUserLoginId);
             User user = userService.getOneByLoginId(realUserLoginId);
             User realUser = userService.getOneByLoginId(realUserLoginId);
-
 
             // Rebuild token
             securityDTO.token = Jwts.builder().setSubject(realUserLoginId)
