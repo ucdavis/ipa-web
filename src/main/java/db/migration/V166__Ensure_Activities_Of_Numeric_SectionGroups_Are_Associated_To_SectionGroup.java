@@ -37,14 +37,11 @@ public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_
                 psSection.setLong(1, sectionId);
 
                 ResultSet rsSection = psSection.executeQuery();
-                while (rsSection.next()) {
-                    sectionGroupId = rsSection.getLong("SectionGroupId");
-                }
+                rsSection.next();
+
+                sectionGroupId = rsSection.getLong("SectionGroupId");
 
                 // Find SectionGroup
-                long courseId = 0L;
-                String sequencePattern = null;
-
                 PreparedStatement psSectionGroup = connection.prepareStatement(
                     "SELECT * FROM `SectionGroups` WHERE `Id` = ? ;"
                 );
@@ -52,9 +49,9 @@ public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_
                 psSectionGroup.setLong(1, sectionGroupId);
 
                 ResultSet rsSectionGroup = psSectionGroup.executeQuery();
-                while (rsSectionGroup.next()) {
-                    courseId = rsSectionGroup.getLong("CourseId");
-                }
+                rsSectionGroup.next();
+
+                long courseId = rsSectionGroup.getLong("CourseId");
 
                 // Find Course
                 PreparedStatement psCourse = connection.prepareStatement(
@@ -64,9 +61,9 @@ public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_
                 psCourse.setLong(1, courseId);
 
                 ResultSet rsCourse = psCourse.executeQuery();
-                while (rsCourse.next()) {
-                    sequencePattern = rsCourse.getString("SequencePattern");
-                }
+                rsCourse.next();
+
+                String sequencePattern = rsCourse.getString("SequencePattern");
 
                 // If this is a letter based sectionGroup, then skip
                 if (Utilities.isNumeric(sequencePattern) == false) {
