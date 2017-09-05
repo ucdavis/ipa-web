@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         Long supportStaffId = studentSupportPreference.getSupportStaff().getId();
 
         this.studentSupportPreferenceRepository.save(studentSupportPreference);
-        this.recalculatePriorities(supportStaffId);
+        this.recalculatePriorities(supportStaffId, studentSupportPreference.getSectionGroup().getTermCode());
 
         return this.studentSupportPreferenceRepository.findOneById(studentSupportPreference.getId());
     }
@@ -54,17 +55,19 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
 
         studentSupportPreference = this.save(studentSupportPreference);
 
-        this.recalculatePriorities(supportStaffId);
+        this.recalculatePriorities(supportStaffId, studentSupportPreference.getSectionGroup().getTermCode());
 
         return this.findById(studentSupportPreference.getId());
     }
 
     @Override
     public void delete(Long studentInstructionalSupportPreferenceId) {
+        StudentSupportPreference studentSupportPreference = this.findById(studentInstructionalSupportPreferenceId);
+
         Long supportStaffId = this.findById(studentInstructionalSupportPreferenceId).getSupportStaff().getId();
 
         this.studentSupportPreferenceRepository.deleteById(studentInstructionalSupportPreferenceId);
-        this.recalculatePriorities(supportStaffId);
+        this.recalculatePriorities(supportStaffId, studentSupportPreference.getSectionGroup().getTermCode());
     }
 
     @Override
@@ -102,18 +105,37 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         return studentSupportPreferenceRepository.findOneById(preferenceId);
     }
 
-    private void recalculatePriorities(Long supportStaffId) {
+    /**
+     * Ensure there are no 'gaps' in preference priority in a specific term and person.
+     * Example: 2,4,5 will change to 1,2,3
+     * @param supportStaffId
+     * @param termCode
+     */
+    private void recalculatePriorities(Long supportStaffId, String termCode) {
         List<StudentSupportPreference> studentSupportPreferences = this.studentSupportPreferenceRepository.findBySupportStaffId(supportStaffId);
+
+        List<StudentSupportPreference> preferencesInTerm = new ArrayList<StudentSupportPreference>();
 
         List<StudentSupportPreference> processedPreferences = new ArrayList<>();
 
+        // Identify relevant studentSupportPreferences
+        for (StudentSupportPreference preference : studentSupportPreferences) {
+            if (termCode.equals(preference.getSectionGroup().getTermCode())) {
+                preferencesInTerm.add(preference);
+            }
+        }
+
         // Assign each preference value
-        for (int priority = 1; priority <= studentSupportPreferences.size(); priority++) {
+        for (int priority = 1; priority <= preferencesInTerm.size(); priority++) {
 
             // Find the preference with the lowest priority (that hasn't already been processed)
             StudentSupportPreference lowestPriorityPreference = null;
 
-            for (StudentSupportPreference preference : studentSupportPreferences) {
+            for (StudentSupportPreference preference : preferencesInTerm) {
+                if (termCode.equals(preference.getSectionGroup().getTermCode()) == false) {
+                    continue;
+                }
+
                 if (this.isInArray(processedPreferences, preference.getId())) {
                     continue;
                 }
