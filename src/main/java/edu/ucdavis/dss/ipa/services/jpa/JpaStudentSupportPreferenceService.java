@@ -61,7 +61,10 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
 
     @Override
     public void delete(Long studentInstructionalSupportPreferenceId) {
+        Long supportStaffId = this.findById(studentInstructionalSupportPreferenceId).getSupportStaff().getId();
+
         this.studentSupportPreferenceRepository.deleteById(studentInstructionalSupportPreferenceId);
+        this.recalculatePriorities(supportStaffId);
     }
 
     @Override
