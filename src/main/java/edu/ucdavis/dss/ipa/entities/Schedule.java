@@ -52,6 +52,8 @@ public class Schedule implements Serializable {
 
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+	private List<SupportAssignment> supportAssignments = new ArrayList<>();
+
 	private String supportStaffSupportCallReviewOpen;
 	private String instructorSupportCallReviewOpen;
 
@@ -157,6 +159,16 @@ public class Schedule implements Serializable {
 
 	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
 		this.teachingAssignments = teachingAssignments;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
+	@JsonIgnore
+	public List<SupportAssignment> getSupportAssignments() {
+		return supportAssignments;
+	}
+
+	public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+		this.supportAssignments = supportAssignments;
 	}
 
 	/**

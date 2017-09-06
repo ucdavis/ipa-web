@@ -17,6 +17,7 @@ public class AssignmentView {
     List<Long> senateInstructorIds = new ArrayList<Long>();
     List<Long> federationInstructorIds = new ArrayList<Long>();
     List<Long> lecturerInstructorIds = new ArrayList<>();
+    List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
     List<Tag> tags = new ArrayList<Tag>();
     long instructorId;
     long userId;
@@ -36,7 +37,8 @@ public class AssignmentView {
                           List<Long> senateInstructorIds,
                           List<Long> federationInstructorIds,
                           List<Long> lecturerInstructorIds,
-                          List<Tag> tags) {
+                          List<Tag> tags,
+                          List<SupportAssignment> supportAssignments) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -54,6 +56,7 @@ public class AssignmentView {
         setLecturerInstructorIds(lecturerInstructorIds);
         setScheduleId(scheduleId);
         setTags(tags);
+        setSupportAssignments(supportAssignments);
     }
 
     public List<Course> getCourses() {
@@ -183,5 +186,13 @@ public class AssignmentView {
 
     public void setLecturerInstructorIds(List<Long> lecturerInstructorIds) {
         this.lecturerInstructorIds = lecturerInstructorIds;
+    }
+
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
+    }
+
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
     }
 }
