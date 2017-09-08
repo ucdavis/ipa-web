@@ -166,9 +166,15 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<Long> courseIds = new ArrayList<>();
 
         for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
+            // Skip termCodes that don't match scope or that haven't been approved
             if (termCode.equals(teachingAssignment.getTermCode()) && teachingAssignment.isApproved()) {
                 // Skip non-sectionGroup assignments
                 if (teachingAssignment.getSectionGroup() == null) {
+                    continue;
+                }
+
+                // Skip teachingAssignments from a different schedule
+                if (teachingAssignment.getSchedule().getId() != schedule.getId()) {
                     continue;
                 }
 
