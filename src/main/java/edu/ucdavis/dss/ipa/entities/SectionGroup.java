@@ -36,6 +36,7 @@ public class SectionGroup extends BaseEntity {
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
 	private Integer PlannedSeats;
+	private Boolean showTheStaff;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,5 +163,14 @@ public class SectionGroup extends BaseEntity {
 
 	public void setInstructorSupportPreferences(List<InstructorSupportPreference> instructorSupportPreferences) {
 		this.instructorSupportPreferences = instructorSupportPreferences;
+	}
+
+	@JsonProperty
+	public Boolean getShowTheStaff() {
+		return showTheStaff;
+	}
+
+	public void setShowTheStaff(Boolean showTheStaff) {
+		this.showTheStaff = showTheStaff;
 	}
 }

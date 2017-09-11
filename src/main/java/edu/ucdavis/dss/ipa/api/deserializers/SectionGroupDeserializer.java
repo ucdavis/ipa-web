@@ -40,6 +40,10 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 			sg.setPlannedSeats(node.get("plannedSeats").intValue());
 		}
 
+		if (node.has("showTheStaff")) {
+			sg.setShowTheStaff(node.get("showTheStaff").booleanValue());
+		}
+
 		return sg;
 	}
 
