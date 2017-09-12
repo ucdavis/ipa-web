@@ -401,7 +401,7 @@ public class InstructionalSupportCallsController {
         studentResponseDTO.setCollectGeneralComments(addStudentsDTO.getCollectGeneralComments());
         studentResponseDTO.setCollectPreferenceComments(addStudentsDTO.getCollectPreferenceComments());
         studentResponseDTO.setCollectTeachingQualifications(addStudentsDTO.getCollectTeachingQualifications());
-
+        studentResponseDTO.setRequirePreferenceComments(addStudentsDTO.getRequirePreferenceComments());
         studentResponseDTO.setCollectReaderPreferences(addStudentsDTO.getCollectReaderPreferences());
         studentResponseDTO.setCollectTeachingAssistantPreferences(addStudentsDTO.getCollectTeachingAssistantPreferences());
         studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getCollectAssociateInstructorPreferences());
@@ -428,7 +428,7 @@ public class InstructionalSupportCallsController {
                         collectGeneralComments = false, collectTeachingQualifications = false,
                         collectPreferenceComments = false, collectEligibilityConfirmation = false,
                         collectTeachingAssistantPreferences = false, collectReaderPreferences = false,
-                        collectAssociateInstructorPreferences = false;
+                        collectAssociateInstructorPreferences = false, requirePreferenceComments = false;
 
         private Long minimumNumberOfPreferences;
 
@@ -543,6 +543,14 @@ public class InstructionalSupportCallsController {
         public void setMinimumNumberOfPreferences(Long minimumNumberOfPreferences) {
             this.minimumNumberOfPreferences = minimumNumberOfPreferences;
         }
+
+        public Boolean getRequirePreferenceComments() {
+            return requirePreferenceComments;
+        }
+
+        public void setRequirePreferenceComments(Boolean requirePreferenceComments) {
+            this.requirePreferenceComments = requirePreferenceComments;
+        }
     }
 
     public class AddStudentsDTODeserializer extends JsonDeserializer<Object> {
@@ -589,6 +597,10 @@ public class InstructionalSupportCallsController {
 
             if (node.has("collectGeneralComments")) {
                 addStudentsDTO.setCollectGeneralComments(node.get("collectGeneralComments").booleanValue());
+            }
+
+            if (node.has("requirePreferenceComments")) {
+                addStudentsDTO.setRequirePreferenceComments(node.get("requirePreferenceComments").booleanValue());
             }
 
             if (node.has("collectTeachingQualifications")) {
