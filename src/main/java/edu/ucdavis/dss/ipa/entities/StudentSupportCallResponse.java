@@ -22,7 +22,7 @@ public class StudentSupportCallResponse implements Serializable {
 
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
-    private boolean collectAssociateInstructorPreferences;
+    private boolean collectAssociateInstructorPreferences, requirePreferenceComments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -212,6 +212,14 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setEligibilityConfirmed(boolean eligibilityConfirmed) {
         this.eligibilityConfirmed = eligibilityConfirmed;
+    }
+
+    public boolean isRequirePreferenceComments() {
+        return requirePreferenceComments;
+    }
+
+    public void setRequirePreferenceComments(boolean requirePreferenceComments) {
+        this.requirePreferenceComments = requirePreferenceComments;
     }
 
     @JsonProperty("supportStaffId")
