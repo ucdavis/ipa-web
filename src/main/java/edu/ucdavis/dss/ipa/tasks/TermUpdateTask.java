@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-@Profile({"production", "staging", "development"})
+@Profile({"production", "staging"})
 public class TermUpdateTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 

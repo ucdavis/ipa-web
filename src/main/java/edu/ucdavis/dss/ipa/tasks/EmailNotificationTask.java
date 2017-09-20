@@ -15,12 +15,12 @@ import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 /**
- * Periodically (5min) checks all teachingCallReceipts to determine if any notification or warning emails need to be sent.
+ * Periodically (5 min) checks all teachingCallReceipts to determine if any notification or warning emails need to be sent.
  * @author Lloyd Wheeler
  *
  */
 @Service
-@Profile({"production", "staging", "development"})
+@Profile({"production", "staging"})
 public class EmailNotificationTask {
 	@Inject WorkgroupService workgroupService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;

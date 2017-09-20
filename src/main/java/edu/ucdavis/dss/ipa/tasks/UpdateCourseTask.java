@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 @Service
-@Profile({"production", "staging", "development"})
+@Profile({"production", "staging"})
 public class UpdateCourseTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
