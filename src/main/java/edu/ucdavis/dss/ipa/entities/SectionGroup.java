@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupDeserializer;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +33,8 @@ public class SectionGroup extends BaseEntity {
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
-	private Integer PlannedSeats;
-	private Boolean showTheStaff;
+	private Integer plannedSeats;
+	private Boolean showTheStaff = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,11 +105,11 @@ public class SectionGroup extends BaseEntity {
 	@Column(name = "PlannedSeats", nullable = true)
 	@JsonProperty
 	public Integer getPlannedSeats() {
-		return PlannedSeats;
+		return plannedSeats;
 	}
 
 	public void setPlannedSeats(Integer plannedSeats) {
-		PlannedSeats = plannedSeats;
+		this.plannedSeats = plannedSeats;
 	}
 
 	@JsonProperty("courseId")
@@ -165,6 +163,7 @@ public class SectionGroup extends BaseEntity {
 		this.instructorSupportPreferences = instructorSupportPreferences;
 	}
 
+	@Column(name = "ShowTheStaff", nullable = false)
 	@JsonProperty
 	public Boolean getShowTheStaff() {
 		return showTheStaff;
