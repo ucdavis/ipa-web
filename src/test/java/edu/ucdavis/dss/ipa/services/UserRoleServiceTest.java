@@ -29,9 +29,13 @@ public class UserRoleServiceTest {
 
     @Test
     public void TARoleCreatesSupportStaffEntity() throws Exception {
+        SupportStaff supportStaff = supportStaffRepository.findByLoginIdIgnoreCase("testers");
+        assertThat(supportStaff).isEqualTo(null);
+
         UserRole userRole = userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken("testers", 1L, "studentMasters");
         assertThat(userRole).isNotEqualTo(null);
-        SupportStaff supportStaff = supportStaffRepository.findByLoginIdIgnoreCase("testers");
+
+        supportStaff = supportStaffRepository.findByLoginIdIgnoreCase("testers");
         assertThat(supportStaff).isNotEqualTo(null).hasFieldOrPropertyWithValue("loginId", "testers");
     }
 }
