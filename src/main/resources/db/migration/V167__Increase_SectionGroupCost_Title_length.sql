@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroupCosts` CHANGE COLUMN `Title` `Title` VARCHAR(100) NOT NULL;

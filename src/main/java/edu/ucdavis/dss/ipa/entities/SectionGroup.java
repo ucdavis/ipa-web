@@ -29,9 +29,9 @@ public class SectionGroup extends BaseEntity {
 	private Course course;
 	private List<Section> sections;
 	private List<SyncAction> syncActions = new ArrayList<>();
-	private List<SupportAssignment> supportAssignments;
-	private List<StudentSupportPreference> studentInstructionalSupportCallPreferences;
-	private List<InstructorSupportPreference> instructorSupportPreferences;
+	private List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
+	private List<StudentSupportPreference> studentInstructionalSupportCallPreferences = new ArrayList<StudentSupportPreference>();
+	private List<InstructorSupportPreference> instructorSupportPreferences = new ArrayList<InstructorSupportPreference>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
