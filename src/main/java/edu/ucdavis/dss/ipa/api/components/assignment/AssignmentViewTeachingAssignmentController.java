@@ -84,6 +84,11 @@ public class AssignmentViewTeachingAssignmentController {
 
             existingTeachingAssignment.setApproved(teachingAssignment.isApproved());
 
+            if (existingTeachingAssignment.isApproved() && sectionGroup != null) {
+                sectionGroup.setShowTheStaff(false);
+                sectionGroupService.save(sectionGroup);
+            }
+
             return teachingAssignmentService.save(existingTeachingAssignment);
         }
 
@@ -91,6 +96,12 @@ public class AssignmentViewTeachingAssignmentController {
         teachingAssignment.setSectionGroup(sectionGroup);
         teachingAssignment.setInstructor(instructor);
         teachingAssignment.setSchedule(sectionGroup.getCourse().getSchedule());
+
+        if (teachingAssignment.isApproved() && sectionGroup != null) {
+            sectionGroup.setShowTheStaff(false);
+            sectionGroupService.save(sectionGroup);
+        }
+
         return teachingAssignmentService.save(teachingAssignment);
 
     }
@@ -190,6 +201,12 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
+
+        if (originalTeachingAssignment.isApproved() && originalTeachingAssignment.getSectionGroup() != null) {
+            SectionGroup sectionGroup = originalTeachingAssignment.getSectionGroup();
+            sectionGroup.setShowTheStaff(false);
+            sectionGroupService.save(sectionGroup);
+        }
 
         return teachingAssignmentService.save(originalTeachingAssignment);
     }

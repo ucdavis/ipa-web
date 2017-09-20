@@ -52,6 +52,7 @@ public class Schedule implements Serializable {
 
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+
 	private String supportStaffSupportCallReviewOpen;
 	private String instructorSupportCallReviewOpen;
 

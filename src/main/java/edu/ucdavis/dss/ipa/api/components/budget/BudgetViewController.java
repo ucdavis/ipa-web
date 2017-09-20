@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin // TODO: make CORS more specific depending on profile
@@ -36,13 +38,20 @@ public class BudgetViewController {
      */
     @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public BudgetView showBudgetView(@PathVariable long workgroupId,
-                                     @PathVariable long year,
-                                     HttpServletResponse httpResponse) {
+    public BudgetView showBudgetView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         // Ensure budget exists
         Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        // Ensure at least one scenario exists
+        if (budget.getBudgetScenarios().size() == 0) {
+
+            BudgetScenario budgetScenario = budgetScenarioService.findOrCreate(budget, "Default Scenario");
+            List<BudgetScenario> scenarios = new ArrayList<>();
+            scenarios.add(budgetScenario);
+            budget.setBudgetScenarios(scenarios);
+        }
 
         return budgetViewFactory.createBudgetView(workgroupId, year, budget);
     }

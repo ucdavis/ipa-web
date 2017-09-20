@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroups` ADD COLUMN `ShowTheStaff` TINYINT(1) NOT NULL DEFAULT '0';

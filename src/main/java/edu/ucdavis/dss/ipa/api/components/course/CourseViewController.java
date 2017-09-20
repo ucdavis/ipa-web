@@ -108,6 +108,7 @@ public class CourseViewController {
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		originalSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
+		originalSectionGroup.setShowTheStaff(sectionGroup.getShowTheStaff());
 
 		return sectionGroupService.save(originalSectionGroup);
 	}
