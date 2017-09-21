@@ -2,7 +2,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
+import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -127,6 +131,46 @@ public class JpaUserService implements UserService {
 		if (user == null) { return; }
 		user.setLastAccessed(new Date());
 		this.save(user);
+	}
+
+	@Override
+	public List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken) {
+		List<User> users = new ArrayList<>();
+
+		List<UserRole> userRoles = workgroup.getUserRoles();
+		for (UserRole userRole : userRoles) {
+			if (userRole.getRoleToken().equals(roleToken)) {
+				users.add(userRole.getUser());
+			}
+		}
+
+		return users;
+	}
+
+	@Override
+	public List<User> findAllByLineItems(List<LineItem> lineItems) {
+		List<User> users = new ArrayList<>();
+		List<String> addedLoginIds = new ArrayList<>();
+
+		for (LineItem lineItem : lineItems) {
+			String modifiedBy = lineItem.getModifiedBy();
+			// modifiedBy will come in the form "system" or "user:guilden"
+			if (modifiedBy.indexOf(":") > 0) {
+				int loginidIndex = modifiedBy.indexOf(":") + 1;
+				String loginId = modifiedBy.substring(loginidIndex);
+
+				if (addedLoginIds.indexOf(loginId) == -1) {
+					User user = this.getOneByLoginId(loginId);
+
+					if (user != null) {
+						users.add(user);
+						addedLoginIds.add(loginId);
+					}
+				}
+			}
+		}
+
+		return users;
 	}
 
 	@Override

@@ -26,6 +26,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject ScheduleService scheduleService;
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject UserService userService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -46,6 +47,11 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 
+        List<User> users = userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner");
+        List<User> lineItemUsers = userService.findAllByLineItems(lineItems);
+        users.removeAll(lineItemUsers);
+        users.addAll(lineItemUsers);
+
         BudgetView budgetView = new BudgetView(
                 budgetScenarios,
                 sectionGroupCosts,
@@ -60,7 +66,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 instructors,
                 courses,
                 teachingAssignments,
-                supportAssignments);
+                supportAssignments,
+                users);
 
         return budgetView;
     }
