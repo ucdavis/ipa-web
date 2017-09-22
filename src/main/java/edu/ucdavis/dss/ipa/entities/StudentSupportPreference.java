@@ -23,6 +23,7 @@ public class StudentSupportPreference implements Serializable {
     private SupportStaff supportStaff;
     private String type, comment;
     private long priority;
+    private Long appointmentPercentage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,5 +104,15 @@ public class StudentSupportPreference implements Serializable {
         } else {
             return 0;
         }
+    }
+
+
+    @Column(nullable = true)
+    public Long getAppointmentPercentage() {
+        return appointmentPercentage;
+    }
+
+    public void setAppointmentPercentage(Long appointmentPercentage) {
+        this.appointmentPercentage = appointmentPercentage;
     }
 }
