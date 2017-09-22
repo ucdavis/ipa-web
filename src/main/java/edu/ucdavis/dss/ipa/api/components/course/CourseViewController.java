@@ -272,11 +272,11 @@ public class CourseViewController {
 
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
@@ -287,33 +287,12 @@ public class CourseViewController {
 		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
 			for (DwSection dwSection : dwSections) {
-
-				String newTermCode = null;
-				String shortTermCode = dwSection.getTermCode().substring(4, 6);
-				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = year + 1;
-					newTermCode = nextYear + shortTermCode;
-				} else {
-					newTermCode = year + shortTermCode;
-				}
-
-
-				Term term = termService.getOneByTermCode(newTermCode);
-
-				// Don't import this dwSection if termState is locked
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-				if (termState.scheduleTermLocked()) {
-					continue;
-				}
-
 				// Calculate sequencePattern from sequenceNumber
 				String dwSequencePattern = null;
-
 				Character c = dwSection.getSequenceNumber().charAt(0);
 				Boolean isLetter = Character.isLetter(c);
+
 				if (isLetter) {
 					dwSequencePattern = String.valueOf(c);
 				} else {
@@ -329,6 +308,17 @@ public class CourseViewController {
 				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
 				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
 				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
+
+					String newTermCode = null;
+					String shortTermCode = dwSection.getTermCode().substring(4, 6);
+					if (Long.valueOf(shortTermCode) < 4) {
+						long nextYear = year + 1;
+						newTermCode = nextYear + shortTermCode;
+					} else {
+						newTermCode = year + shortTermCode;
+					}
+
+					Term term = termService.getOneByTermCode(newTermCode);
 
 					String courseNumber = sectionGroupImport.getCourseNumber();
 
