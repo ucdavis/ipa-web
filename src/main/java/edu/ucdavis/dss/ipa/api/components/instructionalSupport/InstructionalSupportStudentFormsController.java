@@ -46,9 +46,9 @@ public class InstructionalSupportStudentFormsController {
         return instructionalSupportViewFactory.createStudentFormView(workgroupId, year, shortTermCode, supportStaffId);
     }
 
-    @RequestMapping(value = "/api/instructionalSupportStudentFormView/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportStudentFormView/sectionGroups/{sectionGroupId}/preferenceType/{preferenceType}/percentage/{appointmentPercentage}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public StudentSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable String preferenceType, HttpServletResponse httpResponse) {
+    public StudentSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable String preferenceType, @PathVariable Long appointmentPercentage, HttpServletResponse httpResponse) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
         Authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
@@ -59,6 +59,7 @@ public class InstructionalSupportStudentFormsController {
         studentSupportPreference.setSectionGroup(sectionGroupService.getOneById(sectionGroupId));
         studentSupportPreference.setSupportStaff(supportStaff);
         studentSupportPreference.setType(preferenceType);
+        studentSupportPreference.setAppointmentPercentage(appointmentPercentage);
         studentSupportPreference.setComment("");
 
         return studentSupportPreferenceService.create(studentSupportPreference);
