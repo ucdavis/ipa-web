@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.entities.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
@@ -130,6 +131,13 @@ public class JpaScheduleService implements ScheduleService {
 	@Override
 	public List<Term> getActiveTermCodesForSchedule(Schedule schedule) {
 		return this.scheduleRepository.getActiveTermsForScheduleId(schedule.getId());
+	}
+
+	@Override
+	public void importCoursesFromDW(long scheduleId, List<SectionGroupImport> sectionGroupImportList, Long destinationYear, Boolean importAssignments, Boolean importTimes, Boolean showDoNotPrint) {
+		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+
+		}
 	}
 
 	@Override

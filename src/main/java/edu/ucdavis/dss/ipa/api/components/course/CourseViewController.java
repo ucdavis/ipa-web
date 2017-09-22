@@ -412,10 +412,23 @@ public class CourseViewController {
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/createCourses", method = RequestMethod.POST, produces="application/json")
+	/**
+	 * Will only import data into brand new courses.
+	 * If a course already exists, but has different sectionGroup data, the course in IPA will not be modified in any way.
+	 *
+	 * @param sectionGroupImportList
+	 * @param workgroupId
+	 * @param destinationYear
+	 * @param importTimes
+	 * @param importAssignments
+	 * @param showDoNotPrint
+	 * @param httpResponse
+     * @return
+     */
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{destinationYear}/createCourses", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public CourseView createMultipleCoursesFromIPA(@RequestBody List<SectionGroupImport> sectionGroupImportList,
-												  @PathVariable Long workgroupId, @PathVariable Long year,
+												  @PathVariable Long workgroupId, @PathVariable Long destinationYear,
 												   @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 												  HttpServletResponse httpResponse) {
@@ -431,34 +444,24 @@ public class CourseViewController {
 		Long importYear = termService.getAcademicYearFromTermCode(termCode);
 
 		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
 
+		scheduleService.importCoursesFromDW(schedule.getId(), sectionGroupImportList, destinationYear, importAssignments, importTimes, showDoNotPrint);
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 
-			// Find course referenced by this sectionGroup
-			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					importSchedule.getId());
-
-			if (historicalCourse == null) {
-				continue;
-			}
-
-			// If course already exists, do nothing
-			Course newCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+			Course course = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
 					schedule.getId());
 
-			if (newCourse != null) {
+			// If course already exists, do nothing
+			if (course != null) {
 				continue;
 			}
 
 			// Make a newCourse in the current term based on the historical course
-			newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
@@ -468,16 +471,16 @@ public class CourseViewController {
 					true);
 
 			// Find its sectionGroups, and find/create new versions of them
-			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
+			for (SectionGroup historicalSectionGroup : course.getSectionGroups()) {
 
 				String newTermCode = null;
 				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
 
 				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = year + 1;
+					long nextYear = destinationYear + 1;
 					newTermCode = nextYear + shortTermCode;
 				} else {
-					newTermCode = year + shortTermCode;
+					newTermCode = destinationYear + shortTermCode;
 				}
 
 				Term term = termService.getOneByTermCode(newTermCode);
@@ -489,7 +492,7 @@ public class CourseViewController {
 					continue;
 				}
 
-				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
+				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
@@ -554,7 +557,7 @@ public class CourseViewController {
 			}
 		}
 
-		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
+		return annualViewFactory.createCourseView(workgroupId, destinationYear, showDoNotPrint);
 	}
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/queryCourses", method = RequestMethod.GET, produces="application/json")
