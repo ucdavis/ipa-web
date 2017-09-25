@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaBudgetViewFactory implements BudgetViewFactory {
@@ -47,9 +49,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 
-        List<User> users = userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner");
-        List<User> lineItemUsers = userService.findAllByLineItems(lineItems);
-        users.removeAll(lineItemUsers);
+        Set<User> users = new HashSet<> (userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner"));
+        Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
         users.addAll(lineItemUsers);
 
         BudgetView budgetView = new BudgetView(
