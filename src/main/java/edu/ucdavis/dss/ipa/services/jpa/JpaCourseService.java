@@ -211,6 +211,42 @@ public class JpaCourseService implements CourseService {
 		return course;
 	}
 
+	@Override
+	public Course findOrCreateByCourse(Course courseDTO) {
+		// Attempt to find existing course
+		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
+				courseDTO.getSubjectCode(), courseDTO.getCourseNumber(), courseDTO.getSequencePattern(), courseDTO.getEffectiveTermCode(), courseDTO.getSchedule());
+
+		if (course != null) {
+			return course;
+		}
+
+		// Create new course
+		String title = courseDTO.getTitle();
+
+		// Get the meta data (title, tags) from previous offerings if any
+		List<Tag> tags = new ArrayList<>();
+
+		Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+				courseDTO.getSubjectCode(), courseDTO.getCourseNumber(), courseDTO.getSequencePattern(), courseDTO.getEffectiveTermCode(), courseDTO.getSchedule().getWorkgroup().getId());
+		if (matchingCourse != null) {
+			title = matchingCourse.getTitle();
+			tags.addAll(matchingCourse.getTags());
+		}
+
+		course = new Course();
+		course.setSubjectCode(courseDTO.getSubjectCode());
+		course.setCourseNumber(courseDTO.getCourseNumber());
+		course.setSequencePattern(courseDTO.getSequencePattern());
+		course.setTitle(title);
+		course.setEffectiveTermCode(courseDTO.getEffectiveTermCode());
+		course.setSchedule(courseDTO.getSchedule());
+		course.setTags(tags);
+		courseRepository.save(course);
+
+		return course;
+	}
+
 	/**
 	 * Will create a course based on supplied params. Will return null if an identical course already exists.
 	 * Can optionally copy tag/title data from a similar course in another year.

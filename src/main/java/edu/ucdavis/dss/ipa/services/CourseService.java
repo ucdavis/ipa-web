@@ -43,4 +43,6 @@ public interface CourseService {
 	List<Course> getAllCourses();
 
 	Course syncUnits(Course course);
+
+	Course findOrCreateByCourse(Course courseDTO);
 }
