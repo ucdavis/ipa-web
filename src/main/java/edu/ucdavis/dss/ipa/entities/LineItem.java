@@ -131,4 +131,23 @@ public class LineItem extends BaseEntity {
     public Date getLastModifiedOn() {
         return updatedAt;
     }
+
+    @JsonIgnore
+    @Transient
+    public String getLoginIdOfLastModifiedBy() {
+        // modifiedBy will come in the form "system" or "user:guilden"
+
+        if (modifiedBy == null) {
+            return "";
+        }
+
+        int modifiedByIndex = modifiedBy.indexOf(":");
+
+        if (modifiedByIndex == -1) {
+            return "";
+        }
+
+        return modifiedBy.substring(modifiedByIndex + 1);
+    }
+
 }
