@@ -281,6 +281,9 @@ public class CourseViewController {
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
+		// Hash to reduce number of termService lookups
+		HashMap<String, Term> termHashMap = new HashMap<>();
+
 		// Calculate academicYear from the termCode of the first sectionGroupImport
 		String termCode = sectionGroupImportList.get(0).getTermCode();
 		Long yearToImportFrom = termService.getAcademicYearFromTermCode(termCode);
@@ -320,7 +323,12 @@ public class CourseViewController {
 						newTermCode = year + shortTermCode;
 					}
 
-					Term term = termService.getOneByTermCode(newTermCode);
+					if (termHashMap.get(newTermCode) == null) {
+						termHashMap.put(newTermCode, termService.getOneByTermCode(newTermCode));
+					}
+
+					Term term = termHashMap.get(newTermCode);
+
 					Long unitsHigh = 0L;
 					Long unitsLow = 0L;
 
@@ -447,7 +455,6 @@ public class CourseViewController {
 		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
 
-		scheduleService.importCoursesFromDW(schedule.getId(), sectionGroupImportList, destinationYear, importAssignments, importTimes, showDoNotPrint);
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 
 			Course course = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
