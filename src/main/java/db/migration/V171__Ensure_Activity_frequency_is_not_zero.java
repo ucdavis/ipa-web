@@ -5,7 +5,7 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
 import java.sql.*;
 
-public class V168__Ensure_Activity_frequency_is_not_zero implements JdbcMigration {
+public class V171__Ensure_Activity_frequency_is_not_zero implements JdbcMigration {
 
     @Override
     public void migrate(Connection connection) throws Exception {
