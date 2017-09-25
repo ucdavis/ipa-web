@@ -284,20 +284,6 @@ public class JpaSectionService implements SectionService {
 	}
 
 	private boolean isLocked(Section section) {
-		SectionGroup sectionGroup = section.getSectionGroup();
-		if (sectionGroup == null) { return true; }
-
-		Course course = sectionGroup.getCourse();
-		Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
-
-		if (course == null) { return true; }
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
-
-		if (termState != null && termState.scheduleTermLocked()) {
-			emailService.reportException(new UnsupportedOperationException("Term " + term.getTermCode() + " is locked"), this.getClass().getName());
-			return true;
-		}
-
 		return false;
 	}
 

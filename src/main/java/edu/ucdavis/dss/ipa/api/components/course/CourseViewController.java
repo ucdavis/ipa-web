@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -269,13 +270,13 @@ public class CourseViewController {
 												  @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 											HttpServletResponse httpResponse) {
-
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
+
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
@@ -309,6 +310,7 @@ public class CourseViewController {
 				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
 				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
 
+					// Find or create a course
 					String newTermCode = null;
 					String shortTermCode = dwSection.getTermCode().substring(4, 6);
 					if (Long.valueOf(shortTermCode) < 4) {
@@ -319,36 +321,35 @@ public class CourseViewController {
 					}
 
 					Term term = termService.getOneByTermCode(newTermCode);
-
-					String courseNumber = sectionGroupImport.getCourseNumber();
-
-					// Attempt to make a course
-					Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-							sectionGroupImport.getSubjectCode(),
-							sectionGroupImport.getCourseNumber(),
-							sectionGroupImport.getSequencePattern(),
-							sectionGroupImport.getTitle(),
-							sectionGroupImport.getEffectiveTermCode(),
-							schedule,
-							true
-					);
+					Long unitsHigh = 0L;
+					Long unitsLow = 0L;
 
 					if (sectionGroupImport.getUnitsHigh() != null) {
-						course.setUnitsHigh(Long.valueOf(sectionGroupImport.getUnitsHigh()));
+						unitsHigh = Long.valueOf(sectionGroupImport.getUnitsHigh());
 					}
 
 					if (sectionGroupImport.getUnitsLow() != null) {
-						course.setUnitsLow(Long.valueOf(sectionGroupImport.getUnitsLow()));
+						unitsLow = Long.valueOf(sectionGroupImport.getUnitsLow());
 					}
 
-					course = courseService.update(course);
+					Course courseDTO = new Course();
+					courseDTO.setSubjectCode(sectionGroupImport.getSubjectCode());
+					courseDTO.setCourseNumber(sectionGroupImport.getCourseNumber());
+					courseDTO.setSequencePattern(sectionGroupImport.getSequencePattern());
+					courseDTO.setTitle(sectionGroupImport.getTitle());
+					courseDTO.setEffectiveTermCode(sectionGroupImport.getEffectiveTermCode());
+					courseDTO.setSchedule(schedule);
+					courseDTO.setUnitsHigh(unitsHigh);
+					courseDTO.setUnitsLow(unitsLow);
 
-					// Attempt to make a sectionGroup
+					Course course = courseService.findOrCreateByCourse(courseDTO);
+
+					// Find or create a sectionGroup
 					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
 					sectionGroup = sectionGroupService.save(sectionGroup);
 
-					// Attempt to make a section
+					// Find or create a section
 					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
 
 					section.setSeats(dwSection.getMaximumEnrollment());
