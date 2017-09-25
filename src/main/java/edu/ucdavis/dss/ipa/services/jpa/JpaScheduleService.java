@@ -134,13 +134,6 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public void importCoursesFromDW(long scheduleId, List<SectionGroupImport> sectionGroupImportList, Long destinationYear, Boolean importAssignments, Boolean importTimes, Boolean showDoNotPrint) {
-		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
-		}
-	}
-
-	@Override
 	public List<Schedule> findAll() {
 		return (List<Schedule>) this.scheduleRepository.findAll();
 	}

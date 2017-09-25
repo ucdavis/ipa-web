@@ -39,6 +39,4 @@ public interface ScheduleService {
 	 * @return
 	 */
 	List<Term> getActiveTermCodesForSchedule(Schedule schedule);
-
-	void importCoursesFromDW(long scheduleId, List<SectionGroupImport> sectionGroupImportList, Long destinationYear, Boolean importAssignments, Boolean importTimes, Boolean showDoNotPrint);
 }
