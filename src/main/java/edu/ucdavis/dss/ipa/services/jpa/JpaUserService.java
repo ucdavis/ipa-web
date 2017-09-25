@@ -133,8 +133,20 @@ public class JpaUserService implements UserService {
 		this.save(user);
 	}
 
+	/**
+	 * Requires a valid workgroup and roletoken.
+	 * Will return all matching users through the userRole-workgroup assocation
+	 *
+	 * @param workgroup
+	 * @param roleToken
+     * @return
+     */
 	@Override
 	public List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken) {
+		if (workgroup == null || roleToken == null) {
+			return null;
+		}
+
 		List<User> users = new ArrayList<>();
 
 		List<UserRole> userRoles = workgroup.getUserRoles();
@@ -150,22 +162,17 @@ public class JpaUserService implements UserService {
 	@Override
 	public List<User> findAllByLineItems(List<LineItem> lineItems) {
 		List<User> users = new ArrayList<>();
-		List<String> addedLoginIds = new ArrayList<>();
+		List<String> loginIds = new ArrayList<>();
 
 		for (LineItem lineItem : lineItems) {
-			String modifiedBy = lineItem.getModifiedBy();
-			// modifiedBy will come in the form "system" or "user:guilden"
-			if (modifiedBy.indexOf(":") > 0) {
-				int loginidIndex = modifiedBy.indexOf(":") + 1;
-				String loginId = modifiedBy.substring(loginidIndex);
+			String loginId = lineItem.getLoginIdOfLastModifiedBy();
 
-				if (addedLoginIds.indexOf(loginId) == -1) {
-					User user = this.getOneByLoginId(loginId);
+			if (loginIds.indexOf(loginId) == -1) {
+				User user = this.getOneByLoginId(loginId);
 
-					if (user != null) {
-						users.add(user);
-						addedLoginIds.add(loginId);
-					}
+				if (user != null) {
+					users.add(user);
+					loginIds.add(loginId);
 				}
 			}
 		}
