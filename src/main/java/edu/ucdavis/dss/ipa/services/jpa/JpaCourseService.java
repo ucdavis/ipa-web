@@ -211,9 +211,15 @@ public class JpaCourseService implements CourseService {
 		return course;
 	}
 
+	/**
+	 * Attempts to match an existing course based on subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule.
+	 * If none is found, will generate a new course and identify a similar course from past years as a model for what tags should be generated.
+	 *
+	 * @param courseDTO
+	 * @return
+	 */
 	@Override
 	public Course findOrCreateByCourse(Course courseDTO) {
-		// Attempt to find existing course
 		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
 				courseDTO.getSubjectCode(), courseDTO.getCourseNumber(), courseDTO.getSequencePattern(), courseDTO.getEffectiveTermCode(), courseDTO.getSchedule());
 
@@ -221,7 +227,6 @@ public class JpaCourseService implements CourseService {
 			return course;
 		}
 
-		// Create new course
 		String title = courseDTO.getTitle();
 
 		// Get the meta data (title, tags) from previous offerings if any

@@ -8,13 +8,11 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.entities.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TermService;

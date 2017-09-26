@@ -37,8 +37,6 @@ public class JpaSectionService implements SectionService {
 
 	@Override
 	public Section save(@Valid Section section) {
-		if (isLocked(section)) return null;
-
 		return sectionRepository.save(section);
 	}
 
@@ -46,8 +44,6 @@ public class JpaSectionService implements SectionService {
 	@Transactional
 	public boolean delete(Long id) {
 		Section section = this.getOneById(id);
-		if (isLocked(section)) return false;
-
 		this.sectionRepository.delete(id);
 		return true;
 	}
@@ -67,7 +63,7 @@ public class JpaSectionService implements SectionService {
 	public Section updateSequenceNumber(Long sectionId, String newSequencePattern) {
 		Section section = this.getOneById(sectionId);
 
-		if (newSequencePattern == null || newSequencePattern.length() == 0 || this.isLocked(section)) {
+		if (newSequencePattern == null || newSequencePattern.length() == 0) {
 			return null;
 		}
 
@@ -281,10 +277,6 @@ public class JpaSectionService implements SectionService {
 	@Override
 	public List<Section> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
 		return sectionRepository.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-	}
-
-	private boolean isLocked(Section section) {
-		return false;
 	}
 
 	/**

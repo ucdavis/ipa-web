@@ -25,9 +25,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -281,7 +279,7 @@ public class CourseViewController {
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
-		// Hash to reduce number of termService lookups
+		// Cache termService lookups
 		HashMap<String, Term> termHashMap = new HashMap<>();
 
 		// Calculate academicYear from the termCode of the first sectionGroupImport
@@ -315,7 +313,9 @@ public class CourseViewController {
 
 					// Find or create a course
 					String newTermCode = null;
-					String shortTermCode = dwSection.getTermCode().substring(4, 6);
+					String shortTermCode = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
+
+					// Identify which year in academic year range to use
 					if (Long.valueOf(shortTermCode) < 4) {
 						long nextYear = year + 1;
 						newTermCode = nextYear + shortTermCode;
