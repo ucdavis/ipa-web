@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -134,13 +133,13 @@ public class JpaUserService implements UserService {
 	}
 
 	/**
-	 * Requires a valid workgroup and roletoken.
+	 * Requires a valid workgroup and role token.
 	 * Will return all matching users through the userRole-workgroup assocation
 	 *
 	 * @param workgroup
 	 * @param roleToken
-     * @return
-     */
+	 * @return
+	 */
 	@Override
 	public List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken) {
 		if (workgroup == null || roleToken == null) {
@@ -165,7 +164,7 @@ public class JpaUserService implements UserService {
 		List<String> loginIds = new ArrayList<>();
 
 		for (LineItem lineItem : lineItems) {
-			String loginId = lineItem.getLoginIdOfLastModifiedBy();
+			String loginId = lineItem.getLastModifiedByAsLoginId();
 
 			if (loginIds.indexOf(loginId) == -1) {
 				User user = this.getOneByLoginId(loginId);
