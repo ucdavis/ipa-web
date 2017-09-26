@@ -132,19 +132,23 @@ public class LineItem extends BaseEntity {
         return updatedAt;
     }
 
+    /**
+     * Returns a loginId or null.
+     * ModifiedBy is expected to come in the form "system" or "user:guilden", or null for older entities that haven't been updated recently.
+     *
+     * @return
+     */
     @JsonIgnore
     @Transient
-    public String getLoginIdOfLastModifiedBy() {
-        // modifiedBy will come in the form "system" or "user:guilden"
-
+    public String getLastModifiedByAsLoginId() {
         if (modifiedBy == null) {
-            return "";
+            return null;
         }
 
         int modifiedByIndex = modifiedBy.indexOf(":");
 
         if (modifiedByIndex == -1) {
-            return "";
+            return null;
         }
 
         return modifiedBy.substring(modifiedByIndex + 1);
