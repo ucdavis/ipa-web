@@ -21,11 +21,7 @@ public class TeachingAssignment implements Serializable {
 	private Schedule schedule;
 	private String termCode;
 	private int priority;
-	private boolean buyout;
-	private boolean courseRelease;
-	private boolean sabbatical;
-	private boolean inResidence;
-	private boolean workLifeBalance;
+	private boolean buyout, courseRelease, sabbatical, inResidence, workLifeBalance, leaveOfAbsence;
 	private boolean approved;
 	private boolean fromInstructor;
 	private String suggestedSubjectCode;
@@ -148,6 +144,15 @@ public class TeachingAssignment implements Serializable {
 
 	public void setWorkLifeBalance(boolean workLifeBalance) {
 		this.workLifeBalance = workLifeBalance;
+	}
+
+	@JsonProperty
+	public boolean isLeaveOfAbsence() {
+		return leaveOfAbsence;
+	}
+
+	public void setLeaveOfAbsence(boolean leaveOfAbsence) {
+		this.leaveOfAbsence = leaveOfAbsence;
 	}
 
 	@Transient
