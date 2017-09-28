@@ -19,8 +19,8 @@ public interface TeachingAssignmentRepository extends CrudRepository<TeachingAss
 
 	TeachingAssignment findOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
-	TeachingAssignment findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
-			Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance);
+	TeachingAssignment findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsence(
+			Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance, Boolean leaveOfAbsence);
 
 	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 
