@@ -102,27 +102,38 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		return teachingAssignmentRepository.findByScheduleId(scheduleId);
 	}
 
+	/**
+	 * Will return an existing teachingAssignment that matches on all fields, otherwise returns null;
+	 *
+	 * @param teachingAssignmentDTO
+	 * @return
+	 */
 	@Override
-	public TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
-			Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance) {
+	public TeachingAssignment findByTeachingAssignment(TeachingAssignment teachingAssignmentDTO) {
 
-		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-		Instructor instructor = instructorService.getOneById(instructorId);
-		TeachingAssignment teachingAssignment = null;
-
-		if (sectionGroup != null) {
-			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
-			if (teachingAssignment != null) {
-				return teachingAssignment;
-			}
-		} else {
-			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(instructorId, scheduleId, termCode, buyout, courseRelease, sabbatical, inResidence, workLifeBalance);
-			if (teachingAssignment != null) {
-				return teachingAssignment;
-			}
+		if (teachingAssignmentDTO.getInstructor() == null) {
+			return null;
 		}
 
-		return null;
+		TeachingAssignment teachingAssignment = null;
+
+		if (teachingAssignmentDTO.getSectionGroup() != null) {
+			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(teachingAssignmentDTO.getSectionGroup(), teachingAssignmentDTO.getInstructor());
+		} else {
+			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsence(
+				teachingAssignmentDTO.getInstructor().getId(),
+				teachingAssignmentDTO.getSchedule().getId(),
+				teachingAssignmentDTO.getTermCode(),
+				teachingAssignmentDTO.isBuyout(),
+				teachingAssignmentDTO.isCourseRelease(),
+				teachingAssignmentDTO.isSabbatical(),
+				teachingAssignmentDTO.isInResidence(),
+				teachingAssignmentDTO.isWorkLifeBalance(),
+				teachingAssignmentDTO.isWorkLifeBalance()
+			);
+		}
+
+		return teachingAssignment;
 	}
 
 }
