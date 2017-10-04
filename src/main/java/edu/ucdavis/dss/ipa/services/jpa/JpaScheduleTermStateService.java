@@ -67,19 +67,6 @@ public class JpaScheduleTermStateService implements ScheduleTermStateService {
 			terms.addAll(workgroupTerms);
 		}
 
-
-		for(Term term : terms) {
-			states.add(this.createScheduleTermState(term));
-		}
-
-		return states;
-	}
-
-	@Override
-	public List<ScheduleTermState> findAll() {
-		List<Term> terms = termService.findAll();
-		List<ScheduleTermState> states = new ArrayList<>();
-
 		for(Term term : terms) {
 			states.add(this.createScheduleTermState(term));
 		}

@@ -15,15 +15,11 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject WorkgroupService workgroupService;
 	@Inject InstructorService instructorService;
 	@Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
-	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject ScheduleService scheduleService;
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject CourseService courseService;
 	@Inject UserRoleService userRoleService;
-	@Inject TeachingCallReceiptService teachingCallReceiptService;
-	@Inject TeachingCallResponseService teachingCallResponseService;
-	@Inject UserService userService;
 	@Inject SupportAssignmentService supportAssignmentService;
 
 	@Override

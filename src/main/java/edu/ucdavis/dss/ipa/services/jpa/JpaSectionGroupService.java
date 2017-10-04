@@ -17,17 +17,14 @@ import java.util.stream.Collectors;
 @Service
 public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SectionGroupRepository sectionGroupRepository;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject ScheduleService scheduleService;
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
 	@Inject WorkgroupService workgroupService;
-	@Inject TermService termService;
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
 	@Inject ActivityService activityService;
-	@Inject EmailService emailService;
 
 	@Override
 	@Transactional
@@ -262,20 +259,4 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 		return false;
 	}
-
-	private boolean isLocked(long sectionGroupId) {
-		SectionGroup sectionGroup = this.getOneById(sectionGroupId);
-		if (sectionGroup == null) { return false; }
-
-		Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
-
-		if (termState != null && termState.scheduleTermLocked()) {
-			emailService.reportException(new UnsupportedOperationException("Term " + sectionGroup.getTermCode() + " is locked"), this.getClass().getName());
-			return true;
-		}
-
-		return false;
-	}
-
 }

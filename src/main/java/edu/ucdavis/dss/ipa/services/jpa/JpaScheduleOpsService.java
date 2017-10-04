@@ -7,39 +7,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
-import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaScheduleOpsService implements ScheduleOpsService {
 	private static final Logger log = LoggerFactory.getLogger("ScheduleOps");
 
-	@Inject ScheduleRepository scheduleRepository;
 	@Inject ScheduleService scheduleService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
-	@Inject
-	CourseService courseService;
-	@Inject SectionGroupService sectionGroupService;
-	@Inject SectionService sectionService;
-	@Inject ActivityService activityService;
-	@Inject UserService userService;
 	@Inject InstructorService instructorService;
-	@Inject RoleService roleService;
-	@Inject UserRoleService userRoleService;
 	@Inject WorkgroupService workgroupService;
-	@Inject DataWarehouseRepository dwRepository;
 
 	/**
 	 * Creates a new schedule by copying the specified local schedule.

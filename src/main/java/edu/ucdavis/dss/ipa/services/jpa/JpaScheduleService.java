@@ -35,7 +35,6 @@ public class JpaScheduleService implements ScheduleService {
 	@Inject ActivityService activityService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 
 	@Override
@@ -144,7 +143,7 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint) {
+	public boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments) {
 		// Method currently implies all requested sectionGroups have the same subjectCode
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
@@ -168,9 +167,6 @@ public class JpaScheduleService implements ScheduleService {
 				}
 
 				Term term = termService.getOneByTermCode(newTermCode);
-
-				// Don't import this dwSection if termState is locked
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
 
 				// Calculate sequencePattern from sequenceNumber
 				String dwSequencePattern = null;
@@ -284,7 +280,7 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint) {
+	public boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments) {
 		String termCode = sectionGroupImportList.get(0).getTermCode();
 		Long importYear = termService.getAcademicYearFromTermCode(termCode);
 
@@ -338,15 +334,11 @@ public class JpaScheduleService implements ScheduleService {
 
 				Term term = termService.getOneByTermCode(newTermCode);
 
-				// Don't create a sectionGroup in a locked term
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
 				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
 				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
 				for (Section historicalSection : historicalSectionGroup.getSections()) {
-
 					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
 					newSection.setSeats(historicalSection.getSeats());
 					newSection = sectionService.save(newSection);
@@ -366,6 +358,7 @@ public class JpaScheduleService implements ScheduleService {
 						newActivity.setBeginDate(term.getStartDate());
 						newActivity.setEndDate(term.getEndDate());
 						newActivity.setActivityState(ActivityState.DRAFT);
+
 						activityService.saveActivity(newActivity);
 					}
 				}
@@ -374,13 +367,15 @@ public class JpaScheduleService implements ScheduleService {
 					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
 						if (historicalTeachingAssignment.isApproved()) {
 							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
+
 							newTeachingAssignment.setApproved(true);
 							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
 							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
 							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
 							newTeachingAssignment.setSectionGroup(newSectionGroup);
 							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
-							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
+
+							teachingAssignmentService.save(newTeachingAssignment);
 						}
 					}
 				}
@@ -400,6 +395,7 @@ public class JpaScheduleService implements ScheduleService {
 					newActivity.setBeginDate(term.getStartDate());
 					newActivity.setEndDate(term.getEndDate());
 					newActivity.setActivityState(ActivityState.DRAFT);
+
 					activityService.saveActivity(newActivity);
 				}
 			}

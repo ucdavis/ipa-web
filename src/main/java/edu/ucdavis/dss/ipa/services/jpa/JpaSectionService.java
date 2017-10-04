@@ -21,33 +21,23 @@ import java.util.Map;
 
 @Service
 public class JpaSectionService implements SectionService {
-
 	@Inject SectionRepository sectionRepository;
 	@Inject CourseService courseService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TermService termService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject DataWarehouseRepository dataWarehouseRepository;
 	@Inject ActivityService activityService;
-	@Inject NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject JdbcTemplate jdbcTemplate;
-	@Inject SectionService sectionService;
-	@Inject EmailService emailService;
 
 	@Override
 	public Section save(@Valid Section section) {
-		if (isLocked(section)) return null;
-
 		return sectionRepository.save(section);
 	}
 
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		Section section = this.getOneById(id);
-		if (isLocked(section)) return false;
-
 		this.sectionRepository.delete(id);
 		return true;
 	}
@@ -67,7 +57,7 @@ public class JpaSectionService implements SectionService {
 	public Section updateSequenceNumber(Long sectionId, String newSequencePattern) {
 		Section section = this.getOneById(sectionId);
 
-		if (newSequencePattern == null || newSequencePattern.length() == 0 || this.isLocked(section)) {
+		if (newSequencePattern == null || newSequencePattern.length() == 0) {
 			return null;
 		}
 
@@ -281,24 +271,6 @@ public class JpaSectionService implements SectionService {
 	@Override
 	public List<Section> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
 		return sectionRepository.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-	}
-
-	private boolean isLocked(Section section) {
-		SectionGroup sectionGroup = section.getSectionGroup();
-		if (sectionGroup == null) { return true; }
-
-		Course course = sectionGroup.getCourse();
-		Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
-
-		if (course == null) { return true; }
-		ScheduleTermState termState = this.scheduleTermStateService.createScheduleTermState(term);
-
-		if (termState != null && termState.scheduleTermLocked()) {
-			emailService.reportException(new UnsupportedOperationException("Term " + term.getTermCode() + " is locked"), this.getClass().getName());
-			return true;
-		}
-
-		return false;
 	}
 
 	/**

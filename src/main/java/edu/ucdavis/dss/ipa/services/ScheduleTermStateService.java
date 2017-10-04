@@ -45,6 +45,4 @@ public interface ScheduleTermStateService {
 	 * @return
 	 */
 	List<ScheduleTermState> getScheduleTermStatesByLoginId(String loginId);
-
-	List<ScheduleTermState> findAll();
 }

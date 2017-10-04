@@ -40,7 +40,7 @@ public interface ScheduleService {
 	 */
 	List<Term> getActiveTermCodesForSchedule(Schedule schedule);
 
-    boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint);
+    boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments);
 
-	boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint);
+	boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments);
 }

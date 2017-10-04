@@ -1,16 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
-import edu.ucdavis.dss.dw.dto.DwActivity;
-import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
-import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -24,9 +19,7 @@ import org.springframework.web.servlet.View;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.Time;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +33,6 @@ public class CourseViewController {
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
-
-	@Inject CourseValidator courseValidator;
 
 	@Value("${ipa.url.api}")
 	String ipaUrlApi;
@@ -277,7 +268,7 @@ public class CourseViewController {
 			return null;
 		}
 
-		if (this.scheduleService.createMultipleCoursesFromDw(schedule, sectionGroupImportList, importTimes, importAssignments, showDoNotPrint) == false) {
+		if (this.scheduleService.createMultipleCoursesFromDw(schedule, sectionGroupImportList, importTimes, importAssignments) == false) {
 			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			return  null;
 		}
@@ -306,7 +297,7 @@ public class CourseViewController {
 			return null;
 		}
 
-		if( this.scheduleService.createMultipleCoursesFromIPA(schedule, sectionGroupImportList, importTimes, importAssignments, showDoNotPrint) == false) {
+		if( this.scheduleService.createMultipleCoursesFromIPA(schedule, sectionGroupImportList, importTimes, importAssignments) == false) {
 			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			return  null;
 		}
