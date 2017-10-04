@@ -32,7 +32,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		// TODO: make sure banner has terms after 2099, not urgent, just fix before 2099!
 		List<Term> terms = termService.findByYear(year);
 
-		List<Course> courses;
+		List<Course> courses = null;
 		if (showDoNotPrint != null && showDoNotPrint) {
 			courses = schedule.getCourses();
 		} else {

@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,17 +9,20 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.dw.dto.DwActivity;
+import edu.ucdavis.dss.dw.dto.DwSection;
+import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.services.*;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.TermService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
 public class JpaScheduleService implements ScheduleService {
@@ -26,6 +30,13 @@ public class JpaScheduleService implements ScheduleService {
 	@Inject WorkgroupService workgroupService;
 	@Inject UserService userService;
 	@Inject TermService termService;
+	@Inject DataWarehouseRepository dwRepository;
+	@Inject CourseService courseService;
+	@Inject ActivityService activityService;
+	@Inject SectionGroupService sectionGroupService;
+	@Inject SectionService sectionService;
+	@Inject ScheduleTermStateService scheduleTermStateService;
+	@Inject TeachingAssignmentService teachingAssignmentService;
 
 	@Override
 	public Schedule saveSchedule(Schedule schedule) {
@@ -130,6 +141,271 @@ public class JpaScheduleService implements ScheduleService {
 	@Override
 	public List<Term> getActiveTermCodesForSchedule(Schedule schedule) {
 		return this.scheduleRepository.getActiveTermsForScheduleId(schedule.getId());
+	}
+
+	@Override
+	public boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint) {
+		// Method currently implies all requested sectionGroups have the same subjectCode
+		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
+
+		// Calculate academicYear from the termCode of the first sectionGroupImport
+		String termCode = sectionGroupImportList.get(0).getTermCode();
+		Long yearToImportFrom = termService.getAcademicYearFromTermCode(termCode);
+
+		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
+
+		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+
+			for (DwSection dwSection : dwSections) {
+				String newTermCode = null;
+				String shortTermCode = dwSection.getTermCode().substring(4, 6);
+
+				if (Long.valueOf(shortTermCode) < 4) {
+					long nextYear = schedule.getYear() + 1;
+					newTermCode = nextYear + shortTermCode;
+				} else {
+					newTermCode = schedule.getYear() + shortTermCode;
+				}
+
+				Term term = termService.getOneByTermCode(newTermCode);
+
+				// Don't import this dwSection if termState is locked
+				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
+
+				// Calculate sequencePattern from sequenceNumber
+				String dwSequencePattern = null;
+
+				Character c = dwSection.getSequenceNumber().charAt(0);
+				Boolean isLetter = Character.isLetter(c);
+				if (isLetter) {
+					dwSequencePattern = String.valueOf(c);
+				} else {
+					dwSequencePattern = dwSection.getSequenceNumber();
+				}
+
+				// Compare termCode endings
+				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
+				String dwSectionShortTerm = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
+
+				// Ensure this dwSection matches the sectionGroupImport (course) of interest
+				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
+						&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
+						&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
+						&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
+
+					String courseNumber = sectionGroupImport.getCourseNumber();
+
+					// Attempt to make a course
+					Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+							sectionGroupImport.getSubjectCode(),
+							sectionGroupImport.getCourseNumber(),
+							sectionGroupImport.getSequencePattern(),
+							sectionGroupImport.getTitle(),
+							sectionGroupImport.getEffectiveTermCode(),
+							schedule,
+							true
+					);
+
+					if (sectionGroupImport.getUnitsHigh() != null) {
+						course.setUnitsHigh(Long.valueOf(sectionGroupImport.getUnitsHigh()));
+					}
+
+					if (sectionGroupImport.getUnitsLow() != null) {
+						course.setUnitsLow(Long.valueOf(sectionGroupImport.getUnitsLow()));
+					}
+
+					course = courseService.update(course);
+
+					// Attempt to make a sectionGroup
+					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
+					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
+					sectionGroup = sectionGroupService.save(sectionGroup);
+
+					// Attempt to make a section
+					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
+
+					section.setSeats(dwSection.getMaximumEnrollment());
+					section = sectionService.save(section);
+
+					// Make activities
+					for (DwActivity dwActivity : dwSection.getActivities()) {
+						Activity activity = new Activity();
+
+						ActivityType activityType = new ActivityType();
+						activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
+
+						activity.setActivityTypeCode(activityType);
+
+						if (importTimes) {
+							String rawStartTime = dwActivity.getSsrmeet_begin_time();
+
+							if (rawStartTime != null) {
+								String hours = rawStartTime.substring(0, 2);
+								String minutes = rawStartTime.substring(2, 4);
+								String formattedStartTime = hours + ":" + minutes + ":00";
+								Time startTime = java.sql.Time.valueOf(formattedStartTime);
+
+								activity.setStartTime(startTime);
+							}
+
+							String rawEndTime = dwActivity.getSsrmeet_end_time();
+
+							if (rawEndTime != null) {
+								String hours = rawStartTime.substring(0, 2);
+								String minutes = rawStartTime.substring(2, 4);
+								String formattedEndTime = hours + ":" + minutes + ":00";
+								Time endTime = java.sql.Time.valueOf(formattedEndTime);
+
+								activity.setEndTime(endTime);
+							}
+
+							String dayIndicator = dwActivity.getDay_indicator();
+							activity.setDayIndicator(dayIndicator);
+						}
+
+						activity.setBeginDate(term.getStartDate());
+						activity.setEndDate(term.getEndDate());
+						activity.setActivityState(ActivityState.DRAFT);
+
+						// Activities in numeric sectionGroups should always be 'shared' activities
+						if (Utilities.isNumeric(dwSequencePattern)) {
+							activity.setSectionGroup(sectionGroup);
+						} else {
+							activity.setSection(section);
+						}
+
+						activityService.saveActivity(activity);
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint) {
+		String termCode = sectionGroupImportList.get(0).getTermCode();
+		Long importYear = termService.getAcademicYearFromTermCode(termCode);
+
+		Schedule importSchedule = this.findOrCreateByWorkgroupIdAndYear(schedule.getWorkgroup().getId(), importYear);
+
+		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+
+			// Find course referenced by this sectionGroup
+			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					importSchedule.getId());
+
+			if (historicalCourse == null) {
+				continue;
+			}
+
+			// If course already exists, do nothing
+			Course newCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					schedule.getId());
+
+			if (newCourse != null) {
+				continue;
+			}
+
+			// Make a newCourse in the current term based on the historical course
+			newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+					sectionGroupImport.getSubjectCode(),
+					sectionGroupImport.getCourseNumber(),
+					sectionGroupImport.getSequencePattern(),
+					sectionGroupImport.getTitle(),
+					sectionGroupImport.getEffectiveTermCode(),
+					schedule,
+					true);
+
+			// Find its sectionGroups, and find/create new versions of them
+			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
+				String newTermCode = null;
+				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
+
+				if (Long.valueOf(shortTermCode) < 4) {
+					long nextYear = schedule.getYear() + 1;
+					newTermCode = nextYear + shortTermCode;
+				} else {
+					newTermCode = schedule.getYear() + shortTermCode;
+				}
+
+				Term term = termService.getOneByTermCode(newTermCode);
+
+				// Don't create a sectionGroup in a locked term
+				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
+
+				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
+				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
+				newSectionGroup = sectionGroupService.save(newSectionGroup);
+
+				for (Section historicalSection : historicalSectionGroup.getSections()) {
+
+					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
+					newSection.setSeats(historicalSection.getSeats());
+					newSection = sectionService.save(newSection);
+
+					for (Activity historicalActivity : historicalSection.getActivities()) {
+						Activity newActivity = new Activity();
+
+						newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
+						newActivity.setSection(newSection);
+
+						if (importTimes) {
+							newActivity.setDayIndicator(historicalActivity.getDayIndicator());
+							newActivity.setStartTime(historicalActivity.getStartTime());
+							newActivity.setEndTime(historicalActivity.getEndTime());
+						}
+
+						newActivity.setBeginDate(term.getStartDate());
+						newActivity.setEndDate(term.getEndDate());
+						newActivity.setActivityState(ActivityState.DRAFT);
+						activityService.saveActivity(newActivity);
+					}
+				}
+
+				if (importAssignments) {
+					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
+						if (historicalTeachingAssignment.isApproved()) {
+							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
+							newTeachingAssignment.setApproved(true);
+							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
+							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
+							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
+							newTeachingAssignment.setSectionGroup(newSectionGroup);
+							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
+							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
+						}
+					}
+				}
+
+				for (Activity historicalActivity : historicalSectionGroup.getActivities()) {
+					Activity newActivity = new Activity();
+
+					newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
+					newActivity.setSectionGroup(newSectionGroup);
+
+					if (importTimes) {
+						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
+						newActivity.setStartTime(historicalActivity.getStartTime());
+						newActivity.setEndTime(historicalActivity.getEndTime());
+					}
+
+					newActivity.setBeginDate(term.getStartDate());
+					newActivity.setEndDate(term.getEndDate());
+					newActivity.setActivityState(ActivityState.DRAFT);
+					activityService.saveActivity(newActivity);
+				}
+			}
+		}
+
+		return true;
 	}
 
 	@Override

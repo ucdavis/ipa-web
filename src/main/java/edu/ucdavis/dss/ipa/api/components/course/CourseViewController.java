@@ -36,18 +36,12 @@ import java.util.Map;
 public class CourseViewController {
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
-	@Inject WorkgroupService workgroupService;
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
-	@Inject ActivityService activityService;
-	@Inject TermService termService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
-	@Inject TeachingAssignmentService teachingAssignmentService;
 
 	@Inject CourseValidator courseValidator;
-	@Inject DataWarehouseRepository dwRepository;
 
 	@Value("${ipa.url.api}")
 	String ipaUrlApi;
@@ -272,152 +266,21 @@ public class CourseViewController {
 
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
 
-		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
-
-		// Calculate academicYear from the termCode of the first sectionGroupImport
-		String termCode = sectionGroupImportList.get(0).getTermCode();
-		Long yearToImportFrom = termService.getAcademicYearFromTermCode(termCode);
-
-		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
-
-		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
-			for (DwSection dwSection : dwSections) {
-
-				String newTermCode = null;
-				String shortTermCode = dwSection.getTermCode().substring(4, 6);
-				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = year + 1;
-					newTermCode = nextYear + shortTermCode;
-				} else {
-					newTermCode = year + shortTermCode;
-				}
-
-
-				Term term = termService.getOneByTermCode(newTermCode);
-
-				// Don't import this dwSection if termState is locked
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-				if (termState.scheduleTermLocked()) {
-					continue;
-				}
-
-				// Calculate sequencePattern from sequenceNumber
-				String dwSequencePattern = null;
-
-				Character c = dwSection.getSequenceNumber().charAt(0);
-				Boolean isLetter = Character.isLetter(c);
-				if (isLetter) {
-					dwSequencePattern = String.valueOf(c);
-				} else {
-					dwSequencePattern = dwSection.getSequenceNumber();
-				}
-
-				// Compare termCode endings
-				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
-				String dwSectionShortTerm = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
-
-				// Ensure this dwSection matches the sectionGroupImport (course) of interest
-				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
-				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
-				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
-				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
-
-					String courseNumber = sectionGroupImport.getCourseNumber();
-
-					// Attempt to make a course
-					Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-							sectionGroupImport.getSubjectCode(),
-							sectionGroupImport.getCourseNumber(),
-							sectionGroupImport.getSequencePattern(),
-							sectionGroupImport.getTitle(),
-							sectionGroupImport.getEffectiveTermCode(),
-							schedule,
-							true
-					);
-
-					if (sectionGroupImport.getUnitsHigh() != null) {
-						course.setUnitsHigh(Long.valueOf(sectionGroupImport.getUnitsHigh()));
-					}
-
-					if (sectionGroupImport.getUnitsLow() != null) {
-						course.setUnitsLow(Long.valueOf(sectionGroupImport.getUnitsLow()));
-					}
-
-					course = courseService.update(course);
-
-					// Attempt to make a sectionGroup
-					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
-					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
-					sectionGroup = sectionGroupService.save(sectionGroup);
-
-					// Attempt to make a section
-					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
-
-					section.setSeats(dwSection.getMaximumEnrollment());
-					section = sectionService.save(section);
-
-					// Make activities
-					for (DwActivity dwActivity : dwSection.getActivities()) {
-						Activity activity = new Activity();
-
-						ActivityType activityType = new ActivityType();
-						activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
-
-						activity.setActivityTypeCode(activityType);
-
-						if (importTimes) {
-							String rawStartTime = dwActivity.getSsrmeet_begin_time();
-
-							if (rawStartTime != null) {
-								String hours = rawStartTime.substring(0, 2);
-								String minutes = rawStartTime.substring(2, 4);
-								String formattedStartTime = hours + ":" + minutes + ":00";
-								Time startTime = java.sql.Time.valueOf(formattedStartTime);
-
-								activity.setStartTime(startTime);
-							}
-
-							String rawEndTime = dwActivity.getSsrmeet_end_time();
-
-							if (rawEndTime != null) {
-								String hours = rawStartTime.substring(0, 2);
-								String minutes = rawStartTime.substring(2, 4);
-								String formattedEndTime = hours + ":" + minutes + ":00";
-								Time endTime = java.sql.Time.valueOf(formattedEndTime);
-
-								activity.setEndTime(endTime);
-							}
-
-							String dayIndicator = dwActivity.getDay_indicator();
-							activity.setDayIndicator(dayIndicator);
-						}
-
-						activity.setBeginDate(term.getStartDate());
-						activity.setEndDate(term.getEndDate());
-						activity.setActivityState(ActivityState.DRAFT);
-
-						// Activities in numeric sectionGroups should always be 'shared' activities
-						if (Utilities.isNumeric(dwSequencePattern)) {
-							activity.setSectionGroup(sectionGroup);
-						} else {
-							activity.setSection(section);
-						}
-
-						activityService.saveActivity(activity);
-					}
-				}
-			}
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		if (schedule == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
 		}
 
-		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
+		if (this.scheduleService.createMultipleCoursesFromDw(schedule, sectionGroupImportList, importTimes, importAssignments, showDoNotPrint) == false) {
+			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return  null;
+		}
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
@@ -437,131 +300,15 @@ public class CourseViewController {
 			return null;
 		}
 
-		String termCode = sectionGroupImportList.get(0).getTermCode();
-		Long importYear = termService.getAcademicYearFromTermCode(termCode);
-
-		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		if (schedule == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
 
-		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
-			// Find course referenced by this sectionGroup
-			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					importSchedule.getId());
-
-			if (historicalCourse == null) {
-				continue;
-			}
-
-			// If course already exists, do nothing
-			Course newCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					schedule.getId());
-
-			if (newCourse != null) {
-				continue;
-			}
-
-			// Make a newCourse in the current term based on the historical course
-			newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					sectionGroupImport.getTitle(),
-					sectionGroupImport.getEffectiveTermCode(),
-					schedule,
-					true);
-
-			// Find its sectionGroups, and find/create new versions of them
-			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
-
-				String newTermCode = null;
-				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
-
-				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = year + 1;
-					newTermCode = nextYear + shortTermCode;
-				} else {
-					newTermCode = year + shortTermCode;
-				}
-
-				Term term = termService.getOneByTermCode(newTermCode);
-
-				// Don't create a sectionGroup in a locked term
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-				if (termState.scheduleTermLocked()) {
-					continue;
-				}
-
-				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
-				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
-				newSectionGroup = sectionGroupService.save(newSectionGroup);
-
-				for (Section historicalSection : historicalSectionGroup.getSections()) {
-
-					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
-					newSection.setSeats(historicalSection.getSeats());
-					newSection = sectionService.save(newSection);
-
-					for (Activity historicalActivity : historicalSection.getActivities()) {
-						Activity newActivity = new Activity();
-
-						newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
-						newActivity.setSection(newSection);
-
-						if (importTimes) {
-							newActivity.setDayIndicator(historicalActivity.getDayIndicator());
-							newActivity.setStartTime(historicalActivity.getStartTime());
-							newActivity.setEndTime(historicalActivity.getEndTime());
-						}
-
-						newActivity.setBeginDate(term.getStartDate());
-						newActivity.setEndDate(term.getEndDate());
-						newActivity.setActivityState(ActivityState.DRAFT);
-						activityService.saveActivity(newActivity);
-					}
-				}
-
-				if (importAssignments) {
-					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
-						if (historicalTeachingAssignment.isApproved()) {
-							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
-							newTeachingAssignment.setApproved(true);
-							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
-							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
-							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
-							newTeachingAssignment.setSectionGroup(newSectionGroup);
-							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
-							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
-						}
-					}
-				}
-
-				for (Activity historicalActivity : historicalSectionGroup.getActivities()) {
-					Activity newActivity = new Activity();
-
-					newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
-					newActivity.setSectionGroup(newSectionGroup);
-
-					if (importTimes) {
-						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
-						newActivity.setStartTime(historicalActivity.getStartTime());
-						newActivity.setEndTime(historicalActivity.getEndTime());
-					}
-
-					newActivity.setBeginDate(term.getStartDate());
-					newActivity.setEndDate(term.getEndDate());
-					newActivity.setActivityState(ActivityState.DRAFT);
-					activityService.saveActivity(newActivity);
-				}
-
-			}
+		if( this.scheduleService.createMultipleCoursesFromIPA(schedule, sectionGroupImportList, importTimes, importAssignments, showDoNotPrint) == false) {
+			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return  null;
 		}
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);

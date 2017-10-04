@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
+import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -38,4 +39,8 @@ public interface ScheduleService {
 	 * @return
 	 */
 	List<Term> getActiveTermCodesForSchedule(Schedule schedule);
+
+    boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint);
+
+	boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments, Boolean showDoNotPrint);
 }
