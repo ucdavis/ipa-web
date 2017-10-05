@@ -163,7 +163,7 @@ public class DwClient {
 		DwPerson dwPerson = null;
 
 		if (connect() && loginId != null) {
-			HttpGet httpget = new HttpGet("/people/details?loginid=" + URLEncoder.encode(loginId, "UTF-8") + "&token=" + ApiToken);
+			HttpGet httpget = new HttpGet("/people/" + URLEncoder.encode(loginId, "UTF-8") + "?token=" + ApiToken);
 
 			try {
 				CloseableHttpResponse response = httpclient.execute(
