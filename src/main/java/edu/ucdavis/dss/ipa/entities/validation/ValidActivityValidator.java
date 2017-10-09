@@ -20,6 +20,10 @@ public class ValidActivityValidator implements ConstraintValidator<ValidActivity
 			return false;
 		}
 
+		if (activity.getStartTime() != null && activity.getEndTime() != null && activity.getStartTime().equals(activity.getEndTime())) {
+			return false;
+		}
+
 		return true;
 	}
 }
