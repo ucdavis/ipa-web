@@ -132,6 +132,12 @@ public class LineItem extends BaseEntity {
         return updatedAt;
     }
 
+    @JsonProperty("createdAt")
+    @Transient
+    public Date getCreatedOn() {
+        return createdAt;
+    }
+
     /**
      * Returns a loginId or null.
      * ModifiedBy is expected to come in the form "system" or "user:guilden", or null for older entities that haven't been updated recently.
