@@ -32,6 +32,7 @@ public class JpaLocationService implements LocationService {
     }
 
 
+    @Transactional
     @Override
     public Location archiveById(Long id) {
         Location location = this.locationRepository.findOne(id);
