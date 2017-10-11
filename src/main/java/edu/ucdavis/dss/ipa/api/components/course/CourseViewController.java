@@ -146,6 +146,24 @@ public class CourseViewController {
 		courseService.delete(courseId);
 	}
 
+	@RequestMapping(value = "/api/courseView/schedules/{workgroupId}/{year}/courses", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public List<Long> deleteMultipleCourses(@PathVariable long workgroupId, @PathVariable long year, @RequestBody List<Long> courseIds, HttpServletResponse httpResponse) {
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		if (schedule == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Workgroup workgroup = schedule.getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		courseService.deleteMultiple(courseIds);
+
+		return courseIds;
+	}
+
 	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
 	public Course updateCourse(@PathVariable long courseId, @RequestBody @Validated Course courseDTO, HttpServletResponse httpResponse) {
