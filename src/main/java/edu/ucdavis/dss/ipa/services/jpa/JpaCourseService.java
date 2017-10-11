@@ -255,7 +255,9 @@ public class JpaCourseService implements CourseService {
 	@Transactional
 	@Override
 	public void deleteMultiple(List<Long> courseIds) {
-		this.courseRepository.deleteCoursesWithIds(courseIds);
+		for (Long courseId : courseIds) {
+			this.delete(courseId);
+		}
 	}
 
 	/**
