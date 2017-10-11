@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -62,4 +63,13 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
     List<Course> findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
 
     Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
+
+    /**
+     * Delete all Courses with ids specified in {@code ids} parameter
+     *
+     * @param courseIds List of user ids
+     */
+    @Modifying
+    @Query("delete from Course c where c.id in ?1")
+    void deleteCoursesWithIds(List<Long> courseIds);
 }

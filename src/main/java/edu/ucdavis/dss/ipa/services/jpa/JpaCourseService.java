@@ -252,6 +252,12 @@ public class JpaCourseService implements CourseService {
 		return course;
 	}
 
+	@Transactional
+	@Override
+	public void deleteMultiple(List<Long> courseIds) {
+		this.courseRepository.deleteCoursesWithIds(courseIds);
+	}
+
 	/**
 	 * Will create a course based on supplied params. Will return null if an identical course already exists.
 	 * Can optionally copy tag/title data from a similar course in another year.
