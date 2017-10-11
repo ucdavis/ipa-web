@@ -45,4 +45,6 @@ public interface CourseService {
 	Course syncUnits(Course course);
 
 	Course findOrCreateByCourse(Course courseDTO);
+
+	void deleteMultiple(List<Long> courseId);
 }
