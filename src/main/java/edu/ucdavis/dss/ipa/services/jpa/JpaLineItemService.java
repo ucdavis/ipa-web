@@ -79,8 +79,6 @@ public class JpaLineItemService implements LineItemService {
 
     @Override
     public void deleteMany(List<Integer> lineItemIds) {
-        for (Integer lineItemId: lineItemIds) {
-            this.deleteById(lineItemId);
-        }
+        this.lineItemRepository.deleteLineItemsWithIds(lineItemIds);
     }
 }
