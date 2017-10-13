@@ -1,4 +1,6 @@
 /* DO NOT RENAME to data.sql - this should run after Flyway/Hibernate init and data.sql is run before Flyway init */
+
+/* Turning off foreign key checks shouldn't be necessary. What's going on here? */
 SET FOREIGN_KEY_CHECKS = 0;
 
 DELETE FROM Users;
@@ -24,7 +26,6 @@ insert into SectionGroups (Id, CourseId, TermCode, PlannedSeats, ShowTheStaff) V
 
 insert into Sections (Id, Seats, Crn, SequenceNumber, SectionGroupId, Visible, CrnRestricted) VALUES (1, 50, NULL, '001', 1, NULL, NULL);
 
-INSERT INTO `Activities` (`Id`, `SectionId`, `ActivityTypeCode`, `ActivityState`, `BannerLocation`, `BeginDate`, `EndDate`, `StartTime`, `EndTime`, `DayIndicator`, `Frequency`, `IsVirtual`, `LocationId`, `SectionGroupId`, `UpdatedAt`, `CreatedAt`, `ModifiedBy`, `SyncLocation`)
-VALUES (1, NULL, 'D', 0, '', '2016-03-28', '2016-06-02', NULL, NULL, '0000000', 1, 0, 1, 1, NULL, NULL, NULL, 1);
+insert into Activities (Id, SectionId, ActivityTypeCode, ActivityState, BannerLocation, BeginDate, EndDate, StartTime, EndTime, DayIndicator, Frequency, IsVirtual, LocationId, SectionGroupId, UpdatedAt, CreatedAt, ModifiedBy, SyncLocation) VALUES (1, 1, 'D', 0, '', '2016-03-28', '2016-06-02', NULL, NULL, '0000000', 1, 0, 1, 1, NULL, NULL, NULL, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
