@@ -30,12 +30,13 @@ public class JpaLocationService implements LocationService {
     public Location findOneById(Long id) {
         return this.locationRepository.findOne(id);
     }
-
-
+    
     @Transactional
     @Override
     public Location archiveById(Long id) {
         Location location = this.locationRepository.findOne(id);
+
+        if(location == null) { return null; }
 
         // Remove this location from COGs only in active schedules
         for (Activity activity : location.getActivities()) {
