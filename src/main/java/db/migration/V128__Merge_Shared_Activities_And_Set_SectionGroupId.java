@@ -25,7 +25,7 @@ public class V128__Merge_Shared_Activities_And_Set_SectionGroupId implements Jdb
                             " CHANGE COLUMN `SectionId` `SectionId` INT(11) NULL," +
                             " ADD CONSTRAINT `fk_Activities_SectionGroups` " +
                             "  FOREIGN KEY (`SectionGroupId`) " +
-                            "  REFERENCES `IPA`.`SectionGroups` (`Id`) " +
+                            "  REFERENCES `SectionGroups` (`Id`) " +
                             "  ON DELETE NO ACTION " +
                             "  ON UPDATE NO ACTION; "
             );
