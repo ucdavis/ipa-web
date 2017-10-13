@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class InstructionalSupportStudentFormsController {
 
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;

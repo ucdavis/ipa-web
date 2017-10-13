@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class RegistrarReconciliationReportController {
 
 	@Inject ReportViewFactory reportViewFactory;

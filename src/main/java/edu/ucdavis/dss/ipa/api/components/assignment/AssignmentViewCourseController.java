@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class AssignmentViewCourseController {
     @Inject CurrentUser currentUser;
     @Inject AuthenticationService authenticationService;

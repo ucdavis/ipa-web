@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class ScheduleSummaryReportController {
 
     @Inject ScheduleSummaryViewFactory scheduleSummaryViewFactory;

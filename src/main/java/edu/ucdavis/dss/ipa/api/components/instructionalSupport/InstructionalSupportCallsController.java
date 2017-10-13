@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class InstructionalSupportCallsController {
 
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;

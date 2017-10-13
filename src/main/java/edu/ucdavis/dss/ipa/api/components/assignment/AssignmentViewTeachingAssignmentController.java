@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class AssignmentViewTeachingAssignmentController {
     @Inject CurrentUser currentUser;
     @Inject AuthenticationService authenticationService;

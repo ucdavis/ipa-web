@@ -37,7 +37,7 @@ public class SiteController {
 	 * @param httpResponse
 	 * @return
 	 */
-	@CrossOrigin // TODO: make CORS more specific depending on profile
+	@CrossOrigin
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {

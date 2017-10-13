@@ -30,7 +30,7 @@ public class JpaLocationService implements LocationService {
     public Location findOneById(Long id) {
         return this.locationRepository.findOne(id);
     }
-    
+
     @Transactional
     @Override
     public Location archiveById(Long id) {
