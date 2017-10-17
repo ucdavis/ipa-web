@@ -152,7 +152,7 @@ public class CourseViewController {
 		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		if (schedule == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
 			return null;
 		}
 
