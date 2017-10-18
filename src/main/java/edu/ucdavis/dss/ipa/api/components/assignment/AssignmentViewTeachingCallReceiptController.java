@@ -36,7 +36,7 @@ public class AssignmentViewTeachingCallReceiptController {
     public TeachingCallReceipt updateTeachingCallReceipt(@PathVariable long teachingCallReceiptId, @RequestBody TeachingCallReceipt teachingCallReceipt, HttpServletResponse httpResponse) {
         TeachingCallReceipt originalTeachingCallReceipt = teachingCallReceiptService.findOneById(teachingCallReceiptId);
         Workgroup workgroup = originalTeachingCallReceipt.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor", "lecturer");
 
         originalTeachingCallReceipt.setComment(teachingCallReceipt.getComment());
         originalTeachingCallReceipt.setIsDone(teachingCallReceipt.getIsDone());

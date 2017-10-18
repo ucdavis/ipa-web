@@ -33,7 +33,7 @@ public class AssignmentViewTeachingCallResponseController {
     public TeachingCallResponse updateTeachingCallResponse(@PathVariable long teachingCallResponseId, @RequestBody TeachingCallResponse teachingCallResponse, HttpServletResponse httpResponse) {
         TeachingCallResponse originalTeachingCallResponse = teachingCallResponseService.getOneById(teachingCallResponseId);
         Workgroup workgroup = originalTeachingCallResponse.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor", "lecturer");
 
         originalTeachingCallResponse.setAvailabilityBlob(teachingCallResponse.getAvailabilityBlob());
 

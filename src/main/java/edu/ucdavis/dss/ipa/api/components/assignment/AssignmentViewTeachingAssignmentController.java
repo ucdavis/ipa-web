@@ -223,7 +223,7 @@ public class AssignmentViewTeachingAssignmentController {
     public List<TeachingAssignment> removePreference(@PathVariable long teachingAssignmentId, HttpServletResponse httpResponse) {
         TeachingAssignment DTOteachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
         Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
 
         Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
 
@@ -293,7 +293,7 @@ public class AssignmentViewTeachingAssignmentController {
         Schedule schedule = scheduleService.findById(scheduleId);
         Workgroup workgroup = schedule.getWorkgroup();
 
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
         SectionGroup DTOsectionGroup = null;
         Course DTOcourse = null;
@@ -410,7 +410,7 @@ public class AssignmentViewTeachingAssignmentController {
         Schedule schedule = scheduleService.findById(scheduleId);
         Workgroup workgroup = schedule.getWorkgroup();
 
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
         Integer priority = 1;
 

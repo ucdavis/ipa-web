@@ -36,7 +36,7 @@ public class TeachingCallStatusViewController {
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/teachingCallStatus", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public TeachingCallStatusView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
         return teachingCallViewFactory.createTeachingCallStatusView(workgroupId, year);
     }
