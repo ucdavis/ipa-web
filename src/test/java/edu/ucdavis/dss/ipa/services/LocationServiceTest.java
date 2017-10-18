@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @TestPropertySource(locations="classpath:application-test.properties")
-//@Sql("classpath:seed-data.sql")
+@Sql("classpath:seed-data.sql")
 public class LocationServiceTest {
     @Autowired
     private LocationService locationService;
@@ -32,16 +32,15 @@ public class LocationServiceTest {
         Location location = locationService.findOneById(1L);
         Activity activity = activityService.findOneById(1L);
 
-//        assertThat(location).isNotEqualTo(null);
-//        assertThat(activity).isNotEqualTo(null);
-//        assertThat(activity.getLocation()).isNotEqualTo(null);
+        assertThat(location).isNotEqualTo(null);
+        assertThat(activity).isNotEqualTo(null);
+        assertThat(activity.getLocation()).isNotEqualTo(null);
 
-// TODO: Fix this test
-//        location = locationService.archiveById(1L);
-//
-//        assertThat(location.isArchived()).isEqualTo(true);
-//
-//        activity = activityService.findOneById(1L);
-//        assertThat(activity.getLocation()).isEqualTo(null);
+        location = locationService.archiveById(1L);
+
+        assertThat(location.isArchived()).isEqualTo(true);
+
+        activity = activityService.findOneById(1L);
+        assertThat(activity.getLocation()).isEqualTo(null);
     }
 }
