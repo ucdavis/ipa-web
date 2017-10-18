@@ -6,6 +6,8 @@ import javax.transaction.Transactional;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.TermService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.repositories.LocationRepository;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class JpaLocationService implements LocationService {
+    private static final Logger log = LoggerFactory.getLogger("LocationService");
+
     @Inject LocationRepository locationRepository;
     @Inject WorkgroupService workgroupService;
     @Inject TermService termService;
@@ -44,10 +48,10 @@ public class JpaLocationService implements LocationService {
 
             if (activity.getSection() != null) {
                 termCode = activity.getSection().getSectionGroup().getTermCode();
-            }
-
-            if (activity.getSectionGroup().getTermCode() != null) {
+            } else if (activity.getSectionGroup() != null && activity.getSectionGroup().getTermCode() != null) {
                 termCode = activity.getSectionGroup().getTermCode();
+            } else {
+                log.warn("Activity did not have a section or sectionGroup");
             }
 
             boolean isHistorical = termService.isHistoricalByTermCode(termCode);
