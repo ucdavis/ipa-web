@@ -283,65 +283,51 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public boolean createMultipleCoursesFromIPA(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments) {
-		String termCode = sectionGroupImportList.get(0).getTermCode();
-		Long importYear = termService.getAcademicYearFromTermCode(termCode);
-
-		Schedule importSchedule = this.findOrCreateByWorkgroupIdAndYear(schedule.getWorkgroup().getId(), importYear);
-
+	public boolean createMultipleCoursesFromIPA(Schedule destinationSchedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments) {
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 
-			// Find course referenced by this sectionGroup
-			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+			Course course = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
-					importSchedule.getId());
-
-			if (historicalCourse == null) {
-				continue;
-			}
+					destinationSchedule.getId());
 
 			// If course already exists, do nothing
-			Course newCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					schedule.getId());
-
-			if (newCourse != null) {
+			if (course != null) {
 				continue;
 			}
 
 			// Make a newCourse in the current term based on the historical course
-			newCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
 					sectionGroupImport.getTitle(),
 					sectionGroupImport.getEffectiveTermCode(),
-					schedule,
+					destinationSchedule,
 					true);
 
 			// Find its sectionGroups, and find/create new versions of them
-			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
+			for (SectionGroup historicalSectionGroup : course.getSectionGroups()) {
+
 				String newTermCode = null;
 				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
 
 				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = schedule.getYear() + 1;
+					long nextYear = destinationSchedule.getYear() + 1;
 					newTermCode = nextYear + shortTermCode;
 				} else {
-					newTermCode = schedule.getYear() + shortTermCode;
+					newTermCode = destinationSchedule.getYear() + shortTermCode;
 				}
 
 				Term term = termService.getOneByTermCode(newTermCode);
 
-				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), newTermCode);
+				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
 				for (Section historicalSection : historicalSectionGroup.getSections()) {
+
 					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
 					newSection.setSeats(historicalSection.getSeats());
 					newSection = sectionService.save(newSection);
@@ -361,7 +347,6 @@ public class JpaScheduleService implements ScheduleService {
 						newActivity.setBeginDate(term.getStartDate());
 						newActivity.setEndDate(term.getEndDate());
 						newActivity.setActivityState(ActivityState.DRAFT);
-
 						activityService.saveActivity(newActivity);
 					}
 				}
@@ -370,7 +355,6 @@ public class JpaScheduleService implements ScheduleService {
 					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
 						if (historicalTeachingAssignment.isApproved()) {
 							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
-
 							newTeachingAssignment.setApproved(true);
 							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
 							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
@@ -398,7 +382,6 @@ public class JpaScheduleService implements ScheduleService {
 					newActivity.setBeginDate(term.getStartDate());
 					newActivity.setEndDate(term.getEndDate());
 					newActivity.setActivityState(ActivityState.DRAFT);
-
 					activityService.saveActivity(newActivity);
 				}
 			}

@@ -322,8 +322,8 @@ public class CourseViewController {
 			return null;
 		}
 
-<<<<<<< HEAD
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
+
 		if (schedule == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
@@ -332,122 +332,6 @@ public class CourseViewController {
 		if( this.scheduleService.createMultipleCoursesFromIPA(schedule, sectionGroupImportList, importTimes, importAssignments) == false) {
 			httpResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			return  null;
-=======
-		String termCode = sectionGroupImportList.get(0).getTermCode();
-		Long importYear = termService.getAcademicYearFromTermCode(termCode);
-
-		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
-
-		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
-			Course course = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					schedule.getId());
-
-			// If course already exists, do nothing
-			if (course != null) {
-				continue;
-			}
-
-			// Make a newCourse in the current term based on the historical course
-			course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					sectionGroupImport.getTitle(),
-					sectionGroupImport.getEffectiveTermCode(),
-					schedule,
-					true);
-
-			// Find its sectionGroups, and find/create new versions of them
-			for (SectionGroup historicalSectionGroup : course.getSectionGroups()) {
-
-				String newTermCode = null;
-				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
-
-				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = destinationYear + 1;
-					newTermCode = nextYear + shortTermCode;
-				} else {
-					newTermCode = destinationYear + shortTermCode;
-				}
-
-				Term term = termService.getOneByTermCode(newTermCode);
-
-				// Don't create a sectionGroup in a locked term
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-				if (termState.scheduleTermLocked()) {
-					continue;
-				}
-
-				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
-				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
-				newSectionGroup = sectionGroupService.save(newSectionGroup);
-
-				for (Section historicalSection : historicalSectionGroup.getSections()) {
-
-					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
-					newSection.setSeats(historicalSection.getSeats());
-					newSection = sectionService.save(newSection);
-
-					for (Activity historicalActivity : historicalSection.getActivities()) {
-						Activity newActivity = new Activity();
-
-						newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
-						newActivity.setSection(newSection);
-
-						if (importTimes) {
-							newActivity.setDayIndicator(historicalActivity.getDayIndicator());
-							newActivity.setStartTime(historicalActivity.getStartTime());
-							newActivity.setEndTime(historicalActivity.getEndTime());
-						}
-
-						newActivity.setBeginDate(term.getStartDate());
-						newActivity.setEndDate(term.getEndDate());
-						newActivity.setActivityState(ActivityState.DRAFT);
-						activityService.saveActivity(newActivity);
-					}
-				}
-
-				if (importAssignments) {
-					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
-						if (historicalTeachingAssignment.isApproved()) {
-							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
-							newTeachingAssignment.setApproved(true);
-							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
-							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
-							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
-							newTeachingAssignment.setSectionGroup(newSectionGroup);
-							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
-							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
-						}
-					}
-				}
-
-				for (Activity historicalActivity : historicalSectionGroup.getActivities()) {
-					Activity newActivity = new Activity();
-
-					newActivity.setActivityTypeCode(historicalActivity.getActivityTypeCode());
-					newActivity.setSectionGroup(newSectionGroup);
-
-					if (importTimes) {
-						newActivity.setDayIndicator(historicalActivity.getDayIndicator());
-						newActivity.setStartTime(historicalActivity.getStartTime());
-						newActivity.setEndTime(historicalActivity.getEndTime());
-					}
-
-					newActivity.setBeginDate(term.getStartDate());
-					newActivity.setEndDate(term.getEndDate());
-					newActivity.setActivityState(ActivityState.DRAFT);
-					activityService.saveActivity(newActivity);
-				}
-
-			}
->>>>>>> master
 		}
 
 		return annualViewFactory.createCourseView(workgroupId, destinationYear, showDoNotPrint);
