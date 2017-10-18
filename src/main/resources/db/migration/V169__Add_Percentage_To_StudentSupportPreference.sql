@@ -1,0 +1,1 @@
+ALTER TABLE `StudentSupportPreferences` ADD COLUMN `AppointmentPercentage` int(11) NULL;

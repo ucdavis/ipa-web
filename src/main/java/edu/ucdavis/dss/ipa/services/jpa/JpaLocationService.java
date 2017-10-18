@@ -31,14 +31,25 @@ public class JpaLocationService implements LocationService {
         return this.locationRepository.findOne(id);
     }
 
-
+    @Transactional
     @Override
     public Location archiveById(Long id) {
         Location location = this.locationRepository.findOne(id);
 
+        if(location == null) { return null; }
+
         // Remove this location from COGs only in active schedules
         for (Activity activity : location.getActivities()) {
-            String termCode = activity.getSection().getSectionGroup().getTermCode();
+            String termCode = null;
+
+            if (activity.getSection() != null) {
+                termCode = activity.getSection().getSectionGroup().getTermCode();
+            }
+
+            if (activity.getSectionGroup().getTermCode() != null) {
+                termCode = activity.getSectionGroup().getTermCode();
+            }
+
             boolean isHistorical = termService.isHistoricalByTermCode(termCode);
             if (!isHistorical) {
                 activity.setLocation(null);

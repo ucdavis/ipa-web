@@ -1,11 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -21,7 +17,6 @@ import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 
 @Service
@@ -144,8 +139,11 @@ public class JpaScheduleService implements ScheduleService {
 
 	@Override
 	public boolean createMultipleCoursesFromDw(Schedule schedule, List<SectionGroupImport> sectionGroupImportList, Boolean importTimes, Boolean importAssignments) {
-		// Method currently implies all requested sectionGroups have the same subjectCode
+
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
+
+		// Cache termService lookups
+		HashMap<String, Term> termHashMap = new HashMap<>();
 
 		// Calculate academicYear from the termCode of the first sectionGroupImport
 		String termCode = sectionGroupImportList.get(0).getTermCode();
@@ -154,25 +152,12 @@ public class JpaScheduleService implements ScheduleService {
 		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
-
 			for (DwSection dwSection : dwSections) {
-				String newTermCode = null;
-				String shortTermCode = dwSection.getTermCode().substring(4, 6);
-
-				if (Long.valueOf(shortTermCode) < 4) {
-					long nextYear = schedule.getYear() + 1;
-					newTermCode = nextYear + shortTermCode;
-				} else {
-					newTermCode = schedule.getYear() + shortTermCode;
-				}
-
-				Term term = termService.getOneByTermCode(newTermCode);
-
 				// Calculate sequencePattern from sequenceNumber
 				String dwSequencePattern = null;
-
 				Character c = dwSection.getSequenceNumber().charAt(0);
 				Boolean isLetter = Character.isLetter(c);
+
 				if (isLetter) {
 					dwSequencePattern = String.valueOf(c);
 				} else {
@@ -184,40 +169,58 @@ public class JpaScheduleService implements ScheduleService {
 				String dwSectionShortTerm = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
 
 				// Ensure this dwSection matches the sectionGroupImport (course) of interest
-				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
-						&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
-						&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
+				if (sectionGroupImport.getCourseNumber().equals(dwSection.getCourseNumber())
+						&& sectionGroupImport.getSubjectCode().equals(dwSection.getSubjectCode())
+						&& sectionGroupImport.getSequencePattern().equals(dwSequencePattern)
 						&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
 
-					String courseNumber = sectionGroupImport.getCourseNumber();
+					// Find or create a course
+					String newTermCode = null;
+					String shortTermCode = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
 
-					// Attempt to make a course
-					Course course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-							sectionGroupImport.getSubjectCode(),
-							sectionGroupImport.getCourseNumber(),
-							sectionGroupImport.getSequencePattern(),
-							sectionGroupImport.getTitle(),
-							sectionGroupImport.getEffectiveTermCode(),
-							schedule,
-							true
-					);
+					// Identify which year in academic year range to use
+					if (Long.valueOf(shortTermCode) < 4) {
+						long nextYear = schedule.getYear() + 1;
+						newTermCode = nextYear + shortTermCode;
+					} else {
+						newTermCode = schedule.getYear() + shortTermCode;
+					}
+
+					if (termHashMap.get(newTermCode) == null) {
+						termHashMap.put(newTermCode, termService.getOneByTermCode(newTermCode));
+					}
+
+					Term term = termHashMap.get(newTermCode);
+
+					Long unitsHigh = 0L;
+					Long unitsLow = 0L;
 
 					if (sectionGroupImport.getUnitsHigh() != null) {
-						course.setUnitsHigh(Long.valueOf(sectionGroupImport.getUnitsHigh()));
+						unitsHigh = Long.valueOf(sectionGroupImport.getUnitsHigh());
 					}
 
 					if (sectionGroupImport.getUnitsLow() != null) {
-						course.setUnitsLow(Long.valueOf(sectionGroupImport.getUnitsLow()));
+						unitsLow = Long.valueOf(sectionGroupImport.getUnitsLow());
 					}
 
-					course = courseService.update(course);
+					Course courseDTO = new Course();
+					courseDTO.setSubjectCode(sectionGroupImport.getSubjectCode());
+					courseDTO.setCourseNumber(sectionGroupImport.getCourseNumber());
+					courseDTO.setSequencePattern(sectionGroupImport.getSequencePattern());
+					courseDTO.setTitle(sectionGroupImport.getTitle());
+					courseDTO.setEffectiveTermCode(sectionGroupImport.getEffectiveTermCode());
+					courseDTO.setSchedule(schedule);
+					courseDTO.setUnitsHigh(unitsHigh);
+					courseDTO.setUnitsLow(unitsLow);
 
-					// Attempt to make a sectionGroup
+					Course course = courseService.findOrCreateByCourse(courseDTO);
+
+					// Find or create a sectionGroup
 					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
 					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
 					sectionGroup = sectionGroupService.save(sectionGroup);
 
-					// Attempt to make a section
+					// Find or create a section
 					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
 
 					section.setSeats(dwSection.getMaximumEnrollment());

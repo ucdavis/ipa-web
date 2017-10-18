@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class BudgetViewController {
     @Inject BudgetViewFactory budgetViewFactory;
     @Inject BudgetService budgetService;
@@ -190,6 +190,30 @@ public class BudgetViewController {
         Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return lineItemService.update(lineItemDTO);
+    }
+
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public List<Integer> deleteLineItems(@PathVariable long budgetScenarioId,
+                                      @RequestBody List<Integer> lineItemIds,
+                                      HttpServletResponse httpResponse) {
+
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        lineItemService.deleteMany(lineItemIds);
+
+        return lineItemIds;
     }
 
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}", method = RequestMethod.PUT, produces="application/json")

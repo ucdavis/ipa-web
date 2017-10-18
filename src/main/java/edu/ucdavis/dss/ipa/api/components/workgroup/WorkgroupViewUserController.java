@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class WorkgroupViewUserController {
     /**
      * Number of results to return when searching for people

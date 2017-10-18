@@ -24,9 +24,6 @@ public interface TeachingAssignmentService {
 
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
-	TeachingAssignment findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
-		Long sectionGroupId, Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance);
-
 	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 
 	List<TeachingAssignment> findByCourseId(long courseId);
@@ -36,4 +33,6 @@ public interface TeachingAssignmentService {
     List<TeachingAssignment> findApprovedByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
 	List<TeachingAssignment> findByScheduleId(long scheduleId);
+
+	TeachingAssignment findByTeachingAssignment(TeachingAssignment teachingAssignment);
 }

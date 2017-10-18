@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by Lloyd on 8/10/16.
  */
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class AssignmentViewScheduleInstructorNoteController {
     @Inject
     CurrentUser currentUser;

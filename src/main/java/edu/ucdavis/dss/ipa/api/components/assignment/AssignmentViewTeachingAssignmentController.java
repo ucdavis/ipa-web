@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class AssignmentViewTeachingAssignmentController {
     @Inject CurrentUser currentUser;
     @Inject AuthenticationService authenticationService;
@@ -40,13 +40,14 @@ public class AssignmentViewTeachingAssignmentController {
 
         // Ensure valid params
         // Either:
-        // 1) teachingAssignment is a buyout/release/sabbatical/in-residence/work-life-balance
+        // 1) teachingAssignment is a buyout/release/sabbatical/in residence/work life balance/leave of absence
         // 2) teachingAssignment has a sectionGroup
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false
             && teachingAssignment.isInResidence() == false
             && teachingAssignment.isWorkLifeBalance() == false
+            && teachingAssignment.isLeaveOfAbsence() == false
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
@@ -56,6 +57,7 @@ public class AssignmentViewTeachingAssignmentController {
                 || teachingAssignment.isCourseRelease() == true
                 || teachingAssignment.isInResidence() == true
                 || teachingAssignment.isWorkLifeBalance() == true
+                || teachingAssignment.isLeaveOfAbsence() == true
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
@@ -75,8 +77,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // If a Teaching Assignment already exists, update it instead.
-        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findBySectionGroupIdAndInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalance(
-                sectionGroupId, instructor.getId(), scheduleId, teachingAssignment.getTermCode(), teachingAssignment.isBuyout(), teachingAssignment.isCourseRelease(), teachingAssignment.isSabbatical(), teachingAssignment.isInResidence(), teachingAssignment.isWorkLifeBalance());
+        TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findByTeachingAssignment(teachingAssignment);
 
         if (existingTeachingAssignment != null && existingTeachingAssignment.getId() >= 0) {
             existingTeachingAssignment.setSchedule(schedule);
@@ -359,8 +360,8 @@ public class AssignmentViewTeachingAssignmentController {
 
         }
 
-        // Make a single teaching Preference if its a buyout/sab/release
-        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance()) {
+        // Make a single teaching Preference if its a non sectiongroup assignment
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance() || teachingAssignment.isLeaveOfAbsence()) {
 
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);

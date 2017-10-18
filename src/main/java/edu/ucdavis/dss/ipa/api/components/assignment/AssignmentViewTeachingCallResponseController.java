@@ -16,7 +16,7 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
  * Created by Lloyd on 8/10/16.
  */
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class AssignmentViewTeachingCallResponseController {
     @Inject CurrentUser currentUser;
     @Inject AuthenticationService authenticationService;

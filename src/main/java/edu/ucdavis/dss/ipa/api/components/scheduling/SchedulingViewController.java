@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class SchedulingViewController {
 
 	@Inject SectionGroupService sectionGroupService;
@@ -126,5 +126,24 @@ public class SchedulingViewController {
 
 		newActivity = activityService.saveActivity(newActivity);
 		return newActivity;
+	}
+
+	@RequestMapping(value = "/api/schedulingView/sections/{sectionId}/activities", method = RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public List<Activity> getActivitiesBySection(@PathVariable Long sectionId, HttpServletResponse httpResponse) {
+		Section section = sectionService.getOneById(sectionId);
+
+		if (section == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		Authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		List<Activity> activities = new ArrayList<>();
+		activities.addAll(section.getActivities());
+		activities.addAll(section.getSectionGroup().getActivities());
+
+		return activities;
 	}
 }

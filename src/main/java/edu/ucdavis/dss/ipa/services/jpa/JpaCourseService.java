@@ -209,6 +209,55 @@ public class JpaCourseService implements CourseService {
 	}
 
 	/**
+	 * Attempts to match an existing course based on subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule.
+	 * If none is found, will generate a new course and identify a similar course from past years as a model for what tags should be generated.
+	 *
+	 * @param courseDTO
+	 * @return
+	 */
+	@Override
+	public Course findOrCreateByCourse(Course courseDTO) {
+		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
+				courseDTO.getSubjectCode(), courseDTO.getCourseNumber(), courseDTO.getSequencePattern(), courseDTO.getEffectiveTermCode(), courseDTO.getSchedule());
+
+		if (course != null) {
+			return course;
+		}
+
+		String title = courseDTO.getTitle();
+
+		// Get the meta data (title, tags) from previous offerings if any
+		List<Tag> tags = new ArrayList<>();
+
+		Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
+				courseDTO.getSubjectCode(), courseDTO.getCourseNumber(), courseDTO.getSequencePattern(), courseDTO.getEffectiveTermCode(), courseDTO.getSchedule().getWorkgroup().getId());
+		if (matchingCourse != null) {
+			title = matchingCourse.getTitle();
+			tags.addAll(matchingCourse.getTags());
+		}
+
+		course = new Course();
+		course.setSubjectCode(courseDTO.getSubjectCode());
+		course.setCourseNumber(courseDTO.getCourseNumber());
+		course.setSequencePattern(courseDTO.getSequencePattern());
+		course.setTitle(title);
+		course.setEffectiveTermCode(courseDTO.getEffectiveTermCode());
+		course.setSchedule(courseDTO.getSchedule());
+		course.setTags(tags);
+		courseRepository.save(course);
+
+		return course;
+	}
+
+	@Transactional
+	@Override
+	public void deleteMultiple(List<Long> courseIds) {
+		for (Long courseId : courseIds) {
+			this.delete(courseId);
+		}
+	}
+
+	/**
 	 * Will create a course based on supplied params. Will return null if an identical course already exists.
 	 * Can optionally copy tag/title data from a similar course in another year.
 	 * @param subjectCode

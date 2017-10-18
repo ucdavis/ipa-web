@@ -20,4 +20,6 @@ public interface LineItemService {
     LineItem update(LineItem lineItem);
 
     LineItem createDuplicate(LineItem originalLineItem, BudgetScenario budgetScenario);
+
+    void deleteMany(List<Integer> lineItemIds);
 }

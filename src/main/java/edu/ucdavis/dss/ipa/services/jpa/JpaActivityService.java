@@ -55,6 +55,11 @@ public class JpaActivityService implements ActivityService {
 			activity.setDayIndicator("0000000");
 		}
 
+		// Activity frequency should be a minimum of once a week
+		if (activity.getFrequency() < 1) {
+			activity.setFrequency(1);
+		}
+
 		return this.activityRepository.save(activity);
 	}
 

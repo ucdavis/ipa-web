@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import javax.sound.sampled.Line;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class BudgetView {
     String workgroupId;
@@ -22,6 +23,7 @@ public class BudgetView {
     List<Course> courses;
     List<TeachingAssignment> teachingAssignments;
     List<SupportAssignment> supportAssignments;
+    Set<User> users;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -37,7 +39,8 @@ public class BudgetView {
             List<Instructor> instructors,
             List<Course> courses,
             List<TeachingAssignment> teachingAssignments,
-            List<SupportAssignment> supportAssignments) {
+            List<SupportAssignment> supportAssignments,
+            Set<User> users) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -52,6 +55,7 @@ public class BudgetView {
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
         setSupportAssignments(supportAssignments);
+        setUsers(users);
     }
 
     public String getWorkgroupId() {
@@ -172,5 +176,13 @@ public class BudgetView {
 
     public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
         this.supportAssignments = supportAssignments;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

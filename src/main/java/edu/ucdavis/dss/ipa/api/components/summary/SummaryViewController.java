@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@CrossOrigin // TODO: make CORS more specific depending on profile
+@CrossOrigin
 public class SummaryViewController {
 
     @Inject SummaryViewFactory summaryViewFactory;

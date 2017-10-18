@@ -64,6 +64,10 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             teachingAssignment.setWorkLifeBalance(node.get("workLifeBalance").booleanValue());
         }
 
+        if (node.has("leaveOfAbsence")) {
+            teachingAssignment.setLeaveOfAbsence(node.get("leaveOfAbsence").booleanValue());
+        }
+
         if (node.has("courseRelease")) {
             teachingAssignment.setCourseRelease(node.get("courseRelease").booleanValue());
         }
