@@ -1,5 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
@@ -24,11 +31,10 @@ import org.springframework.web.servlet.View;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -207,6 +213,96 @@ public class CourseViewController {
 		}
 
 		return courseService.addTag(course, tag);
+	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/massAddTags", method = RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public void massAddTagsToCourses(@PathVariable long workgroupId, @PathVariable long year, @RequestBody MassAssignTagsDTO massAssignTags, HttpServletResponse httpResponse) {
+		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		Workgroup workgroup = schedule.getWorkgroup();
+		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+		courseService.massAddTagsToCourses(massAssignTags.getTagIdsToAdd(), massAssignTags.getTagIdsToRemove(), massAssignTags.getCourseIds());
+	}
+
+
+	@JsonDeserialize(using = MassAssignTagsDTODeserializer.class)
+	public class MassAssignTagsDTO {
+		private List<Long> courseIds;
+		private List<Long> tagIdsToAdd;
+		private List<Long> tagIdsToRemove;
+
+		public List<Long> getCourseIds() {
+			return courseIds;
+		}
+
+		public void setCourseIds(List<Long> courseIds) {
+			this.courseIds = courseIds;
+		}
+
+		public List<Long> getTagIdsToAdd() {
+			return tagIdsToAdd;
+		}
+
+		public void setTagIdsToAdd(List<Long> tagIdsToAdd) {
+			this.tagIdsToAdd = tagIdsToAdd;
+		}
+
+		public List<Long> getTagIdsToRemove() {
+			return tagIdsToRemove;
+		}
+
+		public void setTagIdsToRemove(List<Long> tagIdsToRemove) {
+			this.tagIdsToRemove = tagIdsToRemove;
+		}
+	}
+
+	public class MassAssignTagsDTODeserializer extends JsonDeserializer<Object> {
+		@Override
+		public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+				throws IOException, JsonProcessingException {
+
+			ObjectCodec oc = jsonParser.getCodec();
+			JsonNode node = oc.readTree(jsonParser);
+
+			MassAssignTagsDTO massAssignTagsDTO = new MassAssignTagsDTO();
+			List<Long> courseIds = new ArrayList<>();
+			List<Long> tagIdsToAdd = new ArrayList<>();
+			List<Long> tagIdsToRemove = new ArrayList<>();
+
+			JsonNode arrNode = node.get("courseIds");
+
+			if (arrNode.isArray()) {
+				for (final JsonNode objNode : arrNode) {
+					Long courseId = objNode.longValue();
+					courseIds.add(courseId);
+				}
+			}
+
+			arrNode = node.get("tagIdsToAdd");
+
+			if (arrNode.isArray()) {
+				for (final JsonNode objNode : arrNode) {
+					Long tagId = objNode.longValue();
+					tagIdsToAdd.add(tagId);
+				}
+			}
+
+			arrNode = node.get("tagIdsToRemove");
+
+			if (arrNode.isArray()) {
+				for (final JsonNode objNode : arrNode) {
+					Long tagId = objNode.longValue();
+					tagIdsToRemove.add(tagId);
+				}
+			}
+
+			massAssignTagsDTO.setTagIdsToAdd(tagIdsToAdd);
+			massAssignTagsDTO.setTagIdsToRemove(tagIdsToRemove);
+			massAssignTagsDTO.setCourseIds(courseIds);
+
+			return massAssignTagsDTO;
+		}
 	}
 
 	@RequestMapping(value = "/api/courseView/courses/{courseId}/tags/{tagId}", method = RequestMethod.DELETE, produces="application/json")
