@@ -259,6 +259,27 @@ public class JpaCourseService implements CourseService {
 		}
 	}
 
+	@Override
+	public void massAddTagsToCourses(List<Long> tagsToAdd, List<Long> tagsToRemove, List<Long> courseIds) {
+		for (Long courseId : courseIds) {
+			Course course = this.getOneById(courseId);
+
+			for (Long tagId: tagsToAdd) {
+				if (course.getTagIds().indexOf(tagId) == -1) {
+					Tag tag = tagService.getOneById(tagId);
+					this.addTag(course, tag);
+				}
+			}
+
+			for (Long tagId: tagsToRemove) {
+				if (course.getTagIds().indexOf(tagId) > -1) {
+					Tag tag = tagService.getOneById(tagId);
+					this.removeTag(course, tag);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Will create a course based on supplied params. Will return null if an identical course already exists.
 	 * Can optionally copy tag/title data from a similar course in another year.
