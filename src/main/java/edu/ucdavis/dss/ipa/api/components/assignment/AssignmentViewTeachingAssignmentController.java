@@ -266,28 +266,21 @@ public class AssignmentViewTeachingAssignmentController {
                     for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
                         // Looking for teachingAssignments from the relevant instructor
                         if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()
-                                && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
+                        && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
+                            if (slotTeachingAssignment.isApproved()) {
+                                continue;
+                            }
+
                             teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
                             teachingAssignmentsToDelete.add((slotTeachingAssignment));
-
-                            if (slotTeachingAssignment.isApproved()) {
-                                oneIsApproved = true;
-                                break;
-                            }
                         }
                     }
                 }
             }
 
-            // Do nothing, the preference UI should not have allowed deletion as an option - this preference has already been approved.
-            if (oneIsApproved == true) {
-                return null;
-            } else {
-                for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
-                    teachingAssignmentService.delete(slotTeachingAssignmentId);
-                }
+            for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
+                teachingAssignmentService.delete(slotTeachingAssignmentId);
             }
-
         }
         // Delete a course release / sabbatical / buyout
         else {
