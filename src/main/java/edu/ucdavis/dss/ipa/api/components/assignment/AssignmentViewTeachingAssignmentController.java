@@ -32,7 +32,17 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         // Ensure Authorization
-        Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
+        Instructor instructor = null;
+
+        if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
+            instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
+        }
+
+        if (instructor == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Schedule schedule = scheduleService.findById(scheduleId);
 
         if (schedule == null) {
@@ -430,18 +440,18 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
-
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
         Integer priority = 1;
 
-        for(Long id : sortedTeachingPreferenceIds) {
-            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(id);
-            if (teachingAssignment == null) {
-                httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-                return null;
-            }
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findAllByIds(sortedTeachingPreferenceIds);
 
+        if (teachingAssignments == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        for(TeachingAssignment teachingAssignment : teachingAssignments) {
             teachingAssignment.setPriority(priority);
             teachingAssignmentService.save(teachingAssignment);
             priority++;
