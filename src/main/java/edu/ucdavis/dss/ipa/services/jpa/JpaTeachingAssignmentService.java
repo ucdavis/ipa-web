@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -15,6 +16,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -134,6 +136,27 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		}
 
 		return teachingAssignment;
+	}
+
+	@Override
+	public List<TeachingAssignment> findAllByIds(List<Long> teachingAssignmentIds) {
+		List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+
+		boolean allIdsValid = true;
+
+		for(Long id : teachingAssignmentIds) {
+			TeachingAssignment teachingAssignment = this.findOneById(id);
+			if (teachingAssignment == null) {
+				allIdsValid = false;
+				break;
+			}
+		}
+
+		if (allIdsValid == false) {
+			return null;
+		}
+
+		return teachingAssignments;
 	}
 
 }

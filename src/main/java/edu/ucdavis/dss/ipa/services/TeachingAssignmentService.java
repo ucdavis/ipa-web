@@ -35,4 +35,6 @@ public interface TeachingAssignmentService {
 	List<TeachingAssignment> findByScheduleId(long scheduleId);
 
 	TeachingAssignment findByTeachingAssignment(TeachingAssignment teachingAssignment);
+
+	List<TeachingAssignment> findAllByIds(List<Long> teachingAssignmentIds);
 }
