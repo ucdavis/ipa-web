@@ -35,6 +35,11 @@ public class AssignmentViewTeachingAssignmentController {
         Instructor instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
         Schedule schedule = scheduleService.findById(scheduleId);
 
+        if (schedule == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Workgroup workgroup = schedule.getWorkgroup();
         Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
@@ -112,9 +117,7 @@ public class AssignmentViewTeachingAssignmentController {
     public TeachingAssignment updateTeachingAssignment(@PathVariable long teachingAssignmentId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         TeachingAssignment originalTeachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
 
-        // Ensuring basic validity of request params
         if (originalTeachingAssignment == null) {
-
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
@@ -222,6 +225,12 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public List<TeachingAssignment> removePreference(@PathVariable long teachingAssignmentId, HttpServletResponse httpResponse) {
         TeachingAssignment DTOteachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
+
+        if (DTOteachingAssignment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
 
@@ -291,6 +300,12 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public List<TeachingAssignment> addPreference(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         Schedule schedule = scheduleService.findById(scheduleId);
+
+        if (schedule == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Workgroup workgroup = schedule.getWorkgroup();
 
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
@@ -408,6 +423,12 @@ public class AssignmentViewTeachingAssignmentController {
     @ResponseBody
     public List<Long> updatePreferenceOrder(@PathVariable long scheduleId, @RequestBody List<Long> sortedTeachingPreferenceIds, HttpServletResponse httpResponse) {
         Schedule schedule = scheduleService.findById(scheduleId);
+
+        if (schedule == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Workgroup workgroup = schedule.getWorkgroup();
 
         Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
@@ -416,6 +437,10 @@ public class AssignmentViewTeachingAssignmentController {
 
         for(Long id : sortedTeachingPreferenceIds) {
             TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(id);
+            if (teachingAssignment == null) {
+                httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+                return null;
+            }
 
             teachingAssignment.setPriority(priority);
             teachingAssignmentService.save(teachingAssignment);
