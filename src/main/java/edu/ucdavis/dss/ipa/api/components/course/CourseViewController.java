@@ -219,12 +219,16 @@ public class CourseViewController {
 	@ResponseBody
 	public void massAddTagsToCourses(@PathVariable long workgroupId, @PathVariable long year, @RequestBody MassAssignTagsDTO massAssignTags, HttpServletResponse httpResponse) {
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		if (schedule == null || massAssignTags.getCourseIds().size() == 0 || (massAssignTags.getTagIdsToAdd().size() == 0 && massAssignTags.getTagIdsToRemove().size() == 0)) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		}
+
 		Workgroup workgroup = schedule.getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseService.massAddTagsToCourses(massAssignTags.getTagIdsToAdd(), massAssignTags.getTagIdsToRemove(), massAssignTags.getCourseIds());
 	}
-
 
 	@JsonDeserialize(using = MassAssignTagsDTODeserializer.class)
 	public class MassAssignTagsDTO {
