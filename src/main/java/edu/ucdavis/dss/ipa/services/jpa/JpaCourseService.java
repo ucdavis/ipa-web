@@ -131,6 +131,10 @@ public class JpaCourseService implements CourseService {
 	public Course addTag(Course course, Tag tag) {
 		if (course == null) { return null; }
 
+		if (course.getTagIds().indexOf(tag.getId()) == -1) {
+			return null;
+		}
+
 		List<Tag> tags = course.getTags();
 		if(!tags.contains(tag)) {
 			tags.add(tag);
@@ -142,6 +146,10 @@ public class JpaCourseService implements CourseService {
 	@Override
 	public Course removeTag(Course course, Tag tag) {
 		if (course == null) { return null; }
+
+		if (course.getTagIds().indexOf(tag.getId()) > -1) {
+			return null;
+		}
 
 		List<Tag> tags = course.getTags();
 		if(tags.contains(tag)) {
@@ -265,17 +273,13 @@ public class JpaCourseService implements CourseService {
 			Course course = this.getOneById(courseId);
 
 			for (Long tagId: tagsToAdd) {
-				if (course.getTagIds().indexOf(tagId) == -1) {
-					Tag tag = tagService.getOneById(tagId);
-					this.addTag(course, tag);
-				}
+				Tag tag = tagService.getOneById(tagId);
+				this.addTag(course, tag);
 			}
 
 			for (Long tagId: tagsToRemove) {
-				if (course.getTagIds().indexOf(tagId) > -1) {
-					Tag tag = tagService.getOneById(tagId);
-					this.removeTag(course, tag);
-				}
+				Tag tag = tagService.getOneById(tagId);
+				this.removeTag(course, tag);
 			}
 		}
 	}
