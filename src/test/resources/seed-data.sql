@@ -13,6 +13,8 @@ INSERT INTO Users (Id, LoginId, LastAccessed, Email, FirstName, LastName, Token,
 INSERT INTO Workgroups (Id, WorkgroupName, WorkgroupCode, UpdatedAt, CreatedAt, ModifiedBy) VALUES (1, 'Department of Basketweaving', 'BAK', NOW(), NOW(), 'system');
 INSERT INTO Locations (Id, Description, WorkgroupId, archived) VALUES (1, 'Coffee House', 1, 0);
 INSERT INTO Schedules (Id, WorkgroupId, Year, Importing, SupportStaffSupportCallReviewOpen, InstructorSupportCallReviewOpen) VALUES (1, 1, 2017, 0, "0000000000", "0000000000");
+INSERT INTO Schedules (Id, WorkgroupId, Year, Importing, SupportStaffSupportCallReviewOpen, InstructorSupportCallReviewOpen)
+               VALUES (2, 1,            2018, 0,         "0000000000",                      "0000000000");
 
 /* Numeric SectionGroup with one section, with a two activities */
 INSERT INTO Courses (Id, ScheduleId, Title, UnitsLow, UnitsHigh, SubjectCode, CourseNumber, EffectiveTermCode, SequencePattern) VALUES (1, 1, 'Weaving 101', 4, 4, 'BAK', '001', '198510', '001');
