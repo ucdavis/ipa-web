@@ -140,19 +140,9 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 	@Override
 	public List<TeachingAssignment> findAllByIds(List<Long> teachingAssignmentIds) {
-		List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+		List<TeachingAssignment> teachingAssignments = teachingAssignmentRepository.findByIdIn(teachingAssignmentIds);
 
-		boolean allIdsValid = true;
-
-		for(Long id : teachingAssignmentIds) {
-			TeachingAssignment teachingAssignment = this.findOneById(id);
-			if (teachingAssignment == null) {
-				allIdsValid = false;
-				break;
-			}
-		}
-
-		if (allIdsValid == false) {
+		if (teachingAssignments.size() != teachingAssignmentIds.size()) {
 			return null;
 		}
 
