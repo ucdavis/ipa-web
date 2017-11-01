@@ -40,9 +40,11 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
 
         TeachingCallReceipt teachingCallReceipt = null;
 
-        for (TeachingCallReceipt slotTeachingCallReceipt : instructor.getTeachingCallReceipts()){
-            if (slotTeachingCallReceipt.getSchedule().getId() == scheduleId) {
-                teachingCallReceipt = slotTeachingCallReceipt;
+        if (instructor != null) {
+            for (TeachingCallReceipt slotTeachingCallReceipt : instructor.getTeachingCallReceipts()){
+                if (slotTeachingCallReceipt.getSchedule().getId() == scheduleId) {
+                    teachingCallReceipt = slotTeachingCallReceipt;
+                }
             }
         }
 
