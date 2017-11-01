@@ -25,7 +25,7 @@ public class TeachingCallFormViewController {
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/teachingCallForm", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public TeachingCallFormView getTeachingCallFormView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
         User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
 

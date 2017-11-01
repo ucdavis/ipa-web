@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.CourseRepository;
 import edu.ucdavis.dss.ipa.services.*;
