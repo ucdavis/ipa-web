@@ -21,6 +21,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
     @Inject SupportStaffService supportStaffService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
+    @Inject SupportAssignmentService supportAssignmentService;
 
     @Override
     public SummaryView createSummaryView(long workgroupId, long year, long userId, long instructorId, long supportStaffId) {
@@ -34,6 +35,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
         List<TeachingAssignment> teachingAssignmentsToAdd = new ArrayList<TeachingAssignment>();
         List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
+        List<SupportAssignment> supportAssignments = new ArrayList<>();
 
         if (schedule != null && instructorId > 0) {
             teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
@@ -79,6 +81,9 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
             // Get instructor support call data
             instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+
+            // Get student assignment data
+            supportAssignments = supportAssignmentService.findVisibleByScheduleAndInstructorId(schedule, instructorId);
         }
 
 
@@ -100,6 +105,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
         }
 
-        return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses);
+        return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses, supportAssignments);
     }
 }
