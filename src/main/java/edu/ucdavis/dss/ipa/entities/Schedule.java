@@ -244,4 +244,29 @@ public class Schedule implements Serializable {
 
 		this.setInstructorSupportCallReviewOpen(newTermsBlob);
 	}
+
+	/**
+	 * Will generate a list of terms from the instructorSupportCallReview termsBlob
+	 * Example: '1010000001' => ['01', '03', '10']
+	 * @return
+     */
+	public List<String> instructorSupportCallReviewAsTerms() {
+		List<String> terms = new ArrayList<>();
+
+		String termBlob = this.getInstructorSupportCallReviewOpen();
+
+		for (int i = 0; i < termBlob.length(); i++) {
+			if (termBlob.charAt(i) == '1') {
+				String term = String.valueOf(i + 1);
+
+				// Zero pad if necessary
+				if (term.length() == 1) {
+					term = "0" + term;
+				}
+
+				terms.add(term);
+			}
+		}
+		return terms;
+	}
 }
