@@ -36,6 +36,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
         List<TeachingAssignment> teachingAssignmentsToAdd = new ArrayList<TeachingAssignment>();
         List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<>();
         List<SupportAssignment> supportAssignments = new ArrayList<>();
+        List<SupportStaff> supportStaffList = new ArrayList<>();
 
         if (schedule != null && instructorId > 0) {
             teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
@@ -84,6 +85,9 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
 
             // Get student assignment data
             supportAssignments = supportAssignmentService.findVisibleByScheduleAndInstructorId(schedule, instructorId);
+
+            // Get supportStaff
+            supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         }
 
 
@@ -105,6 +109,6 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndSupportStaffId(schedule.getId(), supportStaffId);
         }
 
-        return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses, supportAssignments);
+        return new SummaryView(schedule, courses, sectionGroups, sections, activities, teachingAssignmentsToAdd, teachingCallReceipts, terms, studentSupportCallResponses, instructorSupportCallResponses, supportAssignments, supportStaffList);
     }
 }

@@ -126,4 +126,15 @@ public class JpaSupportStaffService implements SupportStaffService {
 
         return supportStaffList;
     }
+
+    @Override
+    public List<SupportStaff> findBySupportAssignments(List<SupportAssignment> supportAssignments) {
+        List<SupportStaff> supportStaffList = new ArrayList<>();
+
+        for (SupportAssignment supportAssignment : supportAssignments) {
+            supportStaffList.add(supportAssignment.getSupportStaff());
+        }
+
+        return supportStaffList;
+    }
 }

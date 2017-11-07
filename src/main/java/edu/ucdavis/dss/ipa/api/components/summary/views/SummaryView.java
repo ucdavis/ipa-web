@@ -18,6 +18,7 @@ public class SummaryView {
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
     List<SupportAssignment> supportAssignments;
     Schedule schedule;
+    List<SupportStaff> supportStaffList = new ArrayList<>();
 
     public SummaryView(Schedule schedule,
                        List<Course> courses,
@@ -29,7 +30,8 @@ public class SummaryView {
                        List<Term> terms,
                        List<StudentSupportCallResponse> studentSupportCallResponses,
                        List<InstructorSupportCallResponse> instructorSupportCallResponses,
-                       List<SupportAssignment> supportAssignments) {
+                       List<SupportAssignment> supportAssignments,
+                       List<SupportStaff> supportStaffList) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -42,6 +44,7 @@ public class SummaryView {
         setInstructorSupportCallResponses(instructorSupportCallResponses);
         setSchedule(schedule);
         setSupportAssignments(supportAssignments);
+        setSupportStaffList(supportStaffList);
     }
 
     public List<Term> getTerms() { return this.terms; }
@@ -127,5 +130,13 @@ public class SummaryView {
 
     public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
         this.supportAssignments = supportAssignments;
+    }
+
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
+    }
+
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
     }
 }
