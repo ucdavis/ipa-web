@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -96,5 +97,15 @@ public class SupportAssignment implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    @Transient
+    @JsonIgnore
+    public boolean isOpenToReview() {
+        String termCode = this.getSectionGroup().getTermCode();
+        String term = termCode.substring(termCode.length() - 2, termCode.length());
+        List<String> openTerms = this.getSectionGroup().getCourse().getSchedule().getInstructorSupportCallReviewAsTerms();
+
+        return (openTerms.indexOf(term) > -1);
     }
 }
