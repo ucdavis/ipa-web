@@ -166,7 +166,9 @@ public class AssignmentViewTeachingAssignmentController {
                     // Necessary sectionGroup did not exist, need to create it
                     if (sectionGroup == null) {
                         sectionGroup = new SectionGroup();
-
+                        sectionGroup.setTermCode(teachingAssignment.getTermCode());
+                        sectionGroup.setCourse(slotCourse);
+                        sectionGroup = sectionGroupService.save(sectionGroup);
                     }
                 }
             } else {
