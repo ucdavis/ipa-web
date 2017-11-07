@@ -55,6 +55,45 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
         return supportAssignments;
     }
 
+    /**
+     * Will return any supportAssignments that should be visible to the specified instructor, for the given schedule.
+     * Visibility to supportAssignments is controlled by the schedule.instructorSupportCallReviewOpen term 'blob'
+     * And only supportAssignments made for sectionGroups that the instructor is teaching.
+     * @param schedule
+     * @param instructorId
+     * @return
+     */
+    @Override
+    public List<SupportAssignment> findVisibleByScheduleAndInstructorId(Schedule schedule, long instructorId) {
+        List<SupportAssignment> supportAssignments = new ArrayList<>();
+
+        // Find all supportAssignments associated to sectionGroups the instructor is teaching
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructorId);
+
+        if (teachingAssignments == null || teachingAssignments.size() == 0) {
+            return supportAssignments;
+        }
+
+        // Filter out supportAssignments based on what has been made visible via 'open for review'
+        String supportCallReviewTermBlob = schedule.getInstructorSupportCallReviewOpen();
+
+        List<SupportAssignment> instructorSupportAssignments = new ArrayList<>();
+
+        for (TeachingAssignment teachingAssignment: teachingAssignments) {
+            if (teachingAssignment.isApproved() == true && teachingAssignment.getSectionGroup() != null) {
+                instructorSupportAssignments.addAll(teachingAssignment.getSectionGroup().getSupportAssignments());
+            }
+        }
+
+        for (SupportAssignment supportAssignment : instructorSupportAssignments) {
+            if (supportAssignment.isOpenToReview()) {
+                supportAssignments.add(supportAssignment);
+            }
+        }
+
+        return supportAssignments;
+    }
+
     @Override
     public SupportAssignment findOneById(Long instructionalSupportAssignmentId) {
         return this.supportAssignmentRepository.findById(instructionalSupportAssignmentId);
