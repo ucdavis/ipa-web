@@ -41,6 +41,7 @@ public class SummaryView {
         setStudentSupportCallResponses(studentSupportCallResponses);
         setInstructorSupportCallResponses(instructorSupportCallResponses);
         setSchedule(schedule);
+        setSupportAssignments(supportAssignments);
     }
 
     public List<Term> getTerms() { return this.terms; }
