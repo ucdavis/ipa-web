@@ -132,7 +132,9 @@ public class JpaSupportStaffService implements SupportStaffService {
         List<SupportStaff> supportStaffList = new ArrayList<>();
 
         for (SupportAssignment supportAssignment : supportAssignments) {
-            supportStaffList.add(supportAssignment.getSupportStaff());
+            if (supportAssignment.getSupportStaff() != null) {
+                supportStaffList.add(supportAssignment.getSupportStaff());
+            }
         }
 
         return supportStaffList;
