@@ -83,7 +83,7 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
         }
 
         for (SupportAssignment supportAssignment : instructorSupportAssignments) {
-            if (supportAssignment.getSupportStaff() != null && supportAssignment.isOpenToReview()) {
+            if (supportAssignment.getSupportStaff() != null && supportAssignment.isOpenForInstructorReview()) {
                 supportAssignments.add(supportAssignment);
             }
         }
