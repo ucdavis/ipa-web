@@ -74,9 +74,6 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
             return supportAssignments;
         }
 
-        // Filter out supportAssignments based on what has been made visible via 'open for review'
-        String supportCallReviewTermBlob = schedule.getInstructorSupportCallReviewOpen();
-
         List<SupportAssignment> instructorSupportAssignments = new ArrayList<>();
 
         for (TeachingAssignment teachingAssignment: teachingAssignments) {
