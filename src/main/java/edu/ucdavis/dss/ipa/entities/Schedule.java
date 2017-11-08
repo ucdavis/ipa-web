@@ -246,6 +246,11 @@ public class Schedule implements Serializable {
 
 		String termBlob = this.getInstructorSupportCallReviewOpen();
 
+		// getInstructorSupportCallReviewOpen is required for persistence in database, but we should avoid errors if called on a DTO.
+		if (termBlob == null || termBlob.length() != 10) {
+			return terms;
+		}
+
 		for (int i = 0; i < termBlob.length(); i++) {
 			if (termBlob.charAt(i) == '1') {
 				String term = String.valueOf(i + 1);
