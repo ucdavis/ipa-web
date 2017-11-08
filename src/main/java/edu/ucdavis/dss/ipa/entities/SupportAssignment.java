@@ -102,7 +102,17 @@ public class SupportAssignment implements Serializable {
     @Transient
     @JsonIgnore
     public boolean isOpenToReview() {
+        // A sectionGroup required for persistence in database, but we should avoid errors if called on a DTO.
+        if (this.getSectionGroup() == null) {
+            return false;
+        }
+
         String termCode = this.getSectionGroup().getTermCode();
+
+        if (termCode == null || termCode.length() != 6) {
+            return false;
+        }
+
         String term = termCode.substring(termCode.length() - 2, termCode.length());
         List<String> openTerms = this.getSectionGroup().getCourse().getSchedule().getInstructorSupportCallReviewAsTerms();
 
