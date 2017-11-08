@@ -99,18 +99,22 @@ public class SupportAssignment implements Serializable {
         }
     }
 
+    /**
+     * Will return true if supportAssignment term matches an activated instructorReview term on the schedule
+     * Will return null if required entities are not found.
+     * @return
+     */
     @Transient
     @JsonIgnore
-    public boolean isOpenToReview() {
-        // A sectionGroup required for persistence in database, but we should avoid errors if called on a DTO.
+    public Boolean isOpenForInstructorReview() {
         if (this.getSectionGroup() == null) {
-            return false;
+            return null;
         }
 
         String termCode = this.getSectionGroup().getTermCode();
 
         if (termCode == null || termCode.length() != 6) {
-            return false;
+            return null;
         }
 
         String term = termCode.substring(termCode.length() - 2, termCode.length());
