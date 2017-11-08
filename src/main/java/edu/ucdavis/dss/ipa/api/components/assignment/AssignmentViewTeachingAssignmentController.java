@@ -441,8 +441,8 @@ public class AssignmentViewTeachingAssignmentController {
 
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findAllByIds(sortedTeachingPreferenceIds);
 
-        if (teachingAssignments == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        if (teachingAssignments == null || teachingAssignments.size() != sortedTeachingPreferenceIds.size()) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
