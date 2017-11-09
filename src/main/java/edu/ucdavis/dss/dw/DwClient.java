@@ -186,17 +186,17 @@ public class DwClient {
 					JsonNode person = node.get("person");
 					JsonNode prikerbacct = node.get("prikerbacct");
 
-					dwPerson.setIamId(contactInfo.get("iamId").toString());
-					dwPerson.setdFirstName(person.get("dFirstName").toString());
-					dwPerson.setdFullName(person.get("dFullName").toString());
-					dwPerson.setdLastName(person.get("dLastName").toString());
-					dwPerson.setdMiddleName(person.get("dMiddleName").toString());
-					dwPerson.setEmail(contactInfo.get("email").toString());
-					dwPerson.setoFirstName(person.get("oFirstName").toString());
-					dwPerson.setoFullName(person.get("oFullName").toString());
-					dwPerson.setoLastName(person.get("oLastName").toString());
-					dwPerson.setoMiddleName(person.get("oMiddleName").toString());
-					dwPerson.setUserId(prikerbacct.get("userId").toString());
+					dwPerson.setIamId(contactInfo.get("iamId").textValue());
+					dwPerson.setdFirstName(person.get("dFirstName").textValue());
+					dwPerson.setdFullName(person.get("dFullName").textValue());
+					dwPerson.setdLastName(person.get("dLastName").textValue());
+					dwPerson.setdMiddleName(person.get("dMiddleName").textValue());
+					dwPerson.setEmail(contactInfo.get("email").textValue());
+					dwPerson.setoFirstName(person.get("oFirstName").textValue());
+					dwPerson.setoFullName(person.get("oFullName").textValue());
+					dwPerson.setoLastName(person.get("oLastName").textValue());
+					dwPerson.setoMiddleName(person.get("oMiddleName").textValue());
+					dwPerson.setUserId(prikerbacct.get("userId").textValue());
 				} else {
 					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
 				}
