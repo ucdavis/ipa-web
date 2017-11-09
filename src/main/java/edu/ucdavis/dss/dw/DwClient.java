@@ -160,7 +160,7 @@ public class DwClient {
 	}
 
 	public DwPerson getPersonByLoginId(String loginId) throws UnsupportedEncodingException {
-		DwPerson dwPerson = null;
+		DwPerson dwPerson = new DwPerson();
 
 		if (connect() && loginId != null) {
 			HttpGet httpget = new HttpGet("/people/" + URLEncoder.encode(loginId, "UTF-8") + "?token=" + ApiToken);
@@ -182,13 +182,21 @@ public class DwClient {
 				if (entityString != null) {
 					JsonNode node = new ObjectMapper().readTree(entityString);
 
-					if (node != null) {
-						dwPerson = mapper.readValue(
-								node.toString(),
-								mapper.getTypeFactory().constructType(DwPerson.class));
-					} else {
-						log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
-					}
+					JsonNode contactInfo = node.get("contactInfo");
+					JsonNode person = node.get("person");
+					JsonNode prikerbacct = node.get("prikerbacct");
+
+					dwPerson.setIamId(contactInfo.get("iamId").toString());
+					dwPerson.setdFirstName(person.get("dFirstName").toString());
+					dwPerson.setdFullName(person.get("dFullName").toString());
+					dwPerson.setdLastName(person.get("dLastName").toString());
+					dwPerson.setdMiddleName(person.get("dMiddleName").toString());
+					dwPerson.setEmail(contactInfo.get("email").toString());
+					dwPerson.setoFirstName(person.get("oFirstName").toString());
+					dwPerson.setoFullName(person.get("oFullName").toString());
+					dwPerson.setoLastName(person.get("oLastName").toString());
+					dwPerson.setoMiddleName(person.get("oMiddleName").toString());
+					dwPerson.setUserId(prikerbacct.get("userId").toString());
 				} else {
 					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
 				}
