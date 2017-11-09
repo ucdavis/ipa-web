@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.api.components.site;
 
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
-import edu.ucdavis.dss.ipa.services.AuthenticationService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
@@ -13,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +22,6 @@ public class SiteController {
 	private final int JS_EXCEPTION_MAIL_MAX_SUBJECT_LENGTH = 75;
 
 	@Inject UserService userService;
-	@Inject AuthenticationService authenticationService;
 	@Inject EmailService emailService;
 
 	/**
