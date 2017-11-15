@@ -2,12 +2,15 @@ package edu.ucdavis.dss.ipa.api.components.assignment.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.InstructorView;
+import edu.ucdavis.dss.ipa.api.components.assignment.views.InstructorExcelView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +28,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject UserService userService;
 	@Inject SupportAssignmentService supportAssignmentService;
+	@Inject TermService termService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
@@ -53,11 +57,40 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	}
 
 	@Override
-	public View createAssignmentExcelView(long workgroupId, long year) {
-		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+	public InstructorView createInstructorView(long workgroupId, long year) {
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		Workgroup workgroup = schedule.getWorkgroup();
+
+		if(workgroup == null) { return null; }
+
+		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroup.getId(), schedule.getYear());
+		List<Instructor> instructors = instructorService.findByScheduleId(schedule.getId());
+		List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
+		List<Course> courses = schedule.getCourses();
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 
-		return new AssignmentExcelView(schedule, instructors, scheduleTermStates);
+		List<Term> terms = new ArrayList<>();
+
+		for (ScheduleTermState scheduleTermState : scheduleTermStates) {
+			terms.add(termService.getOneByTermCode(scheduleTermState.getTermCode()));
+		}
+
+
+		return new InstructorView(courses, sectionGroups, instructors, teachingAssignments, terms, schedule.getId());
+	}
+
+	@Override
+	public View createAssignmentExcelView(long workgroupId, long year, String pivot) {
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
+
+		if ("course".equals(pivot)) {
+			List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+			return new AssignmentExcelView(schedule, instructors, scheduleTermStates);
+		} else {
+			InstructorView instructorView = createInstructorView(workgroupId, year);
+
+			return new InstructorExcelView(instructorView);
+		}
 	}
 }
