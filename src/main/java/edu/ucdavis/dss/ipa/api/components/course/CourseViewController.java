@@ -698,14 +698,17 @@ public class CourseViewController {
 		return annualViewFactory.createCourseQueryView(workgroupId, year, showDoNotPrint);
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/{pivot}/generateExcel", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
-							 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+	public Map<String, String> generateExcel(
+							@PathVariable long workgroupId,
+							@PathVariable long year,
+							@PathVariable String pivot,
+							@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 							 HttpServletRequest httpRequest) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year + "/" + pivot +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
 		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
@@ -732,8 +735,10 @@ public class CourseViewController {
 	 * @return
 	 * @throws ParseException
 	 */
-	@RequestMapping(value = "/download/courseView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
-	public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+	@RequestMapping(value = "/download/courseView/workgroups/{workgroupId}/years/{year}/{pivot}/excel/{salt}/{encrypted}")
+	public View downloadExcel(@PathVariable long workgroupId,
+							  @PathVariable long year,
+							  @PathVariable String pivot,
 							  @PathVariable String salt, @PathVariable String encrypted,
 							  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 							  HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
@@ -747,12 +752,12 @@ public class CourseViewController {
 		boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
 
-		if (isValidUrl) {
-			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
-		} else {
+		if (isValidUrl == false) {
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return null;
 		}
+
+		return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint, pivot);
 	}
 
 }

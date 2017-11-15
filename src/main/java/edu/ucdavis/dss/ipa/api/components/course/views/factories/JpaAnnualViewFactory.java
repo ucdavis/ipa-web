@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseExcelView;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
+import edu.ucdavis.dss.ipa.api.components.course.views.InstructorExcelView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -43,9 +44,14 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	}
 
     @Override
-    public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
+    public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint, String pivot) {
     	CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
-		return new CourseExcelView(courseView);
+
+		if ("course".equals(pivot)) {
+			return new CourseExcelView(courseView);
+		} else {
+			return new InstructorExcelView(courseView);
+		}
     }
 
 	@Override

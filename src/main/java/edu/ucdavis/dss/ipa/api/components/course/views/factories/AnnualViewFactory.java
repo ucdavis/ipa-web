@@ -9,7 +9,7 @@ public interface AnnualViewFactory {
 
 	CourseView createCourseView(long workgroupId, long year, Boolean showDoNotPrint);
 
-	View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint);
+	View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint, String pivot);
 
 	List<JpaAnnualViewFactory.HistoricalCourse> createCourseQueryView(long workgroupId, long year, Boolean showDoNotPrint);
 }
