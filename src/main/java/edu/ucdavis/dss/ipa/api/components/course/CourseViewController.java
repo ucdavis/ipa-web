@@ -63,8 +63,8 @@ public class CourseViewController {
 	 * @param workgroupId
 	 * @param year
 	 * @param httpResponse
-     * @return
-     */
+	 * @return
+	 */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year,
@@ -385,7 +385,7 @@ public class CourseViewController {
 												  @PathVariable Long workgroupId, @PathVariable Long year,
 												  @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-											HttpServletResponse httpResponse) {
+												  HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		if (sectionGroupImportList.size() == 0) {
@@ -425,9 +425,9 @@ public class CourseViewController {
 
 				// Ensure this dwSection matches the sectionGroupImport (course) of interest
 				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
-				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
-				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
-				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
+						&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
+						&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
+						&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
 
 					// Find or create a course
 					String newTermCode = null;
@@ -550,15 +550,15 @@ public class CourseViewController {
 	 * @param importAssignments
 	 * @param showDoNotPrint
 	 * @param httpResponse
-     * @return
-     */
+	 * @return
+	 */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{destinationYear}/createCourses", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public CourseView createMultipleCoursesFromIPA(@RequestBody List<SectionGroupImport> sectionGroupImportList,
-												  @PathVariable Long workgroupId, @PathVariable Long destinationYear,
+												   @PathVariable Long workgroupId, @PathVariable Long destinationYear,
 												   @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
-												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-												  HttpServletResponse httpResponse) {
+												   @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+												   HttpServletResponse httpResponse) {
 
 		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
@@ -689,26 +689,23 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/queryCourses", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public List<JpaAnnualViewFactory.HistoricalCourse> queryCourses(
-									@PathVariable long workgroupId,
-									@PathVariable long year,
-									@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-									HttpServletResponse httpResponse) {
+			@PathVariable long workgroupId,
+			@PathVariable long year,
+			@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+			HttpServletResponse httpResponse) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return annualViewFactory.createCourseQueryView(workgroupId, year, showDoNotPrint);
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/{pivot}/generateExcel", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, String> generateExcel(
-							@PathVariable long workgroupId,
-							@PathVariable long year,
-							@PathVariable String pivot,
-							@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-							 HttpServletRequest httpRequest) {
+	public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+											 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
+											 HttpServletRequest httpRequest) {
 		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year + "/" + pivot +"/excel";
+		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
 		String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
@@ -735,10 +732,8 @@ public class CourseViewController {
 	 * @return
 	 * @throws ParseException
 	 */
-	@RequestMapping(value = "/download/courseView/workgroups/{workgroupId}/years/{year}/{pivot}/excel/{salt}/{encrypted}")
-	public View downloadExcel(@PathVariable long workgroupId,
-							  @PathVariable long year,
-							  @PathVariable String pivot,
+	@RequestMapping(value = "/download/courseView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
+	public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
 							  @PathVariable String salt, @PathVariable String encrypted,
 							  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 							  HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
@@ -752,12 +747,12 @@ public class CourseViewController {
 		boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
 
-		if (isValidUrl == false) {
+		if (isValidUrl) {
+			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
+		} else {
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return null;
 		}
-
-		return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint, pivot);
 	}
 
 }

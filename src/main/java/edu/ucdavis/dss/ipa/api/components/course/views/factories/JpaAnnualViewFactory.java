@@ -2,8 +2,6 @@ package edu.ucdavis.dss.ipa.api.components.course.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseExcelView;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
-import edu.ucdavis.dss.ipa.api.components.course.views.InstructorExcelView;
-import edu.ucdavis.dss.ipa.api.components.course.views.InstructorView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,6 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	@Inject WorkgroupService workgroupService;
 	@Inject CourseService courseService;
 	@Inject TermService termService;
-	@Inject TeachingAssignmentService teachingAssignmentService;
-	@Inject InstructorService instructorService;
 
 	@Override
 	public CourseView createCourseView(long workgroupId, long year, Boolean showDoNotPrint) {
@@ -47,39 +43,10 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 	}
 
 	@Override
-	public InstructorView createInstructorView(long workgroupId, long year, Boolean showDoNotPrint) {
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		if(workgroup == null) { return null; }
-
-		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
-		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
-		List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
-		List<Instructor> instructors = instructorService.findByScheduleId(schedule.getId());
-		List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
-		List<Term> terms = termService.findByYear(year);
-
-		List<Course> courses = new ArrayList<>();
-
-		if (showDoNotPrint != null && showDoNotPrint) {
-			courses = schedule.getCourses();
-		} else {
-			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
-		}
-
-		return new InstructorView(courses, sectionGroups, instructors, teachingAssignments, terms);
+	public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
+		CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
+		return new CourseExcelView(courseView);
 	}
-
-    @Override
-    public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint, String pivot) {
-		if ("course".equals(pivot)) {
-			CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
-			return new CourseExcelView(courseView);
-		} else {
-			InstructorView instructorView = createInstructorView(workgroupId, year, showDoNotPrint);
-
-			return new InstructorExcelView(instructorView);
-		}
-    }
 
 	@Override
 	public List<HistoricalCourse> createCourseQueryView(long workgroupId, long year, Boolean showDoNotPrint) {
