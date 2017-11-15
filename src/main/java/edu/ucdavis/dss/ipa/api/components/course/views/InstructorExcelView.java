@@ -8,10 +8,9 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class InstructorExcelView extends AbstractXlsView {
     private InstructorView instructorViewDTO = null;
@@ -34,56 +33,60 @@ public class InstructorExcelView extends AbstractXlsView {
         int row = 1;
         for(Instructor instructor : instructorViewDTO.getInstructors()) {
             Row excelHeader = sheet.createRow(row);
-
-            excelHeader.createCell(0).setCellValue(instructor.getFullName());
-
-            int col = 2;
+            int col = 0;
+            excelHeader.createCell(col).setCellValue(instructor.getFullName());
+            col++;
             for(Term term : instructorViewDTO.getTerms()) {
-                List<TeachingAssignment> teachingAssignments = this.getTeachingAssignmentsByInstructorAndTermCode(instructor, term.getTermCode());
+                List<TeachingAssignment> teachingAssignments = this.getApprovedTeachingAssignmentsByInstructorAndTermCode(instructor, term.getTermCode());
+                String assignmentsList = "";
 
                 if (teachingAssignments.size() > 0) {
-                    // TODO: Loop over teachingAssignments, and add the subj + course number together, and concatenate to comma separated string
-//                    excelHeader.createCell(col).setCellValue(sectionGroup.getPlannedSeats());
+                    for (TeachingAssignment teachingAssignment : teachingAssignments) {
+                        String subjectCode = teachingAssignment.getSectionGroup().getCourse().getSubjectCode();
+                        String courseNumber = teachingAssignment.getSectionGroup().getCourse().getCourseNumber();
+                        String assignmentDescription = subjectCode + " " + courseNumber;
+
+                        if (assignmentsList.length() > 0) {
+                            assignmentsList += ", ";
+                        }
+
+                        assignmentsList += assignmentDescription;
+                    }
+
+                    excelHeader.createCell(col).setCellValue(assignmentsList);
+                    col++;
                 } else {
                     excelHeader.createCell(col).setCellValue("");
+                    col++;
                 }
-
-                col++;
             }
 
             row++;
         }
     }
 
-    private List<TeachingAssignment> getTeachingAssignmentsByInstructorAndTermCode(Instructor instructor, String termCode) {
+    private List<TeachingAssignment> getApprovedTeachingAssignmentsByInstructorAndTermCode(Instructor instructor, String termCode) {
+        List<TeachingAssignment> teachingAssignments = new ArrayList<>();
 
+        for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
+            if (teachingAssignment.isApproved() == true && termCode.equals(teachingAssignment.getTermCode())) {
+                teachingAssignments.add(teachingAssignment);
+            }
+        }
+
+        return teachingAssignments;
     }
 
     private void setExcelHeader(Sheet excelSheet) {
         Row excelHeader = excelSheet.createRow(0);
+        int col = 0;
 
-        excelHeader.createCell(0).setCellValue("Course");
-        excelHeader.createCell(1).setCellValue("Tracks");
+        excelHeader.createCell(col).setCellValue("Instructor");
+        col++;
 
-        int col = 2;
         for(Term term : instructorViewDTO.getTerms()) {
             excelHeader.createCell(col).setCellValue(Term.getRegistrarName(term.getTermCode()));
             col++;
         }
     }
-
-    /*
-    private SectionGroup  getSectionGroupByCourseAndTermCode(Course course, String termCode) {
-        Predicate<SectionGroup> predicate = sg-> sg.getTermCode().equals(termCode) && sg.getCourse().equals(course);
-        String courseDesc = course.getShortDescription();
-//        List<SectionGroup> matchingSectionGroups = courseViewDTO.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
-        List<SectionGroup> matchingSectionGroups = course.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
-        if (matchingSectionGroups.size() > 0) {
-            return matchingSectionGroups.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    */
 }
