@@ -42,11 +42,11 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		return new CourseView(courses, sectionGroups, workgroup.getTags(), terms);
 	}
 
-	@Override
-	public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
-		CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
+    @Override
+    public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
+    	CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
 		return new CourseExcelView(courseView);
-	}
+    }
 
 	@Override
 	public List<HistoricalCourse> createCourseQueryView(long workgroupId, long year, Boolean showDoNotPrint) {
