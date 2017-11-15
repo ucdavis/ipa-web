@@ -50,13 +50,15 @@ public class AssignmentViewController {
         return assignmentViewFactory.createAssignmentView(workgroupId, year, currentUser.getId(), instructorId);
     }
 
-    @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/{pivot}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+    public Map<String, String> generateExcel(@PathVariable long workgroupId,
+                                             @PathVariable long year,
+                                             @PathVariable String pivot,
                                              HttpServletRequest httpRequest) {
         Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        String url = ipaUrlApi + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+        String url = ipaUrlApi + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year + "/" + pivot +"/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
@@ -74,15 +76,19 @@ public class AssignmentViewController {
      *
      * @param workgroupId
      * @param year
+     * @param pivot
      * @param salt
      * @param encrypted
      * @param httpRequest
      * @return
      * @throws ParseException
      */
-    @RequestMapping(value = "/download/assignmentView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
-    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
-                              @PathVariable String salt, @PathVariable String encrypted,
+    @RequestMapping(value = "/download/assignmentView/workgroups/{workgroupId}/years/{year}/{pivot}/excel/{salt}/{encrypted}")
+    public View downloadExcel(@PathVariable long workgroupId,
+                              @PathVariable long year,
+                              @PathVariable String pivot,
+                              @PathVariable String salt,
+                              @PathVariable String encrypted,
                               HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         long TIMEOUT = 30L; // In seconds
 
@@ -93,12 +99,11 @@ public class AssignmentViewController {
 
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
-
-        if (isValidUrl) {
-            return assignmentViewFactory.createAssignmentExcelView(workgroupId, year);
-        } else {
+        if (isValidUrl == false) {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
         }
+
+        return assignmentViewFactory.createAssignmentExcelView(workgroupId, year, pivot);
     }
 }

@@ -1,5 +1,6 @@
-package edu.ucdavis.dss.ipa.api.components.course.views;
+package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
+import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.entities.*;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public class InstructorExcelView extends AbstractXlsView {
-    private InstructorView instructorViewDTO = null;
+    private AssignmentView.InstructorView instructorViewDTO = null;
 
-    public InstructorExcelView(InstructorView instructorViewDTO) {
+    public InstructorExcelView(AssignmentView.InstructorView instructorViewDTO) {
         this.instructorViewDTO = instructorViewDTO;
     }
 
