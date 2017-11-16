@@ -94,14 +94,23 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sectionGroups", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public SectionGroup createSectionGroup(@RequestBody SectionGroup sectionGroup, HttpServletResponse httpResponse) {
-		if (sectionGroup.getCourse() == null) return null;
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			return null;
+		}
+
+		Course course = courseService.getOneById(sectionGroup.getCourse().getId());
+
+		if (course == null) {
+			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			return null;
+		}
 
 		// TODO: Consider how we can improve the authorizer
-		Course course = courseService.getOneById(sectionGroup.getCourse().getId());
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		return sectionGroupService.save(sectionGroup);
+		return sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces="application/json")
