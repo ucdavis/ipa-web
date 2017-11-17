@@ -33,7 +33,7 @@ public class AssignmentExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=ScheduleData.xls");
+        response.setHeader("Content-Disposition", "attachment; filename=AssignmentsByCourseAndByInstructor.xls");
 
         // Create sheets
         Sheet byCourseSheet = workbook.createSheet("By Course");
@@ -46,12 +46,19 @@ public class AssignmentExcelView extends AbstractXlsView {
         int row = 1;
         for(Course course : schedule.getCourses()) {
             Row excelHeader = byCourseSheet.createRow(row);
+            int col = 0;
 
-            excelHeader.createCell(0).setCellValue(course.getShortDescription());
+            excelHeader.createCell(col).setCellValue(course.getShortDescription());
+            col++;
+
+            excelHeader.createCell(col).setCellValue(course.getUnitsLow());
+            col++;
+
             List<String> tagNameList = course.getTags().stream().map(Tag::getName).collect(Collectors.toList());
-            excelHeader.createCell(1).setCellValue(StringUtils.join(tagNameList, ','));
 
-            int col = 2;
+            excelHeader.createCell(col).setCellValue(StringUtils.join(tagNameList, ','));
+            col++;
+
             for(ScheduleTermState state : scheduleTermStates) {
                 SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, state.getTermCode());
 
@@ -78,10 +85,11 @@ public class AssignmentExcelView extends AbstractXlsView {
         row = 1;
         for(Instructor instructor : instructors) {
             Row excelHeader = byInstructorSheet.createRow(row);
+            int col = 0;
 
-            excelHeader.createCell(0).setCellValue(instructor.getLastName() + ", " + instructor.getFirstName());
+            excelHeader.createCell(col).setCellValue(instructor.getLastName() + ", " + instructor.getFirstName());
+            col++;
 
-            int col = 1;
             for(ScheduleTermState state : scheduleTermStates) {
                 excelHeader.createCell(col).setCellValue(
                         StringUtils.join(
@@ -104,10 +112,15 @@ public class AssignmentExcelView extends AbstractXlsView {
         Row excelHeader = excelSheet.createRow(0);
         int col = 0;
 
-        excelHeader.createCell(col++).setCellValue(firstHeader);
+        excelHeader.createCell(col).setCellValue(firstHeader);
+        col++;
 
         if ("Course".equals(firstHeader)) {
-            excelHeader.createCell(col++).setCellValue("Tracks");
+            excelHeader.createCell(col).setCellValue("Units");
+            col++;
+
+            excelHeader.createCell(col).setCellValue("Tracks");
+            col++;
         }
 
         for(ScheduleTermState state : scheduleTermStates) {
@@ -120,6 +133,7 @@ public class AssignmentExcelView extends AbstractXlsView {
         Predicate<SectionGroup> predicate = sg-> sg.getTermCode().equals(termCode) && sg.getCourse().equals(course);
         String courseDesc = course.getShortDescription();
         List<SectionGroup> matchingSectionGroups = course.getSectionGroups().stream().filter(predicate).collect(Collectors.toList());
+
         if (matchingSectionGroups.size() > 0) {
             return matchingSectionGroups.get(0);
         } else {
