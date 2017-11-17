@@ -33,7 +33,7 @@ public class AssignmentExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=AssignmentsByCourseAndByInstructor.xls");
+        response.setHeader("Content-Disposition", "attachment; filename=Assignments-CourseAndInstructorPivots.xls");
 
         // Create sheets
         Sheet byCourseSheet = workbook.createSheet("By Course");
