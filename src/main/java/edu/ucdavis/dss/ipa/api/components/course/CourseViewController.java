@@ -93,7 +93,7 @@ public class CourseViewController {
 
 	@RequestMapping(value = "/api/courseView/sectionGroups", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public SectionGroup createSectionGroup(@RequestBody SectionGroup sectionGroup, HttpServletResponse httpResponse) {
+	public SectionGroup createOrUpdateSectionGroup(@RequestBody SectionGroup sectionGroup, HttpServletResponse httpResponse) {
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
 			return null;
