@@ -579,34 +579,42 @@ public class CourseViewController {
 		String termCode = sectionGroupImportList.get(0).getTermCode();
 		Long importYear = termService.getAcademicYearFromTermCode(termCode);
 
-		Schedule importSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
-		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
+		Schedule historicalSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, importYear);
+		Schedule destinationSchedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, destinationYear);
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
+			// Identify historical course this sectionGroupImport is based off
+			Course historicalCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+				sectionGroupImport.getSubjectCode(),
+				sectionGroupImport.getCourseNumber(),
+				sectionGroupImport.getSequencePattern(),
+				historicalSchedule.getId());
 
-			Course course = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
-					sectionGroupImport.getSubjectCode(),
-					sectionGroupImport.getCourseNumber(),
-					sectionGroupImport.getSequencePattern(),
-					schedule.getId());
+			// Does the destination schedule already have this course? if so do nothing
+			// When we identify a single sectionGroupImport that is based on the course, we then import all the sectionGroups associated to that course
+			Course destinationCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(
+				sectionGroupImport.getSubjectCode(),
+				sectionGroupImport.getCourseNumber(),
+				sectionGroupImport.getSequencePattern(),
+				destinationSchedule.getId());
 
 			// If course already exists, do nothing
-			if (course != null) {
+			if (destinationCourse != null) {
 				continue;
 			}
 
 			// Make a newCourse in the current term based on the historical course
-			course = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
+			destinationCourse = courseService.findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 					sectionGroupImport.getSubjectCode(),
 					sectionGroupImport.getCourseNumber(),
 					sectionGroupImport.getSequencePattern(),
 					sectionGroupImport.getTitle(),
 					sectionGroupImport.getEffectiveTermCode(),
-					schedule,
+					destinationSchedule,
 					true);
 
 			// Find its sectionGroups, and find/create new versions of them
-			for (SectionGroup historicalSectionGroup : course.getSectionGroups()) {
+			for (SectionGroup historicalSectionGroup : historicalCourse.getSectionGroups()) {
 
 				String newTermCode = null;
 				String shortTermCode = historicalSectionGroup.getTermCode().substring(4, 6);
@@ -620,14 +628,7 @@ public class CourseViewController {
 
 				Term term = termService.getOneByTermCode(newTermCode);
 
-				// Don't create a sectionGroup in a locked term
-				ScheduleTermState termState = scheduleTermStateService.createScheduleTermState(term);
-
-				if (termState.scheduleTermLocked()) {
-					continue;
-				}
-
-				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
+				SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(destinationCourse.getId(), newTermCode);
 				newSectionGroup.setPlannedSeats(historicalSectionGroup.getPlannedSeats());
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
