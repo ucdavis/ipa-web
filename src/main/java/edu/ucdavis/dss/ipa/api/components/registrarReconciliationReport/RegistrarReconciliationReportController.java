@@ -336,7 +336,12 @@ public class RegistrarReconciliationReportController {
 				User user = userService.findOrCreateByLoginId(instructorDto.getLoginId());
 
 				// Ensure they are an instructor
-				Instructor instructor = instructorService.findOrAddActiveInstructor(workgroup, user);
+				Instructor instructor = null;
+				if(user != null) {
+					instructor = instructorService.findOrAddActiveInstructor(workgroup, user);
+				} else {
+					instructor = instructorService.findOrCreate(instructorDto.getFirstName(), instructorDto.getLastName(), instructorDto.getEmail(), instructorDto.getLoginId(), workgroup.getId(), instructorDto.getUcdStudentSID());
+				}
 
 				// Make a teachingAssignment for that instructor
 				TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
