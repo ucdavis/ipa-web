@@ -28,7 +28,7 @@ public interface InstructorService {
 
 	Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId);
 
-	Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId, String employeeId);
+	Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId, String ucdStudentSID);
 
 	void removeOrphanedByLoginId(String loginId);
 
