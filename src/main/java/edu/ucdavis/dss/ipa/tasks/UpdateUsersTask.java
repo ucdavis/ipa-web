@@ -4,6 +4,8 @@ import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,9 +18,9 @@ import java.util.*;
 @Profile({"production", "staging"})
 public class UpdateUsersTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
+    private static final Logger log = LoggerFactory.getLogger("UpdateUsersTask");
 
-    @Inject
-    DataWarehouseRepository dataWarehouseRepository;
+    @Inject DataWarehouseRepository dataWarehouseRepository;
     @Inject UserService userService;
 
     /**
@@ -27,7 +29,6 @@ public class UpdateUsersTask {
     @Scheduled( fixedDelay = 604800000 ) // every 7 days
     @Async
     public void UpdateUsersTask() {
-
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
 
@@ -37,6 +38,7 @@ public class UpdateUsersTask {
             DwPerson dwPerson = dataWarehouseRepository.getPersonByLoginId(user.getLoginId());
 
             if (dwPerson == null) {
+                log.debug("Unable to update user in task: DW returned null for login ID " + user.getLoginId());
                 continue;
             }
 
