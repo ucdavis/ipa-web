@@ -170,6 +170,10 @@ public class DwClient {
 						targetHost, httpget, context);
 
 				StatusLine line = response.getStatusLine();
+				if (line.getStatusCode() == 404) {
+					// DW has no such user
+					return null;
+				}
 				if (line.getStatusCode() != 200) {
 					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
 				}
