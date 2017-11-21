@@ -514,8 +514,8 @@ public class CourseViewController {
 							String rawEndTime = dwActivity.getSsrmeet_end_time();
 
 							if (rawEndTime != null) {
-								String hours = rawStartTime.substring(0, 2);
-								String minutes = rawStartTime.substring(2, 4);
+								String hours = rawEndTime.substring(0, 2);
+								String minutes = rawEndTime.substring(2, 4);
 								String formattedEndTime = hours + ":" + minutes + ":00";
 								Time endTime = java.sql.Time.valueOf(formattedEndTime);
 
