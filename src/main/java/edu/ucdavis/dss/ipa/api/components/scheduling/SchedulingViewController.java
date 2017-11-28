@@ -1,11 +1,10 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling;
 
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
-import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.factories.SchedulingViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.LocationService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
@@ -27,6 +26,7 @@ public class SchedulingViewController {
 	@Inject ActivityService activityService;
 	@Inject LocationService locationService;
 	@Inject SchedulingViewFactory schedulingViewFactory;
+	@Inject Authorizer authorizer;
 
 	/**
 	 * Delivers the JSON payload for the Scheduling View (nee Activities View), used on page load.
@@ -41,9 +41,8 @@ public class SchedulingViewController {
 	@ResponseBody
 	public SchedulingView showSchedulingView(@PathVariable long workgroupId,
 											 @PathVariable long year,
-											 @PathVariable String termCode,
-											 HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+											 @PathVariable String termCode) {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return schedulingViewFactory.createSchedulingView(workgroupId, year, termCode);
 	}
@@ -58,7 +57,7 @@ public class SchedulingViewController {
 		}
 		SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		originalActivity.setLocation(activity.getLocation());
 		originalActivity.setActivityState(activity.getActivityState());
@@ -80,7 +79,7 @@ public class SchedulingViewController {
 		}
 		SectionGroup sectionGroup = sectionGroupService.getOneById(activity.getSectionGroupIdentification());
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		this.activityService.deleteActivityById(activity.getId());
 	}
@@ -89,11 +88,13 @@ public class SchedulingViewController {
 	@ResponseBody
 	public Activity createSharedActivity(@PathVariable char activityCode, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
 		ActivityType activityType = new ActivityType(activityCode);
 		Activity slotActivity = new Activity();
@@ -111,11 +112,13 @@ public class SchedulingViewController {
 	@ResponseBody
 	public Activity createActivity(@PathVariable char activityCode, @PathVariable Long sectionId, HttpServletResponse httpResponse) {
 		Section section = sectionService.getOneById(sectionId);
+
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
-		Authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
 		ActivityType activityType = new ActivityType(activityCode);
 		Activity newActivity = new Activity();
@@ -125,6 +128,7 @@ public class SchedulingViewController {
 		newActivity.setSection(section);
 
 		newActivity = activityService.saveActivity(newActivity);
+
 		return newActivity;
 	}
 
@@ -138,7 +142,7 @@ public class SchedulingViewController {
 			return null;
 		}
 
-		Authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
 		List<Activity> activities = new ArrayList<>();
 		activities.addAll(section.getActivities());

@@ -11,7 +11,7 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.InstructionalSupportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,22 +26,21 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class InstructionalSupportCallsController {
-
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
     @Inject UserService userService;
-    @Inject InstructorService instructorService;
-    @Inject SectionGroupService sectionGroupService;
-    @Inject SupportAssignmentService supportAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
+    @Inject
+    Authorization authorizationAttempt;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/{term}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String term, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year, term);
     }
@@ -50,7 +49,7 @@ public class InstructionalSupportCallsController {
     @ResponseBody
     public Schedule toggleStudentSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
         schedule.toggleSupportStaffSupportCallReview(term);
@@ -62,7 +61,7 @@ public class InstructionalSupportCallsController {
     @ResponseBody
     public Schedule toggleInstructorSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         Schedule schedule = scheduleService.findById(scheduleId);
         schedule.toggleInstructorSupportCallReview(term);
@@ -78,7 +77,7 @@ public class InstructionalSupportCallsController {
     public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO, HttpServletResponse httpResponse) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         List<InstructorSupportCallResponse> instructorResponses = new ArrayList<>();
 
@@ -168,7 +167,7 @@ public class InstructionalSupportCallsController {
     public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO, HttpServletResponse httpResponse) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         List<StudentSupportCallResponse> studentResponses = new ArrayList<>();
 
@@ -251,10 +250,10 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/supportCallView/{scheduleId}/addInstructors", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<InstructorSupportCallResponse> addInstructorsToSupportCall(@PathVariable long scheduleId, @RequestBody AddInstructorsDTO addInstructorsDTO, HttpServletResponse httpResponse) {
+    public List<InstructorSupportCallResponse> addInstructorsToSupportCall(@PathVariable long scheduleId, @RequestBody AddInstructorsDTO addInstructorsDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         InstructorSupportCallResponse instructorResponseDTO = new InstructorSupportCallResponse();
 
@@ -336,7 +335,7 @@ public class InstructionalSupportCallsController {
 
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
+                throws IOException {
             ObjectCodec oc = jsonParser.getCodec();
             JsonNode node = oc.readTree(jsonParser);
 
@@ -382,10 +381,10 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/supportCallView/{scheduleId}/addStudents", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long scheduleId, @RequestBody AddStudentsDTO addStudentsDTO, HttpServletResponse httpResponse) {
+    public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long scheduleId, @RequestBody AddStudentsDTO addStudentsDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         StudentSupportCallResponse studentResponseDTO = new StudentSupportCallResponse();
 
@@ -645,10 +644,10 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "api/supportCallView/schedules/{scheduleId}/instructorSupportCallResponses/{supportCallResponseId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
-    public Long removeInstructorFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId, HttpServletResponse httpResponse) {
+    public Long removeInstructorFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         InstructorSupportCallResponse supportCallResponse = instructorSupportCallResponseService.findOneById(supportCallResponseId);
 
@@ -661,10 +660,10 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "api/supportCallView/schedules/{scheduleId}/studentSupportCallResponses/{supportCallResponseId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
-    public Long removeStudentFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId, HttpServletResponse httpResponse) {
+    public Long removeStudentFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        Authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         StudentSupportCallResponse supportCallResponse = studentSupportCallResponseService.findOneById(supportCallResponseId);
 

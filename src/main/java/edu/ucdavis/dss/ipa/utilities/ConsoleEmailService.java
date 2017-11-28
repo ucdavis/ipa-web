@@ -18,7 +18,11 @@ public class ConsoleEmailService implements EmailService {
 
     @Override
     public boolean send(String recipientEmail, String messageBody, String messageSubject) {
-        log.info("ConsoleEmailService will 'fake' e-mail send by design.\n\tSubject: " + messageSubject);
+        log.info("ConsoleEmailService will 'send' e-mail to log only.");
+        log.info("\tTo      : " + recipientEmail);
+        log.info("\tSubject : " + messageSubject);
+        log.info("\tBody    : \n" + messageBody);
+
         return true;
     }
 

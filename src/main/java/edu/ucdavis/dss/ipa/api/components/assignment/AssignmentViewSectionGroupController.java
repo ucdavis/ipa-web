@@ -3,10 +3,9 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +22,16 @@ public class AssignmentViewSectionGroupController {
 	@Inject ScheduleService scheduleService;
 	@Inject AssignmentViewFactory teachingCallViewFactory;
 	@Inject SectionGroupService sectionGroupService;
+	@Inject Authorizer authorizer;
 
 	@RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public List<SectionGroup> getSectionGroupsByWorkgroupIdAndYear(
 			@PathVariable long workgroupId,
-			@PathVariable long year,
-			HttpServletResponse httpResponse) {
+			@PathVariable long year) {
 
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
 		return this.sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
 	}
 

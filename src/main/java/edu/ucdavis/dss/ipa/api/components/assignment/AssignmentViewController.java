@@ -6,7 +6,7 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,20 +25,22 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class AssignmentViewController {
-
     @Inject AssignmentViewFactory assignmentViewFactory;
     @Inject UserService userService;
     @Inject InstructorService instructorService;
+    @Inject
+    Authorization authorizationAttempt;
+    @Inject Authorizer authorizer;
 
     @Value("${ipa.url.api}")
     String ipaUrlApi;
 
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+    public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
-        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         long instructorId = 0;
@@ -54,7 +56,7 @@ public class AssignmentViewController {
     @ResponseBody
     public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
                                              HttpServletRequest httpRequest) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = ipaUrlApi + "/download/assignmentView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
@@ -66,6 +68,7 @@ public class AssignmentViewController {
 
         Map<String, String> map = new HashMap<>();
         map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+
         return map;
     }
 
@@ -92,7 +95,6 @@ public class AssignmentViewController {
         }
 
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
-
 
         if (isValidUrl) {
             return assignmentViewFactory.createAssignmentExcelView(workgroupId, year);

@@ -23,6 +23,8 @@ public class SiteController {
 
 	@Inject UserService userService;
 	@Inject EmailService emailService;
+	@Inject
+	Authorization authorizationAttempt;
 
 	/**
 	 * Provide /status.json for uptime checks. Designed to return
@@ -77,7 +79,7 @@ public class SiteController {
 		// Construct the email body
 		List<String> body = new ArrayList<String>();
 
-		User user = userService.getOneByLoginId(Authorization.getLoginId());
+		User user = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 		String displayName = "N/A";
 		String kerberosName = "N/A";
 

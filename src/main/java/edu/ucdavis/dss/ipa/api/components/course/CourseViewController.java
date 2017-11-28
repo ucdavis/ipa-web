@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.course;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -16,10 +15,10 @@ import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFa
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.entities.validation.CourseValidator;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,18 +40,17 @@ import java.util.*;
 public class CourseViewController {
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
-	@Inject WorkgroupService workgroupService;
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
-
-	@Inject CourseValidator courseValidator;
 	@Inject DataWarehouseRepository dwRepository;
+	@Inject
+	Authorization authorizationAttempt;
+	@Inject Authorizer authorizer;
 
 	@Value("${ipa.url.api}")
 	String ipaUrlApi;
@@ -68,9 +66,8 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public CourseView showCourseView(@PathVariable long workgroupId, @PathVariable long year,
-									 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-									 HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+									 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint) {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
@@ -78,15 +75,15 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}/sections", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public List<Section> getSectionGroupSections(@PathVariable long sectionGroupId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
+		authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
 
 		return sectionGroup.getSections();
 	}
@@ -106,20 +103,18 @@ public class CourseViewController {
 			return null;
 		}
 
-		// TODO: Consider how we can improve the authorizer
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		return sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
-	public SectionGroup updateSectionGroup(@PathVariable long sectionGroupId, @RequestBody SectionGroup sectionGroup, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
+	public SectionGroup updateSectionGroup(@PathVariable long sectionGroupId, @RequestBody SectionGroup sectionGroup) {
 		SectionGroup originalSectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		Workgroup workgroup = originalSectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		originalSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
 		originalSectionGroup.setShowTheStaff(sectionGroup.getShowTheStaff());
@@ -130,7 +125,6 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public void deleteSectionGroup(@PathVariable long sectionGroupId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		SectionGroup originalSectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
 		if (originalSectionGroup == null) {
@@ -139,7 +133,7 @@ public class CourseViewController {
 		}
 
 		Workgroup workgroup = originalSectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		sectionGroupService.delete(sectionGroupId);
 	}
@@ -147,7 +141,6 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public void deleteCourse(@PathVariable long courseId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Course course = courseService.getOneById(courseId);
 
 		if (course == null) {
@@ -156,7 +149,7 @@ public class CourseViewController {
 		}
 
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseService.delete(courseId);
 	}
@@ -172,7 +165,7 @@ public class CourseViewController {
 		}
 
 		Workgroup workgroup = schedule.getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseService.deleteMultiple(courseIds);
 
@@ -181,10 +174,10 @@ public class CourseViewController {
 
 	@RequestMapping(value = "/api/courseView/courses/{courseId}", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
-	public Course updateCourse(@PathVariable long courseId, @RequestBody @Validated Course courseDTO, HttpServletResponse httpResponse) {
+	public Course updateCourse(@PathVariable long courseId, @RequestBody @Validated Course courseDTO) {
 		Course course = courseService.getOneById(courseId);
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		return courseService.update(courseDTO);
 	}
@@ -192,7 +185,7 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public Course createCourse(@RequestBody @Validated Course course, @PathVariable Long workgroupId, @PathVariable Long year, HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
@@ -210,10 +203,9 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/courses/{courseId}/tags/{tagId}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public Course addTagToCourse(@PathVariable long courseId, @PathVariable long tagId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Course course = courseService.getOneById(courseId);
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Tag tag = tagService.getOneById(tagId);
 		if (tag == null) {
@@ -234,7 +226,7 @@ public class CourseViewController {
 		}
 
 		Workgroup workgroup = schedule.getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseService.massAddTagsToCourses(massAssignTags.getTagIdsToAdd(), massAssignTags.getTagIdsToRemove(), massAssignTags.getCourseIds());
 	}
@@ -273,7 +265,7 @@ public class CourseViewController {
 	public class MassAssignTagsDTODeserializer extends JsonDeserializer<Object> {
 		@Override
 		public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-				throws IOException, JsonProcessingException {
+				throws IOException {
 
 			ObjectCodec oc = jsonParser.getCodec();
 			JsonNode node = oc.readTree(jsonParser);
@@ -321,10 +313,9 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/courses/{courseId}/tags/{tagId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public Course removeTagFromCourse(@PathVariable long courseId, @PathVariable long tagId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Course course = courseService.getOneById(courseId);
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Tag tag = tagService.getOneById(tagId);
 		if (tag == null) {
@@ -338,15 +329,15 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sections/{sectionId}", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
 	public Section updateSection(@PathVariable long sectionId, @RequestBody Section section, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Section originalSection = sectionService.getOneById(sectionId);
+
 		if (originalSection == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
 
 		Workgroup workgroup = originalSection.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		originalSection.setSeats(section.getSeats());
 
@@ -356,14 +347,15 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sections/{sectionId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public void deleteSection(@PathVariable long sectionId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Section section = sectionService.getOneById(sectionId);
+
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return;
 		}
+
 		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		sectionService.delete(sectionId);
 	}
@@ -371,14 +363,15 @@ public class CourseViewController {
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}/sections", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public Section createSection(@RequestBody Section section, @PathVariable Long sectionGroupId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
 		if (sectionGroup == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
+
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Section newSection = new Section();
 		newSection.setSectionGroup(sectionGroup);
@@ -395,7 +388,7 @@ public class CourseViewController {
 												  @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 											HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -568,8 +561,7 @@ public class CourseViewController {
 												   @RequestParam Boolean importTimes, @RequestParam Boolean importAssignments,
 												  @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
 												  HttpServletResponse httpResponse) {
-
-		Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		if (sectionGroupImportList.size() == 0) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -633,7 +625,6 @@ public class CourseViewController {
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
 				for (Section historicalSection : historicalSectionGroup.getSections()) {
-
 					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
 					newSection.setSeats(historicalSection.getSeats());
 					newSection = sectionService.save(newSection);
@@ -661,13 +652,15 @@ public class CourseViewController {
 					for (TeachingAssignment historicalTeachingAssignment : historicalSectionGroup.getTeachingAssignments()) {
 						if (historicalTeachingAssignment.isApproved()) {
 							TeachingAssignment newTeachingAssignment = new TeachingAssignment();
+
 							newTeachingAssignment.setApproved(true);
 							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
 							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
 							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
 							newTeachingAssignment.setSectionGroup(newSectionGroup);
 							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
-							newTeachingAssignment = teachingAssignmentService.save(newTeachingAssignment);
+
+							teachingAssignmentService.save(newTeachingAssignment);
 						}
 					}
 				}
@@ -701,9 +694,8 @@ public class CourseViewController {
 	public List<JpaAnnualViewFactory.HistoricalCourse> queryCourses(
 									@PathVariable long workgroupId,
 									@PathVariable long year,
-									@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-									HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+									@RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint) {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return annualViewFactory.createCourseQueryView(workgroupId, year, showDoNotPrint);
 	}
@@ -712,8 +704,8 @@ public class CourseViewController {
 	@ResponseBody
 	public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
 							 @RequestParam(value="showDoNotPrint", required=false) Boolean showDoNotPrint,
-							 HttpServletRequest httpRequest) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+							 HttpServletRequest httpRequest) throws Exception {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		String url = ipaUrlApi + "/download/courseView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
 		String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
@@ -727,6 +719,7 @@ public class CourseViewController {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress) + showDoNotPrintParam);
+
 		return map;
 	}
 
@@ -756,7 +749,6 @@ public class CourseViewController {
 
 		boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
-
 		if (isValidUrl) {
 			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
 		} else {
@@ -764,5 +756,4 @@ public class CourseViewController {
 			return null;
 		}
 	}
-
 }
