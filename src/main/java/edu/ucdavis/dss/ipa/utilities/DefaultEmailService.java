@@ -25,7 +25,7 @@ import java.util.Properties;
 @Service
 @Profile({"production", "staging"})
 public class DefaultEmailService implements EmailService {
-	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.ipa.utilities.EmailService");
+	private static final Logger log = LoggerFactory.getLogger("EmailUtility");
 	private static final String exceptionRecipientEmail = "dssit-devs-exceptions@ucdavis.edu";
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -50,9 +50,7 @@ public class DefaultEmailService implements EmailService {
 	}
 
 	/**
-	 * Sends email if runningMode is production or staging, else email is suppressed.
-	 * 
-	 * Use this to e-mail the developers.
+	 * Send exception report email to developers.
 	 *
 	 * @param e exception to report
 	 * @param additionalDetails anything to add in addition to exception
@@ -110,47 +108,27 @@ public class DefaultEmailService implements EmailService {
 
 		sender.setJavaMailProperties(mailProperties);
 
-		if (htmlMode) {
-			MimeMessage message = sender.createMimeMessage();
+		MimeMessage message = sender.createMimeMessage();
 
-			try {
-				MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-				helper.setTo(recipientEmail);
-				helper.setFrom(emailFrom);
-				helper.setSubject(messageSubject);
-				helper.setText(messageBody, true);
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+			helper.setTo(recipientEmail);
+			helper.setFrom(emailFrom);
+			helper.setSubject(messageSubject);
+			helper.setText(messageBody, htmlMode);
 
-				sender.send(message);
-			} catch (MailException e) {
-				log.error("MailException while sending email to '" + recipientEmail + "'", e);
-				return false;
-			} catch (MessagingException e) {
-				log.error("MessagingException while sending email to '" + recipientEmail + "'", e);
-				return false;
-			}
-
-			log.info("Success on e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
-
-			return true;
-		} else {
-			SimpleMailMessage message = new SimpleMailMessage();
-
-			message.setTo(recipientEmail);
-			message.setFrom(emailFrom);
-			message.setSubject(messageSubject);
-			message.setText(messageBody);
-
-			try {
-				sender.send(message);
-			} catch (MailException e) {
-				log.error("MailException while sending email to '" + recipientEmail + "'", e);
-				return false;
-			}
-
-			log.info("Success on e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
-
-			return true;
+			sender.send(message);
+		} catch (MailException e) {
+			log.error("MailException while sending email to '" + recipientEmail + "'", e);
+			return false;
+		} catch (MessagingException e) {
+			log.error("MessagingException while sending email to '" + recipientEmail + "'", e);
+			return false;
 		}
+
+		log.info("Success on HTML e-mail to '" + recipientEmail + "', subject '" + messageSubject + "'");
+
+		return true;
 	}
 
 	/**
