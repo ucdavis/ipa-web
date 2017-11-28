@@ -1,9 +1,8 @@
 package edu.ucdavis.dss.ipa.api.components.assignment;
 
-import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,20 +17,17 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class AssignmentViewTeachingAssignmentController {
-    @Inject CurrentUser currentUser;
-    @Inject AuthenticationService authenticationService;
-    @Inject WorkgroupService workgroupService;
     @Inject ScheduleService scheduleService;
     @Inject CourseService courseService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
     @Inject DataWarehouseRepository dwRepository;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
-        // Ensure Authorization
         Instructor instructor = null;
 
         if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
@@ -51,7 +47,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // Ensure valid params
         // Either:
@@ -134,7 +130,7 @@ public class AssignmentViewTeachingAssignmentController {
 
         Schedule schedule = scheduleService.findById(originalTeachingAssignment.getSchedule().getId());
         Workgroup workgroup = schedule.getWorkgroup();
-        Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
         // When an academicCoordinator unapproves a teachingAssignment made by an academicCoordinator, delete instead of updating
         if (teachingAssignment.isApproved() == false && originalTeachingAssignment.isFromInstructor() == false) {
@@ -244,7 +240,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
 
         Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
 
@@ -313,7 +309,7 @@ public class AssignmentViewTeachingAssignmentController {
 
         Workgroup workgroup = schedule.getWorkgroup();
 
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
         SectionGroup DTOsectionGroup = null;
         Course DTOcourse = null;
@@ -397,8 +393,6 @@ public class AssignmentViewTeachingAssignmentController {
             List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
 
             for (Course slotCourse : courses) {
-                String slotSequencePattern = slotCourse.getSequencePattern();
-
                 for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
 
                     // Find associated sectiongroups tied to that course that match the term
@@ -435,7 +429,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
         Integer priority = 1;
 

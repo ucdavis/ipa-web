@@ -1,13 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport;
 
-import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories.ReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import org.hibernate.jdbc.Work;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +17,6 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class RegistrarReconciliationReportController {
-
 	@Inject ReportViewFactory reportViewFactory;
 	@Inject TermService termService;
 	@Inject SectionService sectionService;
@@ -30,18 +27,18 @@ public class RegistrarReconciliationReportController {
 	@Inject SyncActionService syncActionService;
 	@Inject UserService userService;
 	@Inject UserRoleService userRoleService;
+	@Inject Authorizer authorizer;
 
 	/**
 	 * Delivers the available termStates for the initial report form.
 	 *
 	 * @param workgroupId
-	 * @param httpResponse
 	 * @return
 	 */
 	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public List<Term> getTermsToCompare(@PathVariable long workgroupId, HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+	public List<Term> getTermsToCompare(@PathVariable long workgroupId) {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return termService.findActiveTermCodesByWorkgroupId(workgroupId);
 	}
@@ -52,14 +49,13 @@ public class RegistrarReconciliationReportController {
 	 * @param workgroupId
 	 * @param year
 	 * @param termCode
-	 * @param httpResponse
 	 * @return
 	 */
 	@RequestMapping(value = "/api/reportView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public List<SectionDiffView> showDiffView(@PathVariable long workgroupId, @PathVariable long year,
-											  @PathVariable String termCode, HttpServletResponse httpResponse) {
-		Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+											  @PathVariable String termCode) {
+		authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
 		return reportViewFactory.createDiffView(workgroupId, year, termCode);
 	}
@@ -82,7 +78,7 @@ public class RegistrarReconciliationReportController {
 		}
 
 		Workgroup workgroup = originalSection.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		if (section.getCrn() != null) {
 			originalSection.setCrn(section.getCrn());
@@ -113,7 +109,7 @@ public class RegistrarReconciliationReportController {
 		}
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Instructor instructorToAssign = instructorService.getOneByLoginId(instructor.getLoginId());
 
@@ -149,7 +145,7 @@ public class RegistrarReconciliationReportController {
 		}
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Instructor instructorToAssign = instructorService.getOneByLoginId(loginId);
 		if (instructorToAssign == null) {
@@ -180,7 +176,7 @@ public class RegistrarReconciliationReportController {
 		}
 		SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		if (activity.getDayIndicator() != null) {
 			originalActivity.setDayIndicator(activity.getDayIndicator());
@@ -202,13 +198,15 @@ public class RegistrarReconciliationReportController {
 	@ResponseBody
 	public void deleteActivity(@PathVariable long activityId, HttpServletResponse httpResponse) {
 		Activity activity = activityService.findOneById(activityId);
+
 		if (activity == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return;
 		}
+
 		SectionGroup sectionGroup = sectionGroupService.getOneById(activity.getSectionGroupIdentification());
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		this.activityService.deleteActivityById(activity.getId());
 	}
@@ -220,12 +218,14 @@ public class RegistrarReconciliationReportController {
 								   @RequestBody Activity activity,
 								   HttpServletResponse httpResponse) {
 		Section section = sectionService.getOneById(sectionId);
+
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
+
 		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		ActivityType activityType = new ActivityType(activityCode);
 		activity.setActivityTypeCode(activityType);
@@ -238,14 +238,15 @@ public class RegistrarReconciliationReportController {
 	@RequestMapping(value = "/api/reportView/sections/{sectionId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
 	public void deleteSection(@PathVariable long sectionId, HttpServletResponse httpResponse) {
-		// TODO: Consider how we can improve the authorizer
 		Section section = sectionService.getOneById(sectionId);
+
 		if (section == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return;
 		}
+
 		Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		sectionService.delete(sectionId);
 	}
@@ -254,7 +255,6 @@ public class RegistrarReconciliationReportController {
 	@ResponseBody
 	public SyncAction createSyncAction(@RequestBody SyncAction syncAction,
 									   HttpServletResponse httpResponse) {
-
 		if (syncAction == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
@@ -273,7 +273,7 @@ public class RegistrarReconciliationReportController {
 			return null;
 		}
 
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		return syncActionService.save(syncAction);
 	}
@@ -293,7 +293,7 @@ public class RegistrarReconciliationReportController {
 		}
 
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Section section = new Section();
 		section.setSeats(sectionDto.getSeats());
@@ -372,7 +372,7 @@ public class RegistrarReconciliationReportController {
 			workgroup = syncAction.getSectionGroup().getCourse().getSchedule().getWorkgroup();
 		}
 
-		Authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		syncActionService.delete(syncActionId);
 	}

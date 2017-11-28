@@ -6,13 +6,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,9 +28,14 @@ public class JwtFilter extends GenericFilterBean {
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) res;
 
-        if ("OPTIONS".equals(request.getMethod()) == false) {
+        ServletContext servletContext = request.getServletContext();
+        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        Authorization authorizationAttempt = webApplicationContext.getBean(Authorization.class);
 
+        if ("OPTIONS".equals(request.getMethod()) == false) {
             final String authHeader = request.getHeader("Authorization");
+
+            // Ensure valid authHeader
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 throw new ServletException("Missing or invalid Authorization header.");
             }
@@ -43,20 +46,21 @@ public class JwtFilter extends GenericFilterBean {
                 final Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                         .parseClaimsJws(token).getBody();
 
-                Authorization.setLoginId((String) claims.get("loginId"));
-                Authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
-                Authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
-                Authorization.setExpirationDate((Long) claims.get("expirationDate"));
+                authorizationAttempt.setLoginId((String) claims.get("loginId"));
+                authorizationAttempt.setRealUserLoginId((String) claims.get("realUserLoginId"));
+                authorizationAttempt.setUserRoles((List<UserRole>) claims.get("userRoles"));
+                authorizationAttempt.setExpirationDate((Long) claims.get("expirationDate"));
 
                 Date now = new Date();
-                Date expirationDate = new Date(Authorization.getExpirationDate());
+                Date expirationDate = new Date(authorizationAttempt.getExpirationDate());
 
-                // if 'now' has passed expirationDate, set the token to null, otherwise returnt he token back.
+                // if 'now' has passed expirationDate, set the token to null, otherwise return the token back.
                 if (now.compareTo(expirationDate) > 0) {
                     // Return 'Login Required' (440) status code
                     response.setStatus(440);
 
                     String origin = request.getHeader("Origin");
+
                     response.addHeader("Access-Control-Allow-Origin", origin);
                     response.addHeader("Access-Control-Allow-Credentials", "true");
                     response.addHeader("Access-Control-Allow-Headers", "accept, authorization");
@@ -68,6 +72,7 @@ public class JwtFilter extends GenericFilterBean {
                     response.getWriter().write(request.getReader().lines().collect(Collectors.joining(System.lineSeparator())));
                     response.getWriter().flush();
                     response.getWriter().close();
+
                     return;
                 }
             } catch (final SignatureException e) {

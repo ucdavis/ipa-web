@@ -3,7 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.factories.ScheduleSummaryViewFactory;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,8 +20,8 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 public class ScheduleSummaryReportController {
-
     @Inject ScheduleSummaryViewFactory scheduleSummaryViewFactory;
+    @Inject Authorizer authorizer;
 
     @Value("${ipa.url.api}")
     String ipaUrlApi;
@@ -29,9 +29,8 @@ public class ScheduleSummaryReportController {
     @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/terms/{termCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public ScheduleSummaryReportView getScheduleSummaryView(@PathVariable long workgroupId, @PathVariable long year,
-                                                        @PathVariable String termCode, HttpServletResponse httpResponse) {
-
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+                                                        @PathVariable String termCode) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         return scheduleSummaryViewFactory.createScheduleSummaryReportView(workgroupId, year, termCode);
     }
@@ -40,7 +39,7 @@ public class ScheduleSummaryReportController {
     @ResponseBody
     public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode,
                                              HttpServletRequest httpRequest) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/terms/" + termCode + "/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();

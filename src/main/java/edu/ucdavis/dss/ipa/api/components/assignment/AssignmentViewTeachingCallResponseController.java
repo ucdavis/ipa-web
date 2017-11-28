@@ -1,16 +1,13 @@
 package edu.ucdavis.dss.ipa.api.components.assignment;
 
-        import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
         import edu.ucdavis.dss.ipa.entities.*;
-        import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+        import edu.ucdavis.dss.ipa.security.Authorizer;
         import edu.ucdavis.dss.ipa.services.*;
         import org.springframework.http.HttpStatus;
         import org.springframework.web.bind.annotation.*;
 
         import javax.inject.Inject;
         import javax.servlet.http.HttpServletResponse;
-        import java.util.ArrayList;
-        import java.util.List;
 
 /**
  * Created by Lloyd on 8/10/16.
@@ -18,22 +15,17 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 @RestController
 @CrossOrigin
 public class AssignmentViewTeachingCallResponseController {
-    @Inject CurrentUser currentUser;
-    @Inject AuthenticationService authenticationService;
-    @Inject WorkgroupService workgroupService;
     @Inject ScheduleService scheduleService;
-    @Inject CourseService courseService;
-    @Inject TeachingAssignmentService teachingAssignmentService;
-    @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
     @Inject TeachingCallResponseService teachingCallResponseService;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/assignmentView/teachingCallResponses/{teachingCallResponseId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public TeachingCallResponse updateTeachingCallResponse(@PathVariable long teachingCallResponseId, @RequestBody TeachingCallResponse teachingCallResponse, HttpServletResponse httpResponse) {
+    public TeachingCallResponse updateTeachingCallResponse(@PathVariable long teachingCallResponseId, @RequestBody TeachingCallResponse teachingCallResponse) {
         TeachingCallResponse originalTeachingCallResponse = teachingCallResponseService.getOneById(teachingCallResponseId);
         Workgroup workgroup = originalTeachingCallResponse.getSchedule().getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "senateInstructor", "federationInstructor", "lecturer");
 
         originalTeachingCallResponse.setAvailabilityBlob(teachingCallResponse.getAvailabilityBlob());
 
@@ -63,7 +55,7 @@ public class AssignmentViewTeachingCallResponseController {
 
         // Authorize user
         Workgroup workgroup = schedule.getWorkgroup();
-        Authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
 
         TeachingCallResponse teachingCallResponse = teachingCallResponseService.findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(schedule.getId(), instructor.getId(), teachingCallResponseDTO.getTermCode());
 

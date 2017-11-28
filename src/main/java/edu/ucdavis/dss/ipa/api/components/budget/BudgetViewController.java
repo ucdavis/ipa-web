@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,19 +27,19 @@ public class BudgetViewController {
     @Inject UserService userService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
     @Inject LineItemCommentService lineItemCommentService;
+    @Inject Authorizer authorizer;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
      *
      * @param workgroupId
      * @param year
-     * @param httpResponse
      * @return
      */
     @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public BudgetView showBudgetView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+    public BudgetView showBudgetView(@PathVariable long workgroupId, @PathVariable long year) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         // Ensure budget exists
         Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
@@ -68,8 +68,6 @@ public class BudgetViewController {
                                                    @RequestParam(value="scenarioId", required = false) Long scenarioId,
                                                    @RequestBody BudgetScenario budgetScenarioDTO,
                                                    HttpServletResponse httpResponse) {
-
-
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
 
@@ -80,7 +78,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         BudgetScenario budgetScenario = null;
 
@@ -103,7 +101,6 @@ public class BudgetViewController {
     @ResponseBody
     public Long deleteBudgetScenario(@PathVariable long budgetScenarioId,
                                                HttpServletResponse httpResponse) {
-
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
@@ -114,7 +111,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         budgetScenarioService.deleteById(budgetScenarioId);
 
@@ -126,10 +123,10 @@ public class BudgetViewController {
     public LineItem createLineItem(@PathVariable long budgetScenarioId,
                                                @RequestBody LineItem lineItemDTO,
                                                HttpServletResponse httpResponse) {
-
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategoryId());
+
         if (budgetScenario == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
@@ -137,7 +134,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         // Build lineItem
         lineItemDTO.setBudgetScenario(budgetScenario);
@@ -151,7 +148,6 @@ public class BudgetViewController {
     @ResponseBody
     public Long deleteLineItem(@PathVariable long lineItemId,
                                      HttpServletResponse httpResponse) {
-
         // Ensure valid params
         LineItem lineItem = lineItemService.findById(lineItemId);
 
@@ -162,7 +158,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         lineItemService.deleteById(lineItemId);
 
@@ -175,7 +171,6 @@ public class BudgetViewController {
                                    @PathVariable long lineItemId,
                                    @RequestBody LineItem lineItemDTO,
                                    HttpServletResponse httpResponse) {
-
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         LineItem lineItem = lineItemService.findById(lineItemDTO.getId());
@@ -187,7 +182,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return lineItemService.update(lineItemDTO);
     }
@@ -198,7 +193,6 @@ public class BudgetViewController {
     public List<Integer> deleteLineItems(@PathVariable long budgetScenarioId,
                                       @RequestBody List<Integer> lineItemIds,
                                       HttpServletResponse httpResponse) {
-
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
@@ -209,7 +203,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         lineItemService.deleteMany(lineItemIds);
 
@@ -221,7 +215,6 @@ public class BudgetViewController {
     public Budget updateBudget(@PathVariable long budgetId,
                                    @RequestBody Budget budgetDTO,
                                    HttpServletResponse httpResponse) {
-
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
 
@@ -232,7 +225,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return budgetService.update(budgetDTO);
     }
@@ -242,7 +235,6 @@ public class BudgetViewController {
     public InstructorCost updateInstructorCost(@PathVariable long instructorCostId,
                                @RequestBody InstructorCost instructorCostDTO,
                                HttpServletResponse httpResponse) {
-
         // Ensure valid params
         InstructorCost originalInstructorCost = instructorCostService.findById(instructorCostId);
 
@@ -253,7 +245,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return instructorCostService.update(instructorCostDTO);
     }
@@ -263,7 +255,6 @@ public class BudgetViewController {
     public SectionGroupCost updateSectionGroupCost(@PathVariable long sectionGroupCostId,
                                @RequestBody SectionGroupCost sectionGroupCostDTO,
                                HttpServletResponse httpResponse) {
-
         // Ensure valid params
         SectionGroupCost originalSectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
 
@@ -274,7 +265,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = originalSectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return sectionGroupCostService.update(sectionGroupCostDTO);
     }
@@ -284,7 +275,6 @@ public class BudgetViewController {
     public SectionGroupCostComment createSectionGroupCostComment(@PathVariable long sectionGroupCostId,
                                    @RequestBody SectionGroupCostComment sectionGroupCostCommentDTO,
                                    HttpServletResponse httpResponse) {
-
         // Ensure valid params
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
         User user = userService.getOneByLoginId(sectionGroupCostCommentDTO.getUser().getLoginId());
@@ -295,7 +285,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = sectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         sectionGroupCostCommentDTO.setUser(user);
         sectionGroupCostCommentDTO.setSectionGroupCost(sectionGroupCost);
@@ -325,7 +315,7 @@ public class BudgetViewController {
 
         // Authorization check
         Long workGroupId = lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         lineItemCommentDTO.setUser(user);
         lineItemCommentDTO.setLineItem(lineItem);

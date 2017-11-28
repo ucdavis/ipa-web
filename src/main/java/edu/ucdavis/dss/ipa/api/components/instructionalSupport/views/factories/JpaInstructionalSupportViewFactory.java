@@ -17,19 +17,18 @@ import java.util.List;
 public class JpaInstructionalSupportViewFactory implements InstructionalSupportViewFactory {
     @Inject WorkgroupService workgroupService;
     @Inject InstructorService instructorService;
-    @Inject ScheduleInstructorNoteService scheduleInstructorNoteService;
-    @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
     @Inject SectionGroupService sectionGroupService;
     @Inject CourseService courseService;
     @Inject UserService userService;
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject SupportStaffService supportStaffService;
-    @Inject UserRoleService userRoleService;
     @Inject StudentSupportPreferenceService studentSupportPreferenceService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
+    @Inject
+    Authorization authorizationAttempt;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -115,7 +114,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         // Does the user have an associated supportStaff entity?
-        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         // Calculate termcode from shortTermCode
         String termCode = "";
@@ -142,7 +141,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         // Does the user have an associated instructor entity?
-        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         if (instructor == null) {

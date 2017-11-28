@@ -2,54 +2,51 @@ package edu.ucdavis.dss.ipa.security;
 
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
-/**
- * Holds the logged in user information extracted from the JWT token.
- * Class is static so that it can be used anywhere.
- * Variables are stored in threads.
- */
+@Component
+@Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Authorization {
+    private List<UserRole> userRoles;
+    private String loginId;
+    private String realUserLoginId;
+    private Long expirationDate;
 
-    private static final ThreadLocal<List<UserRole>> userRoles = new ThreadLocal();
-    private static final ThreadLocal<String> loginId = new ThreadLocal();
-    private static final ThreadLocal<String> realUserLoginId = new ThreadLocal();
-
-    private static final ThreadLocal<Long> expirationDate = new ThreadLocal();
-
-    public static void setUserRoles(List<UserRole> userRoles) {
-        Authorization.userRoles.set(userRoles);
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
-    public static void setLoginId(String loginId) {
-        Authorization.loginId.set(loginId);
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
-    public static String getLoginId() {
-        return Authorization.loginId.get();
+    public String getLoginId() {
+        return this.loginId;
     }
 
-    public static void setRealUserLoginId(String realUserLoginId) {
-        Authorization.realUserLoginId.set(realUserLoginId);
+    public void setRealUserLoginId(String realUserLoginId) {
+        this.realUserLoginId = realUserLoginId;
     }
 
-    public static String getRealUserLoginId() {
-        return Authorization.realUserLoginId.get();
+    public String getRealUserLoginId() {
+        return this.realUserLoginId;
     }
 
-    public static void setExpirationDate(Long expirationDate) {
-        Authorization.expirationDate.set(expirationDate);
+    public void setExpirationDate(Long expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
-    public static Long getExpirationDate() {
-        return Authorization.expirationDate.get();
+    public Long getExpirationDate() {
+        return this.expirationDate;
     }
 
-    public static boolean isAdmin() {
-        Iterator it = Authorization.userRoles.get().iterator();
+    public boolean isAdmin() {
+        Iterator it = this.userRoles.iterator();
 
         // Iterate over userRoles to find a match
         while (it.hasNext()) {
@@ -73,11 +70,11 @@ public class Authorization {
      * @param roleName
      * @return
      */
-    public static boolean hasRole(Long longWorkgroupId, String roleName) {
+    public boolean hasRole(Long longWorkgroupId, String roleName) {
         if (longWorkgroupId == null || roleName == null) { return false; }
         Integer workgroupId = longWorkgroupId.intValue();
 
-        Iterator it = Authorization.userRoles.get().iterator();
+        Iterator it = this.userRoles.iterator();
 
         // Iterate over userRoles to find a match
         while (it.hasNext()) {
@@ -109,9 +106,9 @@ public class Authorization {
      * Returns a list of workgroups that the user has roles in
      * @return
      */
-    public static List<Workgroup> getWorkgroups() {
+    public List<Workgroup> getWorkgroups() {
         List<Workgroup> workgroups = new ArrayList<>();
-        for (UserRole userRole: Authorization.userRoles.get()) {
+        for (UserRole userRole: this.userRoles) {
             if (!workgroups.contains(userRole.getWorkgroup())) {
                 workgroups.add(userRole.getWorkgroup());
             }
@@ -123,7 +120,7 @@ public class Authorization {
      * Returns the number of roles the user has across all workgroups.
      * @return
      */
-    public static int roleCount() {
-        return Authorization.userRoles.get().size();
+    public int roleCount() {
+        return this.userRoles.size();
     }
 }

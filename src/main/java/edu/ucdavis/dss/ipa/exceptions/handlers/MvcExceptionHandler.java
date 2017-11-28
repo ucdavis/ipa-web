@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,9 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+	@Inject EmailService emailService;
 	@Inject
-	EmailService emailService;
+    Authorization authorizationAttempt;
 
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -48,6 +50,8 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		buffer.append("\n\tX-Forwarded-For  : " + request.getHeader("X-Forwarded-For"));
 		buffer.append("\n\tRemote address   : " + request.getRemoteAddr());
 		buffer.append("\n\tRemote user      : " + request.getRemoteUser());
+		buffer.append("\n\tLogin ID         : " + authorizationAttempt.getLoginId());
+		buffer.append("\n\tReal Login ID    : " + authorizationAttempt.getRealUserLoginId());
 
 		// HTTP specific information
 		buffer.append("\n\tHTTP method      : " + request.getMethod());

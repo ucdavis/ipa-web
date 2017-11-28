@@ -2,12 +2,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.ActivityLog;
 import edu.ucdavis.dss.ipa.entities.User;
-//import edu.ucdavis.dss.ipa.repositories.ActivityLogRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.ActivityLogService;
-import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
-import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.sql.Timestamp;
@@ -17,10 +14,12 @@ import java.util.List;
 public class JpaActivityLogService implements ActivityLogService {
     //@Inject ActivityLogRepository activityLogRepository;
     @Inject UserRepository userRepository;
+    @Inject
+    Authorization authorizationAttempt;
 
     @Override
     public ActivityLog logEntry(String message) {
-        User currentUser = userRepository.findByLoginId(Authorization.getLoginId());
+        User currentUser = userRepository.findByLoginId(authorizationAttempt.getLoginId());
 
         return this.logEntry(currentUser, message);
     }

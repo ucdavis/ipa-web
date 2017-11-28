@@ -5,29 +5,28 @@ import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingC
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorization;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin
 public class TeachingCallFormViewController {
-
     @Inject TeachingCallViewFactory teachingCallViewFactory;
     @Inject UserService userService;
     @Inject InstructorService instructorService;
-    @Inject TeachingCallReceiptService teachingCallReceiptService;
-    @Inject ScheduleService scheduleService;
+    @Inject
+    Authorization authorizationAttempt;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/teachingCallForm", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public TeachingCallFormView getTeachingCallFormView(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+    public TeachingCallFormView getTeachingCallFormView(@PathVariable long workgroupId, @PathVariable long year) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
-        User currentUser = userService.getOneByLoginId(Authorization.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         long instructorId = 0;

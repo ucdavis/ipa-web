@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCall;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -11,12 +10,11 @@ import edu.ucdavis.dss.ipa.api.components.teachingCall.views.TeachingCallStatusV
 import edu.ucdavis.dss.ipa.api.components.teachingCall.views.factories.TeachingCallViewFactory;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,27 +24,25 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class TeachingCallStatusViewController {
-
     @Inject TeachingCallViewFactory teachingCallViewFactory;
-    @Inject UserService userService;
-    @Inject InstructorService instructorService;
     @Inject TeachingCallReceiptService teachingCallReceiptService;
     @Inject ScheduleService scheduleService;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/teachingCallStatus", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public TeachingCallStatusView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+    public TeachingCallStatusView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
         return teachingCallViewFactory.createTeachingCallStatusView(workgroupId, year);
     }
 
     @RequestMapping(value = "/api/teachingCallView/teachingCallReceipts/{teachingCallReceiptId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
-    public Long removeInstructorFromTeachingCall(@PathVariable long teachingCallReceiptId, HttpServletResponse httpResponse) {
+    public Long removeInstructorFromTeachingCall(@PathVariable long teachingCallReceiptId) {
         TeachingCallReceipt teachingCallReceipt = teachingCallReceiptService.findOneById(teachingCallReceiptId);
         Long workgroupId = teachingCallReceipt.getSchedule().getWorkgroup().getId();
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         teachingCallReceiptService.delete(teachingCallReceiptId);
 
@@ -58,8 +54,8 @@ public class TeachingCallStatusViewController {
      */
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<TeachingCallReceipt> contactInstructors(@PathVariable long workgroupId, @PathVariable long year, @RequestBody ContactInstructorsDTO contactInstructorsDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<TeachingCallReceipt> contactInstructors(@PathVariable long workgroupId, @PathVariable long year, @RequestBody ContactInstructorsDTO contactInstructorsDTO) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
 
@@ -108,7 +104,7 @@ public class TeachingCallStatusViewController {
     public class ContactInstructorsDTODeserializer extends JsonDeserializer<Object> {
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
+                throws IOException {
 
             ObjectCodec oc = jsonParser.getCodec();
             JsonNode node = oc.readTree(jsonParser);
@@ -143,8 +139,8 @@ public class TeachingCallStatusViewController {
 
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/addInstructors", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<TeachingCallReceipt> addInstructorsToTeachingCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddInstructorsDTO addInstructorsDTO, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+    public List<TeachingCallReceipt> addInstructorsToTeachingCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddInstructorsDTO addInstructorsDTO) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
 
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
@@ -228,7 +224,7 @@ public class TeachingCallStatusViewController {
 
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
+                throws IOException {
             ObjectCodec oc = jsonParser.getCodec();
             JsonNode node = oc.readTree(jsonParser);
 

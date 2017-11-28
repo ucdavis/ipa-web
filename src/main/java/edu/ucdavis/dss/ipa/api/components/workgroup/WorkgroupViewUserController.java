@@ -8,7 +8,7 @@ import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
+import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -40,11 +40,12 @@ public class WorkgroupViewUserController {
     @Inject UserRoleService userRoleService;
     @Inject CurrentUser currentUser;
     @Inject DataWarehouseRepository dwRepository;
+    @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/workgroupView/{workgroupId}/users", method = RequestMethod.GET)
     @ResponseBody
-    public List<User> getUserRolesByWorkgroupCode(@PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+    public List<User> getUserRolesByWorkgroupCode(@PathVariable Long workgroupId) {
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
@@ -62,7 +63,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.POST)
     @ResponseBody
     public UserRole addUserRoleToUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         User user = userService.getOneByLoginId(loginId);
 
@@ -101,7 +102,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/users/{loginId}/workgroups/{workgroupId}/roles/{role}", method = RequestMethod.DELETE)
     @ResponseBody
     public void removeUserRoleFromUser(@PathVariable String loginId, @PathVariable Long workgroupId, @PathVariable String role, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         Role newRole = roleService.findOneByName(role);
         User user = this.userService.getOneByLoginId(loginId);
@@ -124,7 +125,6 @@ public class WorkgroupViewUserController {
             httpResponse.setStatus(HttpStatus.OK.value());
             UserLogger.log(currentUser, "Removed role '" + role + "' from user " + user.getName() + " (" + loginId + ")");
         }
-
     }
 
     /**
@@ -138,8 +138,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/people/search", method = RequestMethod.GET)
     @ResponseBody
     public List<User> searchUsers(@RequestParam(value = "query", required = true) String query) {
-
-        Authorizer.isAuthorized();
+        authorizer.isAuthorized();
 
         List<User> users = new ArrayList<User>();
 
@@ -189,7 +188,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users", method = RequestMethod.POST)
     @ResponseBody
     public User createUser(@RequestBody User userDTO, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         User user = userService.findOrCreateByLoginId(userDTO.getLoginId());
 
@@ -205,7 +204,7 @@ public class WorkgroupViewUserController {
     @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/users/{loginId}", method = RequestMethod.DELETE)
     @ResponseBody
     public void removeUserFromWorkgroup(@PathVariable String loginId, @PathVariable Long workgroupId, HttpServletResponse httpResponse) {
-        Authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
         if(userRoleService.deleteByLoginIdAndWorkgroupId(loginId, workgroupId)) {
             User user = this.userService.getOneByLoginId(loginId);
@@ -215,5 +214,4 @@ public class WorkgroupViewUserController {
             httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
         }
     }
-
 }

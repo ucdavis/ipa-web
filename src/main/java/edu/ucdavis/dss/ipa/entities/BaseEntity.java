@@ -1,19 +1,13 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.ucdavis.dss.ipa.security.Authorization;
-import edu.ucdavis.dss.ipa.security.authorization.Authorizer;
-import edu.ucdavis.dss.ipa.services.UserService;
 
-import javax.inject.Inject;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
-    @Inject UserService userService;
-
     Date createdAt, updatedAt;
     String modifiedBy;
 
@@ -48,12 +42,15 @@ public abstract class BaseEntity implements Serializable {
     @PreUpdate
     private void beforeUpdate() {
         this.updatedAt = new Date();
-        String realUserLoginId = Authorization.getRealUserLoginId();
-        if (realUserLoginId != null) {
-            this.setModifiedBy("user:" + realUserLoginId);
-        } else {
-            this.setModifiedBy("system");
-        }
+
+        // FIXME: We can't inject Authorization into an entity
+//        String realUserLoginId = authorizationAttempt.getRealUserLoginId();
+//
+//        if (realUserLoginId != null) {
+//            this.setModifiedBy("user:" + realUserLoginId);
+//        } else {
+//            this.setModifiedBy("system");
+//        }
     }
 
     @PrePersist
@@ -61,11 +58,13 @@ public abstract class BaseEntity implements Serializable {
         this.createdAt = new Date();
         this.updatedAt = new Date();
 
-        String realUserLoginId = Authorization.getRealUserLoginId();
-        if (realUserLoginId != null) {
-            this.setModifiedBy("user:" + realUserLoginId);
-        } else {
-            this.setModifiedBy("system");
-        }
+        // FIXME: We can't inject Authorization into an entity
+//        String realUserLoginId = authorizationAttempt.getRealUserLoginId();
+//
+//        if (realUserLoginId != null) {
+//            this.setModifiedBy("user:" + realUserLoginId);
+//        } else {
+//            this.setModifiedBy("system");
+//        }
     }
 }

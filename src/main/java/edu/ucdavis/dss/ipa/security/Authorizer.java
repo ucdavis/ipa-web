@@ -1,21 +1,25 @@
-package edu.ucdavis.dss.ipa.security.authorization;
+package edu.ucdavis.dss.ipa.security;
 
-import edu.ucdavis.dss.ipa.security.Authorization;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * Created by okadri on 6/22/16.
  */
-public interface Authorizer<T> {
-    public void authorize(T entity, Object... args);
+@Service
+public class Authorizer {
+    @Inject
+    Authorization authorizationAttempt;
 
     /**
      * Throws an exception if there is no user logged in or user has no roles and is not admin.
      * Useful if you just want to authorize anyone with IPA access.
      */
-    public static void isAuthorized() {
-        if(Authorization.isAdmin() == false) {
-            if(Authorization.roleCount() <= 0) {
+    public void isAuthorized() {
+        if(authorizationAttempt.isAdmin() == false) {
+            if(authorizationAttempt.roleCount() <= 0) {
                 throw new AccessDeniedException("User not authorized at all.");
             }
         }
@@ -25,8 +29,8 @@ public interface Authorizer<T> {
      * Throws an exception if user is not admin.
      * Useful if you just want to authorize admins.
      */
-    public static void isAdmin() {
-        if(Authorization.isAdmin() == false) {
+    public void isAdmin() {
+        if(authorizationAttempt.isAdmin() == false) {
             throw new AccessDeniedException("User not authorized. Admins only.");
         }
     }
@@ -36,8 +40,8 @@ public interface Authorizer<T> {
      * @param workgroupId
      * @param roleName
      */
-    public static void hasWorkgroupRole(Long workgroupId, String roleName) {
-        if (Authorization.isAdmin() == false && Authorization.hasRole(workgroupId, roleName) == false) {
+    public void hasWorkgroupRole(Long workgroupId, String roleName) {
+        if (authorizationAttempt.isAdmin() == false && authorizationAttempt.hasRole(workgroupId, roleName) == false) {
             throw new AccessDeniedException("User not authorized for workgroup with Id = " + workgroupId);
         }
     };
@@ -47,11 +51,11 @@ public interface Authorizer<T> {
      * @param workgroupId
      * @param roleNames
      */
-    public static void hasWorkgroupRoles(Long workgroupId, String... roleNames) {
-        if (Authorization.isAdmin()) { return; }
+    public void hasWorkgroupRoles(Long workgroupId, String... roleNames) {
+        if (authorizationAttempt.isAdmin()) { return; }
 
         for (String roleName: roleNames) {
-            if (Authorization.hasRole(workgroupId, roleName)) {
+            if (authorizationAttempt.hasRole(workgroupId, roleName)) {
                 return;
             }
         }
