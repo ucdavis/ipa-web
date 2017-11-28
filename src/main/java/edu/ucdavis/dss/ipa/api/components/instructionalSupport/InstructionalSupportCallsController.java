@@ -27,20 +27,15 @@ import java.util.List;
 @CrossOrigin
 public class InstructionalSupportCallsController {
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
-    @Inject UserService userService;
     @Inject ScheduleService scheduleService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
-    @Inject
-    Authorization authorizationAttempt;
     @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/{term}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String term, HttpServletResponse httpResponse) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
-
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year, term);
     }

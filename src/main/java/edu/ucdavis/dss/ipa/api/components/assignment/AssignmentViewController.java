@@ -28,8 +28,7 @@ public class AssignmentViewController {
     @Inject AssignmentViewFactory assignmentViewFactory;
     @Inject UserService userService;
     @Inject InstructorService instructorService;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
     @Inject Authorizer authorizer;
 
     @Value("${ipa.url.api}")
@@ -40,7 +39,7 @@ public class AssignmentViewController {
     public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         long instructorId = 0;

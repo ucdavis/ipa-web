@@ -18,20 +18,15 @@ import java.util.List;
 @CrossOrigin
 public class InstructionalSupportAssignmentsController {
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
-    @Inject UserService userService;
     @Inject SectionGroupService sectionGroupService;
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject SupportStaffService supportStaffService;
-    @Inject
-    Authorization authorizationAttempt;
     @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public InstructionalSupportAssignmentView getInstructionalSupportAssignmentView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport", "lecturer");
-
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
 
         return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, shortTermCode);
     }

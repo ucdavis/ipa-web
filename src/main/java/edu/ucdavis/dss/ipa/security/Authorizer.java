@@ -10,16 +10,15 @@ import javax.inject.Inject;
  */
 @Service
 public class Authorizer {
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
 
     /**
      * Throws an exception if there is no user logged in or user has no roles and is not admin.
      * Useful if you just want to authorize anyone with IPA access.
      */
     public void isAuthorized() {
-        if(authorizationAttempt.isAdmin() == false) {
-            if(authorizationAttempt.roleCount() <= 0) {
+        if(authorization.isAdmin() == false) {
+            if(authorization.roleCount() <= 0) {
                 throw new AccessDeniedException("User not authorized at all.");
             }
         }
@@ -30,7 +29,7 @@ public class Authorizer {
      * Useful if you just want to authorize admins.
      */
     public void isAdmin() {
-        if(authorizationAttempt.isAdmin() == false) {
+        if(authorization.isAdmin() == false) {
             throw new AccessDeniedException("User not authorized. Admins only.");
         }
     }
@@ -41,7 +40,7 @@ public class Authorizer {
      * @param roleName
      */
     public void hasWorkgroupRole(Long workgroupId, String roleName) {
-        if (authorizationAttempt.isAdmin() == false && authorizationAttempt.hasRole(workgroupId, roleName) == false) {
+        if (authorization.isAdmin() == false && authorization.hasRole(workgroupId, roleName) == false) {
             throw new AccessDeniedException("User not authorized for workgroup with Id = " + workgroupId);
         }
     };
@@ -52,10 +51,10 @@ public class Authorizer {
      * @param roleNames
      */
     public void hasWorkgroupRoles(Long workgroupId, String... roleNames) {
-        if (authorizationAttempt.isAdmin()) { return; }
+        if (authorization.isAdmin()) { return; }
 
         for (String roleName: roleNames) {
-            if (authorizationAttempt.hasRole(workgroupId, roleName)) {
+            if (authorization.hasRole(workgroupId, roleName)) {
                 return;
             }
         }

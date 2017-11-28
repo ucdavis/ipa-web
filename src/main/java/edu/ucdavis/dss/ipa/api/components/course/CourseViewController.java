@@ -48,8 +48,7 @@ public class CourseViewController {
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject DataWarehouseRepository dwRepository;
-	@Inject
-	Authorization authorizationAttempt;
+	@Inject Authorization authorization;
 	@Inject Authorizer authorizer;
 
 	@Value("${ipa.url.api}")
@@ -60,7 +59,6 @@ public class CourseViewController {
 	 *
 	 * @param workgroupId
 	 * @param year
-	 * @param httpResponse
      * @return
      */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces="application/json")
