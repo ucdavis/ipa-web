@@ -21,14 +21,13 @@ public class InstructionalSupportInstructorFormsController {
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject ScheduleService scheduleService;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
     @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/instructionalSupportInstructorFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public InstructionalSupportCallInstructorFormView getInstructionalSupportCallInstructorFormView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode) {
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
 
         return instructionalSupportViewFactory.createInstructorFormView(workgroupId, year, shortTermCode, instructor.getId());
@@ -40,7 +39,7 @@ public class InstructionalSupportInstructorFormsController {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
 
         return instructorSupportPreferenceService.create(supportStaffId, instructor.getId(), sectionGroupId);

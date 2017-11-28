@@ -19,15 +19,14 @@ public class SummaryViewController {
     @Inject UserService userService;
     @Inject InstructorService instructorService;
     @Inject SupportStaffService supportStaffService;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
     @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public SummaryView getInitialSummaryView(@PathVariable long workgroupId, @PathVariable long year) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport", "lecturer");
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
         // Determine if user is an instructor
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());

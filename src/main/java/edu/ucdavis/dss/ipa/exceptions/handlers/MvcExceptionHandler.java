@@ -27,8 +27,7 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Inject EmailService emailService;
-	@Inject
-    Authorization authorizationAttempt;
+	@Inject Authorization authorization;
 
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -50,8 +49,8 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		buffer.append("\n\tX-Forwarded-For  : " + request.getHeader("X-Forwarded-For"));
 		buffer.append("\n\tRemote address   : " + request.getRemoteAddr());
 		buffer.append("\n\tRemote user      : " + request.getRemoteUser());
-		buffer.append("\n\tLogin ID         : " + authorizationAttempt.getLoginId());
-		buffer.append("\n\tReal Login ID    : " + authorizationAttempt.getRealUserLoginId());
+		buffer.append("\n\tLogin ID         : " + authorization.getLoginId());
+		buffer.append("\n\tReal Login ID    : " + authorization.getRealUserLoginId());
 
 		// HTTP specific information
 		buffer.append("\n\tHTTP method      : " + request.getMethod());

@@ -1,6 +1,9 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.ucdavis.dss.ipa.config.AutowireHelper;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,6 +13,8 @@ import java.util.Date;
 public abstract class BaseEntity implements Serializable {
     Date createdAt, updatedAt;
     String modifiedBy;
+
+    @Autowired Authorization authorization;
 
     @JsonIgnore
     public Date getCreatedAt() {
@@ -43,14 +48,15 @@ public abstract class BaseEntity implements Serializable {
     private void beforeUpdate() {
         this.updatedAt = new Date();
 
-        // FIXME: We can't inject Authorization into an entity
-//        String realUserLoginId = authorizationAttempt.getRealUserLoginId();
-//
-//        if (realUserLoginId != null) {
-//            this.setModifiedBy("user:" + realUserLoginId);
-//        } else {
-//            this.setModifiedBy("system");
-//        }
+        AutowireHelper.autowire(this, this.authorization);
+
+        String realUserLoginId = authorization.getRealUserLoginId();
+
+        if (realUserLoginId != null) {
+            this.setModifiedBy("user:" + realUserLoginId);
+        } else {
+            this.setModifiedBy("system");
+        }
     }
 
     @PrePersist
@@ -58,13 +64,14 @@ public abstract class BaseEntity implements Serializable {
         this.createdAt = new Date();
         this.updatedAt = new Date();
 
-        // FIXME: We can't inject Authorization into an entity
-//        String realUserLoginId = authorizationAttempt.getRealUserLoginId();
-//
-//        if (realUserLoginId != null) {
-//            this.setModifiedBy("user:" + realUserLoginId);
-//        } else {
-//            this.setModifiedBy("system");
-//        }
+        AutowireHelper.autowire(this, this.authorization);
+
+        String realUserLoginId = authorization.getRealUserLoginId();
+
+        if (realUserLoginId != null) {
+            this.setModifiedBy("user:" + realUserLoginId);
+        } else {
+            this.setModifiedBy("system");
+        }
     }
 }

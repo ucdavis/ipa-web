@@ -30,7 +30,7 @@ public class JwtFilter extends GenericFilterBean {
 
         ServletContext servletContext = request.getServletContext();
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-        Authorization authorizationAttempt = webApplicationContext.getBean(Authorization.class);
+        Authorization authorization = webApplicationContext.getBean(Authorization.class);
 
         if ("OPTIONS".equals(request.getMethod()) == false) {
             final String authHeader = request.getHeader("Authorization");
@@ -46,13 +46,13 @@ public class JwtFilter extends GenericFilterBean {
                 final Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
                         .parseClaimsJws(token).getBody();
 
-                authorizationAttempt.setLoginId((String) claims.get("loginId"));
-                authorizationAttempt.setRealUserLoginId((String) claims.get("realUserLoginId"));
-                authorizationAttempt.setUserRoles((List<UserRole>) claims.get("userRoles"));
-                authorizationAttempt.setExpirationDate((Long) claims.get("expirationDate"));
+                authorization.setLoginId((String) claims.get("loginId"));
+                authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
+                authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
+                authorization.setExpirationDate((Long) claims.get("expirationDate"));
 
                 Date now = new Date();
-                Date expirationDate = new Date(authorizationAttempt.getExpirationDate());
+                Date expirationDate = new Date(authorization.getExpirationDate());
 
                 // if 'now' has passed expirationDate, set the token to null, otherwise return the token back.
                 if (now.compareTo(expirationDate) > 0) {

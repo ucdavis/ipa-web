@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa;
 
+import edu.ucdavis.dss.ipa.config.AutowireHelper;
 import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.exceptions.handlers.MvcExceptionHandler;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
@@ -62,6 +63,11 @@ public class Application {
         cas20.addInitParameter("encoding", "UTF-8");
 
         return cas20;
+    }
+
+    @Bean
+    public AutowireHelper autowireHelper(){
+        return AutowireHelper.getInstance();
     }
 
     @Bean

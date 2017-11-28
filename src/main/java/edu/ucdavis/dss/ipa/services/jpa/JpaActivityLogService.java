@@ -14,12 +14,11 @@ import java.util.List;
 public class JpaActivityLogService implements ActivityLogService {
     //@Inject ActivityLogRepository activityLogRepository;
     @Inject UserRepository userRepository;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
 
     @Override
     public ActivityLog logEntry(String message) {
-        User currentUser = userRepository.findByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userRepository.findByLoginId(authorization.getLoginId());
 
         return this.logEntry(currentUser, message);
     }

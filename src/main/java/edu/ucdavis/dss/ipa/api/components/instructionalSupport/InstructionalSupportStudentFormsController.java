@@ -21,8 +21,7 @@ public class InstructionalSupportStudentFormsController {
     @Inject StudentSupportPreferenceService studentSupportPreferenceService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject ScheduleService scheduleService;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
     @Inject Authorizer authorizer;
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
@@ -30,7 +29,7 @@ public class InstructionalSupportStudentFormsController {
     public InstructionalSupportCallStudentFormView getInstructionalSupportCallStudentFormView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode) {
         authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
         Long supportStaffId = 0L;
 
@@ -47,7 +46,7 @@ public class InstructionalSupportStudentFormsController {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
 
         StudentSupportPreference studentSupportPreference = new StudentSupportPreference();
@@ -67,9 +66,6 @@ public class InstructionalSupportStudentFormsController {
         Long workgroupId = originalSupportCallResponse.getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
-        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
-
         originalSupportCallResponse.setGeneralComments(studentSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setTeachingQualifications(studentSupportCallResponseDTO.getTeachingQualifications());
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
@@ -84,10 +80,6 @@ public class InstructionalSupportStudentFormsController {
         Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
-        // Why are these two lines here??
-        //User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
-        //SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
-
         studentSupportPreferenceService.updatePriorities(preferenceIdsParams);
 
         return preferenceIdsParams;
@@ -99,9 +91,6 @@ public class InstructionalSupportStudentFormsController {
         Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "studentMasters", "studentPhd", "instructionalSupport");
 
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
-        SupportStaff supportStaff = supportStaffService.findByLoginId(currentUser.getLoginId());
-
         StudentSupportPreference preference = studentSupportPreferenceService.findById(supportStaffPreferenceId);
 
         preference.setComment(preferenceDTO.getComment());
@@ -112,9 +101,6 @@ public class InstructionalSupportStudentFormsController {
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Long deletePreference(@PathVariable long studentPreferenceId) {
-        // Why is this line here???
-        //User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
-
         studentSupportPreferenceService.delete(studentPreferenceId);
 
         return studentPreferenceId;

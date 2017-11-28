@@ -27,15 +27,13 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
-    @Inject
-    Authorization authorizationAttempt;
+    @Inject Authorization authorization;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
-        Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
-        // Calculate termcode from shortTermCode
+        // Calculate termCode from shortTermCode
         String termCode = "";
 
         if (Long.valueOf(shortTermCode) >= 5) {
@@ -110,11 +108,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
     @Override
     public InstructionalSupportCallStudentFormView createStudentFormView(long workgroupId, long year, String shortTermCode, long supportStaffId) {
-        Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         // Does the user have an associated supportStaff entity?
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
         // Calculate termcode from shortTermCode
         String termCode = "";
@@ -137,11 +134,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
     @Override
     public InstructionalSupportCallInstructorFormView createInstructorFormView(long workgroupId, long year, String shortTermCode, long instructorId) {
-        Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
         // Does the user have an associated instructor entity?
-        User currentUser = userService.getOneByLoginId(authorizationAttempt.getLoginId());
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
         if (instructor == null) {
