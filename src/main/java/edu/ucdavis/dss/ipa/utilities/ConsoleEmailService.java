@@ -13,7 +13,7 @@ import java.util.Date;
 @Profile({"development", "test"})
 @Service
 public class ConsoleEmailService implements EmailService {
-    private final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.ipa.utilities.EmailService");
+    private final Logger log = LoggerFactory.getLogger("EmailUtility");
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Override
