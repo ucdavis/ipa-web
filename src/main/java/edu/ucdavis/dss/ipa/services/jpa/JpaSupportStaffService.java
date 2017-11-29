@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaSupportStaffService implements SupportStaffService {
@@ -136,6 +138,24 @@ public class JpaSupportStaffService implements SupportStaffService {
                 supportStaffList.add(supportAssignment.getSupportStaff());
             }
         }
+
+        return supportStaffList;
+    }
+
+    @Override
+    public List<SupportStaff> findByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences) {
+        Set<SupportStaff> preferredSupportStaff = new LinkedHashSet<>();
+
+        for (StudentSupportPreference preference : studentPreferences) {
+            if (preference.getSupportStaff() != null) {
+                preferredSupportStaff.add(preference.getSupportStaff());
+            }
+        }
+
+        Set<SupportStaff> activeSupportStaff = new LinkedHashSet<>(this.findActiveByWorkgroupId(workgroupId));
+        preferredSupportStaff.addAll(activeSupportStaff);
+
+        List<SupportStaff> supportStaffList = new ArrayList<>(preferredSupportStaff);
 
         return supportStaffList;
     }
