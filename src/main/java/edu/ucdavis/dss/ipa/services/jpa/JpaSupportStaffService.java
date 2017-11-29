@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaSupportStaffService implements SupportStaffService {
@@ -144,19 +145,9 @@ public class JpaSupportStaffService implements SupportStaffService {
 
     @Override
     public List<SupportStaff> findByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences) {
-        Set<SupportStaff> preferredSupportStaff = new LinkedHashSet<>();
+        Set<SupportStaff> supportStaff = new LinkedHashSet<>(studentPreferences.stream().map(preference -> preference.getSupportStaff()).collect(Collectors.toList()));
+        supportStaff.addAll(new LinkedHashSet<>(this.findActiveByWorkgroupId(workgroupId)));
 
-        for (StudentSupportPreference preference : studentPreferences) {
-            if (preference.getSupportStaff() != null) {
-                preferredSupportStaff.add(preference.getSupportStaff());
-            }
-        }
-
-        Set<SupportStaff> activeSupportStaff = new LinkedHashSet<>(this.findActiveByWorkgroupId(workgroupId));
-        preferredSupportStaff.addAll(activeSupportStaff);
-
-        List<SupportStaff> supportStaffList = new ArrayList<>(preferredSupportStaff);
-
-        return supportStaffList;
+        return new ArrayList<>(supportStaff);
     }
 }
