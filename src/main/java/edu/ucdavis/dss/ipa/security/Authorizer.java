@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 /**
- * Created by okadri on 6/22/16.
+ * Helper functions to perform authorization checks in controllers, etc.
  */
 @Service
 public class Authorizer {

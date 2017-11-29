@@ -9,6 +9,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.*;
 
+/**
+ * Authorization properties are set by the JWT filter and used by the Authorizer.
+ */
 @Component
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Authorization {
