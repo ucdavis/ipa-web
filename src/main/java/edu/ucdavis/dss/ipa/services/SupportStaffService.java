@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 
@@ -19,4 +20,6 @@ public interface SupportStaffService {
     List<SupportStaff> findByScheduleId(long id);
 
     List<SupportStaff> findBySupportAssignments(List<SupportAssignment> supportAssignments);
+
+    List<SupportStaff> findByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences);
 }
