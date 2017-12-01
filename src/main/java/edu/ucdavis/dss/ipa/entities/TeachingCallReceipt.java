@@ -1,7 +1,9 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +11,10 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * TeachingCallReceipt tracks who has been called for a particular teaching call
+ * and related metadata (are they finished, what terms are we asking for, etc.)
+ */
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "TeachingCallReceipts")
@@ -168,4 +174,32 @@ public class TeachingCallReceipt implements Serializable {
 			return 0;
 		}
 	}
+
+	/**
+	 * Returns a list of term codes based on the blob, e.g. a "1" might become 201710
+	 * @return
+	 */
+	@Transient
+	public List<String> getTermsBlobAsList() {
+		String blob = getTermsBlob();
+		List<String> terms = new ArrayList<String>();
+		String year = null;
+
+		for(int i = 1; i <= blob.length(); i++) {
+			if(blob.charAt(i - 1) == '1') {
+				if(i < 5) {
+					year = String.valueOf(getAcademicYear() + 1);
+				} else {
+					year = String.valueOf(getAcademicYear());
+				}
+				if(i >= 9) {
+					terms.add(year + i);
+				} else {
+					terms.add(year + '0' + i);
+				}
+			}
+		}
+
+        return terms;
+    }
 }

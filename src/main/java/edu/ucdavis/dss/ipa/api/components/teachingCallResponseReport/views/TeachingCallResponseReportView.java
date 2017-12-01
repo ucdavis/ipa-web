@@ -9,22 +9,24 @@ public class TeachingCallResponseReportView {
     List<SectionGroup> sectionGroups = new ArrayList<>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
-
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
+    Schedule schedule = null;
 
     public TeachingCallResponseReportView(List<Course> courses,
                                           List<SectionGroup> sectionGroups,
                                           List<TeachingAssignment> teachingAssignments,
                                           List<TeachingCallReceipt> teachingCallReceipts,
                                           List<TeachingCallResponse> teachingCallResponses,
-                                          List<Instructor> instructors) {
+                                          List<Instructor> instructors,
+                                          Schedule schedule) {
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
         setTeachingCallReceipts(teachingCallReceipts);
         setTeachingCallResponses(teachingCallResponses);
         setInstructors(instructors);
         setSectionGroups(sectionGroups);
+        setSchedule(schedule);
     }
 
     public List<Course> getCourses() {
@@ -73,5 +75,13 @@ public class TeachingCallResponseReportView {
 
     public void setSectionGroups(List<SectionGroup> sectionGroups) {
         this.sectionGroups = sectionGroups;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 }

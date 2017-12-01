@@ -48,7 +48,6 @@ public class CourseViewController {
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject DataWarehouseRepository dwRepository;
-	@Inject Authorization authorization;
 	@Inject Authorizer authorizer;
 
 	@Value("${ipa.url.api}")
