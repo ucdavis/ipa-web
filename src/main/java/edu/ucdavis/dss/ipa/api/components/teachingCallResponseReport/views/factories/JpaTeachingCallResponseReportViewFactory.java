@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.TeachingCallResponseReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.TeachingCallResponseReportView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -11,17 +13,8 @@ import java.util.List;
 
 @Service
 public class JpaTeachingCallResponseReportViewFactory implements TeachingCallResponseReportViewFactory {
-
     @Inject ScheduleService scheduleService;
-
-    @Inject CourseService courseService;
     @Inject SectionGroupService sectionGroupService;
-    @Inject SectionService sectionService;
-    @Inject ActivityService activityService;
-
-    @Inject TeachingAssignmentService teachingAssignmentService;
-    @Inject InstructorService instructorService;
-    @Inject UserRoleService userRoleService;
 
     @Override
     public TeachingCallResponseReportView createTeachingCallResponseReportView(long workgroupId, long year) {
@@ -44,6 +37,12 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
             }
         }
 
-        return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors);
+        return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
+    }
+
+    @Override
+    public View createTeachingCallResponseReportExcelView(long workgroupId, long year) {
+        TeachingCallResponseReportView teachingCallResponseReportView = createTeachingCallResponseReportView(workgroupId, year);
+        return new TeachingCallResponseReportExcelView(teachingCallResponseReportView);
     }
 }

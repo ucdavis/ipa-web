@@ -16,7 +16,7 @@ import edu.ucdavis.dss.ipa.api.views.TeachingCallResponseViews;
 
 /**
  * @author okadri
- * Stores instructor availabilities and comments for a given TeachingCall and TermCode
+ * Stores instructor availabilities for a given TeachingCall and TermCode
  */
 @SuppressWarnings("serial")
 @Entity

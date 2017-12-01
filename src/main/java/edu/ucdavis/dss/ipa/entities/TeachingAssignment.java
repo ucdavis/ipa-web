@@ -10,6 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.TeachingAssignmentDeserializer;
 
+/**
+ * Represents a teaching assignment or teaching preference (an unapproved assignment that may be created by
+ * an instructor in a teaching call). A teaching assignment may indicate a sectionGroup is to be taught
+ * by an instructor but may also simply indicate a sabbatical is occurring in a specific term.
+ */
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "TeachingAssignments")
@@ -157,7 +162,7 @@ public class TeachingAssignment implements Serializable {
 
 	@Transient
 	@JsonProperty("sectionGroupId")
-	public long getsectionGroupIdentification() {
+	public long getSectionGroupIdentification() {
 		if (sectionGroup != null) {
 			return this.sectionGroup.getId();
 		} else {
