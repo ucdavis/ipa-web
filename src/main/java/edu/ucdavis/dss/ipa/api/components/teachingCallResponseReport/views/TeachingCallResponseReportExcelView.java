@@ -351,6 +351,6 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
         SectionGroup sg = teachingAssignment.getSectionGroup();
         Course course = sg.getCourse();
 
-        return course.getSubjectCode() + " " + course.getCourseNumber() + " " + course.getSequencePattern();
+        return course.getSubjectCode() + " " + course.getCourseNumber() + " " + course.getSequencePattern() + " " + course.getTitle();
     }
 }
