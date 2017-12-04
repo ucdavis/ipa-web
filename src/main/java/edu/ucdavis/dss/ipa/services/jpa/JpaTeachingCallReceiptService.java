@@ -156,18 +156,16 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		Long year = teachingCallReceipt.getSchedule().getYear();
 
-		// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
-		messageSubject = "IPA: Teaching Call has started";
+		// Many e-mail clients (Outlook, Gmail, etc.) are unpredictable with how they process html/css, so the template is very ugly
+		messageSubject = "Teaching Call Response Requested for " + year + "-" + (year + 1);
+
 		messageBody = "<table><tbody><tr><td style='width: 20px;'></td><td>";
-		messageBody += "Faculty,";
+		messageBody += "Your department requests that you indicate <b>your teaching preferences for " + year + "-" + (year + 1) + "</b>.";
 		messageBody += "<br /><br />";
-		messageBody += "It is time to start thinking about teaching plans for <b>" + year + "-" + (year+1) + "</b>.";
-		messageBody += "<br />";
-		messageBody += "<br />";
+		messageBody += "You may do so by clicking the following link or copying and pasting it into your browser: <a href='" + teachingCallUrl + "'>" + teachingCallUrl + "</a>";
+		messageBody += "<br /><br />";
 		messageBody += teachingCallReceipt.getMessage();
-		messageBody += "<br />";
-		messageBody += "<br />";
-		messageBody += "<a href='" + teachingCallUrl + "'>View Teaching Call</a>";
+		messageBody += "<br /><br />";
 		messageBody += "</td></tr></tbody></table>";
 
 		if (emailService.send(recipientEmail, messageBody, messageSubject)) {
