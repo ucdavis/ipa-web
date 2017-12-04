@@ -20,6 +20,11 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
     public TeachingCallResponseReportView createTeachingCallResponseReportView(long workgroupId, long year) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
+        if(schedule == null) {
+            // No such schedule, so no teaching call to report on
+            return null;
+        }
+
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Course> courses = schedule.getCourses();
         List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
