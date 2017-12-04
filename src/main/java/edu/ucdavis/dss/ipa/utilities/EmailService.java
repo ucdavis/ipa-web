@@ -11,6 +11,7 @@ public interface EmailService {
      * @param messageSubject message subject
      */
     boolean send(String recipientEmail, String messageBody, String messageSubject);
+    boolean send(String recipientEmail, String messageBody, String messageSubject, Boolean htmlMode);
 
     /**
      * Sends email if runningMode is production or staging, else email is suppressed.
