@@ -29,7 +29,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Inject InstructorService instructorService;
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
-	@Inject UserRoleService userRoleService;
 	@Inject ScheduleService scheduleService;
 	@Inject EmailService emailService;
 
@@ -51,7 +50,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	}
 
 	/**
-	 * Searches all TeachingCalls for the given workgroupId for emails waiting to be sent based on notifiedAt and warnedAt.
+	 * Searches all TeachingCalls with the given workgroupId for e-mails waiting to be sent based on notifiedAt and warnedAt.
 	 * This is the primary method teachingCallReceipts are created.
 	 */
 	@Override
@@ -91,8 +90,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 					// Is a warning scheduled to be sent?
 					if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
 						// Form hasn't been submitted and it has a due date
-						Long oneDayInMilliseconds = 86400000L;
-						Long threeDaysInMilliseconds = 259200000L;
+						final Long threeDaysInMilliseconds = 259200000L;
 
 						Long currentTime = currentDate.getTime();
 						Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
@@ -142,24 +140,20 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		}
 
 		String recipientEmail = user.getEmail();
-		String messageSubject = "";
 
 		Schedule schedule = teachingCallReceipt.getSchedule();
 		long workgroupId = schedule.getWorkgroup().getId();
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = ipaUrlFrontend + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
-		String messageBody = "";
-
-		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+		String teachingCallUrl = getTeachingCallUrl(ipaUrlFrontend, workgroupId, schedule.getYear());
 
 		Long year = teachingCallReceipt.getSchedule().getYear();
 
 		// Many e-mail clients (Outlook, Gmail, etc.) are unpredictable with how they process html/css, so the template is very ugly
-		messageSubject = "Teaching Call Response Requested for " + year + "-" + (year + 1);
+		String messageSubject = "Teaching Call Response Requested for " + year + "-" + (year + 1);
 
-		messageBody = "<table><tbody><tr><td style='width: 20px;'></td><td>";
+		String messageBody = "<table><tbody><tr><td style='width: 20px;'></td><td>";
 		messageBody += "Your department requests that you indicate <b>your teaching preferences for " + year + "-" + (year + 1) + "</b>.";
 		messageBody += "<br /><br />";
 		messageBody += "You may do so by clicking the following link or copying and pasting it into your browser: <a href='" + teachingCallUrl + "'>" + teachingCallUrl + "</a>";
@@ -175,7 +169,11 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		}
 	}
 
-	private void sendTeachingCallWarning(TeachingCallReceipt teachingCallReceipt, Date currentDate) {
+    private String getTeachingCallUrl(String ipaUrlFrontend, long workgroupId, long year) {
+        return ipaUrlFrontend + "/teachingCalls/" + workgroupId + "/" + year + "/teachingCall";
+    }
+
+    private void sendTeachingCallWarning(TeachingCallReceipt teachingCallReceipt, Date currentDate) {
 		if (teachingCallReceipt.getIsDone()) {
 			return;
 		}
@@ -183,7 +181,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String loginId = teachingCallReceipt.getInstructor().getLoginId();
 
 		// loginId is necessary to map to a user and email
-		if ( loginId == null) {
+		if (loginId == null) {
 			log.error("Attempted to send notification to instructor id '" + teachingCallReceipt.getInstructor().getId() + "' but loginId was null.");
 			return;
 		}
@@ -195,31 +193,28 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		}
 
 		String recipientEmail = user.getEmail();
-		String messageSubject = "";
 
 		Schedule schedule = teachingCallReceipt.getSchedule();
 		long workgroupId = schedule.getWorkgroup().getId();
 
 		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
 		//       at all -- it breaks out frontend / backend separation.
-		String teachingCallUrl = ipaUrlFrontend + "/teachingCalls/" + workgroupId + "/" + schedule.getYear() + "/teachingCall";
-		String messageBody = "";
+		String teachingCallUrl = getTeachingCallUrl(ipaUrlFrontend, workgroupId, schedule.getYear());
 
 		SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 
 		Long year = teachingCallReceipt.getSchedule().getYear();
 
-		// Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
+		// Many e-mail clients (Outlook, Gmail, etc.) are unpredictable with how they process html/css, so the template is very ugly
+		String messageSubject = "Reminder: Teaching Call Response Requested for " + year + "-" + (year + 1);
 
-		messageSubject = "IPA: Action needed - Teaching Call closing soon";
-
-		messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-		messageBody += "Faculty,";
-		messageBody += "<br />";
-		messageBody += "A teaching call will be closing soon. Please submit your teaching preferences for the academic year by <b>" + format.format(teachingCallReceipt.getDueDate()) + "</b>.";
-		messageBody += "<br />";
-		messageBody += "<br />";
-		messageBody += "<h3><a href='" + teachingCallUrl + "'>View Teaching Call</a></h3>";
+		String messageBody = "<table><tbody><tr><td style='width: 20px;'></td><td>";
+        messageBody += "Your department requests that you indicate <b>your teaching preferences for " + year + "-" + (year + 1) + "</b>.";
+        messageBody += "<br /><br />";
+        messageBody += "You may do so by clicking the following link or copying and pasting it into your browser: <a href='" + teachingCallUrl + "'>" + teachingCallUrl + "</a>";
+		messageBody += "<br /><br />";
+		messageBody += "Please submit your teaching preferences by <b>" + format.format(teachingCallReceipt.getDueDate()) + "</b>.";
+		messageBody += "<br /><br />";
 
 		messageBody += "</td></tr></tbody></table>";
 
@@ -231,7 +226,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt) {
-
 		teachingCallReceipt.setIsDone(false);
 		teachingCallReceipt = teachingCallReceiptRepository.save(teachingCallReceipt);
 		return teachingCallReceipt;
@@ -255,6 +249,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			slotTeachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
 
 			slotTeachingCallReceipt = this.save(slotTeachingCallReceipt);
+
 			receipts.add(slotTeachingCallReceipt);
 		}
 
@@ -264,8 +259,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		TeachingCallReceipt teachingCallReceipt = this.findOneById(id);
-
 		this.teachingCallReceiptRepository.delete(id);
 		return true;
 	}

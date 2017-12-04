@@ -13,15 +13,15 @@ import java.util.List;
 @Validated
 public interface TeachingCallReceiptService {
 
-	public TeachingCallReceipt findOneById(Long id);
+	TeachingCallReceipt findOneById(Long id);
 
-	public TeachingCallReceipt save(@NotNull @Valid TeachingCallReceipt teachingCallReceipt);
+	TeachingCallReceipt save(@NotNull @Valid TeachingCallReceipt teachingCallReceipt);
 
-	public void sendNotificationsByWorkgroupId(Long workgroupId);
+	void sendNotificationsByWorkgroupId(Long workgroupId);
 
-	public TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt);
+	TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt);
 
-	public List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
+	List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
 
 	boolean delete(Long id);
 }
