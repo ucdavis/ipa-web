@@ -120,6 +120,8 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
             row.createCell(1).setCellValue(instructor.getFirstName());
 
             for(String termCode : usedTermCodes) {
+                Set<String> usedCourses = new HashSet<>();
+
                 currentRow = instructorStartRow;
                 currentCell = termCodeColumnMapping.get(termCode);
 
@@ -136,11 +138,18 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
 
                 // instructor in termCode has teachingAssignments.size() assignments
                 for(TeachingAssignment teachingAssignment : teachingAssignments) {
-                    // Writing teachingAssignment as describeTeachingAssignment(teachingAssignment) in row currentRow, cell currentCell
-                    row.createCell(currentCell).setCellValue(describeTeachingAssignment(teachingAssignment));
+                    String description = describeTeachingAssignment(teachingAssignment);
+                    boolean alreadyExists = usedCourses.contains(description);
 
-                    currentRow++;
-                    row = findOrCreateRow(sheet, currentRow);
+                    if(alreadyExists == false) {
+                        // Writing teachingAssignment as describeTeachingAssignment(teachingAssignment) in row currentRow, cell currentCell
+                        row.createCell(currentCell).setCellValue(description);
+
+                        currentRow++;
+                        row = findOrCreateRow(sheet, currentRow);
+
+                        usedCourses.add(description);
+                    }
                 }
 
                 if(teachingAssignments.size() > lastInstructorRowCount) { lastInstructorRowCount = teachingAssignments.size(); }
@@ -367,6 +376,6 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
 
         Course course = sg.getCourse();
 
-        return course.getSubjectCode() + " " + course.getCourseNumber() + " " + course.getSequencePattern() + " " + course.getTitle();
+        return course.getSubjectCode() + " " + course.getCourseNumber() + " " + course.getTitle();
     }
 }
