@@ -341,6 +341,7 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
     }
 
     private String describeTeachingAssignment(TeachingAssignment teachingAssignment) {
+        // Check to see if TeachingAssignment is flag-based
         if(teachingAssignment.isBuyout()) return "Buyout";
         if(teachingAssignment.isCourseRelease()) return "Course Release";
         if(teachingAssignment.isSabbatical()) return "Sabbatical";
@@ -348,7 +349,22 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
         if(teachingAssignment.isWorkLifeBalance()) return "Work-life Balance";
         if(teachingAssignment.isLeaveOfAbsence()) return "Leave of Absence";
 
+        // Check to see if TeachingAssignment is a suggested course
+        String suggestedCourseNumber = teachingAssignment.getSuggestedCourseNumber();
+        if(suggestedCourseNumber != null) {
+            String suggestedSubjectCode = teachingAssignment.getSuggestedSubjectCode();
+
+            return suggestedSubjectCode + " " + suggestedCourseNumber + " (suggested)";
+        }
+
+        // If the two cases above aren't correct, teachingAssignment must be a course preference
         SectionGroup sg = teachingAssignment.getSectionGroup();
+
+        if(sg == null) {
+            logger.error("TeachingAssignment with ID " + teachingAssignment.getId() + " cannot be described. Please address.");
+            return "Unknown";
+        }
+
         Course course = sg.getCourse();
 
         return course.getSubjectCode() + " " + course.getCourseNumber() + " " + course.getSequencePattern() + " " + course.getTitle();
