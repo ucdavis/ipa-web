@@ -136,6 +136,7 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
                                         && assignment.isFromInstructor()
                         ).collect(Collectors.toList());
 
+                int uniqueAssignmentRows = 0;
                 // instructor in termCode has teachingAssignments.size() assignments
                 for(TeachingAssignment teachingAssignment : teachingAssignments) {
                     String description = describeTeachingAssignment(teachingAssignment);
@@ -146,13 +147,14 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
                         row.createCell(currentCell).setCellValue(description);
 
                         currentRow++;
+                        uniqueAssignmentRows++;
                         row = findOrCreateRow(sheet, currentRow);
 
                         usedCourses.add(description);
                     }
                 }
 
-                if(teachingAssignments.size() > lastInstructorRowCount) { lastInstructorRowCount = teachingAssignments.size(); }
+                if(uniqueAssignmentRows > lastInstructorRowCount) { lastInstructorRowCount = uniqueAssignmentRows; }
             }
 
             // Handle comments, if any
