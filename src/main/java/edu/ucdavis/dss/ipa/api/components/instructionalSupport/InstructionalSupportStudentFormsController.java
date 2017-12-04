@@ -71,6 +71,10 @@ public class InstructionalSupportStudentFormsController {
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
         originalSupportCallResponse.setEligibilityConfirmed(studentSupportCallResponseDTO.isEligibilityConfirmed());
 
+        if (originalSupportCallResponse.isCollectAvailability()) {
+            originalSupportCallResponse.setAvailabilityBlob(studentSupportCallResponseDTO.getAvailabilityBlob());
+        }
+
         return studentSupportCallResponseService.update(originalSupportCallResponse);
     }
 

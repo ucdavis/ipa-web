@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,12 +18,12 @@ public class StudentSupportCallResponse implements Serializable {
     private SupportStaff supportStaff;
     private Date nextContactAt, lastContactedAt, startDate, dueDate;
     private boolean submitted, allowSubmissionAfterDueDate, eligibilityConfirmed;
-    private String generalComments, teachingQualifications, message, termCode;
+    private String generalComments, teachingQualifications, message, termCode, availabilityBlob;
     private Schedule schedule;
 
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
-    private boolean collectAssociateInstructorPreferences, requirePreferenceComments;
+    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailability;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -222,6 +223,27 @@ public class StudentSupportCallResponse implements Serializable {
         this.requirePreferenceComments = requirePreferenceComments;
     }
 
+    // The availabilityBlob on a teachingCallResponse is a comma delimited string
+    // It represents availability within a 15 hour window (7am-10pm) over 5 days
+    // 1 for available, 0 for not
+    @Basic(optional = true)
+    @JsonProperty
+    public String getAvailabilityBlob() {
+        return availabilityBlob;
+    }
+
+    public void setAvailabilityBlob(String availabilityBlob) {
+        this.availabilityBlob = availabilityBlob;
+    }
+
+    public boolean isCollectAvailability() {
+        return collectAvailability;
+    }
+
+    public void setCollectAvailability(boolean collectAvailability) {
+        this.collectAvailability = collectAvailability;
+    }
+
     @JsonProperty("supportStaffId")
     @Transient
     public long getInstructionalSupportStaffIdentification() {
@@ -230,5 +252,16 @@ public class StudentSupportCallResponse implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    @Transient
+    @JsonProperty
+    public static String getDefaultAvailabilityBlob() {
+        String blob = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"; // 29
+        return blob;
     }
 }
