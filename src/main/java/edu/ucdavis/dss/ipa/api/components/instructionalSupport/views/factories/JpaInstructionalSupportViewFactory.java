@@ -133,8 +133,9 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCodeAndSupportStaffId(schedule.getId(), termCode, supportStaffId);
+        List<StudentSupportCallCrn> studentSupportCallCrns = studentSupportCallResponse.getStudentSupportCallCrns();
 
-        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCallResponse, sections, activities);
+        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCallResponse, sections, activities, studentSupportCallCrns);
     }
 
     @Override
