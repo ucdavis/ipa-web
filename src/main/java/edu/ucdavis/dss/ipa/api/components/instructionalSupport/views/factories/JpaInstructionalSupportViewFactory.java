@@ -19,6 +19,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject InstructorService instructorService;
     @Inject ScheduleService scheduleService;
     @Inject SectionGroupService sectionGroupService;
+    @Inject SectionService sectionService;
+    @Inject ActivityService activityService;
     @Inject CourseService courseService;
     @Inject UserService userService;
     @Inject SupportAssignmentService supportAssignmentService;
@@ -125,11 +127,14 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findByScheduleIdAndSupportStaffIdAndTermCode(schedule.getId(), supportStaffId, termCode);
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+        List<Activity> activities = activityService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCodeAndSupportStaffId(schedule.getId(), termCode, supportStaffId);
 
-        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCallResponse);
+        return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCallResponse, sections, activities);
     }
 
     @Override

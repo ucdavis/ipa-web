@@ -6,6 +6,8 @@ import java.util.List;
 
 public class InstructionalSupportCallStudentFormView {
     List<SectionGroup> sectionGroups;
+    List<Section> sections;
+    List<Activity> activities;
     List<Course> courses;
     List<SupportAssignment> supportAssignments;
     List<StudentSupportPreference> studentSupportPreferences;
@@ -19,7 +21,9 @@ public class InstructionalSupportCallStudentFormView {
                                                List<StudentSupportPreference> studentSupportPreferences,
                                                Long scheduleId,
                                                Long supportStaffId,
-                                               StudentSupportCallResponse studentSupportCallResponse) {
+                                               StudentSupportCallResponse studentSupportCallResponse,
+                                               List<Section> sections,
+                                               List<Activity> activities) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -27,6 +31,8 @@ public class InstructionalSupportCallStudentFormView {
         setSupportStaffId(supportStaffId);
         setStudentSupportPreferences(studentSupportPreferences);
         setStudentSupportCallResponse(studentSupportCallResponse);
+        setSections(sections);
+        setActivities(activities);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -83,5 +89,21 @@ public class InstructionalSupportCallStudentFormView {
 
     public void setStudentSupportCallResponse(StudentSupportCallResponse studentSupportCallResponse) {
         this.studentSupportCallResponse = studentSupportCallResponse;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 }
