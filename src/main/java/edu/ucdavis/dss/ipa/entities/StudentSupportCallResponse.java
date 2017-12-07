@@ -23,7 +23,7 @@ public class StudentSupportCallResponse implements Serializable {
 
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
-    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailability;
+    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -236,12 +236,20 @@ public class StudentSupportCallResponse implements Serializable {
         this.availabilityBlob = availabilityBlob;
     }
 
-    public boolean isCollectAvailability() {
-        return collectAvailability;
+    public boolean isCollectAvailabilityByCrn() {
+        return collectAvailabilityByCrn;
     }
 
-    public void setCollectAvailability(boolean collectAvailability) {
-        this.collectAvailability = collectAvailability;
+    public void setCollectAvailabilityByCrn(boolean collectAvailabilityByCrn) {
+        this.collectAvailabilityByCrn = collectAvailabilityByCrn;
+    }
+
+    public boolean isCollectAvailabilityByGrid() {
+        return collectAvailabilityByGrid;
+    }
+
+    public void setCollectAvailabilityByGrid(boolean collectAvailabilityByGrid) {
+        this.collectAvailabilityByGrid = collectAvailabilityByGrid;
     }
 
     @JsonProperty("supportStaffId")

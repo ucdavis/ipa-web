@@ -21,6 +21,7 @@ public class InstructionalSupportStudentFormsController {
     @Inject StudentSupportPreferenceService studentSupportPreferenceService;
     @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject ScheduleService scheduleService;
+    @Inject SectionService sectionService;
     @Inject Authorization authorization;
     @Inject Authorizer authorizer;
 
@@ -71,7 +72,7 @@ public class InstructionalSupportStudentFormsController {
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
         originalSupportCallResponse.setEligibilityConfirmed(studentSupportCallResponseDTO.isEligibilityConfirmed());
 
-        if (originalSupportCallResponse.isCollectAvailability()) {
+        if (originalSupportCallResponse.isCollectAvailabilityByCrn() || originalSupportCallResponse.isCollectAvailabilityByGrid()) {
             originalSupportCallResponse.setAvailabilityBlob(studentSupportCallResponseDTO.getAvailabilityBlob());
         }
 
