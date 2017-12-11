@@ -22,7 +22,6 @@ public class StudentSupportCallResponse implements Serializable {
     private boolean submitted, allowSubmissionAfterDueDate, eligibilityConfirmed;
     private String generalComments, teachingQualifications, message, termCode, availabilityBlob;
     private Schedule schedule;
-    private List<StudentSupportCallCrn> studentSupportCallCrns = new ArrayList<>();
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
     private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid;
@@ -223,16 +222,6 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setRequirePreferenceComments(boolean requirePreferenceComments) {
         this.requirePreferenceComments = requirePreferenceComments;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "studentSupportCallResponse", cascade = {CascadeType.ALL})
-    @JsonIgnore
-    public List<StudentSupportCallCrn> getStudentSupportCallCrns() {
-        return studentSupportCallCrns;
-    }
-
-    public void setStudentSupportCallCrns(List<StudentSupportCallCrn> studentSupportCallCrns) {
-        this.studentSupportCallCrns = studentSupportCallCrns;
     }
 
     // The availabilityBlob on a teachingCallResponse is a comma delimited string

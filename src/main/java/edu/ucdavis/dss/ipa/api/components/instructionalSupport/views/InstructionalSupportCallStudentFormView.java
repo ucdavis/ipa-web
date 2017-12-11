@@ -14,7 +14,6 @@ public class InstructionalSupportCallStudentFormView {
     StudentSupportCallResponse studentSupportCallResponse;
     Long scheduleId;
     Long supportStaffId;
-    List<StudentSupportCallCrn> studentSupportCallCrns;
 
     public InstructionalSupportCallStudentFormView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -24,8 +23,7 @@ public class InstructionalSupportCallStudentFormView {
                                                Long supportStaffId,
                                                StudentSupportCallResponse studentSupportCallResponse,
                                                List<Section> sections,
-                                               List<Activity> activities,
-                                               List<StudentSupportCallCrn> studentSupportCallCrns) {
+                                               List<Activity> activities) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -35,7 +33,6 @@ public class InstructionalSupportCallStudentFormView {
         setStudentSupportCallResponse(studentSupportCallResponse);
         setSections(sections);
         setActivities(activities);
-        setStudentSupportCallCrns(studentSupportCallCrns);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -108,13 +105,5 @@ public class InstructionalSupportCallStudentFormView {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
-    }
-
-    public List<StudentSupportCallCrn> getStudentSupportCallCrns() {
-        return studentSupportCallCrns;
-    }
-
-    public void setStudentSupportCallCrns(List<StudentSupportCallCrn> studentSupportCallCrns) {
-        this.studentSupportCallCrns = studentSupportCallCrns;
     }
 }
