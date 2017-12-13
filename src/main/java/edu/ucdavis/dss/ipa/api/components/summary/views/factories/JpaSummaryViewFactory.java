@@ -90,10 +90,7 @@ public class JpaSummaryViewFactory implements SummaryViewFactory {
             supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         }
 
-
-        // Grab terms info from DW
-        long currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        List<Term> terms = termService.findByYear(currentYear);
+        List<Term> terms = termService.findByYear(year);
 
         // Grab teachingCallReceipts
         List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
