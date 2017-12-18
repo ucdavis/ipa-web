@@ -15,6 +15,7 @@ public class InstructionalSupportAssignmentView {
     List<StudentSupportCallResponse> studentSupportCallResponses;
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
     Schedule schedule;
+    List<SupportAppointment> supportAppointments;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -25,7 +26,8 @@ public class InstructionalSupportAssignmentView {
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
                                               Schedule schedule,
                                               List<InstructorSupportPreference> instructorSupportPreferences,
-                                              List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+                                              List<InstructorSupportCallResponse> instructorSupportCallResponses,
+                                              List<SupportAppointment> supportAppointments) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -36,6 +38,7 @@ public class InstructionalSupportAssignmentView {
         setInstructorSupportCallResponses(instructorSupportCallResponses);
         setInstructorSupportPreferences(instructorSupportPreferences);
         setAssignedSupportStaff(assignedSupportStaff);
+        setSupportAppointments(supportAppointments);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -116,5 +119,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setAssignedSupportStaff(List<SupportStaff> assignedSupportStaff) {
         this.assignedSupportStaff = assignedSupportStaff;
+    }
+
+    public List<SupportAppointment> getSupportAppointments() {
+        return supportAppointments;
+    }
+
+    public void setSupportAppointments(List<SupportAppointment> supportAppointments) {
+        this.supportAppointments = supportAppointments;
     }
 }

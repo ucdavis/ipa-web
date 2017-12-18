@@ -30,6 +30,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
     @Inject Authorization authorization;
+    @Inject SupportAppointmentService supportAppointmentService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -55,9 +56,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<InstructorSupportPreference> instructorSupportPreferences = instructorSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<SupportAppointment> supportAppointments = supportAppointmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
         return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList, assignedSupportStaff,
-                studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses);
+                studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses, supportAppointments);
     }
 
     @Override
