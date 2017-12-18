@@ -33,7 +33,7 @@ public class SectionGroup extends BaseEntity {
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
-	private Integer plannedSeats;
+	private Integer plannedSeats, teachingAssistantAppointments, readerAppointments;
 	private Boolean showTheStaff = false;
 
 	@Id
