@@ -116,6 +116,8 @@ public class CourseViewController {
 
 		originalSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
 		originalSectionGroup.setShowTheStaff(sectionGroup.getShowTheStaff());
+		originalSectionGroup.setTeachingAssistantAppointments(sectionGroup.getTeachingAssistantAppointments());
+		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
 		return sectionGroupService.save(originalSectionGroup);
 	}

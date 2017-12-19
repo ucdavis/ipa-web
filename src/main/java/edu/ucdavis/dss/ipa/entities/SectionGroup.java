@@ -33,7 +33,8 @@ public class SectionGroup extends BaseEntity {
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
-	private Integer plannedSeats, teachingAssistantAppointments, readerAppointments;
+	private Integer plannedSeats;
+	private Float teachingAssistantAppointments, readerAppointments;
 	private Boolean showTheStaff = false;
 
 	@Id
@@ -171,5 +172,21 @@ public class SectionGroup extends BaseEntity {
 
 	public void setShowTheStaff(Boolean showTheStaff) {
 		this.showTheStaff = showTheStaff;
+	}
+
+	public Float getTeachingAssistantAppointments() {
+		return teachingAssistantAppointments;
+	}
+
+	public void setTeachingAssistantAppointments(Float teachingAssistantAppointments) {
+		this.teachingAssistantAppointments = teachingAssistantAppointments;
+	}
+
+	public Float getReaderAppointments() {
+		return readerAppointments;
+	}
+
+	public void setReaderAppointments(Float readerAppointments) {
+		this.readerAppointments = readerAppointments;
 	}
 }
