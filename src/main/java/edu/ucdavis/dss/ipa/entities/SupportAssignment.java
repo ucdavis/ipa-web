@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SupportAssignment implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
+    private Section section;
     private SupportStaff supportStaff;
     private long appointmentPercentage;
     private String appointmentType;
@@ -41,8 +42,7 @@ public class SupportAssignment implements Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SectionGroupId", nullable = false)
-    @NotNull
+    @JoinColumn(name = "SectionGroupId", nullable = true)
     @JsonIgnore
     public SectionGroup getSectionGroup() {
         return sectionGroup;
@@ -50,6 +50,17 @@ public class SupportAssignment implements Serializable {
 
     public void setSectionGroup(SectionGroup sectionGroup) {
         this.sectionGroup = sectionGroup;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SectionId", nullable = true)
+    @JsonIgnore
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
