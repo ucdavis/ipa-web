@@ -399,6 +399,8 @@ public class InstructionalSupportCallsController {
         studentResponseDTO.setCollectReaderPreferences(addStudentsDTO.getCollectReaderPreferences());
         studentResponseDTO.setCollectTeachingAssistantPreferences(addStudentsDTO.getCollectTeachingAssistantPreferences());
         studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getCollectAssociateInstructorPreferences());
+        studentResponseDTO.setCollectAvailabilityByCrn(addStudentsDTO.getCollectAvailabilityByCrn());
+        studentResponseDTO.setCollectAvailabilityByGrid(addStudentsDTO.getCollectAvailabilityByGrid());
 
         if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());
@@ -422,7 +424,8 @@ public class InstructionalSupportCallsController {
                         collectGeneralComments = false, collectTeachingQualifications = false,
                         collectPreferenceComments = false, collectEligibilityConfirmation = false,
                         collectTeachingAssistantPreferences = false, collectReaderPreferences = false,
-                        collectAssociateInstructorPreferences = false, requirePreferenceComments = false;
+                        collectAssociateInstructorPreferences = false, requirePreferenceComments = false,
+                        collectAvailabilityByGrid = false, collectAvailabilityByCrn = false;
 
         private Long minimumNumberOfPreferences;
 
@@ -545,6 +548,22 @@ public class InstructionalSupportCallsController {
         public void setRequirePreferenceComments(Boolean requirePreferenceComments) {
             this.requirePreferenceComments = requirePreferenceComments;
         }
+
+        public Boolean getCollectAvailabilityByGrid() {
+            return collectAvailabilityByGrid;
+        }
+
+        public void setCollectAvailabilityByGrid(Boolean collectAvailabilityByGrid) {
+            this.collectAvailabilityByGrid = collectAvailabilityByGrid;
+        }
+
+        public Boolean getCollectAvailabilityByCrn() {
+            return collectAvailabilityByCrn;
+        }
+
+        public void setCollectAvailabilityByCrn(Boolean collectAvailabilityByCrn) {
+            this.collectAvailabilityByCrn = collectAvailabilityByCrn;
+        }
     }
 
     public class AddStudentsDTODeserializer extends JsonDeserializer<Object> {
@@ -607,6 +626,14 @@ public class InstructionalSupportCallsController {
 
             if (node.has("collectEligibilityConfirmation")) {
                 addStudentsDTO.setCollectEligibilityConfirmation(node.get("collectEligibilityConfirmation").booleanValue());
+            }
+
+            if (node.has("collectAvailabilityByGrid")) {
+                addStudentsDTO.setCollectAvailabilityByGrid(node.get("collectAvailabilityByGrid").booleanValue());
+            }
+
+            if (node.has("collectAvailabilityByCrn")) {
+                addStudentsDTO.setCollectAvailabilityByCrn(node.get("collectAvailabilityByCrn").booleanValue());
             }
 
             if (node.has("collectTeachingAssistantPreferences")) {
