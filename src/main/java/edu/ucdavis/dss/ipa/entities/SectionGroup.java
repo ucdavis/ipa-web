@@ -174,6 +174,7 @@ public class SectionGroup extends BaseEntity {
 		this.showTheStaff = showTheStaff;
 	}
 
+	@JsonProperty
 	public Float getTeachingAssistantAppointments() {
 		return teachingAssistantAppointments;
 	}
@@ -182,6 +183,7 @@ public class SectionGroup extends BaseEntity {
 		this.teachingAssistantAppointments = teachingAssistantAppointments;
 	}
 
+	@JsonProperty
 	public Float getReaderAppointments() {
 		return readerAppointments;
 	}
