@@ -110,6 +110,16 @@ public class SupportAssignment implements Serializable {
         }
     }
 
+    @JsonProperty("sectionId")
+    @Transient
+    public long getSectionIdentification() {
+        if(section != null) {
+            return section.getId();
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * Will return true if supportAssignment term matches an activated instructorReview term on the schedule
      * Will return null if required entities are not found.
