@@ -16,6 +16,7 @@ public class InstructionalSupportAssignmentView {
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
     Schedule schedule;
     List<SupportAppointment> supportAppointments;
+    List<Section> sections;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -27,7 +28,8 @@ public class InstructionalSupportAssignmentView {
                                               Schedule schedule,
                                               List<InstructorSupportPreference> instructorSupportPreferences,
                                               List<InstructorSupportCallResponse> instructorSupportCallResponses,
-                                              List<SupportAppointment> supportAppointments) {
+                                              List<SupportAppointment> supportAppointments,
+                                              List<Section> sections) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -39,6 +41,7 @@ public class InstructionalSupportAssignmentView {
         setInstructorSupportPreferences(instructorSupportPreferences);
         setAssignedSupportStaff(assignedSupportStaff);
         setSupportAppointments(supportAppointments);
+        setSections(sections);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -127,5 +130,13 @@ public class InstructionalSupportAssignmentView {
 
     public void setSupportAppointments(List<SupportAppointment> supportAppointments) {
         this.supportAppointments = supportAppointments;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
     }
 }

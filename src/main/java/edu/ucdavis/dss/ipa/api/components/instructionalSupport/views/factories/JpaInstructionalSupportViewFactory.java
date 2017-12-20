@@ -46,6 +46,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         }
 
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
@@ -59,7 +61,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         List<SupportAppointment> supportAppointments = supportAppointmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
         return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList, assignedSupportStaff,
-                studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses, supportAppointments);
+                studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses, supportAppointments, sections);
     }
 
     @Override
