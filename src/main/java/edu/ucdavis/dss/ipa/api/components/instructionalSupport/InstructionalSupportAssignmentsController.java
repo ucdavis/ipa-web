@@ -40,12 +40,6 @@ public class InstructionalSupportAssignmentsController {
         Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        // Ensure the assignment is unassigned.
-        if (supportAssignment.getSupportStaff() != null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
-        }
-
         supportAssignmentService.delete(instructionalSupportAssignmentId);
 
         return instructionalSupportAssignmentId;
