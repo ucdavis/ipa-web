@@ -22,6 +22,7 @@ public class InstructionalSupportAssignmentsController {
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject SupportStaffService supportStaffService;
     @Inject Authorizer authorizer;
+    @Inject SectionService sectionService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -29,26 +30,6 @@ public class InstructionalSupportAssignmentsController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport", "lecturer");
 
         return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, shortTermCode);
-    }
-
-    @RequestMapping(value = "/api/instructionalSupportView/sectionGroups/{sectionGroupId}/instructionalSupportAssignments/{numberOfAssignments}", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public List<SupportAssignment> addAssignmentSlots(@PathVariable long sectionGroupId, @PathVariable long numberOfAssignments, @RequestBody SupportAssignment supportAssignment) {
-        List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
-
-        // Ensure submitted data looks reasonable
-        if (supportAssignment.getAppointmentPercentage() > 0
-            && supportAssignment.getAppointmentType().length() > 0
-            && numberOfAssignments > 0
-            && sectionGroupId > 0 ) {
-
-            supportAssignments = supportAssignmentService.createMultiple(sectionGroupId, supportAssignment.getAppointmentType(), supportAssignment.getAppointmentPercentage(), numberOfAssignments);
-        }
-
-        Workgroup workgroup = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        return supportAssignments;
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}", method = RequestMethod.DELETE, produces = "application/json")
@@ -70,23 +51,9 @@ public class InstructionalSupportAssignmentsController {
         return instructionalSupportAssignmentId;
     }
 
-    @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{assignmentId}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public SupportAssignment assignStaffToSlot(@PathVariable long assignmentId, @PathVariable long supportStaffId) {
-        SupportAssignment supportAssignment = supportAssignmentService.findOneById(assignmentId);
-        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
-
-        Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        supportAssignment.setSupportStaff(supportStaff);
-
-        return supportAssignmentService.save(supportAssignment);
-    }
-
     @RequestMapping(value = "/api/instructionalSupportView/sectionGroups/{sectionGroupId}/assignmentType/{type}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public SupportAssignment assignStaffToSectionGroupSlot(@PathVariable long sectionGroupId, @PathVariable String type, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+    public SupportAssignment assignStaffToSectionGroup(@PathVariable long sectionGroupId, @PathVariable String type, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
         SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
         Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
@@ -99,38 +66,33 @@ public class InstructionalSupportAssignmentsController {
             return null;
         }
 
-        SupportAssignment supportAssignment = null;
-
-        // Find a supportAssignment of specified type, that is not already filled
-        for (SupportAssignment slotSupportAssignment : sectionGroup.getSupportAssignments()) {
-            if (type.equals(slotSupportAssignment.getAppointmentType()) && slotSupportAssignment.getSupportStaff() == null) {
-                supportAssignment = slotSupportAssignment;
-            }
-        }
-
-        // If one is not found, make a new slot
-        if (supportAssignment == null) {
-            supportAssignment = new SupportAssignment();
-            supportAssignment.setAppointmentPercentage(50);
-            supportAssignment.setAppointmentType(type);
-            supportAssignment.setSectionGroup(sectionGroup);
-        }
-
-
+        SupportAssignment supportAssignment = new SupportAssignment();
+        supportAssignment.setAppointmentType(type);
+        supportAssignment.setSectionGroup(sectionGroup);
         supportAssignment.setSupportStaff(supportStaff);
 
         return supportAssignmentService.save(supportAssignment);
     }
 
-    @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}/unassign", method = RequestMethod.DELETE, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/sections/{sectionId}/assignmentType/{type}/supportStaff/{supportStaffId}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public SupportAssignment removeStaffFromSlot(@PathVariable long instructionalSupportAssignmentId) {
-        SupportAssignment supportAssignment = supportAssignmentService.findOneById(instructionalSupportAssignmentId);
+    public SupportAssignment assignStaffToSection(@PathVariable long sectionId, @PathVariable String type, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+        Section section = sectionService.getOneById(sectionId);
 
-        Workgroup workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
+        Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        supportAssignment.setSupportStaff(null);
+        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
+
+        if (supportStaff == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        SupportAssignment supportAssignment = new SupportAssignment();
+        supportAssignment.setAppointmentType(type);
+        supportAssignment.setSection(section);
+        supportAssignment.setSupportStaff(supportStaff);
 
         return supportAssignmentService.save(supportAssignment);
     }
