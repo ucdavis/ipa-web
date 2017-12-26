@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ public class JpaInstructorService implements InstructorService {
 	@Inject InstructorRepository instructorRepository;
 	@Inject WorkgroupService workgroupService;
 	@Inject ScheduleService scheduleService;
-	@Inject UserRoleService userRoleService;
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -97,40 +95,7 @@ public class JpaInstructorService implements InstructorService {
 		}
 	}
 
-	@Override
-	public List<Instructor> findByScheduleId(long scheduleId) {
-		Schedule schedule = scheduleService.findById(scheduleId);
-
-		List<SectionGroup> sectionGroups = new ArrayList<>();
-
-		for (Course course : schedule.getCourses()) {
-			sectionGroups.addAll(course.getSectionGroups());
-		}
-
-		List<Instructor> activeInstructors = userRoleService.getInstructorsByWorkgroupId(schedule.getWorkgroup().getId());
-		List<Instructor> instructorsFromAssignments = this.findBySectionGroups(sectionGroups);
-
-		List<Long> uniqueInstructorIds = new ArrayList<>();
-		List<Instructor> uniqueInstructors = new ArrayList<>();
-
-		for (Instructor slotInstructor : instructorsFromAssignments) {
-			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-				uniqueInstructorIds.add(slotInstructor.getId());
-				uniqueInstructors.add(slotInstructor);
-			}
-		}
-
-		for (Instructor slotInstructor : activeInstructors) {
-			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-				uniqueInstructorIds.add(slotInstructor.getId());
-				uniqueInstructors.add(slotInstructor);
-			}
-		}
-
-		return uniqueInstructors;
-	}
-
-	private List<Instructor> findBySectionGroups(List<SectionGroup> sectionGroups) {
+	public List<Instructor> findBySectionGroups(List<SectionGroup> sectionGroups) {
 		List<Long> uniqueInstructorIds = new ArrayList<>();
 		List<Instructor> uniqueInstructors = new ArrayList<>();
 
