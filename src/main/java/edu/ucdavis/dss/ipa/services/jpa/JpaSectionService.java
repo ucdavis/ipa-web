@@ -14,7 +14,6 @@ import java.util.List;
 public class JpaSectionService implements SectionService {
 
 	@Inject SectionRepository sectionRepository;
-	@Inject SectionGroupService sectionGroupService;
 
 	@Override
 	public Section save(@Valid Section section) {
