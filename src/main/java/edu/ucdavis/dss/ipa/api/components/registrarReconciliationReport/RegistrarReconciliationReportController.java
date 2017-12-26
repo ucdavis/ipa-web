@@ -338,7 +338,7 @@ public class RegistrarReconciliationReportController {
 				// Ensure they are an instructor
 				Instructor instructor = null;
 				if(user != null) {
-					instructor = instructorService.findOrAddActiveInstructor(workgroup, user);
+					instructor = userRoleService.findOrAddActiveInstructor(workgroup, user);
 				} else {
 					instructor = instructorService.findOrCreate(instructorDto.getFirstName(), instructorDto.getLastName(), instructorDto.getEmail(), instructorDto.getLoginId(), workgroup.getId(), instructorDto.getUcdStudentSID());
 				}

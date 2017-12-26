@@ -172,17 +172,6 @@ public class JpaInstructorService implements InstructorService {
 	}
 
 	@Override
-	public Instructor findOrAddActiveInstructor(Workgroup workgroup, User user) {
-		// Create Instructor
-		Instructor instructor = this.findOrCreate(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLoginId(), workgroup.getId());
-
-		// Create userRole, if necessary
-		userRoleService.findOrAddInstructorRoleToWorkgroup(workgroup, user);
-
-		return instructor;
-	}
-
-	@Override
 	public List<Instructor> findAssignedByScheduleId(long scheduleId) {
 		Schedule schedule = scheduleService.findById(scheduleId);
 
