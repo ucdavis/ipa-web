@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.tasks;
 
-import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,7 +14,7 @@ import java.util.*;
 public class UpdateSectionsTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-    @Inject SectionService sectionService;
+    @Inject ScheduleOpsService scheduleOpsService;
 
     /**
      * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
@@ -26,7 +26,7 @@ public class UpdateSectionsTask {
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
 
-        this.sectionService.updateSectionsFromDW();
+        this.scheduleOpsService.updateSectionsFromDW();
 
         runningTask = false;
     }

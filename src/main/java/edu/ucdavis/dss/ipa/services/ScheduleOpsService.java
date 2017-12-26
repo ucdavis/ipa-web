@@ -26,4 +26,9 @@ public interface ScheduleOpsService {
 	 * @return
 	 */
 	Schedule createScheduleFromExisting(Long workgroupId, Long scheduleYear, Long copyFromYear, Boolean copyInstructors, Boolean copyRooms, Boolean copyTimes);
+
+	/**
+	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
+	 */
+	void updateSectionsFromDW();
 }

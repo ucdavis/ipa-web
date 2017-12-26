@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SectionGroupRepository sectionGroupRepository;
+
 	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject ScheduleService scheduleService;
 	@Inject SectionService sectionService;
@@ -84,8 +85,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
-	public List<SectionGroup> findVisibleByWorkgroupIdAndYear(long workgroupId, long year) {
-		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
+	public List<SectionGroup> findByCourses(List<Course> courses) {
 		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
 
 		for (Course course : courses) {
