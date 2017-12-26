@@ -299,5 +299,13 @@ public class JpaUserRoleService implements UserRoleService {
 		return userRole;
 	}
 
+	@Override
+	public Instructor findOrAddActiveInstructor(Workgroup workgroup, User user) {
+		Instructor instructor = instructorService.findOrCreate(user.getFirstName(), user.getLastName(), user.getEmail(), user.getLoginId(), workgroup.getId());
+
+		this.findOrAddInstructorRoleToWorkgroup(workgroup, user);
+
+		return instructor;
+	}
 }
 

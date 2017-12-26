@@ -44,4 +44,6 @@ public interface UserRoleService {
 	 * @param user
 	 */
 	UserRole findOrAddInstructorRoleToWorkgroup(Workgroup workgroup, User user);
+
+	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
 }

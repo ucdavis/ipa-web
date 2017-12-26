@@ -41,13 +41,6 @@ public interface InstructorService {
 	 */
 	List<Instructor> findActiveByWorkgroupId(long workgroupId);
 
-	/**
-	 * Creates instructors and userRoles if necessary.
-	 * @param workgroup
-	 * @param user
-	 */
-	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
-
 	List<Instructor> findAssignedByScheduleId(long scheduleId);
 
 	List<Instructor> findActiveByWorkgroupIdAndLecturer(long id, boolean b);
