@@ -19,13 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaCourseService implements CourseService {
 
 	@Inject CourseRepository courseRepository;
+
 	@Inject SectionGroupRepository sectionGroupRepository;
-	@Inject SectionGroupService sectionGroupService;
 	@Inject ScheduleService scheduleService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
-	@Inject InstructorService instructorService;
 	@Inject TagService tagService;
-	@Inject WorkgroupService workgroupService;
 	@Inject SectionService sectionService;
 
 	@Override
