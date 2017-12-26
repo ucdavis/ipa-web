@@ -4,11 +4,9 @@ import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Location;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.SectionService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -20,7 +18,6 @@ import java.util.List;
 @Service
 public class JpaActivityService implements ActivityService {
 	@Inject ActivityRepository activityRepository;
-	@Inject SectionService sectionService;
 
 	@Override
 	@Transactional

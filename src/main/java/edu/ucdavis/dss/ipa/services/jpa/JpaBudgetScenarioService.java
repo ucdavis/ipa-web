@@ -19,6 +19,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject SectionGroupService sectionGroupService;
     @Inject LineItemService lineItemService;
+    @Inject CourseService courseService;
 
     @Override
     @Transactional
@@ -36,9 +37,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setName(budgetScenarioName);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        // Create relevant sectionGroupCosts
-        Schedule schedule = budget.getSchedule();
-        List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYear(schedule.getWorkgroup().getId(), schedule.getYear());
+        List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear());
+        List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<SectionGroupCost> newSectionGroupCosts = new ArrayList<>();
 
         for (SectionGroup sectionGroup : sectionGroups) {
