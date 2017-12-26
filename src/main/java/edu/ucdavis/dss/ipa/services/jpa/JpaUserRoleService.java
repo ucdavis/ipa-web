@@ -25,6 +25,7 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject InstructorService instructorService;
 	@Inject SupportStaffService supportStaffService;
 	@Inject EmailService emailService;
+	@Inject ScheduleService scheduleService;
 
 	@Override
 	@Transactional
@@ -306,6 +307,39 @@ public class JpaUserRoleService implements UserRoleService {
 		this.findOrAddInstructorRoleToWorkgroup(workgroup, user);
 
 		return instructor;
+	}
+
+	@Override
+	public List<Instructor> findActiveInstructorByScheduleId(long scheduleId) {
+		Schedule schedule = scheduleService.findById(scheduleId);
+
+		List<SectionGroup> sectionGroups = new ArrayList<>();
+
+		for (Course course : schedule.getCourses()) {
+			sectionGroups.addAll(course.getSectionGroups());
+		}
+
+		List<Instructor> activeInstructors = this.getInstructorsByWorkgroupId(schedule.getWorkgroup().getId());
+		List<Instructor> instructorsFromAssignments = instructorService.findBySectionGroups(sectionGroups);
+
+		List<Long> uniqueInstructorIds = new ArrayList<>();
+		List<Instructor> uniqueInstructors = new ArrayList<>();
+
+		for (Instructor slotInstructor : instructorsFromAssignments) {
+			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+				uniqueInstructorIds.add(slotInstructor.getId());
+				uniqueInstructors.add(slotInstructor);
+			}
+		}
+
+		for (Instructor slotInstructor : activeInstructors) {
+			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+				uniqueInstructorIds.add(slotInstructor.getId());
+				uniqueInstructors.add(slotInstructor);
+			}
+		}
+
+		return uniqueInstructors;
 	}
 }
 

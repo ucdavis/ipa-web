@@ -1,11 +1,7 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.validation.annotation.Validated;
-
-import edu.ucdavis.dss.ipa.entities.Instructor;
 
 import java.util.List;
 
@@ -32,8 +28,6 @@ public interface InstructorService {
 
 	void removeOrphanedByLoginId(String loginId);
 
-	List<Instructor> findByScheduleId(long scheduleId);
-
 	/**
 	 * Find all instructors associated to active 'instructor' type users in the workgroup.
 	 * @param workgroupId
@@ -46,4 +40,6 @@ public interface InstructorService {
 	List<Instructor> findActiveByWorkgroupIdAndLecturer(long id, boolean b);
 
 	List<Instructor> findByInstructorCosts(List<InstructorCost> instructorCosts);
+
+	List<Instructor> findBySectionGroups(List<SectionGroup> sectionGroups);
 }
