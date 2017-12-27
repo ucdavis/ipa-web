@@ -15,9 +15,9 @@ public interface SupportAssignmentService {
 
     void delete(Long instructionalSupportAssignmentId);
 
-    SupportAssignment create(long sectionGroupId, String type, long appointmentPercentage);
+    SupportAssignment create(SectionGroup sectionGroup, String type, long appointmentPercentage);
 
-    List<SupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate);
+    List<SupportAssignment> createMultiple(SectionGroup sectionGroup, String type, long appointmentPercentage, long numberToCreate);
 
     SupportAssignment assignInstructionalSupportStaff(long instructionalSupportStaffId, long instructionalSupportAssignmentId);
 
