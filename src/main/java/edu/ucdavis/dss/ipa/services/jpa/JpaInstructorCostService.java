@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorCostRepository;
-import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.util.List;
 public class JpaInstructorCostService implements InstructorCostService {
     @Inject InstructorCostRepository instructorCostRepository;
     @Inject InstructorService instructorService;
-    @Inject BudgetService budgetService;
 
     @Override
     public List<InstructorCost> findByBudgetId(Long budgetId) {
@@ -68,20 +66,14 @@ public class JpaInstructorCostService implements InstructorCostService {
     /**
      * Will find or create instructorCosts for all instructors currently active in the workgroup,
      * and any instructors of record for the schedule in the specified year.
-     * @param workgroup
-     * @param year
+     * @param budget
      * @return
      */
     @Override
-    public List<InstructorCost> findOrCreateManyFromWorkgroupAndYear(Workgroup workgroup, long year) {
-        Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroup.getId(), year);
-
-        if (budget == null) {
-            return null;
-        }
+    public List<InstructorCost> findOrCreateManyFromBudget(Budget budget) {
 
         List<InstructorCost> instructorCosts = new ArrayList<>();
-        instructorCosts.addAll(this.findOrCreateFromWorkgroup(workgroup, budget));
+        instructorCosts.addAll(this.findOrCreateFromWorkgroup(budget.getSchedule().getWorkgroup(), budget));
 
         return instructorCosts;
     }

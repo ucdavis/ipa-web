@@ -74,7 +74,7 @@ public class JpaBudgetService implements BudgetService {
         budget.setSchedule(schedule);
         budget = budgetRepository.save(budget);
 
-        instructorCostService.findOrCreateManyFromWorkgroupAndYear(schedule.getWorkgroup(), schedule.getYear());
+        instructorCostService.findOrCreateManyFromBudget(budget);
 
         return budget;
     }
