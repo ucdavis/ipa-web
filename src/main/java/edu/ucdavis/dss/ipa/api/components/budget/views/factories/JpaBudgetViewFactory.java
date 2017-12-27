@@ -42,7 +42,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
-        List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromWorkgroupAndYear(workgroup, year);
+        List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
         List<Instructor> instructors = instructorService.findByInstructorCosts(instructorCosts);
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
