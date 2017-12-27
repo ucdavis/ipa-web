@@ -33,22 +33,17 @@ public class InstructionalSupportAssignmentsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/sectionGroups/{sectionGroupId}/instructionalSupportAssignments/{numberOfAssignments}", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public List<SupportAssignment> addAssignmentSlots(@PathVariable long sectionGroupId, @PathVariable long numberOfAssignments, @RequestBody SupportAssignment supportAssignment) {
-        List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
+    public List<SupportAssignment> addAssignmentSlots(@PathVariable long sectionGroupId, @PathVariable long numberOfAssignments, @RequestBody SupportAssignment supportAssignment, HttpServletResponse httpResponse) {
+        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
-        // Ensure submitted data looks reasonable
-        if (supportAssignment.getAppointmentPercentage() > 0
-            && supportAssignment.getAppointmentType().length() > 0
-            && numberOfAssignments > 0
-            && sectionGroupId > 0 ) {
-
-            supportAssignments = supportAssignmentService.createMultiple(sectionGroupId, supportAssignment.getAppointmentType(), supportAssignment.getAppointmentPercentage(), numberOfAssignments);
+        if (sectionGroup == null || supportAssignment.getAppointmentType() == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
         }
 
-        Workgroup workgroup = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+        authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
 
-        return supportAssignments;
+        return supportAssignmentService.createMultiple(sectionGroup, supportAssignment.getAppointmentType(), supportAssignment.getAppointmentPercentage(), numberOfAssignments);
     }
 
     @RequestMapping(value = "/api/instructionalSupportView/instructionalSupportAssignments/{instructionalSupportAssignmentId}", method = RequestMethod.DELETE, produces = "application/json")
