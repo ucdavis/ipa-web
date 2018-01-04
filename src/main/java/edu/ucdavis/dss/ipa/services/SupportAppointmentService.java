@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.SupportAppointment;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface SupportAppointmentService {
     SupportAppointment create (SupportAppointment supportAppointment);
 
     List<SupportAppointment> findByScheduleIdAndTermCode(long id, String termCode);
+
+    SupportAppointment createOrUpdate(SupportAppointment supportAppointment);
 }

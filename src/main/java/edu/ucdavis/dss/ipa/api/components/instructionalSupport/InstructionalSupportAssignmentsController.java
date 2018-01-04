@@ -23,6 +23,8 @@ public class InstructionalSupportAssignmentsController {
     @Inject SupportStaffService supportStaffService;
     @Inject Authorizer authorizer;
     @Inject SectionService sectionService;
+    @Inject SupportAppointmentService supportAppointmentService;
+    @Inject ScheduleService scheduleService;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -99,27 +101,24 @@ public class InstructionalSupportAssignmentsController {
         return supportAssignmentService.save(supportAssignment);
     }
 
-    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/supportStaff/{supportStaffId}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public SupportAssignment updateSupportStaffAppointment(@PathVariable long sectionId, @PathVariable String type, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
-        Section section = sectionService.getOneById(sectionId);
+    public SupportAppointment updateSupportStaffAppointment(@PathVariable long scheduleId, @RequestBody SupportAppointment supportAppointment, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+        SupportStaff supportStaff = supportStaffService.findOneById(supportAppointment.getSupportStaff().getId());
 
-        Workgroup workgroup = section.getSectionGroup().getCourse().getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-
-        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
-
-        if (supportStaff == null) {
+        if (schedule == null || supportStaff == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
 
-        SupportAssignment supportAssignment = new SupportAssignment();
-        supportAssignment.setAppointmentType(type);
-        supportAssignment.setSection(section);
-        supportAssignment.setSupportStaff(supportStaff);
+        Workgroup workgroup = schedule.getWorkgroup();
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-        return supportAssignmentService.save(supportAssignment);
+        supportAppointment.setSchedule(schedule);
+        supportAppointment.setSupportStaff(supportStaff);
+
+        return supportAppointmentService.createOrUpdate(supportAppointment);
     }
 
 }

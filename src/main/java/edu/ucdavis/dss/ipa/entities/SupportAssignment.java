@@ -120,6 +120,42 @@ public class SupportAssignment implements Serializable {
         }
     }
 
+    @JsonProperty("subjectCode")
+    @Transient
+    public String getSubjectCode() {
+        if(section != null) {
+            return section.getSectionGroup().getCourse().getSubjectCode();
+        } else if (sectionGroup != null) {
+            return sectionGroup.getCourse().getSubjectCode();
+        } else {
+            return null;
+        }
+    }
+
+    @JsonProperty("sequenceNumber")
+    @Transient
+    public String getSequenceNumber() {
+        if(section != null) {
+            return section.getSequenceNumber();
+        } else if (sectionGroup != null) {
+            return sectionGroup.getCourse().getSequencePattern();
+        } else {
+            return null;
+        }
+    }
+
+    @JsonProperty("courseNumber")
+    @Transient
+    public String getCourseNumber() {
+        if(section != null) {
+            return section.getSectionGroup().getCourse().getCourseNumber();
+        } else if (sectionGroup != null) {
+            return sectionGroup.getCourse().getCourseNumber();
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Will return true if supportAssignment term matches an activated instructorReview term on the schedule
      * Will return null if required entities are not found.

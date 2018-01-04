@@ -4,6 +4,8 @@ package edu.ucdavis.dss.ipa.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SupportAppointmentDeserializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,11 +14,12 @@ import java.io.Serializable;
 @Entity
 @Table(name = "SupportAppointments")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonDeserialize(using = SupportAppointmentDeserializer.class)
 public class SupportAppointment implements Serializable {
     private long id;
     private Schedule schedule;
     private SupportStaff supportStaff;
-    private Long percentage;
+    private Float percentage;
     private String type, termCode;
 
     @Id
@@ -45,11 +48,11 @@ public class SupportAppointment implements Serializable {
         this.supportStaff = supportStaff;
     }
 
-    public Long getPercentage() {
+    public Float getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(Long percentage) {
+    public void setPercentage(Float percentage) {
         this.percentage = percentage;
     }
 
@@ -85,6 +88,16 @@ public class SupportAppointment implements Serializable {
     public long getInstructionalSupportStaffIdentification() {
         if(supportStaff != null) {
             return supportStaff.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("scheduleId")
+    @Transient
+    public long getScheduleIdentification() {
+        if(schedule != null) {
+            return schedule.getId();
         } else {
             return 0;
         }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface SupportAppointmentRepository extends CrudRepository<SupportAppointment, Long> {
 
     List<SupportAppointment> findByScheduleIdAndTermCode(long scheduleId, String termCode);
+
+    SupportAppointment findByScheduleIdAndTermCodeAndSupportStaffId(long scheduleId, String termCode, long supportStaffId);
 }
