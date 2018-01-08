@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroups` ADD COLUMN `ShowPlaceholderAI` TINYINT(1) NOT NULL DEFAULT '0';

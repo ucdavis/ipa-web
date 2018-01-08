@@ -35,7 +35,7 @@ public class SectionGroup extends BaseEntity {
 	private String termCode;
 	private Integer plannedSeats;
 	private Float teachingAssistantAppointments, readerAppointments;
-	private Boolean showTheStaff = false;
+	private Boolean showTheStaff = false, showPlaceholderAI = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,6 +172,16 @@ public class SectionGroup extends BaseEntity {
 
 	public void setShowTheStaff(Boolean showTheStaff) {
 		this.showTheStaff = showTheStaff;
+	}
+
+	@Column(name = "ShowPlaceholderAI", nullable = false)
+	@JsonProperty
+	public Boolean getShowPlaceholderAI() {
+		return showPlaceholderAI;
+	}
+
+	public void setShowPlaceholderAI(Boolean showPlaceholderAI) {
+		this.showPlaceholderAI = showPlaceholderAI;
 	}
 
 	@JsonProperty
