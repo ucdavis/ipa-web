@@ -53,7 +53,7 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 		}
 
 		if (node.has("showPlaceholderAI")) {
-			sg.setShowTheStaff(node.get("showPlaceholderAI").booleanValue());
+			sg.setShowPlaceholderAI(node.get("showPlaceholderAI").booleanValue());
 		}
 
 		return sg;
