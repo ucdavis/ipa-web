@@ -32,7 +32,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		long scheduleId = schedule.getId();
 
-		List<Instructor> instructorMasterList = userRoleService.findActiveInstructorByScheduleId(scheduleId);
+		List<Instructor> instructorMasterList = userRoleService.findActiveInstructorsByScheduleId(scheduleId);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
 
