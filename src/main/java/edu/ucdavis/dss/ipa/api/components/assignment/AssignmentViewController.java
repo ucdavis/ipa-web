@@ -12,11 +12,7 @@ import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SupportStaffService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -41,6 +37,7 @@ public class AssignmentViewController {
     @Inject SectionGroupService sectionGroupService;
     @Inject SupportStaffService supportStaffService;
     @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject UserRoleService userRoleService;
 
     @Value("${ipa.url.api}")
     String ipaUrlApi;
@@ -77,10 +74,19 @@ public class AssignmentViewController {
         Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
         authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
+        // Ensure instructor object has been created
         Instructor instructor = instructorService.findOrCreate(supportStaff.getFirstName(), supportStaff.getLastName(), supportStaff.getEmail(), supportStaff.getLoginId(), workgroup.getId());
 
+        // Ensure lecturer role is given
+        userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "lecturer");
+
+        // Assign supportStaff to AI
         TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
         teachingAssignment.setApproved(true);
+
+        // Remove placeholderAI flag
+        sectionGroup.setShowPlaceholderAI(false);
+        sectionGroupService.save(sectionGroup);
 
         return teachingAssignmentService.save(teachingAssignment);
     }
