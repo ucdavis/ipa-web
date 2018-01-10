@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.entities;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -44,7 +43,6 @@ public class SupportAppointment implements Serializable {
     {
         this.id = id;
     }
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SupportStaffId", nullable = false)

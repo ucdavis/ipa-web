@@ -39,6 +39,7 @@ public class InstructionalSupportAssignmentsController {
     public Long deleteAssignment(@PathVariable long supportAssignmentId, HttpServletResponse httpResponse) {
         SupportAssignment supportAssignment = supportAssignmentService.findOneById(supportAssignmentId);
         Workgroup workgroup = null;
+
         if (supportAssignment.getSectionGroup() != null) {
             workgroup = supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup();
         } else if (supportAssignment.getSection() != null){
