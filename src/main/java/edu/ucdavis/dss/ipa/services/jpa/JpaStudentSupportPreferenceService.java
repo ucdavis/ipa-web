@@ -101,6 +101,11 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
     }
 
     @Override
+    public List<StudentSupportPreference> findByScheduleId(long scheduleId) {
+        return studentSupportPreferenceRepository.findByScheduleId(scheduleId);
+    }
+
+    @Override
     public StudentSupportPreference findById(long preferenceId) {
         return studentSupportPreferenceRepository.findOneById(preferenceId);
     }

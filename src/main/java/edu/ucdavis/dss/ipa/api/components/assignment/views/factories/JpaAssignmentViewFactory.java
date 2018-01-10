@@ -25,6 +25,8 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject TeachingCallResponseService teachingCallResponseService;
 	@Inject UserService userService;
 	@Inject SupportAssignmentService supportAssignmentService;
+	@Inject SupportStaffService supportStaffService;
+	@Inject StudentSupportPreferenceService studentSupportPreferenceService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
@@ -46,10 +48,13 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
 		List<Long> lecturerInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "lecturer");
 
+		List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+		List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(scheduleId);
+
 		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
-				senateInstructorIds, federationInstructorIds, lecturerInstructorIds, workgroup.getTags(), supportAssignments);
+				senateInstructorIds, federationInstructorIds, lecturerInstructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences);
 	}
 
 	@Override
