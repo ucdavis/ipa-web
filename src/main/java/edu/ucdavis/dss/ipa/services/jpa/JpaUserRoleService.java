@@ -310,7 +310,7 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public List<Instructor> findActiveInstructorByScheduleId(long scheduleId) {
+	public List<Instructor> findActiveInstructorsByScheduleId(long scheduleId) {
 		Schedule schedule = scheduleService.findById(scheduleId);
 
 		List<SectionGroup> sectionGroups = new ArrayList<>();

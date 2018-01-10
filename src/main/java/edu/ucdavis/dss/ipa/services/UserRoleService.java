@@ -47,5 +47,5 @@ public interface UserRoleService {
 
 	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
 
-	List<Instructor> findActiveInstructorByScheduleId(long scheduleId);
+	List<Instructor> findActiveInstructorsByScheduleId(long scheduleId);
 }

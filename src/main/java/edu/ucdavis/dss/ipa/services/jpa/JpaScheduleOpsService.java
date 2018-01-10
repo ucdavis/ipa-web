@@ -5,8 +5,25 @@ import javax.transaction.Transactional;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.services.ActivityService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.RoleService;
+import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.TermService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -179,14 +196,12 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	@Transactional
 	@Override
 	public void updateSectionsFromDW() {
-
 		List<Course> courses = this.courseService.getAllCourses();
 
 		// Map Keys will look like allDwSections.get(PSC-2017);
 		Map<String, List<DwSection>> allDwSections = new HashMap<>();
 
 		for (Course course : courses) {
-
 			Long year = course.getSchedule().getYear();
 			String subjectCode = course.getSubjectCode();
 			String dwSectionKey = subjectCode + "-" + year;
@@ -197,20 +212,15 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				if (dwSections == null) {
 					// If query fails to return results for the query, don't attempt to requery on a later section
 					allDwSections.put(dwSectionKey, new ArrayList<DwSection>());
-				}
-
-				if (dwSections == null) {
 					continue;
 				}
 
 				allDwSections.put(dwSectionKey, dwSections);
 			}
 
-
 			// Loop through course children
 			for (SectionGroup sectionGroup : course.getSectionGroups()) {
 				for (Section section : sectionGroup.getSections()) {
-
 					// Find relevant dwSections to sync from
 					for (DwSection dwSection : allDwSections.get(dwSectionKey)) {
 						// Ensure dwSection identification data is valid
@@ -251,18 +261,17 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 		this.updateEmptySectionGroups();
 	}
 
-
 	private void updateEmptySectionGroups() {
 		// Find emptySectionGroups in IPA
 		List<SectionGroup> emptySectionGroups = sectionGroupService.findEmpty();
 
 		// Generate termCode+subjectCode pairs to query DW for to get relevant sections
-		List<QueryParam> queryParams = jdbcTemplate.query("SELECT DISTINCT sg.TermCode, c.SubjectCode" +
+		List<SubjectTermCode> subjectTermCodes = jdbcTemplate.query("SELECT DISTINCT sg.TermCode, c.SubjectCode" +
 						" FROM SectionGroups sg" +
 						" LEFT JOIN Courses c ON sg.CourseId = c.Id" +
 						" LEFT JOIN Sections st ON sg.Id = st.sectionGroupId" +
 						" WHERE st.Id IS NULL;",
-				(rs, rowNum) -> new QueryParam(
+				(rs, rowNum) -> new SubjectTermCode(
 						rs.getString("SubjectCode"),
 						rs.getString("TermCode")
 				)
@@ -271,8 +280,8 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 		// Query DW for potentially matching sections
 		List<DwSection> allDwSections = new ArrayList<>();
 
-		for (QueryParam queryParam : queryParams) {
-			List<DwSection> slotDwSections = dwRepository.getSectionsBySubjectCodeAndTermCode(queryParam.subjectCode, queryParam.termCode);
+		for (SubjectTermCode subjectTermCode : subjectTermCodes) {
+			List<DwSection> slotDwSections = dwRepository.getSectionsBySubjectCodeAndTermCode(subjectTermCode.subjectCode, subjectTermCode.termCode);
 			allDwSections.addAll(slotDwSections);
 		}
 
@@ -327,12 +336,11 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 		}
 	}
 
-
-	private class QueryParam {
+	private class SubjectTermCode {
 		public String subjectCode;
 		public String termCode;
 
-		QueryParam (String subjectCode, String termCode) {
+		SubjectTermCode(String subjectCode, String termCode) {
 			this.subjectCode = subjectCode;
 			this.termCode = termCode;
 		}

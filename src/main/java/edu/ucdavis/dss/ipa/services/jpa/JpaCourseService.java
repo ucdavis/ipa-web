@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaCourseService implements CourseService {
 
 	@Inject CourseRepository courseRepository;
-
 	@Inject SectionGroupRepository sectionGroupRepository;
 	@Inject ScheduleService scheduleService;
 	@Inject TagService tagService;
