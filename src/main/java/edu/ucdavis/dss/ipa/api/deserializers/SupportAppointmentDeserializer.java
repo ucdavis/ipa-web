@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.SupportAppointment;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 
 public class SupportAppointmentDeserializer extends JsonDeserializer<Object> {
 
