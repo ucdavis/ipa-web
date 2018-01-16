@@ -22,6 +22,8 @@ public class AssignmentView {
     long instructorId;
     long userId;
     long scheduleId;
+    List<SupportStaff> supportStaffList;
+    List<StudentSupportPreference> studentSupportPreferences;
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
@@ -38,7 +40,9 @@ public class AssignmentView {
                           List<Long> federationInstructorIds,
                           List<Long> lecturerInstructorIds,
                           List<Tag> tags,
-                          List<SupportAssignment> supportAssignments) {
+                          List<SupportAssignment> supportAssignments,
+                          List<SupportStaff> supportStaffList,
+                          List<StudentSupportPreference> studentSupportPreferences) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -57,6 +61,8 @@ public class AssignmentView {
         setScheduleId(scheduleId);
         setTags(tags);
         setSupportAssignments(supportAssignments);
+        setSupportStaffList(supportStaffList);
+        setStudentSupportPreferences(studentSupportPreferences);
     }
 
     public List<Course> getCourses() {
@@ -194,5 +200,21 @@ public class AssignmentView {
 
     public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
         this.supportAssignments = supportAssignments;
+    }
+
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
+    }
+
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
+    }
+
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
+    }
+
+    public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 }

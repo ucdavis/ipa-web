@@ -27,6 +27,7 @@ public class Section extends BaseEntity {
 	private List<Activity> activities = new ArrayList<>();
 	private List<SyncAction> syncActions = new ArrayList<>();
 	private Boolean visible, crnRestricted;
+	private List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -141,4 +142,13 @@ public class Section extends BaseEntity {
 		this.crnRestricted = crnRestricted;
 	}
 
+	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "section", cascade = {CascadeType.ALL})
+	@JsonIgnore
+	public List<SupportAssignment> getSupportAssignments() {
+		return supportAssignments;
+	}
+
+	public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+		this.supportAssignments = supportAssignments;
+	}
 }

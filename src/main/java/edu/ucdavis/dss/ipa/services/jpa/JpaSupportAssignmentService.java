@@ -163,6 +163,10 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
         // Find all supportAssignments associated to the sectionGroups.
         for (SectionGroup sectionGroup : sectionGroups) {
             supportAssignments.addAll(sectionGroup.getSupportAssignments());
+
+            for (Section section : sectionGroup.getSections()) {
+                supportAssignments.addAll(section.getSupportAssignments());
+            }
         }
 
         return supportAssignments;

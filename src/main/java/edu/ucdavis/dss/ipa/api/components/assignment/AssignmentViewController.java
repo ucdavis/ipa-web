@@ -3,11 +3,20 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
 import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
+
 import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +39,10 @@ public class AssignmentViewController {
     @Inject InstructorService instructorService;
     @Inject Authorization authorization;
     @Inject Authorizer authorizer;
+    @Inject SectionGroupService sectionGroupService;
+    @Inject SupportStaffService supportStaffService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject UserRoleService userRoleService;
 
     @Value("${ipa.url.api}")
     String ipaUrlApi;
@@ -49,6 +62,38 @@ public class AssignmentViewController {
         }
 
         return assignmentViewFactory.createAssignmentView(workgroupId, year, currentUser.getId(), instructorId);
+    }
+
+
+    @RequestMapping(value = "/api/assignmentView/sectionGroups/{sectionGroupId}/supportStaff/{supportStaffId}/assignAI", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public TeachingAssignment assignStudentToAssociateInstructor(@PathVariable long sectionGroupId, @PathVariable long supportStaffId, HttpServletResponse httpResponse) {
+        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+        SupportStaff supportStaff = supportStaffService.findOneById(supportStaffId);
+
+        if (supportStaff == null || sectionGroup == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        // Ensure instructor object has been created
+        Instructor instructor = instructorService.findOrCreate(supportStaff.getFirstName(), supportStaff.getLastName(), supportStaff.getEmail(), supportStaff.getLoginId(), workgroup.getId());
+
+        // Ensure lecturer role is given
+        userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "lecturer");
+
+        // Assign supportStaff to AI
+        TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+        teachingAssignment.setApproved(true);
+
+        // Remove placeholderAI flag
+        sectionGroup.setShowPlaceholderAI(false);
+        sectionGroupService.save(sectionGroup);
+
+        return teachingAssignmentService.save(teachingAssignment);
     }
 
     @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)

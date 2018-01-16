@@ -15,6 +15,9 @@ public class InstructionalSupportAssignmentView {
     List<StudentSupportCallResponse> studentSupportCallResponses;
     List<InstructorSupportCallResponse> instructorSupportCallResponses;
     Schedule schedule;
+    List<SupportAppointment> supportAppointments;
+    List<Section> sections;
+    List<Activity> activities;
 
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
@@ -25,7 +28,10 @@ public class InstructionalSupportAssignmentView {
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
                                               Schedule schedule,
                                               List<InstructorSupportPreference> instructorSupportPreferences,
-                                              List<InstructorSupportCallResponse> instructorSupportCallResponses) {
+                                              List<InstructorSupportCallResponse> instructorSupportCallResponses,
+                                              List<SupportAppointment> supportAppointments,
+                                              List<Section> sections,
+                                              List<Activity> activities) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setSupportAssignments(supportAssignments);
@@ -36,6 +42,9 @@ public class InstructionalSupportAssignmentView {
         setInstructorSupportCallResponses(instructorSupportCallResponses);
         setInstructorSupportPreferences(instructorSupportPreferences);
         setAssignedSupportStaff(assignedSupportStaff);
+        setSupportAppointments(supportAppointments);
+        setSections(sections);
+        setActivities(activities);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -116,5 +125,29 @@ public class InstructionalSupportAssignmentView {
 
     public void setAssignedSupportStaff(List<SupportStaff> assignedSupportStaff) {
         this.assignedSupportStaff = assignedSupportStaff;
+    }
+
+    public List<SupportAppointment> getSupportAppointments() {
+        return supportAppointments;
+    }
+
+    public void setSupportAppointments(List<SupportAppointment> supportAppointments) {
+        this.supportAppointments = supportAppointments;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 }

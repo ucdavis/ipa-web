@@ -300,6 +300,8 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
             studentResponse.setCollectPreferenceComments(studentResponseDTO.isCollectPreferenceComments());
             studentResponse.setCollectGeneralComments(studentResponseDTO.isCollectGeneralComments());
             studentResponse.setRequirePreferenceComments(studentResponseDTO.isRequirePreferenceComments());
+            studentResponse.setCollectAvailabilityByGrid(studentResponseDTO.isCollectAvailabilityByGrid());
+            studentResponse.setCollectAvailabilityByCrn(studentResponseDTO.isCollectAvailabilityByCrn());
 
             studentResponse.setMinimumNumberOfPreferences(studentResponseDTO.getMinimumNumberOfPreferences());
             studentResponse.setAllowSubmissionAfterDueDate(studentResponseDTO.isAllowSubmissionAfterDueDate());

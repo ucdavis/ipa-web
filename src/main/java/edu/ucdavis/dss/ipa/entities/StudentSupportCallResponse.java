@@ -3,7 +3,17 @@ package edu.ucdavis.dss.ipa.entities;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,12 +27,11 @@ public class StudentSupportCallResponse implements Serializable {
     private SupportStaff supportStaff;
     private Date nextContactAt, lastContactedAt, startDate, dueDate;
     private boolean submitted, allowSubmissionAfterDueDate, eligibilityConfirmed;
-    private String generalComments, teachingQualifications, message, termCode;
+    private String generalComments, teachingQualifications, message, termCode, availabilityBlob;
     private Schedule schedule;
-
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
-    private boolean collectAssociateInstructorPreferences, requirePreferenceComments;
+    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -222,6 +231,35 @@ public class StudentSupportCallResponse implements Serializable {
         this.requirePreferenceComments = requirePreferenceComments;
     }
 
+    // The availabilityBlob on a teachingCallResponse is a comma delimited string
+    // It represents availability within a 15 hour window (7am-10pm) over 5 days
+    // 1 for available, 0 for not
+    @Basic(optional = true)
+    @JsonProperty
+    public String getAvailabilityBlob() {
+        return availabilityBlob;
+    }
+
+    public void setAvailabilityBlob(String availabilityBlob) {
+        this.availabilityBlob = availabilityBlob;
+    }
+
+    public boolean isCollectAvailabilityByCrn() {
+        return collectAvailabilityByCrn;
+    }
+
+    public void setCollectAvailabilityByCrn(boolean collectAvailabilityByCrn) {
+        this.collectAvailabilityByCrn = collectAvailabilityByCrn;
+    }
+
+    public boolean isCollectAvailabilityByGrid() {
+        return collectAvailabilityByGrid;
+    }
+
+    public void setCollectAvailabilityByGrid(boolean collectAvailabilityByGrid) {
+        this.collectAvailabilityByGrid = collectAvailabilityByGrid;
+    }
+
     @JsonProperty("supportStaffId")
     @Transient
     public long getInstructionalSupportStaffIdentification() {
@@ -230,5 +268,16 @@ public class StudentSupportCallResponse implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    @Transient
+    @JsonProperty
+    public static String getDefaultAvailabilityBlob() {
+        String blob = "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
+                    + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"; // 29
+        return blob;
     }
 }
