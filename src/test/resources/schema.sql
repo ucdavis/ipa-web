@@ -26,6 +26,7 @@ drop table if exists Sections;
 drop table if exists StudentSupportCallResponses;
 drop table if exists StudentSupportPreferences;
 drop table if exists SupportAssignments;
+drop table if exists SupportAppointments;
 drop table if exists SupportStaff;
 drop table if exists SyncActions;
 drop table if exists Tags;
