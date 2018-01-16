@@ -48,7 +48,6 @@ public class CourseViewController {
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject DataWarehouseRepository dwRepository;
-	@Inject Authorization authorization;
 	@Inject Authorizer authorizer;
 
 	@Value("${ipa.url.api}")
@@ -480,7 +479,7 @@ public class CourseViewController {
 					sectionGroup = sectionGroupService.save(sectionGroup);
 
 					// Find or create a section
-					Section section = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(sectionGroup.getId(), dwSection.getSequenceNumber());
+					Section section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, dwSection.getSequenceNumber());
 
 					section.setSeats(dwSection.getMaximumEnrollment());
 					section = sectionService.save(section);
@@ -627,7 +626,7 @@ public class CourseViewController {
 				newSectionGroup = sectionGroupService.save(newSectionGroup);
 
 				for (Section historicalSection : historicalSectionGroup.getSections()) {
-					Section newSection = sectionService.findOrCreateBySectionGroupIdAndSequenceNumber(newSectionGroup.getId(), historicalSection.getSequenceNumber());
+					Section newSection = sectionService.findOrCreateBySectionGroupAndSequenceNumber(newSectionGroup, historicalSection.getSequenceNumber());
 					newSection.setSeats(historicalSection.getSeats());
 					newSection = sectionService.save(newSection);
 

@@ -213,7 +213,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
         }
 
-        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = supportStaffService.findByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
 
         return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse);
     }

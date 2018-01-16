@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaSupportStaffService implements SupportStaffService {
@@ -138,5 +141,13 @@ public class JpaSupportStaffService implements SupportStaffService {
         }
 
         return supportStaffList;
+    }
+
+    @Override
+    public List<SupportStaff> findByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences) {
+        Set<SupportStaff> supportStaff = new LinkedHashSet<>(studentPreferences.stream().map(preference -> preference.getSupportStaff()).collect(Collectors.toList()));
+        supportStaff.addAll(new LinkedHashSet<>(this.findActiveByWorkgroupId(workgroupId)));
+
+        return new ArrayList<>(supportStaff);
     }
 }

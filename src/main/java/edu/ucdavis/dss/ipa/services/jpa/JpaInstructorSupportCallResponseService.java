@@ -274,6 +274,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
             instructorResponse.setNextContactAt(instructorResponseDTO.getNextContactAt());
             instructorResponse.setTermCode(instructorResponseDTO.getTermCode());
             instructorResponse.setDueDate(instructorResponseDTO.getDueDate());
+            instructorResponse.setAllowSubmissionAfterDueDate(instructorResponseDTO.isAllowSubmissionAfterDueDate());
 
             instructorResponse = this.create(instructorResponse);
             instructorResponses.add(instructorResponse);

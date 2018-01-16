@@ -34,7 +34,7 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/{term}/supportCallStatus", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String term, HttpServletResponse httpResponse) {
+    public InstructionalSupportCallStatusView getInstructionalSupportCallView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String term) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         return instructionalSupportViewFactory.createSupportCallStatusView(workgroupId, year, term);
@@ -42,7 +42,7 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/terms/{term}/toggleSupportStaffSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Schedule toggleStudentSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
+    public Schedule toggleStudentSupportCallReview(@PathVariable long scheduleId, @PathVariable String term) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
@@ -54,7 +54,7 @@ public class InstructionalSupportCallsController {
 
     @RequestMapping(value = "/api/instructionalSupportView/schedules/{scheduleId}/terms/{term}/toggleInstructorSupportCallReview", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Schedule toggleInstructorSupportCallReview(@PathVariable long scheduleId, @PathVariable String term, HttpServletResponse httpResponse) {
+    public Schedule toggleInstructorSupportCallReview(@PathVariable long scheduleId, @PathVariable String term) {
         Workgroup workgroup = scheduleService.findById(scheduleId).getWorkgroup();
         authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
@@ -69,7 +69,7 @@ public class InstructionalSupportCallsController {
      */
     @RequestMapping(value = "/api/supportCallView/{scheduleId}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO, HttpServletResponse httpResponse) {
+    public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
         authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
@@ -121,7 +121,7 @@ public class InstructionalSupportCallsController {
     public class InstructorSupportCallContactDTODeserializer extends JsonDeserializer<Object> {
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
+                throws IOException {
 
             InstructorSupportCallContactDTO instructorSupportCallContactDTO = new InstructorSupportCallContactDTO();
 
@@ -143,7 +143,6 @@ public class InstructionalSupportCallsController {
                 instructorSupportCallContactDTO.setMessage(node.get("message").textValue());
             }
 
-
             if (node.has("dueDate") && !node.get("dueDate").isNull()) {
                 long epochDate = node.get("dueDate").longValue();
                 Date dueDate = new Date(epochDate);
@@ -159,7 +158,7 @@ public class InstructionalSupportCallsController {
      */
     @RequestMapping(value = "/api/supportCallView/{scheduleId}/contactSupportStaff", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO, HttpServletResponse httpResponse) {
+    public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
         authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
@@ -168,9 +167,11 @@ public class InstructionalSupportCallsController {
 
         for (Long responseId : studentSupportCallContactDTO.responseIds) {
             StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findOneById(responseId);
+
             studentSupportCallResponse.setNextContactAt(studentSupportCallContactDTO.getNextContactAt());
             studentSupportCallResponse.setMessage(studentSupportCallContactDTO.getMessage());
             studentSupportCallResponse = studentSupportCallResponseService.update(studentSupportCallResponse);
+
             studentResponses.add(studentSupportCallResponse);
         }
 
@@ -211,7 +212,7 @@ public class InstructionalSupportCallsController {
     public class StudentSupportCallContactDTODeserializer extends JsonDeserializer<Object> {
         @Override
         public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-                throws IOException, JsonProcessingException {
+                throws IOException {
             StudentSupportCallContactDTO studentSupportCallContactDTO = new StudentSupportCallContactDTO();
 
             ObjectCodec oc = jsonParser.getCodec();
@@ -231,7 +232,6 @@ public class InstructionalSupportCallsController {
             if (node.has("message")) {
                 studentSupportCallContactDTO.setMessage(node.get("message").textValue());
             }
-
 
             if (node.has("dueDate") && !node.get("dueDate").isNull()) {
                 long epochDate = node.get("dueDate").longValue();
@@ -264,9 +264,7 @@ public class InstructionalSupportCallsController {
             instructorResponseDTO.setNextContactAt(now);
         }
 
-        List<InstructorSupportCallResponse> instructorResponses = instructorSupportCallResponseService.createMany(addInstructorsDTO.getInstructorIds(), instructorResponseDTO);
-
-        return instructorResponses;
+        return instructorSupportCallResponseService.createMany(addInstructorsDTO.getInstructorIds(), instructorResponseDTO);
     }
 
 
@@ -409,9 +407,7 @@ public class InstructionalSupportCallsController {
             studentResponseDTO.setNextContactAt(now);
         }
 
-        List<StudentSupportCallResponse> studentResponses = studentSupportCallResponseService.createMany(addStudentsDTO.getStudentIds(), studentResponseDTO);
-
-        return studentResponses;
+        return studentSupportCallResponseService.createMany(addStudentsDTO.getStudentIds(), studentResponseDTO);
     }
 
 

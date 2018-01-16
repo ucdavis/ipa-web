@@ -24,14 +24,12 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 public class EmailNotificationTask {
 	@Inject WorkgroupService workgroupService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
-	@Inject
-	StudentSupportCallResponseService studentSupportCallResponseService;
-	@Inject
-	InstructorSupportCallResponseService instructorSupportCallResponseService;
+	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
+	@Inject InstructorSupportCallResponseService instructorSupportCallResponseService;
 
 	private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-	@Scheduled( fixedDelay = 300000 ) // Every 5 min
+	@Scheduled( fixedDelay = 300000 ) // Every 5 minutes
 	@Async
 	public void scanForEmailsToSend() {
 		if(runningTask) return; // avoid multiple concurrent jobs

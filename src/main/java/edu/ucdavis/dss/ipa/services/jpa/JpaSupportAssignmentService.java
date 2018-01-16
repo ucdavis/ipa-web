@@ -15,7 +15,6 @@ import java.util.Collection;
 public class JpaSupportAssignmentService implements SupportAssignmentService {
 
     @Inject SupportAssignmentRepository supportAssignmentRepository;
-    @Inject SectionGroupService sectionGroupService;
     @Inject SupportStaffService supportStaffService;
     @Inject ScheduleService scheduleService;
     @Inject TeachingAssignmentService teachingAssignmentService;
@@ -102,10 +101,7 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
     }
 
     @Override
-    public SupportAssignment create(long sectionGroupId, String type, long appointmentPercentage) {
-
-        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
-
+    public SupportAssignment create(SectionGroup sectionGroup, String type, long appointmentPercentage) {
         SupportAssignment supportAssignment = new SupportAssignment();
 
         supportAssignment.setSectionGroup(sectionGroup);
@@ -118,12 +114,12 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
     }
 
     @Override
-    public List<SupportAssignment> createMultiple(long sectionGroupId, String type, long appointmentPercentage, long numberToCreate) {
+    public List<SupportAssignment> createMultiple(SectionGroup sectionGroup, String type, long appointmentPercentage, long numberToCreate) {
 
         List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
 
         for (int i = 0; i < numberToCreate; i++) {
-            SupportAssignment supportAssignment = this.create(sectionGroupId, type, appointmentPercentage);
+            SupportAssignment supportAssignment = this.create(sectionGroup, type, appointmentPercentage);
             supportAssignments.add(supportAssignment);
         }
 

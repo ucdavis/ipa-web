@@ -100,7 +100,7 @@ public class SiteController {
 		log.error(messageSubject);
 		log.error(messageBody);
 
-		emailService.send("dssit-devs-exceptions@ucdavis.edu", messageBody, messageSubject);
+		emailService.send("dssit-devs-exceptions@ucdavis.edu", messageBody, messageSubject, false);
 	}
 
 	/**

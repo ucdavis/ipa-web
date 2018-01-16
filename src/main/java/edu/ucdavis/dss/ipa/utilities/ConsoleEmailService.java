@@ -18,10 +18,16 @@ public class ConsoleEmailService implements EmailService {
 
     @Override
     public boolean send(String recipientEmail, String messageBody, String messageSubject) {
+        return send(recipientEmail, messageBody, messageSubject, true);
+    }
+
+    @Override
+    public boolean send(String recipientEmail, String messageBody, String messageSubject, Boolean htmlMode) {
         log.info("ConsoleEmailService will 'send' e-mail to log only.");
-        log.info("\tTo      : " + recipientEmail);
-        log.info("\tSubject : " + messageSubject);
-        log.info("\tBody    : \n" + messageBody);
+        log.info("\tHTML mode : " + (htmlMode == true ? "Yes" : "No"));
+        log.info("\tTo        : " + recipientEmail);
+        log.info("\tSubject   : " + messageSubject);
+        log.info("\tBody      : \n" + messageBody);
 
         return true;
     }

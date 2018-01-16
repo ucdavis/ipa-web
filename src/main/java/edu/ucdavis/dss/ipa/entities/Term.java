@@ -180,4 +180,12 @@ public class Term implements Serializable {
 			default: return "Unknown";
 		}
 	}
+
+	@Transient
+	public static String getYear(String termCode) {
+		if(termCode == null) throw new IllegalArgumentException("termCode cannot be null");
+		if(termCode.length() != 6) throw new IllegalArgumentException("Cannot get year if termCode is short");
+
+		return termCode.substring(0, 4);
+	}
 }

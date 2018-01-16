@@ -17,5 +17,5 @@ public interface InstructorCostService {
 
     InstructorCost update(InstructorCost instructorCost);
 
-    List<InstructorCost> findOrCreateManyFromWorkgroupAndYear(Workgroup workgroup, long year);
+    List<InstructorCost> findOrCreateManyFromBudget(Budget budget);
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Section;
@@ -21,9 +22,9 @@ public interface SectionService {
 
 	List<Section> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
-	Section findOrCreateBySectionGroupIdAndSequenceNumber(long id, String sequenceNumber);
-
-	void updateSectionsFromDW();
+	Section findOrCreateBySectionGroupAndSequenceNumber(SectionGroup sectionGroup, String sequenceNumber);
 
 	List<Section> findVisibleByWorkgroupIdAndYear(long workgroupId, long year);
+
+	boolean hasValidSequenceNumber (Section section);
 }

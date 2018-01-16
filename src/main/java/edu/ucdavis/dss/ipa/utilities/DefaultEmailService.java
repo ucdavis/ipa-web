@@ -46,7 +46,12 @@ public class DefaultEmailService implements EmailService {
 	 */
 	@Override
 	public boolean send(String recipientEmail, String messageBody, String messageSubject) {
-		return sendEmail(recipientEmail, messageBody, messageSubject, true);
+		return send(recipientEmail, messageBody, messageSubject, true);
+	}
+
+	@Override
+	public boolean send(String recipientEmail, String messageBody, String messageSubject, Boolean htmlMode) {
+		return sendEmail(recipientEmail, messageBody, messageSubject, htmlMode);
 	}
 
 	/**

@@ -26,7 +26,7 @@ public interface SectionGroupService {
 
     List<SectionGroup> findVisibleByWorkgroupIdAndYearAndTermCode(long workgroupId, long year, String termCode);
 
-	List<SectionGroup> findVisibleByWorkgroupIdAndYear(long workgroupId, long year);
+	List<SectionGroup> findByCourses(List<Course> courses);
 
 	List<SectionGroup> findByScheduleIdAndTermCodeAndStudentSupportCallResponseId(long scheduleId, String termCode, long studentSupportCallResponseId);
 
