@@ -13,4 +13,6 @@ public interface BudgetScenarioService {
     void deleteById(long budgetScenarioId);
 
     BudgetScenario createFromExisting(Long scenarioId, String name);
+
+    BudgetScenario update(BudgetScenario budgetScenario);
 }
