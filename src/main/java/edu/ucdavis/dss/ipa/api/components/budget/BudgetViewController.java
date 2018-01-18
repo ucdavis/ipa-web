@@ -230,6 +230,28 @@ public class BudgetViewController {
         return budgetService.update(budgetDTO);
     }
 
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public BudgetScenario updateBudgetScenario(@PathVariable long budgetScenarioId,
+                               @RequestBody BudgetScenario newBudgetScenario,
+                               HttpServletResponse httpResponse) {
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        budgetScenario.setName(newBudgetScenario.getName());
+
+        return budgetScenarioService.update(budgetScenario);
+    }
+
     @RequestMapping(value = "/api/budgetView/instructorCosts/{instructorCostId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public InstructorCost updateInstructorCost(@PathVariable long instructorCostId,
