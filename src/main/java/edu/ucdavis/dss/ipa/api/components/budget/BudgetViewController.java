@@ -175,8 +175,15 @@ public class BudgetViewController {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         LineItem lineItem = lineItemService.findById(lineItemDTO.getId());
 
-        if (budgetScenario == null || lineItem == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        if (budgetScenario == null || lineItem == null || lineItem.getLineItemCategory() == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategory().getId());
+
+        if (lineItemCategory == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
