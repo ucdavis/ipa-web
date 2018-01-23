@@ -1,0 +1,1 @@
+ALTER TABLE `BudgetScenarios` ADD COLUMN `ActiveTermsBlob` varchar(10) NOT NULL DEFAULT '1111111111';
