@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class BudgetScenario extends BaseEntity {
     private long id;
     private Budget budget;
-    private String name;
+    private String name, activeTermsBlob;
     private List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
     private List<LineItem> lineItems = new ArrayList<>();
 
@@ -78,6 +78,48 @@ public class BudgetScenario extends BaseEntity {
 
     public void setLineItems(List<LineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    /**
+     * Terms are expected to be sorted ['01','02','03','04','05','06','07','08','09','10']
+     */
+    @JsonProperty
+    public String getActiveTermsBlob() {
+        return activeTermsBlob;
+    }
+
+    public void setActiveTermsBlob(String activeTermsBlob) {
+        this.activeTermsBlob = activeTermsBlob;
+    }
+
+    /**
+     * Will generate a list of terms from the activeTermsBlob
+     * Example: '1010000001' => ['01', '03', '10']
+     */
+    @Transient
+    @JsonIgnore
+    public List<String> getActiveTermsBlobAsTerms() {
+        List<String> terms = new ArrayList<>();
+        String termBlob = this.getActiveTermsBlob();
+
+        if (termBlob == null || termBlob.length() != 10) {
+            return terms;
+        }
+
+        for (int i = 0; i < termBlob.length(); i++) {
+            if (termBlob.charAt(i) == '1') {
+                String term = String.valueOf(i + 1);
+
+                // Zero pad if necessary
+                if (term.length() == 1) {
+                    term = "0" + term;
+                }
+
+                terms.add(term);
+            }
+        }
+
+        return terms;
     }
 
     @JsonProperty("budgetId")
