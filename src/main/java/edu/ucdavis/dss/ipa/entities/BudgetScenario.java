@@ -95,11 +95,38 @@ public class BudgetScenario extends BaseEntity {
     }
 
     /**
+     * Will set the value for the specified term, '1' for active, '0' for inactive
+     * @param termCode
+     * @param active
+     * @return
+     */
+    public String setTermInActiveTermsBlob(String termCode, boolean active) {
+        if (termCode == null || termCode.length() != 6) {
+            return this.activeTermsBlob;
+        }
+
+        String term = termCode.substring(termCode.length() -2);
+
+        if (term == null || term.length() != 2) {
+            return this.activeTermsBlob;
+        }
+
+        int index = Integer.valueOf(term) - 1;
+        char value = (active) ? '1' : '0';
+
+        char[] charArrayDTO = this.activeTermsBlob.toCharArray();
+        charArrayDTO[index] = value;
+        this.activeTermsBlob = String.valueOf(charArrayDTO);
+
+        return this.activeTermsBlob;
+    }
+
+    /**
      * Will generate a list of terms from the activeTermsBlob
      * Example: '1010000001' => ['01', '03', '10']
      */
     @Transient
-    @JsonIgnore
+    @JsonProperty("terms")
     public List<String> getActiveTermsBlobAsTerms() {
         List<String> terms = new ArrayList<>();
         String termBlob = this.getActiveTermsBlob();
@@ -109,6 +136,9 @@ public class BudgetScenario extends BaseEntity {
         }
 
         for (int i = 0; i < termBlob.length(); i++) {
+            // Skip term '04', its not used
+            if (i == 3) {continue;}
+
             if (termBlob.charAt(i) == '1') {
                 String term = String.valueOf(i + 1);
 
