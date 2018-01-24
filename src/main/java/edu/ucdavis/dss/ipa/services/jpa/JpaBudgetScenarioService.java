@@ -35,6 +35,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(budget);
         budgetScenario.setName(budgetScenarioName);
+        budgetScenario.setActiveTermsBlob("0000000000");
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear());
@@ -42,6 +43,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         List<SectionGroupCost> newSectionGroupCosts = new ArrayList<>();
 
         for (SectionGroup sectionGroup : sectionGroups) {
+            budgetScenario.setTermInActiveTermsBlob(sectionGroup.getTermCode(), true);
+
             SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
             newSectionGroupCosts.add(sectionGroupCost);
         }
