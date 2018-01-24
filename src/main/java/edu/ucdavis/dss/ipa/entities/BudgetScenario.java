@@ -129,6 +129,8 @@ public class BudgetScenario extends BaseEntity {
     @JsonProperty("terms")
     public List<String> getActiveTermsBlobAsTerms() {
         List<String> terms = new ArrayList<>();
+        List<String> secondYearTerms = new ArrayList<>();
+
         String termBlob = this.getActiveTermsBlob();
 
         if (termBlob == null || termBlob.length() != 10) {
@@ -147,9 +149,16 @@ public class BudgetScenario extends BaseEntity {
                     term = "0" + term;
                 }
 
-                terms.add(term);
+                // Put winter/spring terms at the end to ensure list is chronologically ordered
+                if (i < 3) {
+                    secondYearTerms.add(term);
+                } else {
+                    terms.add(term);
+                }
             }
         }
+
+        terms.addAll(secondYearTerms);
 
         return terms;
     }
