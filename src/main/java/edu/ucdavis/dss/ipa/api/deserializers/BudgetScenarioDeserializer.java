@@ -29,6 +29,10 @@ public class BudgetScenarioDeserializer extends JsonDeserializer<Object> {
             budgetScenario.setName(node.get("name").textValue());
         }
 
+        if (node.has("activeTermsBlob")) {
+            budgetScenario.setActiveTermsBlob(node.get("activeTermsBlob").textValue());
+        }
+
         return budgetScenario;
     }
 }

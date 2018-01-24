@@ -255,6 +255,7 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         budgetScenario.setName(newBudgetScenario.getName());
+        budgetScenario.setActiveTermsBlob(newBudgetScenario.getActiveTermsBlob());
 
         return budgetScenarioService.update(budgetScenario);
     }
