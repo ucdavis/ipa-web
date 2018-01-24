@@ -103,6 +103,11 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     @Override
+    public BudgetScenario update(BudgetScenario budgetScenario) {
+        return budgetScenarioRepository.save(budgetScenario);
+    }
+
+    @Override
     public BudgetScenario findById(long budgetScenarioId) {
         return budgetScenarioRepository.findById(budgetScenarioId);
     }

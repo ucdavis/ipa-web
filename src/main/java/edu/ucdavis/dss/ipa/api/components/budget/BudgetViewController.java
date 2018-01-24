@@ -175,8 +175,15 @@ public class BudgetViewController {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         LineItem lineItem = lineItemService.findById(lineItemDTO.getId());
 
-        if (budgetScenario == null || lineItem == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        if (budgetScenario == null || lineItem == null || lineItem.getLineItemCategory() == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategory().getId());
+
+        if (lineItemCategory == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -228,6 +235,28 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return budgetService.update(budgetDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public BudgetScenario updateBudgetScenario(@PathVariable long budgetScenarioId,
+                               @RequestBody BudgetScenario newBudgetScenario,
+                               HttpServletResponse httpResponse) {
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        budgetScenario.setName(newBudgetScenario.getName());
+
+        return budgetScenarioService.update(budgetScenario);
     }
 
     @RequestMapping(value = "/api/budgetView/instructorCosts/{instructorCostId}", method = RequestMethod.PUT, produces="application/json")
