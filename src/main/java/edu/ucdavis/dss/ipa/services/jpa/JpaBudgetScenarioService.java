@@ -20,6 +20,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject SectionGroupService sectionGroupService;
     @Inject LineItemService lineItemService;
     @Inject CourseService courseService;
+    @Inject LineItemCategoryService lineItemCategoryService;
 
     @Override
     @Transactional
@@ -53,6 +54,42 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
         sectionGroupCosts.addAll(newSectionGroupCosts);
         budgetScenario.setSectionGroupCosts(sectionGroupCosts);
+
+        // Generate Line items automatically from buyouts
+        List<LineItem> lineItems = budgetScenario.getLineItems();
+        List<LineItem> newLineItems = new ArrayList<>();
+
+        for (TeachingAssignment teachingAssignment : budget.getSchedule().getTeachingAssignments()) {
+            if (teachingAssignment.isApproved() == false) {
+                continue;
+            }
+
+            if (teachingAssignment.isBuyout()) {
+                LineItem lineItemDTO = new LineItem();
+                lineItemDTO.setBudgetScenario(budgetScenario);
+                lineItemDTO.setAmount(0f);
+                lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(2));
+
+                String description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
+                lineItemDTO.setDescription(description);
+
+                LineItem newLineItem = lineItemService.findOrCreate(lineItemDTO);
+                newLineItems.add(newLineItem);
+            } else if (teachingAssignment.isWorkLifeBalance()) {
+                LineItem lineItemDTO = new LineItem();
+                lineItemDTO.setBudgetScenario(budgetScenario);
+                lineItemDTO.setAmount(0f);
+                lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(5));
+
+                String description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
+                lineItemDTO.setDescription(description);
+
+                LineItem newLineItem = lineItemService.findOrCreate(lineItemDTO);
+                newLineItems.add(newLineItem);
+            }
+        }
+        lineItems.addAll(newLineItems);
+        budgetScenario.setLineItems(lineItems);
 
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
