@@ -24,6 +24,7 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject InstructorService instructorService;
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
+    @Inject BudgetScenarioService budgetScenarioService;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
@@ -74,7 +75,10 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setInstructor(instructor);
             teachingAssignment.setSchedule(schedule);
 
-            return teachingAssignmentService.save(teachingAssignment);
+            TeachingAssignment newTeachingAssignment = teachingAssignmentService.save(teachingAssignment);
+            budgetScenarioService.createLineItemsFromTeachingAssignment(newTeachingAssignment);
+
+            return newTeachingAssignment;
         }
 
         // Handle sectionGroup based preferences
@@ -210,6 +214,10 @@ public class AssignmentViewTeachingAssignmentController {
             originalTeachingAssignment.setSuggestedEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
 
             return originalTeachingAssignment;
+        }
+
+        if (originalTeachingAssignment.isApproved() == false && teachingAssignment.isApproved()) {
+            budgetScenarioService.createLineItemsFromTeachingAssignment(teachingAssignment);
         }
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
