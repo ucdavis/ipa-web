@@ -78,6 +78,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(originalBudgetScenario.getBudget());
         budgetScenario.setName(name);
+        budgetScenario.setActiveTermsBlob(originalBudgetScenario.getActiveTermsBlob());
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
         List<SectionGroupCost> sectionGroupCostList = new ArrayList<>();
