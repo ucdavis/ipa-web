@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -15,4 +16,6 @@ public interface BudgetScenarioService {
     BudgetScenario createFromExisting(Long scenarioId, String name);
 
     BudgetScenario update(BudgetScenario budgetScenario);
+
+    void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment);
 }
