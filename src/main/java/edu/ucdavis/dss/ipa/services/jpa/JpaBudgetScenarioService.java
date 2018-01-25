@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import java.util.List;
 
 @Service
 public class JpaBudgetScenarioService implements BudgetScenarioService {
-    @Inject BudgetRepository budgetRepository;
     @Inject ScheduleService scheduleService;
     @Inject BudgetScenarioRepository budgetScenarioRepository;
     @Inject SectionGroupCostService sectionGroupCostService;
@@ -21,6 +19,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject LineItemService lineItemService;
     @Inject CourseService courseService;
     @Inject LineItemCategoryService lineItemCategoryService;
+    @Inject BudgetService budgetService;
 
     @Override
     @Transactional
@@ -146,6 +145,17 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Override
     public BudgetScenario update(BudgetScenario budgetScenario) {
         return budgetScenarioRepository.save(budgetScenario);
+    }
+
+    @Override
+    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment) {
+        if (teachingAssignment.isApproved() && (teachingAssignment.isBuyout() || teachingAssignment.isWorkLifeBalance())) {
+
+            Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
+            for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {
+                lineItemService.createLineItemFromTeachingAssignmentAndBudgetScenario(teachingAssignment, budgetScenario);
+            }
+        }
     }
 
     @Override

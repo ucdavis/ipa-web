@@ -2,7 +2,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.LineItemRepository;
+import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +16,7 @@ import java.util.List;
 @Service
 public class JpaLineItemService implements LineItemService {
     @Inject LineItemRepository lineItemRepository;
+    @Inject LineItemCategoryService lineItemCategoryService;
 
     @Override
     public List<LineItem> findByBudgetId(Long budgetId) {
@@ -81,5 +85,35 @@ public class JpaLineItemService implements LineItemService {
     @Override
     public void deleteMany(List<Integer> lineItemIds) {
         this.lineItemRepository.deleteLineItemsWithIds(lineItemIds);
+    }
+
+    @Override
+    public void createLineItemFromTeachingAssignmentAndBudgetScenario(TeachingAssignment teachingAssignment, BudgetScenario budgetScenario) {
+        if (teachingAssignment.isApproved() == false) {
+            return;
+        }
+
+        LineItem lineItemDTO = null;
+
+        if (teachingAssignment.isBuyout()) {
+            lineItemDTO = new LineItem();
+            lineItemDTO.setAmount(0f);
+            lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(2));
+            lineItemDTO.setBudgetScenario(budgetScenario);
+
+            String description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
+            lineItemDTO.setDescription(description);
+            this.findOrCreate(lineItemDTO);
+        } else if (teachingAssignment.isWorkLifeBalance()) {
+            lineItemDTO = new LineItem();
+            lineItemDTO.setAmount(0f);
+            lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(5));
+            lineItemDTO.setBudgetScenario(budgetScenario);
+
+            String description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
+            lineItemDTO.setDescription(description);
+
+            this.findOrCreate(lineItemDTO);
+        }
     }
 }
