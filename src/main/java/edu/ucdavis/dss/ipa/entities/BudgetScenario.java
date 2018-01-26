@@ -139,7 +139,7 @@ public class BudgetScenario extends BaseEntity {
 
         for (int i = 0; i < termBlob.length(); i++) {
             // Skip term '04', its not used
-            if (i == 3) {continue;}
+            if (i == 3) { continue; }
 
             if (termBlob.charAt(i) == '1') {
                 String term = String.valueOf(i + 1);

@@ -24,4 +24,9 @@ public class JpaLineItemCategoryService implements LineItemCategoryService {
     public LineItemCategory findById(long lineItemCategoryId) {
         return lineItemCategoryRepository.findById(lineItemCategoryId);
     }
+
+    @Override
+    public LineItemCategory findByDescription(String description) {
+        return lineItemCategoryRepository.findByDescription(description);
+    }
 }

@@ -89,31 +89,26 @@ public class JpaLineItemService implements LineItemService {
 
     @Override
     public void createLineItemFromTeachingAssignmentAndBudgetScenario(TeachingAssignment teachingAssignment, BudgetScenario budgetScenario) {
-        if (teachingAssignment.isApproved() == false) {
+        if (teachingAssignment.isApproved() == false || (teachingAssignment.isBuyout() == false && teachingAssignment.isWorkLifeBalance() == false)) {
             return;
         }
 
-        LineItem lineItemDTO = null;
+        LineItem lineItemDTO = new LineItem();
+        lineItemDTO.setAmount(0f);
+        lineItemDTO.setBudgetScenario(budgetScenario);
+
+        String description = "";
 
         if (teachingAssignment.isBuyout()) {
-            lineItemDTO = new LineItem();
-            lineItemDTO.setAmount(0f);
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(2));
-            lineItemDTO.setBudgetScenario(budgetScenario);
-
-            String description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-            lineItemDTO.setDescription(description);
-            this.findOrCreate(lineItemDTO);
+            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Buyout Lecturer Replacement Funds"));
+            description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
         } else if (teachingAssignment.isWorkLifeBalance()) {
-            lineItemDTO = new LineItem();
-            lineItemDTO.setAmount(0f);
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(5));
-            lineItemDTO.setBudgetScenario(budgetScenario);
-
-            String description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-            lineItemDTO.setDescription(description);
-
-            this.findOrCreate(lineItemDTO);
+            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Work-Life Balance Funds"));
+            description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
         }
+
+        lineItemDTO.setDescription(description);
+
+        this.findOrCreate(lineItemDTO);
     }
 }
