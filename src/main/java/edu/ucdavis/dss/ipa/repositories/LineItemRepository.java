@@ -22,6 +22,6 @@ public interface LineItemRepository extends CrudRepository<LineItem, Long> {
 
     @Modifying
     @Query("delete from LineItem l where l.id in ?1")
-    void deleteLineItemsWithIds(List<Integer> ids);
+    void deleteLineItemsWithIds(List<Long> ids);
 
 }

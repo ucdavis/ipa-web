@@ -195,10 +195,10 @@ public class BudgetViewController {
     }
 
 
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.DELETE, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public List<Integer> deleteLineItems(@PathVariable long budgetScenarioId,
-                                      @RequestBody List<Integer> lineItemIds,
+    public List<Long> deleteLineItems(@PathVariable long budgetScenarioId,
+                                      @RequestBody List<Long> lineItemIds,
                                       HttpServletResponse httpResponse) {
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);

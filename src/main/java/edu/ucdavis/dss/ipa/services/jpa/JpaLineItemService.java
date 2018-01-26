@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -82,9 +83,12 @@ public class JpaLineItemService implements LineItemService {
         return this.lineItemRepository.save(lineItem);
     }
 
+    @Transactional
     @Override
-    public void deleteMany(List<Integer> lineItemIds) {
-        this.lineItemRepository.deleteLineItemsWithIds(lineItemIds);
+    public void deleteMany(List<Long> lineItemIds) {
+        for (Long lineItemId : lineItemIds) {
+            this.deleteById(lineItemId);
+        }
     }
 
     @Override
