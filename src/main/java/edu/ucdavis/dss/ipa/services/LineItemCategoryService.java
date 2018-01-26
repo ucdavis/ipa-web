@@ -13,4 +13,6 @@ public interface LineItemCategoryService {
     List<LineItemCategory> findAll();
 
     LineItemCategory findById(long lineItemCategoryId);
+
+    LineItemCategory findByDescription(String description);
 }

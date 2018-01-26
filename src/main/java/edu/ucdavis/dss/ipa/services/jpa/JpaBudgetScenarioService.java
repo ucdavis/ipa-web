@@ -150,8 +150,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Override
     public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment) {
         if (teachingAssignment.isApproved() && (teachingAssignment.isBuyout() || teachingAssignment.isWorkLifeBalance())) {
-
             Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
+
             for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {
                 lineItemService.createLineItemFromTeachingAssignmentAndBudgetScenario(teachingAssignment, budgetScenario);
             }

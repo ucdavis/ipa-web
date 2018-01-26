@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface LineItemCategoryRepository extends CrudRepository<LineItemCategory, Long> {
     LineItemCategory findById(long lineItemCategoryId);
+
+    LineItemCategory findByDescription(String description);
 }
