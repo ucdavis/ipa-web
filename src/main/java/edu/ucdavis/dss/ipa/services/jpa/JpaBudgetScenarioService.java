@@ -40,19 +40,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear());
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
-        List<SectionGroupCost> newSectionGroupCosts = new ArrayList<>();
 
         for (SectionGroup sectionGroup : sectionGroups) {
             budgetScenario.setTermInActiveTermsBlob(sectionGroup.getTermCode(), true);
-
-            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
-            newSectionGroupCosts.add(sectionGroupCost);
         }
-
-        // Bind sectionGroupCosts to the current entity
-        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
-        sectionGroupCosts.addAll(newSectionGroupCosts);
-        budgetScenario.setSectionGroupCosts(sectionGroupCosts);
 
         // Generate Line items automatically from buyouts
         List<LineItem> lineItems = budgetScenario.getLineItems();
@@ -87,6 +78,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
                 newLineItems.add(newLineItem);
             }
         }
+
         lineItems.addAll(newLineItems);
         budgetScenario.setLineItems(lineItems);
 
