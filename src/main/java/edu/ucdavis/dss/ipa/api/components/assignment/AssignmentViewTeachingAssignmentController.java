@@ -439,19 +439,11 @@ public class AssignmentViewTeachingAssignmentController {
         Workgroup workgroup = schedule.getWorkgroup();
         authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
 
-        Integer priority = 1;
-
-        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findAllByIds(sortedTeachingPreferenceIds);
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.updatePreferenceOrder(sortedTeachingPreferenceIds);
 
         if (teachingAssignments == null || teachingAssignments.size() != sortedTeachingPreferenceIds.size()) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
-        }
-
-        for(TeachingAssignment teachingAssignment : teachingAssignments) {
-            teachingAssignment.setPriority(priority);
-            teachingAssignmentService.save(teachingAssignment);
-            priority++;
         }
 
         return sortedTeachingPreferenceIds;
