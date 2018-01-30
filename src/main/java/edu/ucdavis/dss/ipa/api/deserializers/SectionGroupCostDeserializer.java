@@ -37,24 +37,24 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("enrollment")) {
-            if (node.get("enrollment").size() > 0) {
+            if (node.get("enrollment").isNull() == false) {
                 sectionGroupCost.setEnrollment(node.get("enrollment").longValue());
             }
         }
 
         if (node.has("taCount")) {
-            if (node.get("taCount").size() > 0) {
+            if (node.get("taCount").isNull() == false) {
                 sectionGroupCost.setTaCount(node.get("taCount").floatValue());
             }
         }
 
         if (node.has("sectionCount")) {
-            if (node.get("sectionCount").size() > 0) {
+            if (node.get("sectionCount").isNull() == false) {
                 sectionGroupCost.setSectionCount(node.get("sectionCount").intValue());
             }
         }
         if (node.has("readerCount")) {
-            if (node.get("readerCount").size() > 0) {
+            if (node.get("readerCount").isNull() == false) {
                 sectionGroupCost.setReaderCount(node.get("readerCount").floatValue());
             }
         }
