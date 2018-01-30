@@ -148,7 +148,7 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("budgetScenarioId")
     @Transient
-    public long getBudgetScenarioId() {
+    public long getBudgetScenarioIdentification() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
         } else {
@@ -156,9 +156,19 @@ public class SectionGroupCost extends BaseEntity {
         }
     }
 
+    @JsonProperty("sectionGroupId")
+    @Transient
+    public long getSectionGroupIdentification() {
+        if(sectionGroup != null) {
+            return sectionGroup.getId();
+        } else {
+            return 0;
+        }
+    }
+
     @JsonProperty("instructorId")
     @Transient
-    public long getInstructorId() {
+    public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
         } else {
@@ -168,7 +178,7 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("originalInstructorId")
     @Transient
-    public long getOriginalInstructorId() {
+    public long getOriginalInstructorIdentification() {
         if(originalInstructor != null) {
             return originalInstructor.getId();
         } else {
