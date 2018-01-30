@@ -74,8 +74,8 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setEnrollment(enrollment);
 
         // Set reader and ta count
-        Long readerCount = 0L;
-        Long taCount = 0L;
+        Float readerCount = 0F;
+        Float taCount = 0F;
 
         for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
             if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {

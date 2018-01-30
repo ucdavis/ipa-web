@@ -21,11 +21,12 @@ public class SectionGroupCost extends BaseEntity {
     private long id;
     private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
-    private long enrollment = 0, sectionCount = 0;
+    private Integer sectionCount;
+    private Long enrollment;
     private Instructor instructor;
     private Instructor originalInstructor;
     private String reason;
-    private Float instructorCost, taCount = 0f, readerCount = 0f;
+    private Float instructorCost, taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
@@ -54,35 +55,35 @@ public class SectionGroupCost extends BaseEntity {
         this.sectionGroup = sectionGroup;
     }
 
-    public long getEnrollment() {
+    public Long getEnrollment() {
         return enrollment;
     }
 
-    public void setEnrollment(long enrollment) {
+    public void setEnrollment(Long enrollment) {
         this.enrollment = enrollment;
     }
 
-    public float getTaCount() {
+    public Float getTaCount() {
         return taCount;
     }
 
-    public void setTaCount(float taCount) {
+    public void setTaCount(Float taCount) {
         this.taCount = taCount;
     }
 
-    public long getSectionCount() {
+    public Integer getSectionCount() {
         return sectionCount;
     }
 
-    public void setSectionCount(long sectionCount) {
+    public void setSectionCount(Integer sectionCount) {
         this.sectionCount = sectionCount;
     }
 
-    public float getReaderCount() {
+    public Float getReaderCount() {
         return readerCount;
     }
 
-    public void setReaderCount(float readerCount) {
+    public void setReaderCount(Float readerCount) {
         this.readerCount = readerCount;
     }
 

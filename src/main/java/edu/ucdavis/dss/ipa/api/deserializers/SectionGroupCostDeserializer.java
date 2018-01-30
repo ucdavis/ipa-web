@@ -37,19 +37,26 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("enrollment")) {
-            sectionGroupCost.setEnrollment(node.get("enrollment").longValue());
+            if (node.get("enrollment").size() > 0) {
+                sectionGroupCost.setEnrollment(node.get("enrollment").longValue());
+            }
         }
 
         if (node.has("taCount")) {
-            sectionGroupCost.setTaCount(node.get("taCount").floatValue());
+            if (node.get("taCount").size() > 0) {
+                sectionGroupCost.setTaCount(node.get("taCount").floatValue());
+            }
         }
 
         if (node.has("sectionCount")) {
-            sectionGroupCost.setSectionCount(node.get("sectionCount").longValue());
+            if (node.get("sectionCount").size() > 0) {
+                sectionGroupCost.setSectionCount(node.get("sectionCount").intValue());
+            }
         }
-
         if (node.has("readerCount")) {
-            sectionGroupCost.setReaderCount(node.get("readerCount").floatValue());
+            if (node.get("readerCount").size() > 0) {
+                sectionGroupCost.setReaderCount(node.get("readerCount").floatValue());
+            }
         }
 
         if (node.has("instructorId")) {
