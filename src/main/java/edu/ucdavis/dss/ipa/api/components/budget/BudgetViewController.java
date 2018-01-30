@@ -28,6 +28,7 @@ public class BudgetViewController {
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
     @Inject LineItemCommentService lineItemCommentService;
     @Inject Authorizer authorizer;
+    @Inject SectionGroupService sectionGroupService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -298,6 +299,28 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return sectionGroupCostService.update(sectionGroupCostDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/sectionGroupCosts", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public SectionGroupCost createSectionGroupCost(@PathVariable long budgetScenarioId,
+                                                   @RequestBody SectionGroupCost sectionGroupCostDTO,
+                                                   HttpServletResponse httpResponse) {
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+        SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupCostDTO.getSectionGroup().getId());
+
+        if (budgetScenario == null || sectionGroup == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        sectionGroupCostDTO.setSectionGroup(sectionGroup);
+
+        return sectionGroupCostService.createOrUpdateFrom(sectionGroupCostDTO, budgetScenario);
     }
 
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostComments", method = RequestMethod.POST, produces="application/json")
