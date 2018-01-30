@@ -113,7 +113,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
-            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFrom(originalSectionGroupCost, budgetScenario);
+            SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetScenario);
             sectionGroupCostList.add(sectionGroupCost);
         }
 

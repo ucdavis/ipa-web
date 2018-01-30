@@ -20,8 +20,12 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     }
 
     @Override
-    public SectionGroupCost createFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario) {
-        SectionGroupCost sectionGroupCost = new SectionGroupCost();
+    public SectionGroupCost createOrUpdateFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario) {
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySectionGroupIdAndBudgetScenarioId(originalSectionGroupCost.getSectionGroup().getId(), budgetScenario.getId());
+
+        if (sectionGroupCost == null) {
+            sectionGroupCost = new SectionGroupCost();
+        }
 
         sectionGroupCost.setBudgetScenario(budgetScenario);
         sectionGroupCost.setInstructor(originalSectionGroupCost.getInstructor());

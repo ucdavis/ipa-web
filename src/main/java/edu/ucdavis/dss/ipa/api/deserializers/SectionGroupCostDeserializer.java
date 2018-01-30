@@ -64,6 +64,18 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             sectionGroupCost.setOriginalInstructor(originalInstructor);
         }
 
+        if (node.has("budgetScenarioId")) {
+            BudgetScenario budgetScenario = new BudgetScenario();
+            budgetScenario.setId(node.get("budgetScenarioId").longValue());
+            sectionGroupCost.setBudgetScenario(budgetScenario);
+        }
+
+        if (node.has("sectionGroupId")) {
+            SectionGroup sectionGroup = new SectionGroup();
+            sectionGroup.setId(node.get("sectionGroupId").longValue());
+            sectionGroupCost.setSectionGroup(sectionGroup);
+        }
+
         return sectionGroupCost;
     }
 }
