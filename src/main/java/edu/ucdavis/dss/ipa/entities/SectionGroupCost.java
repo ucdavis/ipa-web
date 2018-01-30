@@ -24,8 +24,8 @@ public class SectionGroupCost extends BaseEntity {
     private long enrollment = 0, sectionCount = 0;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
-    private Float unitsHigh, unitsLow, instructorCost, taCount = 0f, readerCount = 0f;
+    private String reason;
+    private Float instructorCost, taCount = 0f, readerCount = 0f;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
@@ -136,70 +136,6 @@ public class SectionGroupCost extends BaseEntity {
 
     public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
         this.sectionGroupCostComments = sectionGroupCostComments;
-    }
-
-    public float getUnitsHigh() {
-        return unitsHigh;
-    }
-
-    public void setUnitsHigh(float unitsHigh) {
-        this.unitsHigh = unitsHigh;
-    }
-
-    public float getUnitsLow() {
-        return unitsLow;
-    }
-
-    public void setUnitsLow(float unitsLow) {
-        this.unitsLow = unitsLow;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getSubjectCode() {
-        return subjectCode;
-    }
-
-    public void setSubjectCode(String subjectCode) {
-        this.subjectCode = subjectCode;
-    }
-
-    public String getCourseNumber() {
-        return courseNumber;
-    }
-
-    public void setCourseNumber(String courseNumber) {
-        this.courseNumber = courseNumber;
-    }
-
-    public String getEffectiveTermCode() {
-        return effectiveTermCode;
-    }
-
-    public void setEffectiveTermCode(String effectiveTermCode) {
-        this.effectiveTermCode = effectiveTermCode;
-    }
-
-    public String getSequencePattern() {
-        return sequencePattern;
-    }
-
-    public void setSequencePattern(String sequencePattern) {
-        this.sequencePattern = sequencePattern;
-    }
-
-    public String getTermCode() {
-        return termCode;
-    }
-
-    public void setTermCode(String termCode) {
-        this.termCode = termCode;
     }
 
     public String getReason() {

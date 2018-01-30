@@ -32,15 +32,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setTaCount(originalSectionGroupCost.getTaCount());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
         sectionGroupCost.setInstructorCost(originalSectionGroupCost.getInstructorCost());
-        sectionGroupCost.setSubjectCode(originalSectionGroupCost.getSubjectCode());
-        sectionGroupCost.setCourseNumber(originalSectionGroupCost.getCourseNumber());
-        sectionGroupCost.setTitle(originalSectionGroupCost.getTitle());
-        sectionGroupCost.setEffectiveTermCode(originalSectionGroupCost.getEffectiveTermCode());
-        sectionGroupCost.setUnitsHigh(originalSectionGroupCost.getUnitsHigh());
-        sectionGroupCost.setUnitsLow(originalSectionGroupCost.getUnitsLow());
-        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
-        sectionGroupCost.setSequencePattern(originalSectionGroupCost.getSequencePattern());
-        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
@@ -62,16 +53,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         }
 
         sectionGroupCost.setInstructor(instructor);
-
-        // Set course meta data
-        sectionGroupCost.setCourseNumber(sectionGroup.getCourse().getCourseNumber());
-        sectionGroupCost.setSubjectCode(sectionGroup.getCourse().getSubjectCode());
-        sectionGroupCost.setEffectiveTermCode(sectionGroup.getCourse().getEffectiveTermCode());
-        sectionGroupCost.setTitle(sectionGroup.getCourse().getTitle());
-        sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
-        sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsHigh());
-        sectionGroupCost.setTermCode(sectionGroup.getTermCode());
-        sectionGroupCost.setSequencePattern(sectionGroup.getCourse().getSequencePattern());
 
         // Set sectionCount
         Integer sectionCount = sectionGroup.getSections().size();

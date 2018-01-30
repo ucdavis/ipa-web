@@ -32,56 +32,6 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             }
         }
 
-        if (node.has("unitsHigh")) {
-            Float unitsHigh = null;
-
-            String stringAmount = node.get("unitsHigh").textValue();
-            if (stringAmount == null) {
-                unitsHigh = node.get("unitsHigh").floatValue();
-            } else {
-                unitsHigh = Float.valueOf(stringAmount);
-            }
-
-            sectionGroupCost.setUnitsHigh(unitsHigh);
-        }
-
-        if (node.has("unitsLow")) {
-            Float unitsLow = null;
-
-            String stringAmount = node.get("unitsLow").textValue();
-            if (stringAmount == null) {
-                unitsLow = node.get("unitsLow").floatValue();
-            } else {
-                unitsLow = Float.valueOf(stringAmount);
-            }
-
-            sectionGroupCost.setUnitsLow(unitsLow);
-        }
-
-        if (node.has("title")) {
-            sectionGroupCost.setTitle(node.get("title").textValue());
-        }
-
-        if (node.has("subjectCode")) {
-            sectionGroupCost.setSubjectCode(node.get("subjectCode").textValue());
-        }
-
-        if (node.has("courseNumber")) {
-            sectionGroupCost.setCourseNumber(node.get("courseNumber").textValue());
-        }
-
-        if (node.has("effectiveTermCode")) {
-            sectionGroupCost.setEffectiveTermCode(node.get("effectiveTermCode").textValue());
-        }
-
-        if (node.has("termCode")) {
-            sectionGroupCost.setTermCode(node.get("termCode").textValue());
-        }
-
-        if (node.has("sequencePattern")) {
-            sectionGroupCost.setSequencePattern(node.get("sequencePattern").textValue());
-        }
-
         if (node.has("reason")) {
             sectionGroupCost.setReason(node.get("reason").textValue());
         }
