@@ -32,9 +32,7 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
 
         if (node.has("instructorTypeId")) {
             InstructorType instructorType = new InstructorType();
-
             instructorType.setId(node.get("instructorTypeId").longValue());
-
             instructorCost.setInstructorType(instructorType);
         }
         return instructorCost;
