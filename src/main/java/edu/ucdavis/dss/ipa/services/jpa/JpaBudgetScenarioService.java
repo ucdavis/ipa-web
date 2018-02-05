@@ -20,6 +20,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject CourseService courseService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject BudgetService budgetService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     @Override
     @Transactional
@@ -148,8 +149,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     @Override
-    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment) {
-        if (teachingAssignment.isApproved() && (teachingAssignment.isBuyout() || teachingAssignment.isWorkLifeBalance())) {
+    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignmentDTO) {
+        if (teachingAssignmentDTO.isApproved() && (teachingAssignmentDTO.isBuyout() || teachingAssignmentDTO.isWorkLifeBalance())) {
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentDTO.getId());
+
             Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
 
             for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {
