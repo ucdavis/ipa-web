@@ -20,6 +20,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject CourseService courseService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject BudgetService budgetService;
+    @Inject InstructorTypeService instructorTypeService;
 
     @Override
     @Transactional
