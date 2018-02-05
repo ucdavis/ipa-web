@@ -1,0 +1,1 @@
+ALTER TABLE `InstructorCosts` ADD COLUMN `InstructorTypeId` int(11) NULL;
