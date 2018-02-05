@@ -1,7 +1,7 @@
 CREATE TABLE `InstructorTypes` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `BudgetId` int(11) NOT NULL,
-  `Cost` float DEFAULT NULL,
+  `Cost` decimal(11,2) DEFAULT NULL,
   `Description` varchar(50) NOT NULL,
   `UpdatedAt` timestamp NULL DEFAULT NULL,
   `CreatedAt` timestamp NULL DEFAULT NULL,
