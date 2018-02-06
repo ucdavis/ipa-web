@@ -55,6 +55,10 @@ public class JpaInstructorTypeService implements InstructorTypeService {
 
     @Override
     public InstructorType findOrCreate(InstructorType instructorTypeDTO) {
+        if (instructorTypeDTO == null || instructorTypeDTO.getBudget() == null) {
+            return null;
+        }
+
         InstructorType existingInstructorType = this.instructorTypeRepository.findByDescriptionAndBudgetId(instructorTypeDTO.getDescription(), instructorTypeDTO.getBudget().getId());
 
         if (existingInstructorType != null) {

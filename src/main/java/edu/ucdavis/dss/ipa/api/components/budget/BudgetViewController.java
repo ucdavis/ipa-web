@@ -3,9 +3,29 @@ package edu.ucdavis.dss.ipa.api.components.budget;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.LineItemCategory;
+import edu.ucdavis.dss.ipa.entities.LineItemComment;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
+import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
+import edu.ucdavis.dss.ipa.services.BudgetService;
+import edu.ucdavis.dss.ipa.services.InstructorCostService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
+import edu.ucdavis.dss.ipa.services.LineItemCommentService;
+import edu.ucdavis.dss.ipa.services.LineItemService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,7 +94,7 @@ public class BudgetViewController {
         Budget budget = budgetService.findById(budgetId);
 
         if (budget == null || budgetScenarioDTO.getName() == null || budgetScenarioDTO.getName().length() == 0) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -92,7 +112,7 @@ public class BudgetViewController {
         }
 
         if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -107,7 +127,7 @@ public class BudgetViewController {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
         if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -130,7 +150,7 @@ public class BudgetViewController {
         LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategoryId());
 
         if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -148,14 +168,14 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypes", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public InstructorType createLineItem(@PathVariable long budgetId,
+    public InstructorType createInstructorType(@PathVariable long budgetId,
                                    @RequestBody InstructorType newInstructorType,
                                    HttpServletResponse httpResponse) {
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
 
         if (budget == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -178,7 +198,7 @@ public class BudgetViewController {
         LineItem lineItem = lineItemService.findById(lineItemId);
 
         if (lineItem == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -270,7 +290,7 @@ public class BudgetViewController {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
         if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -292,7 +312,7 @@ public class BudgetViewController {
         Budget budget = budgetService.findById(budgetId);
 
         if (budget == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -335,7 +355,7 @@ public class BudgetViewController {
         InstructorCost originalInstructorCost = instructorCostService.findById(instructorCostId);
 
         if (originalInstructorCost == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -355,7 +375,7 @@ public class BudgetViewController {
         SectionGroupCost originalSectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
 
         if (originalSectionGroupCost == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -397,7 +417,7 @@ public class BudgetViewController {
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
         User user = userService.getOneByLoginId(sectionGroupCostCommentDTO.getUser().getLoginId());
         if (user == null || sectionGroupCost == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -411,7 +431,7 @@ public class BudgetViewController {
         SectionGroupCostComment sectionGroupCostComment = sectionGroupCostCommentService.create(sectionGroupCostCommentDTO);
 
         if (sectionGroupCostComment == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -426,8 +446,9 @@ public class BudgetViewController {
         // Ensure valid params
         LineItem lineItem = lineItemService.findById(lineItemId);
         User user = userService.getOneByLoginId(lineItemCommentDTO.getUser().getLoginId());
+
         if (user == null || lineItem == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
@@ -441,7 +462,7 @@ public class BudgetViewController {
         LineItemComment lineItemComment = lineItemCommentService.create(lineItemCommentDTO);
 
         if (lineItemComment == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 

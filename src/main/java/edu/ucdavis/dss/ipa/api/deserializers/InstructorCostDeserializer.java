@@ -35,6 +35,7 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
             instructorType.setId(node.get("instructorTypeId").longValue());
             instructorCost.setInstructorType(instructorType);
         }
+
         return instructorCost;
     }
 }

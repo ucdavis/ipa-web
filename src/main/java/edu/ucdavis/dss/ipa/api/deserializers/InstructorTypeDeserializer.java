@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 
 public class InstructorTypeDeserializer extends JsonDeserializer<Object> {
 
@@ -26,8 +26,7 @@ public class InstructorTypeDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("cost")) {
-            Float amount = node.get("cost").floatValue();
-            instructorType.setCost(amount);
+            instructorType.setCost(node.get("cost").floatValue());
         }
 
         if (node.has("description")) {
