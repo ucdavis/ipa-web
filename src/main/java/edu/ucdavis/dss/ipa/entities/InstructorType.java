@@ -1,15 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.InstructorTypeDeserializer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 @Entity
@@ -28,6 +22,7 @@ public class InstructorType extends BaseEntity {
     private Budget budget;
     private Float cost;
     private String description;
+    private List<InstructorCost> instructorCosts = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,6 +64,16 @@ public class InstructorType extends BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorType", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
     }
 
     @JsonProperty("budgetId")
