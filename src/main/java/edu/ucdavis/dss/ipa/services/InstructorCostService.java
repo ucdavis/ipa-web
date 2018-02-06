@@ -19,4 +19,6 @@ public interface InstructorCostService {
     InstructorCost update(InstructorCost instructorCost);
 
     List<InstructorCost> findOrCreateManyFromBudget(Budget budget);
+
+    void removeAssociationByInstructorTypeId(long instructorTypeId);
 }

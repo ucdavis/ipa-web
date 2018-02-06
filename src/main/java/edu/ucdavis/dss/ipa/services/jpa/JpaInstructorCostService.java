@@ -79,6 +79,11 @@ public class JpaInstructorCostService implements InstructorCostService {
         return instructorCosts;
     }
 
+    @Override
+    public void removeAssociationByInstructorTypeId(long instructorTypeId) {
+        this.instructorCostRepository.removeAssociationByInstructorTypeId(instructorTypeId);
+    }
+
     /**
      * Find all instructors based on workgroup userRoles, and find or create instructorCosts for each.
      * @param workgroup

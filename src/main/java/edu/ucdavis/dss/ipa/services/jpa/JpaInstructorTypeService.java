@@ -31,10 +31,7 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     public void deleteById(long instructorTypeId) {
         InstructorType instructorType = this.findById(instructorTypeId);
 
-        for (InstructorCost instructorCost : instructorType.getInstructorCosts()) {
-            instructorCost.setInstructorType(null);
-            instructorCostService.update(instructorCost);
-        }
+        instructorCostService.removeAssociationByInstructorTypeId(instructorTypeId);
 
         instructorTypeRepository.deleteById(instructorTypeId);
     }
