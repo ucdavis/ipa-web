@@ -1,8 +1,23 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
+import edu.ucdavis.dss.ipa.services.BudgetService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
+import edu.ucdavis.dss.ipa.services.LineItemService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +35,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject CourseService courseService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject BudgetService budgetService;
-    @Inject InstructorTypeService instructorTypeService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     @Override
     @Transactional
@@ -141,8 +156,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     @Override
-    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment) {
-        if (teachingAssignment.isApproved() && (teachingAssignment.isBuyout() || teachingAssignment.isWorkLifeBalance())) {
+    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignmentDTO) {
+        if (teachingAssignmentDTO.isApproved() && (teachingAssignmentDTO.isBuyout() || teachingAssignmentDTO.isWorkLifeBalance())) {
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentDTO.getId());
+
             Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
 
             for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {

@@ -139,4 +139,26 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		return teachingAssignmentRepository.findByIdIn(teachingAssignmentIds);
 	}
 
+	@Override
+	public List<TeachingAssignment> updatePreferenceOrder(List<Long> sortedTeachingPreferenceIds) {
+		List<TeachingAssignment> teachingAssignments = this.findAllByIds(sortedTeachingPreferenceIds);
+
+		if (teachingAssignments == null) {
+			return null;
+		}
+
+		Integer priority = 1;
+
+		for (Long id : sortedTeachingPreferenceIds) {
+			for(TeachingAssignment teachingAssignment : teachingAssignments) {
+				if (id == teachingAssignment.getId()) {
+					teachingAssignment.setPriority(priority);
+					this.save(teachingAssignment);
+					priority++;
+				}
+			}
+		}
+
+		return teachingAssignments;
+	}
 }
