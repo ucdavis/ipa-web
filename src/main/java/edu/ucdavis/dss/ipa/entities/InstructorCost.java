@@ -24,6 +24,7 @@ public class InstructorCost extends BaseEntity {
     private Instructor instructor;
     private Float cost;
     private Boolean lecturer = false;
+    private InstructorType instructorType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,6 +64,17 @@ public class InstructorCost extends BaseEntity {
         this.instructor = instructor;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorTypeId", nullable = false)
+    @JsonIgnore
+    public InstructorType getInstructorType() {
+        return instructorType;
+    }
+
+    public void setInstructorType(InstructorType instructorType) {
+        this.instructorType = instructorType;
+    }
+
     public Float getCost() {
         return cost;
     }
@@ -84,6 +96,16 @@ public class InstructorCost extends BaseEntity {
     public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorTypeId")
+    @Transient
+    public long getInstructorTypeIdentification() {
+        if(instructorType != null) {
+            return instructorType.getId();
         } else {
             return 0;
         }

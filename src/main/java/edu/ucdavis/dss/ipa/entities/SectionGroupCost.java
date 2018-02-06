@@ -21,11 +21,12 @@ public class SectionGroupCost extends BaseEntity {
     private long id;
     private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
-    private long enrollment = 0, sectionCount = 0;
+    private Integer sectionCount;
+    private Long enrollment;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String title, subjectCode, courseNumber, effectiveTermCode, termCode, sequencePattern, reason;
-    private Float unitsHigh, unitsLow, instructorCost, taCount = 0f, readerCount = 0f;
+    private String reason;
+    private Float instructorCost, taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
@@ -54,35 +55,35 @@ public class SectionGroupCost extends BaseEntity {
         this.sectionGroup = sectionGroup;
     }
 
-    public long getEnrollment() {
+    public Long getEnrollment() {
         return enrollment;
     }
 
-    public void setEnrollment(long enrollment) {
+    public void setEnrollment(Long enrollment) {
         this.enrollment = enrollment;
     }
 
-    public float getTaCount() {
+    public Float getTaCount() {
         return taCount;
     }
 
-    public void setTaCount(float taCount) {
+    public void setTaCount(Float taCount) {
         this.taCount = taCount;
     }
 
-    public long getSectionCount() {
+    public Integer getSectionCount() {
         return sectionCount;
     }
 
-    public void setSectionCount(long sectionCount) {
+    public void setSectionCount(Integer sectionCount) {
         this.sectionCount = sectionCount;
     }
 
-    public float getReaderCount() {
+    public Float getReaderCount() {
         return readerCount;
     }
 
-    public void setReaderCount(float readerCount) {
+    public void setReaderCount(Float readerCount) {
         this.readerCount = readerCount;
     }
 
@@ -138,70 +139,6 @@ public class SectionGroupCost extends BaseEntity {
         this.sectionGroupCostComments = sectionGroupCostComments;
     }
 
-    public float getUnitsHigh() {
-        return unitsHigh;
-    }
-
-    public void setUnitsHigh(float unitsHigh) {
-        this.unitsHigh = unitsHigh;
-    }
-
-    public float getUnitsLow() {
-        return unitsLow;
-    }
-
-    public void setUnitsLow(float unitsLow) {
-        this.unitsLow = unitsLow;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getSubjectCode() {
-        return subjectCode;
-    }
-
-    public void setSubjectCode(String subjectCode) {
-        this.subjectCode = subjectCode;
-    }
-
-    public String getCourseNumber() {
-        return courseNumber;
-    }
-
-    public void setCourseNumber(String courseNumber) {
-        this.courseNumber = courseNumber;
-    }
-
-    public String getEffectiveTermCode() {
-        return effectiveTermCode;
-    }
-
-    public void setEffectiveTermCode(String effectiveTermCode) {
-        this.effectiveTermCode = effectiveTermCode;
-    }
-
-    public String getSequencePattern() {
-        return sequencePattern;
-    }
-
-    public void setSequencePattern(String sequencePattern) {
-        this.sequencePattern = sequencePattern;
-    }
-
-    public String getTermCode() {
-        return termCode;
-    }
-
-    public void setTermCode(String termCode) {
-        this.termCode = termCode;
-    }
-
     public String getReason() {
         return reason;
     }
@@ -212,7 +149,7 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("budgetScenarioId")
     @Transient
-    public long getBudgetScenarioId() {
+    public long getBudgetScenarioIdentification() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
         } else {
@@ -220,9 +157,19 @@ public class SectionGroupCost extends BaseEntity {
         }
     }
 
+    @JsonProperty("sectionGroupId")
+    @Transient
+    public long getSectionGroupIdentification() {
+        if(sectionGroup != null) {
+            return sectionGroup.getId();
+        } else {
+            return 0;
+        }
+    }
+
     @JsonProperty("instructorId")
     @Transient
-    public long getInstructorId() {
+    public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
         } else {
@@ -232,7 +179,7 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("originalInstructorId")
     @Transient
-    public long getOriginalInstructorId() {
+    public long getOriginalInstructorIdentification() {
         if(originalInstructor != null) {
             return originalInstructor.getId();
         } else {

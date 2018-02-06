@@ -25,6 +25,7 @@ public class Budget extends BaseEntity {
     private float taCost = 0f, readerCost = 0f, lecturerCost = 0f;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
     private List<InstructorCost> instructorCosts = new ArrayList<>();
+    private List<InstructorType> instructorTypes = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -94,5 +95,15 @@ public class Budget extends BaseEntity {
 
     public void setInstructorCosts(List<InstructorCost> instructorCosts) {
         this.instructorCosts = instructorCosts;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }

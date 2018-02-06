@@ -59,6 +59,7 @@ public class JpaInstructorCostService implements InstructorCostService {
         }
 
         originalInstructorCost.setCost(instructorCostDTO.getCost());
+        originalInstructorCost.setInstructorType(instructorCostDTO.getInstructorType());
 
         return this.instructorCostRepository.save(originalInstructorCost);
     }
@@ -76,6 +77,11 @@ public class JpaInstructorCostService implements InstructorCostService {
         instructorCosts.addAll(this.findOrCreateFromWorkgroup(budget.getSchedule().getWorkgroup(), budget));
 
         return instructorCosts;
+    }
+
+    @Override
+    public void removeAssociationByInstructorTypeId(long instructorTypeId) {
+        this.instructorCostRepository.removeAssociationByInstructorTypeId(instructorTypeId);
     }
 
     /**

@@ -1,8 +1,23 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
+import edu.ucdavis.dss.ipa.services.BudgetService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
+import edu.ucdavis.dss.ipa.services.LineItemService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,19 +56,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear());
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
-        List<SectionGroupCost> newSectionGroupCosts = new ArrayList<>();
 
         for (SectionGroup sectionGroup : sectionGroups) {
             budgetScenario.setTermInActiveTermsBlob(sectionGroup.getTermCode(), true);
-
-            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
-            newSectionGroupCosts.add(sectionGroupCost);
         }
-
-        // Bind sectionGroupCosts to the current entity
-        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
-        sectionGroupCosts.addAll(newSectionGroupCosts);
-        budgetScenario.setSectionGroupCosts(sectionGroupCosts);
 
         // Generate Line items automatically from buyouts
         List<LineItem> lineItems = budgetScenario.getLineItems();
@@ -88,6 +94,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
                 newLineItems.add(newLineItem);
             }
         }
+
         lineItems.addAll(newLineItems);
         budgetScenario.setLineItems(lineItems);
 
@@ -122,7 +129,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
-            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFrom(originalSectionGroupCost, budgetScenario);
+            SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetScenario);
             sectionGroupCostList.add(sectionGroupCost);
         }
 

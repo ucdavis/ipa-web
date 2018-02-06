@@ -20,8 +20,16 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     }
 
     @Override
-    public SectionGroupCost createFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario) {
-        SectionGroupCost sectionGroupCost = new SectionGroupCost();
+    public SectionGroupCost createOrUpdateFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario) {
+        if (originalSectionGroupCost == null || originalSectionGroupCost.getSectionGroup() == null || budgetScenario == null) {
+            return null;
+        }
+
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySectionGroupIdAndBudgetScenarioId(originalSectionGroupCost.getSectionGroup().getId(), budgetScenario.getId());
+
+        if (sectionGroupCost == null) {
+            sectionGroupCost = new SectionGroupCost();
+        }
 
         sectionGroupCost.setBudgetScenario(budgetScenario);
         sectionGroupCost.setInstructor(originalSectionGroupCost.getInstructor());
@@ -32,15 +40,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setTaCount(originalSectionGroupCost.getTaCount());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
         sectionGroupCost.setInstructorCost(originalSectionGroupCost.getInstructorCost());
-        sectionGroupCost.setSubjectCode(originalSectionGroupCost.getSubjectCode());
-        sectionGroupCost.setCourseNumber(originalSectionGroupCost.getCourseNumber());
-        sectionGroupCost.setTitle(originalSectionGroupCost.getTitle());
-        sectionGroupCost.setEffectiveTermCode(originalSectionGroupCost.getEffectiveTermCode());
-        sectionGroupCost.setUnitsHigh(originalSectionGroupCost.getUnitsHigh());
-        sectionGroupCost.setUnitsLow(originalSectionGroupCost.getUnitsLow());
-        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
-        sectionGroupCost.setSequencePattern(originalSectionGroupCost.getSequencePattern());
-        sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
@@ -63,16 +62,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         sectionGroupCost.setInstructor(instructor);
 
-        // Set course meta data
-        sectionGroupCost.setCourseNumber(sectionGroup.getCourse().getCourseNumber());
-        sectionGroupCost.setSubjectCode(sectionGroup.getCourse().getSubjectCode());
-        sectionGroupCost.setEffectiveTermCode(sectionGroup.getCourse().getEffectiveTermCode());
-        sectionGroupCost.setTitle(sectionGroup.getCourse().getTitle());
-        sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
-        sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsHigh());
-        sectionGroupCost.setTermCode(sectionGroup.getTermCode());
-        sectionGroupCost.setSequencePattern(sectionGroup.getCourse().getSequencePattern());
-
         // Set sectionCount
         Integer sectionCount = sectionGroup.getSections().size();
         sectionGroupCost.setSectionCount(sectionCount);
@@ -89,8 +78,8 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setEnrollment(enrollment);
 
         // Set reader and ta count
-        Long readerCount = 0L;
-        Long taCount = 0L;
+        Float readerCount = 0F;
+        Float taCount = 0F;
 
         for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
             if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {
@@ -129,8 +118,8 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setInstructorCost(sectionGroupCostDTO.getInstructorCost());
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
 
-        originalSectionGroupCost.setInstructor(instructorService.getOneById(sectionGroupCostDTO.getInstructorId()));
-        originalSectionGroupCost.setOriginalInstructor(instructorService.getOneById(sectionGroupCostDTO.getOriginalInstructorId()));
+        originalSectionGroupCost.setInstructor(instructorService.getOneById(sectionGroupCostDTO.getInstructorIdentification()));
+        originalSectionGroupCost.setOriginalInstructor(instructorService.getOneById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
 
         return this.sectionGroupCostRepository.save(originalSectionGroupCost);
     }
