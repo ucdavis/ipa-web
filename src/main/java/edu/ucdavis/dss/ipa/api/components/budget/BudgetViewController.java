@@ -146,6 +146,30 @@ public class BudgetViewController {
         return lineItem;
     }
 
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypes", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public InstructorType createLineItem(@PathVariable long budgetId,
+                                   @RequestBody InstructorType newInstructorType,
+                                   HttpServletResponse httpResponse) {
+        // Ensure valid params
+        Budget budget = budgetService.findById(budgetId);
+
+        if (budget == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budget.getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        // Build lineItem
+        newInstructorType.setBudget(budget);
+        InstructorType instructorType = instructorTypeService.findOrCreate(newInstructorType);
+
+        return instructorType;
+    }
+
     @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Long deleteLineItem(@PathVariable long lineItemId,
@@ -214,6 +238,27 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return instructorTypeService.update(newInstructorType);
+    }
+
+    @RequestMapping(value = "/api/budgetView/instructorTypes/{instructorTypeId}", method = RequestMethod.DELETE, produces="application/json")
+    @ResponseBody
+    public Long deleteInstructorType(@PathVariable long instructorTypeId,
+                                               HttpServletResponse httpResponse) {
+        // Ensure valid params
+        InstructorType originalInstructorType = instructorTypeService.findById(instructorTypeId);
+
+        if (originalInstructorType == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        instructorTypeService.deleteById(instructorTypeId);
+
+        return instructorTypeId;
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
