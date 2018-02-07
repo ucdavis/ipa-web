@@ -17,7 +17,7 @@ public class BudgetView {
     List<SectionGroup> sectionGroups;
     List<Section> sections;
     List<InstructorCost> instructorCosts;
-    List<Instructor> instructors;
+    Set<Instructor> instructors;
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<LineItemComment> lineItemComments;
     List<Course> courses;
@@ -37,7 +37,7 @@ public class BudgetView {
             List<SectionGroup> sectionGroups,
             List<Section> sections,
             List<InstructorCost> instructorCosts,
-            List<Instructor> instructors,
+            Set<Instructor> instructors,
             List<Course> courses,
             List<TeachingAssignment> teachingAssignments,
             List<SupportAssignment> supportAssignments,
@@ -133,11 +133,11 @@ public class BudgetView {
         this.instructorCosts = instructorCosts;
     }
 
-    public List<Instructor> getInstructors() {
+    public Set<Instructor> getInstructors() {
         return instructors;
     }
 
-    public void setInstructors(List<Instructor> instructors) {
+    public void setInstructors(Set<Instructor> instructors) {
         this.instructors = instructors;
     }
 
