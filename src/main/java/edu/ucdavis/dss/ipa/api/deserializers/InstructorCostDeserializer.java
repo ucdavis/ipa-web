@@ -36,6 +36,20 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
             instructorCost.setInstructorType(instructorType);
         }
 
+        if (node.has("budgetId")) {
+            Budget budget = new Budget();
+
+            budget.setId(node.get("budgetId").longValue());
+            instructorCost.setBudget(budget);
+        }
+
+        if (node.has("instructorId")) {
+            Instructor instructor = new Instructor();
+
+            instructor.setId(node.get("instructorId").longValue());
+            instructorCost.setInstructor(instructor);
+        }
+
         return instructorCost;
     }
 }

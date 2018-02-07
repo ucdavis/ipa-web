@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.LineItem;
@@ -18,6 +19,7 @@ import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
+import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
@@ -50,6 +52,7 @@ public class BudgetViewController {
     @Inject Authorizer authorizer;
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorTypeService instructorTypeService;
+    @Inject InstructorService instructorService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -363,7 +366,39 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
+        InstructorType instructorType = null;
+
+        if (instructorCostDTO.getInstructorType() != null) {
+            instructorType = instructorTypeService.findById(instructorCostDTO.getInstructorType().getId());
+        }
+
+        instructorCostDTO.setInstructorType(instructorType);
+
         return instructorCostService.update(instructorCostDTO);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorCosts", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public InstructorCost createInstructorCost(@PathVariable long budgetId,
+                                               @RequestBody InstructorCost instructorCostDTO,
+                                               HttpServletResponse httpResponse) {
+        // Ensure valid params
+        Budget budget = budgetService.findById(budgetId);
+        Instructor instructor = instructorService.getOneById(instructorCostDTO.getInstructor().getId());
+
+        if (budget == null || instructor == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budget.getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        instructorCostDTO.setBudget(budget);
+        instructorCostDTO.setInstructor(instructor);
+
+        return instructorCostService.findOrCreate(instructorCostDTO);
     }
 
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}", method = RequestMethod.PUT, produces="application/json")
