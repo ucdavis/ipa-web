@@ -26,7 +26,7 @@ public class SectionGroupCost extends BaseEntity {
     private Instructor instructor;
     private Instructor originalInstructor;
     private String reason;
-    private Float instructorCost, taCount, readerCount;
+    private Float cost, taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
@@ -87,12 +87,12 @@ public class SectionGroupCost extends BaseEntity {
         this.readerCount = readerCount;
     }
 
-    public Float getInstructorCost() {
-        return instructorCost;
+    public Float getCost() {
+        return cost;
     }
 
-    public void setInstructorCost(Float instructorCost) {
-        this.instructorCost = instructorCost;
+    public void setCost(Float cost) {
+        this.cost = cost;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

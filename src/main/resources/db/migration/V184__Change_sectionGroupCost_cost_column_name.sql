@@ -1,0 +1,1 @@
+ALTER TABLE `SectionGroupCosts` CHANGE COLUMN `InstructorCost` `Cost` decimal(15,2) NULL;

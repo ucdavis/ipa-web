@@ -77,8 +77,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
         List<InstructorType> instructorTypes = instructorTypeService.findByBudgetId(budget.getId());
 
-        List<Instructor> instructors = instructorService.findByInstructorCosts(instructorCosts);
-        List<Instructor> assignedInstructors = instructorService.findAssignedByScheduleId(schedule.getId());
+        Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
+        Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
         instructors.addAll(assignedInstructors);
 
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
