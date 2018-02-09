@@ -39,7 +39,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setReaderCount(originalSectionGroupCost.getReaderCount());
         sectionGroupCost.setTaCount(originalSectionGroupCost.getTaCount());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
-        sectionGroupCost.setInstructorCost(originalSectionGroupCost.getInstructorCost());
+        sectionGroupCost.setCost(originalSectionGroupCost.getCost());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
@@ -115,7 +115,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setReaderCount(sectionGroupCostDTO.getReaderCount());
         originalSectionGroupCost.setEnrollment(sectionGroupCostDTO.getEnrollment());
         originalSectionGroupCost.setSectionCount(sectionGroupCostDTO.getSectionCount());
-        originalSectionGroupCost.setInstructorCost(sectionGroupCostDTO.getInstructorCost());
+        originalSectionGroupCost.setCost(sectionGroupCostDTO.getCost());
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
 
         originalSectionGroupCost.setInstructor(instructorService.getOneById(sectionGroupCostDTO.getInstructorIdentification()));

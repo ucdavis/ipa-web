@@ -28,10 +28,9 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             sectionGroupCost.setId(node.get("id").longValue());
         }
 
-        if (node.has("instructorCost")) {
-            if (!node.get("instructorCost").isNull()) {
-                float instructorCost = node.get("instructorCost").floatValue();
-                sectionGroupCost.setInstructorCost(instructorCost);
+        if (node.has("cost")) {
+            if (!node.get("cost").isNull()) {
+                sectionGroupCost.setCost(node.get("cost").floatValue());
             }
         }
 

@@ -26,14 +26,29 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("cost")) {
-            Float amount = node.get("cost").floatValue();
-            instructorCost.setCost(amount);
+            if (node.get("cost").isNull() == false) {
+                instructorCost.setCost(node.get("cost").floatValue());
+            }
         }
 
         if (node.has("instructorTypeId")) {
             InstructorType instructorType = new InstructorType();
             instructorType.setId(node.get("instructorTypeId").longValue());
             instructorCost.setInstructorType(instructorType);
+        }
+
+        if (node.has("budgetId")) {
+            Budget budget = new Budget();
+
+            budget.setId(node.get("budgetId").longValue());
+            instructorCost.setBudget(budget);
+        }
+
+        if (node.has("instructorId")) {
+            Instructor instructor = new Instructor();
+
+            instructor.setId(node.get("instructorId").longValue());
+            instructorCost.setInstructor(instructor);
         }
 
         return instructorCost;
