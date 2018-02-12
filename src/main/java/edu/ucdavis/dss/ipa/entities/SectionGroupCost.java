@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,8 @@ public class SectionGroupCost extends BaseEntity {
     private Instructor instructor;
     private Instructor originalInstructor;
     private String reason;
-    private Float cost, taCount, readerCount;
+    private BigDecimal cost;
+    private Float taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
 
     @Id
@@ -87,11 +89,11 @@ public class SectionGroupCost extends BaseEntity {
         this.readerCount = readerCount;
     }
 
-    public Float getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(Float cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
 

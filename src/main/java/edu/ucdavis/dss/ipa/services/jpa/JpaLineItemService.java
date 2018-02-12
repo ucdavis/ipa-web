@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -98,7 +98,7 @@ public class JpaLineItemService implements LineItemService {
         }
 
         LineItem lineItemDTO = new LineItem();
-        lineItemDTO.setAmount(0f);
+        lineItemDTO.setAmount(new BigDecimal(0));
         lineItemDTO.setBudgetScenario(budgetScenario);
 
         String description = "";

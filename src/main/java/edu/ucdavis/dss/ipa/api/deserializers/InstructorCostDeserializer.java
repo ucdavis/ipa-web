@@ -27,7 +27,7 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
 
         if (node.has("cost")) {
             if (node.get("cost").isNull() == false) {
-                instructorCost.setCost(node.get("cost").floatValue());
+                instructorCost.setCost(node.get("cost").decimalValue());
             }
         }
 
