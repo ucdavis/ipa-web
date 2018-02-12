@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.deserializers;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +47,7 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("amount")) {
-            float amount = node.get("amount").floatValue();
+            BigDecimal amount = node.get("amount").decimalValue();
             lineItem.setAmount(amount);
         }
 

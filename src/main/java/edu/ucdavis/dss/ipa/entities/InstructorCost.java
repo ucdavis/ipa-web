@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,9 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.InstructorCostDeserializer;
-import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
@@ -22,7 +20,7 @@ public class InstructorCost extends BaseEntity {
     private long id;
     private Budget budget;
     private Instructor instructor;
-    private Float cost;
+    private BigDecimal cost;
     private Boolean lecturer = false;
     private InstructorType instructorType;
 
@@ -75,11 +73,11 @@ public class InstructorCost extends BaseEntity {
         this.instructorType = instructorType;
     }
 
-    public Float getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(Float cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
 

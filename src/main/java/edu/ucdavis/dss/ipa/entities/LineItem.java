@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 @SuppressWarnings("serial")
@@ -23,7 +22,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
-    private float amount = 0f;
+    private BigDecimal amount = new BigDecimal(0);
     private String description, notes;
     private LineItemCategory lineItemCategory;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
@@ -54,11 +53,11 @@ public class LineItem extends BaseEntity {
         this.budgetScenario = budgetScenario;
     }
 
-    public float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
