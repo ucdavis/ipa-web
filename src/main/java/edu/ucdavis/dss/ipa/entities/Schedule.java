@@ -42,8 +42,8 @@ public class Schedule implements Serializable {
 	private List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
 
-	private String supportStaffSupportCallReviewOpen;
-	private String instructorSupportCallReviewOpen;
+	private String supportStaffSupportCallReviewOpen = "0000000000";
+	private String instructorSupportCallReviewOpen = "0000000000";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -152,6 +152,7 @@ public class Schedule implements Serializable {
 	/**
 	 * Terms are expected to be sorted ['01','02','03','04','05','06','07','08','09','10']
 	 */
+	@NotNull
 	@JsonProperty
 	public String getSupportStaffSupportCallReviewOpen() {
 		return supportStaffSupportCallReviewOpen;
@@ -164,6 +165,7 @@ public class Schedule implements Serializable {
 	/**
 	 * Terms are expected to be sorted ['01','02','03','04','05','06','07','08','09','10']
 	 */
+	@NotNull
 	@JsonProperty
 	public String getInstructorSupportCallReviewOpen() {
 		return instructorSupportCallReviewOpen;
