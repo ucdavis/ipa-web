@@ -157,19 +157,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     @Override
-    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignmentDTO) {
-        if (teachingAssignmentDTO.isApproved() && (teachingAssignmentDTO.isBuyout() || teachingAssignmentDTO.isWorkLifeBalance())) {
-            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentDTO.getId());
-
-            Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
-
-            for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {
-                lineItemService.createLineItemFromTeachingAssignmentAndBudgetScenario(teachingAssignment, budgetScenario);
-            }
-        }
-    }
-
-    @Override
     public BudgetScenario findById(long budgetScenarioId) {
         return budgetScenarioRepository.findById(budgetScenarioId);
     }

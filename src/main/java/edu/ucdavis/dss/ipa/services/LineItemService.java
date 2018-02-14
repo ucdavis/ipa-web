@@ -23,6 +23,4 @@ public interface LineItemService {
     LineItem createDuplicate(LineItem originalLineItem, BudgetScenario budgetScenario);
 
     void deleteMany(List<Long> lineItemIds);
-
-    void createLineItemFromTeachingAssignmentAndBudgetScenario(TeachingAssignment teachingAssignment, BudgetScenario budgetScenario);
 }

@@ -76,7 +76,6 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setSchedule(schedule);
 
             TeachingAssignment newTeachingAssignment = teachingAssignmentService.save(teachingAssignment);
-            budgetScenarioService.createLineItemsFromTeachingAssignment(newTeachingAssignment);
 
             return newTeachingAssignment;
         }
@@ -214,10 +213,6 @@ public class AssignmentViewTeachingAssignmentController {
             originalTeachingAssignment.setSuggestedEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
 
             return originalTeachingAssignment;
-        }
-
-        if (originalTeachingAssignment.isApproved() == false && teachingAssignment.isApproved()) {
-            budgetScenarioService.createLineItemsFromTeachingAssignment(teachingAssignment);
         }
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());

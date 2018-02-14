@@ -90,29 +90,4 @@ public class JpaLineItemService implements LineItemService {
             this.deleteById(lineItemId);
         }
     }
-
-    @Override
-    public void createLineItemFromTeachingAssignmentAndBudgetScenario(TeachingAssignment teachingAssignment, BudgetScenario budgetScenario) {
-        if (teachingAssignment.isApproved() == false || (teachingAssignment.isBuyout() == false && teachingAssignment.isWorkLifeBalance() == false)) {
-            return;
-        }
-
-        LineItem lineItemDTO = new LineItem();
-        lineItemDTO.setAmount(new BigDecimal(0));
-        lineItemDTO.setBudgetScenario(budgetScenario);
-
-        String description = "";
-
-        if (teachingAssignment.isBuyout()) {
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Buyout Lecturer Replacement Funds"));
-            description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-        } else if (teachingAssignment.isWorkLifeBalance()) {
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Work-Life Balance Funds"));
-            description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-        }
-
-        lineItemDTO.setDescription(description);
-
-        this.findOrCreate(lineItemDTO);
-    }
 }
