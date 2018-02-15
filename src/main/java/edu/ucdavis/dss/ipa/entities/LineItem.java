@@ -26,6 +26,8 @@ public class LineItem extends BaseEntity {
     private String description, notes;
     private LineItemCategory lineItemCategory;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
+    private Boolean hidden = false;
+    private TeachingAssignment teachingAssignment;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +80,18 @@ public class LineItem extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TeachingAssignmentId", nullable = true)
+    @NotNull
+    @JsonIgnore
+    public TeachingAssignment getTeachingAssignment() {
+        return teachingAssignment;
+    }
+
+    public void setTeachingAssignment(TeachingAssignment teachingAssignment) {
+        this.teachingAssignment = teachingAssignment;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LineItemCategoryId", nullable = false)
     @NotNull
     @JsonIgnore
@@ -99,6 +113,15 @@ public class LineItem extends BaseEntity {
         this.lineItemComments = lineItemComments;
     }
 
+    @JsonProperty
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
+    }
+
     @JsonProperty("lineItemCategoryId")
     @Transient
     public long getLineItemCategoryId() {
@@ -106,6 +129,16 @@ public class LineItem extends BaseEntity {
             return lineItemCategory.getId();
         } else {
             return 0;
+        }
+    }
+
+    @JsonProperty("teachingAssignmentId")
+    @Transient
+    public Long getTeachingAssignmentIdentification() {
+        if(teachingAssignment != null) {
+            return teachingAssignment.getId();
+        } else {
+            return null;
         }
     }
 
