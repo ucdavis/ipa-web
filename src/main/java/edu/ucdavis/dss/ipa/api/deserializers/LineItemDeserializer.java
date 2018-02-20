@@ -52,6 +52,10 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setNotes(node.get("notes").textValue());
         }
 
+        if (node.has("hidden")) {
+            lineItem.setHidden(node.get("hidden").booleanValue());
+        }
+
         if (node.has("amount")) {
             BigDecimal amount = node.get("amount").decimalValue();
             lineItem.setAmount(amount);
