@@ -50,6 +50,7 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setNotes(lineItemDTO.getNotes());
         lineItem.setDescription(lineItemDTO.getDescription());
         lineItem.setTeachingAssignment(lineItemDTO.getTeachingAssignment());
+        lineItem.setHidden(lineItemDTO.getHidden());
 
         return lineItemRepository.save(lineItem);
     }
@@ -66,6 +67,7 @@ public class JpaLineItemService implements LineItemService {
         originalLineItem.setAmount(lineItem.getAmount());
         originalLineItem.setNotes(lineItem.getNotes());
         originalLineItem.setLineItemCategory(lineItem.getLineItemCategory());
+        originalLineItem.setHidden(lineItem.getHidden());
 
         return this.lineItemRepository.save(originalLineItem);
     }
