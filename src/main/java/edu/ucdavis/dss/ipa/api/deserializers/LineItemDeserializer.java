@@ -38,6 +38,12 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setLineItemCategory(lineItemCategory);
         }
 
+        if (node.has("teachingAssignmentId")) {
+            TeachingAssignment teachingAssignment = new TeachingAssignment();
+            teachingAssignment.setId(node.get("teachingAssignmentId").longValue());
+            lineItem.setTeachingAssignment(teachingAssignment);
+        }
+
         if (node.has("description")) {
             lineItem.setDescription(node.get("description").textValue());
         }

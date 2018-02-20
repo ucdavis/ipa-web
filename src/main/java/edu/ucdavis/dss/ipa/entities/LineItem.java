@@ -81,7 +81,6 @@ public class LineItem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TeachingAssignmentId", nullable = true)
-    @NotNull
     @JsonIgnore
     public TeachingAssignment getTeachingAssignment() {
         return teachingAssignment;
@@ -113,6 +112,7 @@ public class LineItem extends BaseEntity {
         this.lineItemComments = lineItemComments;
     }
 
+    @NotNull
     @JsonProperty
     public Boolean getHidden() {
         return hidden;
