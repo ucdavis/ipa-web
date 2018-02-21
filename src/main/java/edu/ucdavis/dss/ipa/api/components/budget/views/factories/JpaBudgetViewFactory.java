@@ -84,7 +84,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
-
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 
         Set<User> users = new HashSet<> (userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner"));
