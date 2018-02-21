@@ -10,7 +10,6 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
     @Override
     public void migrate(Connection connection) throws Exception {
         // Find all lineItems
-
         PreparedStatement psLineItems = connection.prepareStatement("SELECT * FROM `LineItems`");
 
         try {
@@ -25,7 +24,12 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
 
                 // Should not delete if description doesn't match auto-generated pattern
                 // Look for string 'buyout funds for' or 'work-life balance funds for
-                // TODO
+                String buyoutDescription = "Buyout Funds for";
+                String workDescription = "Work-Life Balance Funds for";
+
+                if (description.contains(buyoutDescription) == false && description.contains(workDescription) == false) {
+                    continue;
+                }
 
                 // Should not delete if a cost was set
                 if (amount.compareTo(BigDecimal.ZERO) > 0) {
@@ -33,18 +37,31 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
                 }
 
                 // Should not delete if comments were made
-                PreparedStatement psComments = connection.prepareStatement("SELECT COUNT(*) FROM `LineItemComments` WHERE `LineItemId` = ?");
+                PreparedStatement psComments = connection.prepareStatement("SELECT * FROM `LineItemComments` WHERE `LineItemId` = ?");
                 psComments.setLong(1, lineItemId);
-                ResultSet rsComments = psComments.executeQuery();
 
-                if(rsComments.next()) {
-                    // Comments were found
+                ResultSet rsComments = psComments.executeQuery();
+                Boolean commentsFound = false;
+
+                while (rsComments.next()) {
+                    commentsFound = true;
+                }
+
+                if (commentsFound) {
                     continue;
                 }
 
                 psComments.close();
 
                 // Delete lineItem
+                PreparedStatement psDeleteLineItem = connection.prepareStatement(
+                        "DELETE FROM `LineItems` WHERE `Id` = ?;"
+                );
+
+                psDeleteLineItem.setLong(1, lineItemId);
+
+                psDeleteLineItem.execute();
+                psDeleteLineItem.close();
             }
 
             // Commit changes
