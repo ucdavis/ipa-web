@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import java.util.*;
 
 @Service
-@Profile({"production", "staging"})
+@Profile({"production", "staging", "development"})
 public class UpdateUsersTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
     private static final Logger log = LoggerFactory.getLogger("UpdateUsersTask");
@@ -46,6 +46,7 @@ public class UpdateUsersTask {
             String firstName = dwPerson.getdFirstName();
             String lastName = dwPerson.getdLastName();
             String displayName = dwPerson.getdFullName();
+            String email = dwPerson.getEmail();
 
             if (displayName != null && displayName.length() > 0) {
                 user.setDisplayName(displayName);
@@ -61,6 +62,10 @@ public class UpdateUsersTask {
 
             if (iamId != null && iamId.length() > 0) {
                 user.setIamId(Long.valueOf(iamId));
+            }
+
+            if (email != null && email.length() > 0) {
+                user.setEmail(email);
             }
 
             userService.save(user);
