@@ -36,18 +36,17 @@ public class EmailNotificationTask {
 	@Scheduled( fixedDelay = 300000 ) // Every 5 minutes
 	@Async
 	public void scanForEmailsToSend() {
-		log.debug("scanForEmailsToSend() called");
-
 		if(runningTask) {
-			log.debug("scanForEmailsToSend() aborted: task already running");
+			log.debug("scanForEmailsToSend() won't run: task already running");
 			return; // avoid multiple concurrent jobs
+		} else {
+			log.debug("scanForEmailsToSend() will run: task not already running");
 		}
 		runningTask = true;
 
 		List<Long> workgroupIds = workgroupService.findAllIds();
 
 		for (Long workgroupId : workgroupIds) {
-			log.debug("Scanning workgroup with ID" + workgroupId + ", num workgroups = " + workgroupIds.size());
 			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
 			studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
 			instructorSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
