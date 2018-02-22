@@ -41,18 +41,12 @@ import java.util.Map;
 public class JpaScheduleOpsService implements ScheduleOpsService {
 	private static final Logger log = LoggerFactory.getLogger("ScheduleOps");
 
-	@Inject ScheduleRepository scheduleRepository;
 	@Inject ScheduleService scheduleService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject CourseService courseService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
-	@Inject UserService userService;
 	@Inject InstructorService instructorService;
-	@Inject RoleService roleService;
-	@Inject UserRoleService userRoleService;
-	@Inject WorkgroupService workgroupService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject JdbcTemplate jdbcTemplate;
 	@Inject TermService termService;
@@ -300,10 +294,16 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 						Activity activity = activityService.createFromDwActivity(dwActivity);
 
 						Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+
 						activity.setEndDate(term.getEndDate());
 						activity.setBeginDate(term.getStartDate());
 						activity.setSection(section);
-						activityService.saveActivity(activity);
+
+						try {
+							activityService.saveActivity(activity);
+						} catch (javax.validation.ConstraintViolationException e) {
+							log.error("Could not save activity based on DW activity:" + dwActivity);
+						}
 					}
 				}
 			}
