@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +24,8 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 @Service
 @Profile({"production", "staging"})
 public class EmailNotificationTask {
+	private final Logger log = LoggerFactory.getLogger("EmailNotificationTask");
+
 	@Inject WorkgroupService workgroupService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 	@Inject StudentSupportCallResponseService studentSupportCallResponseService;
@@ -32,18 +36,26 @@ public class EmailNotificationTask {
 	@Scheduled( fixedDelay = 300000 ) // Every 5 minutes
 	@Async
 	public void scanForEmailsToSend() {
-		if(runningTask) return; // avoid multiple concurrent jobs
+		log.debug("scanForEmailsToSend() called");
+
+		if(runningTask) {
+			log.debug("scanForEmailsToSend() aborted: task already running");
+			return; // avoid multiple concurrent jobs
+		}
 		runningTask = true;
 
 		List<Long> workgroupIds = workgroupService.findAllIds();
 
 		for (Long workgroupId : workgroupIds) {
+			log.debug("Scanning workgroup with ID" + workgroupId + ", num workgroups = " + workgroupIds.size());
 			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
 			studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
 			instructorSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
 		}
 
 		runningTask = false;
+
+		log.debug("scanForEmailsToSend() finished");
 	}
 
 }

@@ -30,6 +30,7 @@
     <logger name="edu.ucdavis.dss.ipa.Application" level="INFO" />
 
     <logger name="UpdateUsersTask" level="DEBUG" />
+    <logger name="EmailNotificationTask" level="DEBUG" />
 
     <logger name="EmailUtility" level="INFO">
         <appender-ref ref="FILE" />
