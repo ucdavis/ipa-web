@@ -27,6 +27,7 @@ public class UpdateSectionsTask {
         runningTask = true;
 
         this.scheduleOpsService.updateSectionsFromDW();
+        this.scheduleOpsService.updateEmptySectionGroups();
 
         runningTask = false;
     }
