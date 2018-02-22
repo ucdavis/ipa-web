@@ -70,24 +70,28 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		java.sql.Date currentDate = new Date(utilDate.getTime());
 
 		for (Schedule schedule : workgroup.getSchedules()) {
-			// Ignore historical schedules
-			if (schedule.getYear() >= currentYear) {
-
+			// Only check non-historical schedules
+			// Ensure the 'ending year' of the academic year range has been passed.
+			// Example: for schedule with year 2016 (academic year 2016-17, ensure that the currentYear is greater than 2017 before simply ignoring the schedule entirely.
+			if (currentYear <= (schedule.getYear() + 1)) {
 				// Check teachingCallReceipts to see if messages need to be sent
 				for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
-
-					// Is an email scheduled to be sent?
+					// Send scheduled email if the send date has been passed
 					if (teachingCallReceipt.getNextContactAt() != null) {
 						long currentTime = currentDate.getTime();
 						long contactAtTime = teachingCallReceipt.getNextContactAt().getTime();
 
-						// Is it time to send that email?
 						if (currentTime > contactAtTime) {
 							sendTeachingCall(teachingCallReceipt, currentDate);
 						}
 					}
 
-					// Is a warning scheduled to be sent?
+					// Warnings are sent if the following are all true:
+					// 1) form is incomplete
+					// 2) A due date is set
+					// 3) At least 3 days since last contact
+					// 4) There are less than 3 days between now and the dueDate
+					// 5) The dueDate has not yet passed
 					if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
 						// Form hasn't been submitted and it has a due date
 						final Long threeDaysInMilliseconds = 259200000L;
