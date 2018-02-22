@@ -8,7 +8,6 @@ import java.util.List;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
-import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
@@ -100,7 +99,7 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if(line.getStatusCode() != HttpStatus.OK.value()) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return 200 OK (was " + line.getStatusCode() + "). URL: /people/search?q=" + URLEncoder.encode(query, "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -135,7 +134,7 @@ public class DwClient {
 			StatusLine line = response.getStatusLine();
 
 			if(line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /terms");
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -175,11 +174,10 @@ public class DwClient {
 					return null;
 				}
 				if (line.getStatusCode() != 200) {
-					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+					throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /people/" + URLEncoder.encode(loginId, "UTF-8"));
 				}
 
 				HttpEntity entity = response.getEntity();
-				ObjectMapper mapper = new ObjectMapper();
 
 				String entityString = EntityUtils.toString(entity);
 
@@ -191,8 +189,12 @@ public class DwClient {
 					JsonNode prikerbacct = node.get("prikerbacct");
 
 					if(contactInfo != null) {
-						dwPerson.setIamId(contactInfo.get("iamId").textValue());
-						dwPerson.setEmail(contactInfo.get("email").textValue());
+						if(contactInfo.get("iamId") != null) {
+							dwPerson.setIamId(contactInfo.get("iamId").textValue());
+						}
+						if(contactInfo.get("email") != null) {
+							dwPerson.setEmail(contactInfo.get("email").textValue());
+						}
 					}
 
 					if(person != null) {
@@ -224,7 +226,7 @@ public class DwClient {
 		return dwPerson;
 	}
 
-	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) throws ClientProtocolException, IOException {
+	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
 		String query = subjectCode + " " + courseNumber;
 
 		DwCourse dwCourse = new DwCourse();
@@ -238,7 +240,7 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if(line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /courses/search?q=" + URLEncoder.encode(query, "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -282,7 +284,7 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if(line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /courses/search?q=" + URLEncoder.encode(query, "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -319,7 +321,8 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if (line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /sections/details?termCode=" + URLEncoder.encode(termCode, "UTF-8") +
+				"&sections=" + URLEncoder.encode(sectionUniqueKeys, "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -358,7 +361,8 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if (line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+				"&year=" + URLEncoder.encode(String.valueOf(year), "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
@@ -397,7 +401,8 @@ public class DwClient {
 
 			StatusLine line = response.getStatusLine();
 			if (line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). Check URL/parameters.");
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /sections/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+				"&termCode=" + URLEncoder.encode(String.valueOf(termCode), "UTF-8"));
 			}
 
 			HttpEntity entity = response.getEntity();
