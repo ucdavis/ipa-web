@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.tasks;
 
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +15,7 @@ import java.util.*;
 @Profile({"production", "staging"})
 public class UpdateSectionsTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
+    private static final Logger log = LoggerFactory.getLogger("UpdateSectionsTask");
 
     @Inject ScheduleOpsService scheduleOpsService;
 
@@ -27,7 +30,12 @@ public class UpdateSectionsTask {
         runningTask = true;
 
         this.scheduleOpsService.updateSectionsFromDW();
-        this.scheduleOpsService.updateEmptySectionGroups();
+        try {
+            this.scheduleOpsService.updateEmptySectionGroups();
+        } catch (org.springframework.transaction.TransactionSystemException e) {
+            log.error("TransactionSystemException while updating empty section groups!");
+            log.error(e.toString());
+        }
 
         runningTask = false;
     }
