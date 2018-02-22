@@ -375,7 +375,7 @@ public class DwClient {
 						mapper.getTypeFactory().constructCollectionType(
 								List.class, DwSection.class));
 			} else {
-				log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + subjectCode + ", " + year);
+				log.warn("getDetailedSectionsBySubjectCodeAndYear: Response from DW returned null, for criterion = " + subjectCode + ", " + year);
 			}
 
 			response.close();
