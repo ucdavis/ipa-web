@@ -37,17 +37,13 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
                 }
 
                 // Should not delete if comments were made
-                PreparedStatement psComments = connection.prepareStatement("SELECT * FROM `LineItemComments` WHERE `LineItemId` = ?");
+                PreparedStatement psComments = connection.prepareStatement("SELECT COUNT(*) AS commentCount FROM `LineItemComments` WHERE `LineItemId` = ?");
                 psComments.setLong(1, lineItemId);
 
                 ResultSet rsComments = psComments.executeQuery();
-                Boolean commentsFound = false;
+                rsComments.next();
 
-                while (rsComments.next()) {
-                    commentsFound = true;
-                }
-
-                if (commentsFound) {
+                if (rsComments.getLong("commentCount") > 0) {
                     continue;
                 }
 
