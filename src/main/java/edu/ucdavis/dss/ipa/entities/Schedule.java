@@ -278,6 +278,6 @@ public class Schedule implements Serializable {
 		Calendar now = Calendar.getInstance();
 		int currentYear = now.get(Calendar.YEAR);
 
-		return currentYear <= (this.getYear() + 1);
+		return currentYear > (this.getYear() + 1);
 	}
 }
