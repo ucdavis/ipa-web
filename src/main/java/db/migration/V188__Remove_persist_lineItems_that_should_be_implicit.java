@@ -17,6 +17,9 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
 
             ResultSet rsLineItems = psLineItems.executeQuery();
 
+            String buyoutDescription = "Buyout Funds for";
+            String workDescription = "Work-Life Balance Funds for";
+
             while (rsLineItems.next()) {
                 long lineItemId = rsLineItems.getLong("Id");
                 BigDecimal amount = rsLineItems.getBigDecimal("amount");
@@ -24,9 +27,6 @@ public class V188__Remove_persist_lineItems_that_should_be_implicit implements J
 
                 // Should not delete if description doesn't match auto-generated pattern
                 // Look for string 'buyout funds for' or 'work-life balance funds for
-                String buyoutDescription = "Buyout Funds for";
-                String workDescription = "Work-Life Balance Funds for";
-
                 if (description.contains(buyoutDescription) == false && description.contains(workDescription) == false) {
                     continue;
                 }

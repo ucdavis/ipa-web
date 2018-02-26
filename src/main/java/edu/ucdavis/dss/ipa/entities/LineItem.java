@@ -79,12 +79,12 @@ public class LineItem extends BaseEntity {
         this.notes = notes;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TeachingAssignmentId", nullable = true)
-    @JsonIgnore
     /**
      * May reference a teachingAssignment that no longer exists. Orphaning is intentional to allow user to decide whether or not to delete.
      */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TeachingAssignmentId", nullable = true)
+    @JsonIgnore
     public TeachingAssignment getTeachingAssignment() {
         return teachingAssignment;
     }
@@ -137,7 +137,7 @@ public class LineItem extends BaseEntity {
 
     @JsonProperty("teachingAssignmentId")
     @Transient
-    public Long getTeachingAssignmentIdentification() {
+    public Long getTeachingAssignmentIdIfExists() {
         if(teachingAssignment != null) {
             return teachingAssignment.getId();
         } else {
