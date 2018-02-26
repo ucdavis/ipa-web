@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -264,5 +265,19 @@ public class Schedule implements Serializable {
 			}
 		}
 		return terms;
+	}
+
+	/**
+	 * 	Returns false if the 'ending year' of the academic year range has been passed.
+	 * 	Example: for schedule with year 2016 (academic year 2016-17, it will return true once the currentYear is 2018.
+	 * @return
+     */
+	@Transient
+	@JsonIgnore
+	public boolean isHistorical() {
+		Calendar now = Calendar.getInstance();
+		int currentYear = now.get(Calendar.YEAR);
+
+		return currentYear <= (this.getYear() + 1);
 	}
 }

@@ -71,9 +71,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		for (Schedule schedule : workgroup.getSchedules()) {
 			// Only check non-historical schedules
-			// Ensure the 'ending year' of the academic year range has been passed.
-			// Example: for schedule with year 2016 (academic year 2016-17, ensure that the currentYear is greater than 2017 before simply ignoring the schedule entirely.
-			if (currentYear <= (schedule.getYear() + 1)) {
+			if (schedule.isHistorical() == false) {
 				// Check teachingCallReceipts to see if messages need to be sent
 				for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
 					// Send scheduled email if the send date has been passed

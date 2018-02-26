@@ -101,7 +101,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
         for (Schedule schedule : workgroup.getSchedules()) {
             // Ignore historical schedules
-            if (currentYear <= (schedule.getYear() + 1)) {
+            if (schedule.isHistorical() == false) {
 
                 // Check teachingCallReceipts to see if messages need to be sent
                 for (StudentSupportCallResponse studentSupportCallResponse : schedule.getStudentSupportCallResponses()) {
