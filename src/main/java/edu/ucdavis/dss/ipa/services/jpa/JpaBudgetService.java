@@ -6,7 +6,7 @@ import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,8 @@ public class JpaBudgetService implements BudgetService {
     @Inject BudgetRepository budgetRepository;
     @Inject ScheduleService scheduleService;
     @Inject InstructorCostService instructorCostService;
-    @Inject InstructorTypeService instructorTypeService;
+    @Inject
+    InstructorTypeCostService instructorTypeCostService;
 
     /**
      * Helper method to handle schedule checking. Intentionally private.
@@ -86,7 +87,7 @@ public class JpaBudgetService implements BudgetService {
             InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
             instructorTypeCost.setBudget(budget);
             instructorTypeCost.setDescription(description);
-            instructorTypeCost = instructorTypeService.findOrCreate(instructorTypeCost);
+            instructorTypeCost = instructorTypeCostService.findOrCreate(instructorTypeCost);
             newInstructorTypes.add(instructorTypeCost);
         }
 

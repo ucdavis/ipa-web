@@ -1,16 +1,8 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-public interface InstructorTypeRepository extends CrudRepository<InstructorTypeCost, Long> {
-    InstructorTypeCost findById(Long instructorTypeId);
-
-    void deleteById(long instructorTypeId);
-
-    List<InstructorTypeCost> findByBudgetId(Long budgetId);
-
-    InstructorTypeCost findByDescriptionAndBudgetId(String description, long id);
+public interface InstructorTypeRepository extends CrudRepository<InstructorType, Long> {
+    InstructorType findById(Long instructorTypeId);
 }

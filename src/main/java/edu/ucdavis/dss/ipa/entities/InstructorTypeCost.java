@@ -25,7 +25,7 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "InstructorTypes")
+@Table(name = "InstructorTypeCosts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = InstructorTypeCostDeserializer.class)
 public class InstructorTypeCost extends BaseEntity {
@@ -33,6 +33,7 @@ public class InstructorTypeCost extends BaseEntity {
     private Budget budget;
     private Float cost;
     private String description;
+    private InstructorType instructorType;
     private List<InstructorCost> instructorCosts = new ArrayList<>();
 
     @Id
@@ -61,6 +62,17 @@ public class InstructorTypeCost extends BaseEntity {
         this.budget = budget;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorTypeId", nullable = true)
+    @JsonIgnore
+    public InstructorType getInstructorType() {
+        return instructorType;
+    }
+
+    public void setInstructorType(InstructorType instructorType) {
+        this.instructorType = instructorType;
+    }
+
     public Float getCost() {
         return cost;
     }
@@ -77,7 +89,7 @@ public class InstructorTypeCost extends BaseEntity {
         this.description = description;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorType", cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorTypeCost", cascade = {CascadeType.ALL})
     @JsonIgnore
     public List<InstructorCost> getInstructorCosts() {
         return instructorCosts;
@@ -94,6 +106,16 @@ public class InstructorTypeCost extends BaseEntity {
             return budget.getId();
         } else {
             return 0;
+        }
+    }
+
+    @JsonProperty("instructorTypeId")
+    @Transient
+    public Long getInstructorTypeIdIfExists() {
+        if(instructorType != null) {
+            return instructorType.getId();
+        } else {
+            return null;
         }
     }
 }

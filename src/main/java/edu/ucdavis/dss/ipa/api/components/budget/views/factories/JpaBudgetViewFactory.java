@@ -23,7 +23,7 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
@@ -60,7 +60,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject UserService userService;
-    @Inject InstructorTypeService instructorTypeService;
+    @Inject
+    InstructorTypeCostService instructorTypeCostService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -75,7 +76,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
-        List<InstructorTypeCost> instructorTypes = instructorTypeService.findByBudgetId(budget.getId());
+        List<InstructorTypeCost> instructorTypes = instructorTypeCostService.findByBudgetId(budget.getId());
 
         Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));

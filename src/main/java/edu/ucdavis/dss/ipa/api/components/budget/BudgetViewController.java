@@ -21,7 +21,7 @@ import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
@@ -53,7 +53,8 @@ public class BudgetViewController {
     @Inject LineItemCommentService lineItemCommentService;
     @Inject Authorizer authorizer;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructorTypeService instructorTypeService;
+    @Inject
+    InstructorTypeCostService instructorTypeCostService;
     @Inject InstructorService instructorService;
     @Inject TeachingAssignmentService teachingAssignmentService;
 
@@ -196,7 +197,7 @@ public class BudgetViewController {
 
         // Build lineItem
         newInstructorType.setBudget(budget);
-        InstructorTypeCost instructorTypeCost = instructorTypeService.findOrCreate(newInstructorType);
+        InstructorTypeCost instructorTypeCost = instructorTypeCostService.findOrCreate(newInstructorType);
 
         return instructorTypeCost;
     }
@@ -257,7 +258,7 @@ public class BudgetViewController {
                                                    @RequestBody InstructorTypeCost newInstructorType,
                                                    HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorTypeCost originalInstructorType = instructorTypeService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorType = instructorTypeCostService.findById(instructorTypeId);
 
         if (originalInstructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -268,7 +269,7 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        return instructorTypeService.update(newInstructorType);
+        return instructorTypeCostService.update(newInstructorType);
     }
 
     @RequestMapping(value = "/api/budgetView/instructorTypes/{instructorTypeId}", method = RequestMethod.DELETE, produces="application/json")
@@ -276,7 +277,7 @@ public class BudgetViewController {
     public Long deleteInstructorType(@PathVariable long instructorTypeId,
                                                HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorTypeCost originalInstructorType = instructorTypeService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorType = instructorTypeCostService.findById(instructorTypeId);
 
         if (originalInstructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -287,7 +288,7 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        instructorTypeService.deleteById(instructorTypeId);
+        instructorTypeCostService.deleteById(instructorTypeId);
 
         return instructorTypeId;
     }
@@ -377,7 +378,7 @@ public class BudgetViewController {
         InstructorTypeCost instructorTypeCost = null;
 
         if (instructorCostDTO.getInstructorTypeCost() != null) {
-            instructorTypeCost = instructorTypeService.findById(instructorCostDTO.getInstructorTypeCost().getId());
+            instructorTypeCost = instructorTypeCostService.findById(instructorCostDTO.getInstructorTypeCost().getId());
         }
 
         instructorCostDTO.setInstructorTypeCost(instructorTypeCost);
