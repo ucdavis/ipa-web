@@ -31,4 +31,6 @@ public interface ScheduleOpsService {
 	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
 	 */
 	void updateSectionsFromDW();
+
+	void updateEmptySectionGroups();
 }

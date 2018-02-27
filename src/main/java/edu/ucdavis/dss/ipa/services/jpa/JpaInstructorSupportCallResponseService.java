@@ -88,7 +88,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
 
         for (Schedule schedule : workgroup.getSchedules()) {
             // Ignore historical schedules
-            if (schedule.getYear() >= currentYear) {
+            if (schedule.isHistorical() == false) {
 
                 // Check teachingCallReceipts to see if messages need to be sent
                 for (InstructorSupportCallResponse instructorSupportCallResponse : schedule.getInstructorSupportCallResponses()) {

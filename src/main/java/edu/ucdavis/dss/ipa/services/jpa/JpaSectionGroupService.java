@@ -23,7 +23,6 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Inject SectionService sectionService;
 	@Inject CourseService courseService;
 	@Inject InstructorService instructorService;
-	@Inject WorkgroupService workgroupService;
 	@Inject TermService termService;
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportCallResponseService studentSupportCallResponseService;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.ucdavis.dss.ipa.config.AutowireHelper;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -47,10 +48,15 @@ public abstract class BaseEntity implements Serializable {
     @PreUpdate
     private void beforeUpdate() {
         this.updatedAt = new Date();
+        String realUserLoginId = null;
 
-        AutowireHelper.autowire(this, this.authorization);
-
-        String realUserLoginId = authorization.getRealUserLoginId();
+        // Only attempt to auto-wire if we're in a request. We may be in a background
+        // task, in which case the authorization will fail as it uses request-scoped
+        // beans.
+        if(RequestContextHolder.getRequestAttributes() != null) {
+            AutowireHelper.autowire(this, this.authorization);
+            realUserLoginId = authorization.getRealUserLoginId();
+        }
 
         if (realUserLoginId != null) {
             this.setModifiedBy("user:" + realUserLoginId);
@@ -61,12 +67,18 @@ public abstract class BaseEntity implements Serializable {
 
     @PrePersist
     private void beforeCreation() {
+        String realUserLoginId = null;
+
         this.createdAt = new Date();
         this.updatedAt = new Date();
 
-        AutowireHelper.autowire(this, this.authorization);
-
-        String realUserLoginId = authorization.getRealUserLoginId();
+        // Only attempt to auto-wire if we're in a request. We may be in a background
+        // task, in which case the authorization will fail as it uses request-scoped
+        // beans.
+        if(RequestContextHolder.getRequestAttributes() != null) {
+            AutowireHelper.autowire(this, this.authorization);
+            realUserLoginId = authorization.getRealUserLoginId();
+        }
 
         if (realUserLoginId != null) {
             this.setModifiedBy("user:" + realUserLoginId);
