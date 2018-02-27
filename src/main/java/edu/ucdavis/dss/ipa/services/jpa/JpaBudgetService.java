@@ -1,8 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.services.BudgetService;
@@ -79,21 +78,21 @@ public class JpaBudgetService implements BudgetService {
         budget.setSchedule(schedule);
         budget = budgetRepository.save(budget);
 
-        // Generate default instructorTypes
+        // Generate default instructorTypeCosts
         List<String> descriptions = Arrays.asList("Emeriti", "Visiting Professor", "Associate Instructor", "Unit 18 Pre-six", "Continuing Lecturer", "Ladder Faculty", "Adjunct Professor", "Other");
-        List<InstructorType> newInstructorTypes = new ArrayList<>();
+        List<InstructorTypeCost> newInstructorTypes = new ArrayList<>();
 
         for (String description : descriptions) {
-            InstructorType instructorType = new InstructorType();
-            instructorType.setBudget(budget);
-            instructorType.setDescription(description);
-            instructorType = instructorTypeService.findOrCreate(instructorType);
-            newInstructorTypes.add(instructorType);
+            InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
+            instructorTypeCost.setBudget(budget);
+            instructorTypeCost.setDescription(description);
+            instructorTypeCost = instructorTypeService.findOrCreate(instructorTypeCost);
+            newInstructorTypes.add(instructorTypeCost);
         }
 
-        List<InstructorType> instructorTypes = budget.getInstructorTypes();
-        instructorTypes.addAll(newInstructorTypes);
-        budget.setInstructorTypes(instructorTypes);
+        List<InstructorTypeCost> instructorTypeCosts = budget.getInstructorTypes();
+        instructorTypeCosts.addAll(newInstructorTypes);
+        budget.setInstructorTypes(instructorTypeCosts);
         this.update(budget);
 
         instructorCostService.findOrCreateManyFromBudget(budget);

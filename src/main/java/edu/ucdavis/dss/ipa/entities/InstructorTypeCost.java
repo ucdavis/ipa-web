@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.InstructorTypeDeserializer;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorTypeCostDeserializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,8 @@ import java.util.List;
 @Entity
 @Table(name = "InstructorTypes")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@JsonDeserialize(using = InstructorTypeDeserializer.class)
-public class InstructorType extends BaseEntity {
+@JsonDeserialize(using = InstructorTypeCostDeserializer.class)
+public class InstructorTypeCost extends BaseEntity {
     private long id;
     private Budget budget;
     private Float cost;

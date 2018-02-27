@@ -2,8 +2,6 @@ package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
 
-import javax.sound.sampled.Line;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +22,7 @@ public class BudgetView {
     List<TeachingAssignment> teachingAssignments;
     List<SupportAssignment> supportAssignments;
     Set<User> users;
-    List<InstructorType> instructorTypes;
+    List<InstructorTypeCost> instructorTypes;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -42,7 +40,7 @@ public class BudgetView {
             List<TeachingAssignment> teachingAssignments,
             List<SupportAssignment> supportAssignments,
             Set<User> users,
-            List<InstructorType> instructorTypes) {
+            List<InstructorTypeCost> instructorTypeCosts) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -58,7 +56,7 @@ public class BudgetView {
         setTeachingAssignments(teachingAssignments);
         setSupportAssignments(supportAssignments);
         setUsers(users);
-        setInstructorTypes(instructorTypes);
+        setInstructorTypes(instructorTypeCosts);
     }
 
     public String getWorkgroupId() {
@@ -189,11 +187,11 @@ public class BudgetView {
         this.users = users;
     }
 
-    public List<InstructorType> getInstructorTypes() {
+    public List<InstructorTypeCost> getInstructorTypes() {
         return instructorTypes;
     }
 
-    public void setInstructorTypes(List<InstructorType> instructorTypes) {
-        this.instructorTypes = instructorTypes;
+    public void setInstructorTypes(List<InstructorTypeCost> instructorTypeCosts) {
+        this.instructorTypes = instructorTypeCosts;
     }
 }

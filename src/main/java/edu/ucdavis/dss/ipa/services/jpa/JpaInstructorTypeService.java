@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
@@ -17,19 +16,19 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     @Inject InstructorCostService instructorCostService;
 
     @Override
-    public List<InstructorType> findByBudgetId(Long budgetId) {
+    public List<InstructorTypeCost> findByBudgetId(Long budgetId) {
         return instructorTypeRepository.findByBudgetId(budgetId);
     }
 
     @Override
-    public InstructorType findById(Long instructorTypeId) {
+    public InstructorTypeCost findById(Long instructorTypeId) {
         return instructorTypeRepository.findById(instructorTypeId);
     }
 
     @Override
     @Transactional
     public void deleteById(long instructorTypeId) {
-        InstructorType instructorType = this.findById(instructorTypeId);
+        InstructorTypeCost instructorTypeCost = this.findById(instructorTypeId);
 
         instructorCostService.removeAssociationByInstructorTypeId(instructorTypeId);
 
@@ -37,8 +36,8 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     }
 
     @Override
-    public InstructorType update(InstructorType newInstructorType) {
-        InstructorType originalInstructorType = this.findById(newInstructorType.getId());
+    public InstructorTypeCost update(InstructorTypeCost newInstructorType) {
+        InstructorTypeCost originalInstructorType = this.findById(newInstructorType.getId());
 
         if(originalInstructorType == null) {
             return null;
@@ -51,23 +50,23 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     }
 
     @Override
-    public InstructorType findOrCreate(InstructorType instructorTypeDTO) {
-        if (instructorTypeDTO == null || instructorTypeDTO.getBudget() == null) {
+    public InstructorTypeCost findOrCreate(InstructorTypeCost instructorTypeCostDTO) {
+        if (instructorTypeCostDTO == null || instructorTypeCostDTO.getBudget() == null) {
             return null;
         }
 
-        InstructorType existingInstructorType = this.instructorTypeRepository.findByDescriptionAndBudgetId(instructorTypeDTO.getDescription(), instructorTypeDTO.getBudget().getId());
+        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeRepository.findByDescriptionAndBudgetId(instructorTypeCostDTO.getDescription(), instructorTypeCostDTO.getBudget().getId());
 
-        if (existingInstructorType != null) {
-            return existingInstructorType;
+        if (existingInstructorTypeCost != null) {
+            return existingInstructorTypeCost;
         }
 
-        InstructorType instructorType = new InstructorType();
+        InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
 
-        instructorType.setBudget(instructorTypeDTO.getBudget());
-        instructorType.setDescription(instructorTypeDTO.getDescription());
-        instructorType.setCost(instructorTypeDTO.getCost());
+        instructorTypeCost.setBudget(instructorTypeCostDTO.getBudget());
+        instructorTypeCost.setDescription(instructorTypeCostDTO.getDescription());
+        instructorTypeCost.setCost(instructorTypeCostDTO.getCost());
 
-        return this.instructorTypeRepository.save(instructorType);
+        return this.instructorTypeRepository.save(instructorTypeCost);
     }
 }

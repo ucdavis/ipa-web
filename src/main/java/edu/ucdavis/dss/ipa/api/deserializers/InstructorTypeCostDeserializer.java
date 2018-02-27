@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 
-public class InstructorTypeDeserializer extends JsonDeserializer<Object> {
+public class InstructorTypeCostDeserializer extends JsonDeserializer<Object> {
 
     @Override
     public Object deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
@@ -19,20 +19,20 @@ public class InstructorTypeDeserializer extends JsonDeserializer<Object> {
         ObjectCodec oc = jsonParser.getCodec();
         JsonNode node = oc.readTree(jsonParser);
 
-        InstructorType instructorType = new InstructorType();
+        InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
 
         if (node.has("id")) {
-            instructorType.setId(node.get("id").longValue());
+            instructorTypeCost.setId(node.get("id").longValue());
         }
 
         if (node.has("cost")) {
-            instructorType.setCost(node.get("cost").floatValue());
+            instructorTypeCost.setCost(node.get("cost").floatValue());
         }
 
         if (node.has("description")) {
-            instructorType.setDescription(node.get("description").textValue());
+            instructorTypeCost.setDescription(node.get("description").textValue());
         }
 
-        return instructorType;
+        return instructorTypeCost;
     }
 }

@@ -1,19 +1,19 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @Validated
 public interface InstructorTypeService {
-    List<InstructorType> findByBudgetId(Long budgetId);
+    List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
-    InstructorType findById(Long instructorTypeId);
+    InstructorTypeCost findById(Long instructorTypeId);
 
     void deleteById(long instructorTypeId);
 
-    InstructorType update(InstructorType instructorType);
+    InstructorTypeCost update(InstructorTypeCost instructorTypeCost);
 
-    InstructorType findOrCreate(InstructorType instructorTypeDTO);
+    InstructorTypeCost findOrCreate(InstructorTypeCost instructorTypeCostDTO);
 }

@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemCategory;
 import edu.ucdavis.dss.ipa.entities.LineItemComment;
@@ -75,7 +75,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
-        List<InstructorType> instructorTypes = instructorTypeService.findByBudgetId(budget.getId());
+        List<InstructorTypeCost> instructorTypes = instructorTypeService.findByBudgetId(budget.getId());
 
         Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));

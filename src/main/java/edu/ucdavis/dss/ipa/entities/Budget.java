@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class Budget extends BaseEntity {
     private float taCost = 0f, readerCost = 0f, lecturerCost = 0f;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
     private List<InstructorCost> instructorCosts = new ArrayList<>();
-    private List<InstructorType> instructorTypes = new ArrayList<>();
+    private List<InstructorTypeCost> instructorTypes = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,11 +98,11 @@ public class Budget extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
     @JsonIgnore
-    public List<InstructorType> getInstructorTypes() {
+    public List<InstructorTypeCost> getInstructorTypes() {
         return instructorTypes;
     }
 
-    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+    public void setInstructorTypes(List<InstructorTypeCost> instructorTypes) {
         this.instructorTypes = instructorTypes;
     }
 }

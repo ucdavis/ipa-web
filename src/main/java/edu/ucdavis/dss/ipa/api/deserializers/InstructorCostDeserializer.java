@@ -31,10 +31,10 @@ public class InstructorCostDeserializer extends JsonDeserializer<Object> {
             }
         }
 
-        if (node.has("instructorTypeId")) {
-            InstructorType instructorType = new InstructorType();
-            instructorType.setId(node.get("instructorTypeId").longValue());
-            instructorCost.setInstructorType(instructorType);
+        if (node.has("instructorTypeCostId")) {
+            InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
+            instructorTypeCost.setId(node.get("instructorTypeCostId").longValue());
+            instructorCost.setInstructorTypeCost(instructorTypeCost);
         }
 
         if (node.has("budgetId")) {

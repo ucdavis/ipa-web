@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemCategory;
 import edu.ucdavis.dss.ipa.entities.LineItemComment;
@@ -179,9 +179,9 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypes", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public InstructorType createInstructorType(@PathVariable long budgetId,
-                                   @RequestBody InstructorType newInstructorType,
-                                   HttpServletResponse httpResponse) {
+    public InstructorTypeCost createInstructorType(@PathVariable long budgetId,
+                                                   @RequestBody InstructorTypeCost newInstructorType,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
 
@@ -196,9 +196,9 @@ public class BudgetViewController {
 
         // Build lineItem
         newInstructorType.setBudget(budget);
-        InstructorType instructorType = instructorTypeService.findOrCreate(newInstructorType);
+        InstructorTypeCost instructorTypeCost = instructorTypeService.findOrCreate(newInstructorType);
 
-        return instructorType;
+        return instructorTypeCost;
     }
 
     @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}", method = RequestMethod.DELETE, produces="application/json")
@@ -253,11 +253,11 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/instructorTypes/{instructorTypeId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public InstructorType updateInstructorType(@PathVariable long instructorTypeId,
-                                   @RequestBody InstructorType newInstructorType,
-                                   HttpServletResponse httpResponse) {
+    public InstructorTypeCost updateInstructorType(@PathVariable long instructorTypeId,
+                                                   @RequestBody InstructorTypeCost newInstructorType,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorType originalInstructorType = instructorTypeService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorType = instructorTypeService.findById(instructorTypeId);
 
         if (originalInstructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -276,7 +276,7 @@ public class BudgetViewController {
     public Long deleteInstructorType(@PathVariable long instructorTypeId,
                                                HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorType originalInstructorType = instructorTypeService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorType = instructorTypeService.findById(instructorTypeId);
 
         if (originalInstructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -374,13 +374,13 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        InstructorType instructorType = null;
+        InstructorTypeCost instructorTypeCost = null;
 
-        if (instructorCostDTO.getInstructorType() != null) {
-            instructorType = instructorTypeService.findById(instructorCostDTO.getInstructorType().getId());
+        if (instructorCostDTO.getInstructorTypeCost() != null) {
+            instructorTypeCost = instructorTypeService.findById(instructorCostDTO.getInstructorTypeCost().getId());
         }
 
-        instructorCostDTO.setInstructorType(instructorType);
+        instructorCostDTO.setInstructorTypeCost(instructorTypeCost);
 
         return instructorCostService.update(instructorCostDTO);
     }
