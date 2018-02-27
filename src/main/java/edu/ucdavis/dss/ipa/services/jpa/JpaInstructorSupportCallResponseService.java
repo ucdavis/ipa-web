@@ -87,49 +87,45 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         java.sql.Date currentDate = new Date(utilDate.getTime());
 
         for (Schedule schedule : workgroup.getSchedules()) {
-            // Ignore historical schedules
-            if (schedule.isHistorical() == false) {
+            // Check teachingCallReceipts to see if messages need to be sent
+            for (InstructorSupportCallResponse instructorSupportCallResponse : schedule.getInstructorSupportCallResponses()) {
 
-                // Check teachingCallReceipts to see if messages need to be sent
-                for (InstructorSupportCallResponse instructorSupportCallResponse : schedule.getInstructorSupportCallResponses()) {
+                // Is an email scheduled to be sent?
+                if (instructorSupportCallResponse.getNextContactAt() != null) {
+                    long currentTime = currentDate.getTime();
+                    long contactAtTime = instructorSupportCallResponse.getNextContactAt().getTime();
 
-                    // Is an email scheduled to be sent?
-                    if (instructorSupportCallResponse.getNextContactAt() != null) {
-                        long currentTime = currentDate.getTime();
-                        long contactAtTime = instructorSupportCallResponse.getNextContactAt().getTime();
+                    // Is it time to send that email?
+                    if (currentTime > contactAtTime) {
+                        sendSupportCall(instructorSupportCallResponse, currentDate);
+                    }
+                }
 
-                        // Is it time to send that email?
-                        if (currentTime > contactAtTime) {
-                            sendSupportCall(instructorSupportCallResponse, currentDate);
-                        }
+                // Is a warning scheduled to be sent?
+                if (instructorSupportCallResponse.getDueDate() != null) {
+                    Long oneDayInMilliseconds = 86400000L;
+                    Long threeDaysInMilliseconds = 259200000L;
+
+                    Long currentTime = currentDate.getTime();
+                    Long dueDateTime = instructorSupportCallResponse.getDueDate().getTime();
+                    Long warnTime = dueDateTime - threeDaysInMilliseconds;
+                    Long timeSinceLastContact = null;
+
+                    if (instructorSupportCallResponse.getLastContactedAt() != null) {
+                        timeSinceLastContact = currentTime - instructorSupportCallResponse.getLastContactedAt().getTime();
                     }
 
-                    // Is a warning scheduled to be sent?
-                    if (instructorSupportCallResponse.getDueDate() != null) {
-                        Long oneDayInMilliseconds = 86400000L;
-                        Long threeDaysInMilliseconds = 259200000L;
-
-                        Long currentTime = currentDate.getTime();
-                        Long dueDateTime = instructorSupportCallResponse.getDueDate().getTime();
-                        Long warnTime = dueDateTime - threeDaysInMilliseconds;
-                        Long timeSinceLastContact = null;
-
-                        if (instructorSupportCallResponse.getLastContactedAt() != null) {
-                            timeSinceLastContact = currentTime - instructorSupportCallResponse.getLastContactedAt().getTime();
+                    // Is it time to send a warning email?
+                    // Warning emails are sent 3 days before dueDate
+                    // To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
+                    // Warning emails are suppressed if the due Date has passed
+                    if (currentTime > warnTime) {
+                        if (timeSinceLastContact == null && currentTime < dueDateTime) {
+                            sendSupportCallWarning(instructorSupportCallResponse, currentDate);
+                        } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
+                            sendSupportCallWarning(instructorSupportCallResponse, currentDate);
                         }
 
-                        // Is it time to send a warning email?
-                        // Warning emails are sent 3 days before dueDate
-                        // To avoid spamming, warning email is suppressed if 'lastContacted' was within 24 hours
-                        // Warning emails are suppressed if the due Date has passed
-                        if (currentTime > warnTime) {
-                            if (timeSinceLastContact == null && currentTime < dueDateTime) {
-                                sendSupportCallWarning(instructorSupportCallResponse, currentDate);
-                            } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
-                                sendSupportCallWarning(instructorSupportCallResponse, currentDate);
-                            }
-
-                        }
                     }
                 }
             }
