@@ -125,6 +125,7 @@ public class DefaultEmailService implements EmailService {
 
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
 			helper.setTo(recipientEmail);
 			helper.setFrom(emailFrom);
 			helper.setSubject(messageSubject);

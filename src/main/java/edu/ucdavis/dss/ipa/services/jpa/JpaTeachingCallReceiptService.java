@@ -19,7 +19,6 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.TeachingCallReceiptRepository;
 
 @Service
@@ -170,7 +169,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			teachingCallReceipt.setNextContactAt(null);
 			this.save(teachingCallReceipt);
-		}
+		} else {
+		    log.error("Error while sending teaching call email. Teaching call receipt will not be updated.");
+        }
 	}
 
     private String getTeachingCallUrl(String ipaUrlFrontend, long workgroupId, long year) {
@@ -225,7 +226,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		if (emailService.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			this.save(teachingCallReceipt);
-		}
+		} else {
+            log.error("Error while sending teaching call warning email. Teaching call receipt will not be updated.");
+        }
 	}
 
 	@Override
