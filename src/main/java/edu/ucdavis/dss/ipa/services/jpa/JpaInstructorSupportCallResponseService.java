@@ -2,10 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorSupportCallResponseRepository;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.services.*;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +21,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
 
     @Inject InstructorSupportCallResponseRepository instructorSupportCallResponseRepository;
     @Inject InstructorService instructorService;
-    @Inject WorkgroupService workgroupService;
+    @Inject ScheduleService scheduleService;
     @Inject UserService userService;
     @Inject EmailService emailService;
 
@@ -73,26 +70,30 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
     @Override
     @Transactional
     public void sendNotificationsByWorkgroupId(Long workgroupId) {
-        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+        List<Schedule> schedules = scheduleService.findByWorkgroupId(workgroupId);
 
-        if (workgroup == null) {
-            log.error("instructorSupportCallResponse sendNotificationsByWorkgroup() could not find workgroup with ID " + workgroupId);
+        if (schedules == null) {
+            log.error("sendNotificationsByWorkgroup() schedule list is null for workgroup ID " + workgroupId);
+            return;
+        }
+        if (schedules.size() == 0) {
+            log.debug("sendNotificationsByWorkgroup() schedule list not null but empty for workgroup ID " + workgroupId);
             return;
         }
 
         Calendar now = Calendar.getInstance();
-        int currentYear = now.get(Calendar.YEAR);
 
         java.util.Date utilDate = now.getTime();
         java.sql.Date currentDate = new Date(utilDate.getTime());
+        Long currentTime = currentDate.getTime();
 
-        for (Schedule schedule : workgroup.getSchedules()) {
+        for (Schedule schedule : schedules) {
+            List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseRepository.findByScheduleIdAndSendEmailAndIsSubmitted(schedule.getId(), true, false);
+
             // Check teachingCallReceipts to see if messages need to be sent
-            for (InstructorSupportCallResponse instructorSupportCallResponse : schedule.getInstructorSupportCallResponses()) {
-
+            for (InstructorSupportCallResponse instructorSupportCallResponse : instructorSupportCallResponses) {
                 // Is an email scheduled to be sent?
                 if (instructorSupportCallResponse.getNextContactAt() != null) {
-                    long currentTime = currentDate.getTime();
                     long contactAtTime = instructorSupportCallResponse.getNextContactAt().getTime();
 
                     // Is it time to send that email?
@@ -106,7 +107,6 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
                     Long oneDayInMilliseconds = 86400000L;
                     Long threeDaysInMilliseconds = 259200000L;
 
-                    Long currentTime = currentDate.getTime();
                     Long dueDateTime = instructorSupportCallResponse.getDueDate().getTime();
                     Long warnTime = dueDateTime - threeDaysInMilliseconds;
                     Long timeSinceLastContact = null;
@@ -147,19 +147,22 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         String loginId = instructorSupportCallResponse.getInstructor().getLoginId();
 
         // loginId is necessary to map to a user and email
-        if ( loginId == null) {
-            log.error("Attempted to send notification to instructor id '" + instructorSupportCallResponse.getInstructor().getId() + "' but loginId was null.");
+        if (loginId == null) {
+            log.error("Failed to send instructor support call email to instructor with ID '" + instructorSupportCallResponse.getInstructor().getId() + "' but loginId was null.");
             return;
         }
 
         User user = userService.getOneByLoginId(loginId);
         if (user == null) {
-            log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
+            log.error("Failed to send instructor support call email to user with loginId '" + loginId + "' but user was not found.");
+            return;
+        }
+        if (user.getEmail() == null) {
+            log.error("Failed to send instructor support call email to user with loginId '" + loginId + "' but user has no email on file.");
             return;
         }
 
         String recipientEmail = user.getEmail();
-        String messageSubject = "";
 
         Schedule schedule = instructorSupportCallResponse.getSchedule();
         long workgroupId = schedule.getWorkgroup().getId();
@@ -171,25 +174,24 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         String supportCallUrl = ipaUrlFrontend + "/instructionalSupport/" + workgroupId + "/" + year + "/" + term + "/instructorSupportCallForm";
         String messageBody = "";
 
-        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
-
-
         // Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
-        messageSubject = "IPA: Support Call has started";
+        String messageSubject = "Support Call Response Requested for " + year + "-" + (year + 1);
         messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-        messageBody += "It is time to start thinking about teaching plans for <b>" + " " + year + "-" + (year+1) + "</b>.";
-        messageBody += "<br />";
-        messageBody += "<br />";
+        messageBody += "Your department requests that you indicate <b>your teaching preferences for " + year + "-" + (year + 1) + "</b>.";
+        messageBody += "<br /><br />";
+        messageBody += "You may do so by clicking the following link or copying and pasting it into your browser: <a href='" + supportCallUrl + "'>" + supportCallUrl + "</a>";
+        messageBody += "<br /><br />";
         messageBody += instructorSupportCallResponse.getMessage();
-        messageBody += "<br />";
-        messageBody += "<br />";
-        messageBody += "<a href='" + supportCallUrl + "'>View Support Call</a>";
+        messageBody += "<br /><br />";
         messageBody += "</td></tr></tbody></table>";
 
         if (emailService.send(recipientEmail, messageBody, messageSubject)) {
             instructorSupportCallResponse.setLastContactedAt(currentDate);
             instructorSupportCallResponse.setNextContactAt(null);
+
             this.update(instructorSupportCallResponse);
+        } else {
+            log.error("Error while sending instructor support call email. Instructor support call response will not be updated.");
         }
     }
 
@@ -271,6 +273,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
             instructorResponse.setTermCode(instructorResponseDTO.getTermCode());
             instructorResponse.setDueDate(instructorResponseDTO.getDueDate());
             instructorResponse.setAllowSubmissionAfterDueDate(instructorResponseDTO.isAllowSubmissionAfterDueDate());
+            instructorResponse.setSendEmail(instructorResponseDTO.getSendEmail());
 
             instructorResponse = this.create(instructorResponse);
             instructorResponses.add(instructorResponse);

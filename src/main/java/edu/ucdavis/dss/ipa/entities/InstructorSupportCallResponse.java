@@ -20,6 +20,7 @@ public class InstructorSupportCallResponse implements Serializable {
     private Instructor instructor;
     private boolean submitted, allowSubmissionAfterDueDate;
     private String generalComments;
+    private Boolean sendEmail;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public long getId() {
         return this.id;
     }
-
     public void setId(long id) {
         this.id = id;
     }
@@ -40,7 +40,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Instructor getInstructor() {
         return instructor;
     }
-
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
     }
@@ -49,7 +48,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public boolean isSubmitted() {
         return submitted;
     }
-
     public void setSubmitted(boolean submitted) {
         this.submitted = submitted;
     }
@@ -58,7 +56,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public String getGeneralComments() {
         return generalComments;
     }
-
     public void setGeneralComments(String generalComments) {
         this.generalComments = generalComments;
     }
@@ -69,7 +66,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Schedule getSchedule() {
         return schedule;
     }
-
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
     }
@@ -77,7 +73,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
     }
@@ -85,7 +80,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public String getTermCode() {
         return termCode;
     }
-
     public void setTermCode(String termCode) {
         this.termCode = termCode;
     }
@@ -93,7 +87,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Date getStartDate() {
         return startDate;
     }
-
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
@@ -101,7 +94,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Date getDueDate() {
         return dueDate;
     }
-
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
@@ -109,7 +101,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Date getLastContactedAt() {
         return lastContactedAt;
     }
-
     public void setLastContactedAt(Date lastContactedAt) {
         this.lastContactedAt = lastContactedAt;
     }
@@ -117,7 +108,6 @@ public class InstructorSupportCallResponse implements Serializable {
     public Date getNextContactAt() {
         return nextContactAt;
     }
-
     public void setNextContactAt(Date nextContactAt) {
         this.nextContactAt = nextContactAt;
     }
@@ -125,9 +115,15 @@ public class InstructorSupportCallResponse implements Serializable {
     public boolean isAllowSubmissionAfterDueDate() {
         return allowSubmissionAfterDueDate;
     }
-
     public void setAllowSubmissionAfterDueDate(boolean allowSubmissionAfterDueDate) {
         this.allowSubmissionAfterDueDate = allowSubmissionAfterDueDate;
+    }
+
+    public Boolean getSendEmail() {
+        return sendEmail;
+    }
+    public void setSendEmail(Boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 
     @JsonProperty("instructorId")

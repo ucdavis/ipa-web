@@ -32,6 +32,7 @@ public class StudentSupportCallResponse implements Serializable {
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
     private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid;
+    private Boolean sendEmail;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +41,6 @@ public class StudentSupportCallResponse implements Serializable {
     public long getId() {
         return this.id;
     }
-
     public void setId(long id) {
         this.id = id;
     }
@@ -52,7 +52,6 @@ public class StudentSupportCallResponse implements Serializable {
     public SupportStaff getSupportStaff() {
         return supportStaff;
     }
-
     public void setSupportStaff(SupportStaff supportStaff) {
         this.supportStaff = supportStaff;
     }
@@ -61,7 +60,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isSubmitted() {
         return submitted;
     }
-
     public void setSubmitted(boolean submitted) {
         this.submitted = submitted;
     }
@@ -70,7 +68,6 @@ public class StudentSupportCallResponse implements Serializable {
     public String getGeneralComments() {
         return generalComments;
     }
-
     public void setGeneralComments(String generalComments) {
         this.generalComments = generalComments;
     }
@@ -79,7 +76,6 @@ public class StudentSupportCallResponse implements Serializable {
     public String getTeachingQualifications() {
         return teachingQualifications;
     }
-
     public void setTeachingQualifications(String teachingQualifications) {
         this.teachingQualifications = teachingQualifications;
     }
@@ -87,7 +83,6 @@ public class StudentSupportCallResponse implements Serializable {
     public long getMinimumNumberOfPreferences() {
         return minimumNumberOfPreferences;
     }
-
     public void setMinimumNumberOfPreferences(long minimumNumberOfPreferences) {
         this.minimumNumberOfPreferences = minimumNumberOfPreferences;
     }
@@ -95,7 +90,6 @@ public class StudentSupportCallResponse implements Serializable {
     public Date getNextContactAt() {
         return nextContactAt;
     }
-
     public void setNextContactAt(Date nextContactAt) {
         this.nextContactAt = nextContactAt;
     }
@@ -103,7 +97,6 @@ public class StudentSupportCallResponse implements Serializable {
     public Date getLastContactedAt() {
         return lastContactedAt;
     }
-
     public void setLastContactedAt(Date lastContactedAt) {
         this.lastContactedAt = lastContactedAt;
     }
@@ -111,7 +104,6 @@ public class StudentSupportCallResponse implements Serializable {
     public Date getStartDate() {
         return startDate;
     }
-
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
@@ -119,7 +111,6 @@ public class StudentSupportCallResponse implements Serializable {
     public Date getDueDate() {
         return dueDate;
     }
-
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
@@ -127,7 +118,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isAllowSubmissionAfterDueDate() {
         return allowSubmissionAfterDueDate;
     }
-
     public void setAllowSubmissionAfterDueDate(boolean allowSubmissionAfterDueDate) {
         this.allowSubmissionAfterDueDate = allowSubmissionAfterDueDate;
     }
@@ -135,7 +125,6 @@ public class StudentSupportCallResponse implements Serializable {
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
     }
@@ -143,7 +132,6 @@ public class StudentSupportCallResponse implements Serializable {
     public String getTermCode() {
         return termCode;
     }
-
     public void setTermCode(String termCode) {
         this.termCode = termCode;
     }
@@ -154,7 +142,6 @@ public class StudentSupportCallResponse implements Serializable {
     public Schedule getSchedule() {
         return schedule;
     }
-
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
     }
@@ -162,7 +149,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectGeneralComments() {
         return collectGeneralComments;
     }
-
     public void setCollectGeneralComments(boolean collectGeneralComments) {
         this.collectGeneralComments = collectGeneralComments;
     }
@@ -170,7 +156,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectTeachingQualifications() {
         return collectTeachingQualifications;
     }
-
     public void setCollectTeachingQualifications(boolean collectTeachingQualifications) {
         this.collectTeachingQualifications = collectTeachingQualifications;
     }
@@ -178,7 +163,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectPreferenceComments() {
         return collectPreferenceComments;
     }
-
     public void setCollectPreferenceComments(boolean collectPreferenceComments) {
         this.collectPreferenceComments = collectPreferenceComments;
     }
@@ -186,7 +170,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectEligibilityConfirmation() {
         return collectEligibilityConfirmation;
     }
-
     public void setCollectEligibilityConfirmation(boolean collectEligibilityConfirmation) {
         this.collectEligibilityConfirmation = collectEligibilityConfirmation;
     }
@@ -194,7 +177,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectTeachingAssistantPreferences() {
         return collectTeachingAssistantPreferences;
     }
-
     public void setCollectTeachingAssistantPreferences(boolean collectTeachingAssistantPreferences) {
         this.collectTeachingAssistantPreferences = collectTeachingAssistantPreferences;
     }
@@ -202,7 +184,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectReaderPreferences() {
         return collectReaderPreferences;
     }
-
     public void setCollectReaderPreferences(boolean collectReaderPreferences) {
         this.collectReaderPreferences = collectReaderPreferences;
     }
@@ -210,7 +191,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectAssociateInstructorPreferences() {
         return collectAssociateInstructorPreferences;
     }
-
     public void setCollectAssociateInstructorPreferences(boolean collectAssociateInstructorPreferences) {
         this.collectAssociateInstructorPreferences = collectAssociateInstructorPreferences;
     }
@@ -218,7 +198,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isEligibilityConfirmed() {
         return eligibilityConfirmed;
     }
-
     public void setEligibilityConfirmed(boolean eligibilityConfirmed) {
         this.eligibilityConfirmed = eligibilityConfirmed;
     }
@@ -226,7 +205,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isRequirePreferenceComments() {
         return requirePreferenceComments;
     }
-
     public void setRequirePreferenceComments(boolean requirePreferenceComments) {
         this.requirePreferenceComments = requirePreferenceComments;
     }
@@ -239,7 +217,6 @@ public class StudentSupportCallResponse implements Serializable {
     public String getAvailabilityBlob() {
         return availabilityBlob;
     }
-
     public void setAvailabilityBlob(String availabilityBlob) {
         this.availabilityBlob = availabilityBlob;
     }
@@ -247,7 +224,6 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectAvailabilityByCrn() {
         return collectAvailabilityByCrn;
     }
-
     public void setCollectAvailabilityByCrn(boolean collectAvailabilityByCrn) {
         this.collectAvailabilityByCrn = collectAvailabilityByCrn;
     }
@@ -255,9 +231,15 @@ public class StudentSupportCallResponse implements Serializable {
     public boolean isCollectAvailabilityByGrid() {
         return collectAvailabilityByGrid;
     }
-
     public void setCollectAvailabilityByGrid(boolean collectAvailabilityByGrid) {
         this.collectAvailabilityByGrid = collectAvailabilityByGrid;
+    }
+
+    public Boolean getSendEmail() {
+        return sendEmail;
+    }
+    public void setSendEmail(Boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 
     @JsonProperty("supportStaffId")

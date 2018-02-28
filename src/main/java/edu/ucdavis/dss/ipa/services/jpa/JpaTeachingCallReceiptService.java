@@ -131,14 +131,18 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String loginId = teachingCallReceipt.getInstructor().getLoginId();
 
 		// loginId is necessary to map to a user and email
-		if ( loginId == null) {
-			log.error("Attempted to send notification to instructor id '" + teachingCallReceipt.getInstructor().getId() + "' but loginId was null.");
+		if (loginId == null) {
+			log.error("Failed to send notification to instructor id '" + teachingCallReceipt.getInstructor().getId() + "' but loginId was null.");
 			return;
 		}
 
 		User user = userService.getOneByLoginId(loginId);
 		if (user == null) {
-			log.error("Attempted to send notification to user with loginId '" + loginId + "' but user was not found.");
+			log.error("Failed to send notification to user with loginId '" + loginId + "' but user was not found.");
+			return;
+		}
+		if (user.getEmail() == null) {
+			log.error("Failed to send notification to user with loginId '" + loginId + "' but user has no email on file.");
 			return;
 		}
 
@@ -147,8 +151,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		Schedule schedule = teachingCallReceipt.getSchedule();
 		long workgroupId = schedule.getWorkgroup().getId();
 
-		// TODO: ipa-client-angular should supply the frontendUrl and we shouldn't be tracking it in SettingsConfiguraiton
-		//       at all -- it breaks out frontend / backend separation.
 		String teachingCallUrl = getTeachingCallUrl(ipaUrlFrontend, workgroupId, schedule.getYear());
 
 		Long year = teachingCallReceipt.getSchedule().getYear();
@@ -168,6 +170,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		if (emailService.send(recipientEmail, messageBody, messageSubject)) {
 			teachingCallReceipt.setLastContactedAt(currentDate);
 			teachingCallReceipt.setNextContactAt(null);
+
 			this.save(teachingCallReceipt);
 		} else {
 		    log.error("Error while sending teaching call email. Teaching call receipt will not be updated.");

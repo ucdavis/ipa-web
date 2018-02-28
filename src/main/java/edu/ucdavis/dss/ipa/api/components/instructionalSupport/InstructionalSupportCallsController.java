@@ -80,7 +80,10 @@ public class InstructionalSupportCallsController {
             InstructorSupportCallResponse instructorSupportCallResponse = instructorSupportCallResponseService.findOneById(responseId);
             instructorSupportCallResponse.setNextContactAt(instructorSupportCallContactDTO.getNextContactAt());
             instructorSupportCallResponse.setMessage(instructorSupportCallContactDTO.getMessage());
+            instructorSupportCallResponse.setSendEmail(true);
+
             instructorSupportCallResponse = instructorSupportCallResponseService.update(instructorSupportCallResponse);
+
             instructorResponses.add(instructorSupportCallResponse);
         }
 
@@ -170,6 +173,8 @@ public class InstructionalSupportCallsController {
 
             studentSupportCallResponse.setNextContactAt(studentSupportCallContactDTO.getNextContactAt());
             studentSupportCallResponse.setMessage(studentSupportCallContactDTO.getMessage());
+            studentSupportCallResponse.setSendEmail(true);
+
             studentSupportCallResponse = studentSupportCallResponseService.update(studentSupportCallResponse);
 
             studentResponses.add(studentSupportCallResponse);
@@ -256,6 +261,7 @@ public class InstructionalSupportCallsController {
         instructorResponseDTO.setTermCode(addInstructorsDTO.getTermCode());
         instructorResponseDTO.setSchedule(schedule);
         instructorResponseDTO.setAllowSubmissionAfterDueDate(addInstructorsDTO.getAllowSubmissionAfterDueDate());
+        instructorResponseDTO.setSendEmail(addInstructorsDTO.getSendEmail());
 
         if (addInstructorsDTO.getSendEmail() != null && addInstructorsDTO.getSendEmail() == true) {
             instructorResponseDTO.setMessage(addInstructorsDTO.getMessage());
@@ -382,13 +388,10 @@ public class InstructionalSupportCallsController {
         StudentSupportCallResponse studentResponseDTO = new StudentSupportCallResponse();
 
         studentResponseDTO.setSchedule(schedule);
-
         studentResponseDTO.setDueDate(addStudentsDTO.getDueDate());
         studentResponseDTO.setTermCode(addStudentsDTO.getTermCode());
         studentResponseDTO.setMinimumNumberOfPreferences(addStudentsDTO.getMinimumNumberOfPreferences());
-
         studentResponseDTO.setAllowSubmissionAfterDueDate(addStudentsDTO.getAllowSubmissionAfterDueDate());
-
         studentResponseDTO.setCollectEligibilityConfirmation(addStudentsDTO.getCollectEligibilityConfirmation());
         studentResponseDTO.setCollectGeneralComments(addStudentsDTO.getCollectGeneralComments());
         studentResponseDTO.setCollectPreferenceComments(addStudentsDTO.getCollectPreferenceComments());
@@ -399,6 +402,7 @@ public class InstructionalSupportCallsController {
         studentResponseDTO.setCollectAssociateInstructorPreferences(addStudentsDTO.getCollectAssociateInstructorPreferences());
         studentResponseDTO.setCollectAvailabilityByCrn(addStudentsDTO.getCollectAvailabilityByCrn());
         studentResponseDTO.setCollectAvailabilityByGrid(addStudentsDTO.getCollectAvailabilityByGrid());
+        studentResponseDTO.setSendEmail(addStudentsDTO.getSendEmail());
 
         if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());
