@@ -22,7 +22,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
  *
  */
 @Service
-@Profile({"production", "staging"})
+@Profile({"production", "staging", "development"})
 public class EmailNotificationTask {
 	private final Logger log = LoggerFactory.getLogger("EmailNotificationTask");
 
