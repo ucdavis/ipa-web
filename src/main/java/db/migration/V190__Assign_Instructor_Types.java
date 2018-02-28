@@ -24,12 +24,12 @@ public class V190__Assign_Instructor_Types implements JdbcMigration {
             ResultSet rsInstructorTypeCosts = psInstructorTypeCosts.executeQuery();
 
             while (rsInstructorTypeCosts.next()) {
-                Long id = rsInstructorTypeCosts.getLong("id");
-                String description = rsInstructorTypeCosts.getString("description");
-                Long amount = rsInstructorTypeCosts.getLong("amount");
+                Long id = rsInstructorTypeCosts.getLong("Id");
+                String description = rsInstructorTypeCosts.getString("Description");
+                Long cost = rsInstructorTypeCosts.getLong("Cost");
 
                 // Delete instructorTypeCosts with null values
-                if (amount == null) {
+                if (cost == null) {
                     PreparedStatement psDeleteInstructorTypeCost = connection.prepareStatement(
                             "DELETE FROM `InstructorTypeCosts` WHERE `Id` = ?;"
                     );
