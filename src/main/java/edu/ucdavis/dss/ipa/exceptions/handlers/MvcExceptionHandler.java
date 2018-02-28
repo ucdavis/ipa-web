@@ -19,6 +19,7 @@ import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
@@ -28,6 +29,9 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 
 	@Inject EmailService emailService;
 	@Inject Authorization authorization;
+
+	@Value("${ipa.email.exceptions_addr}")
+	String emailExceptionAddress;
 
 	@Override
 	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
@@ -123,7 +127,7 @@ public class MvcExceptionHandler extends SimpleMappingExceptionResolver {
 		log.error(buffer.toString());
 
 		String messageSubject = "IPA Exception: " + request.getRequestURL().toString();
-		emailService.send("dssit-devs-exceptions@ucdavis.edu", buffer.toString(), messageSubject);
+		emailService.send(emailExceptionAddress, buffer.toString(), messageSubject);
 
 		return super.doResolveException(request, response, handler, ex);
 	}

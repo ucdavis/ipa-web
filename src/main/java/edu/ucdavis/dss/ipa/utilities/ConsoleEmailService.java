@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.utilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ import java.util.Date;
 public class ConsoleEmailService implements EmailService {
     private final Logger log = LoggerFactory.getLogger("EmailUtility");
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+    @Value("${ipa.email.exceptions_addr}")
+    String emailExceptionAddress;
 
     @Override
     public boolean send(String recipientEmail, String messageBody, String messageSubject) {
@@ -34,7 +38,6 @@ public class ConsoleEmailService implements EmailService {
 
     @Override
     public boolean reportException(Exception e, String additionalDetails) {
-        String recipientEmail = "dssit-devs-exceptions@ucdavis.edu";
         String messageSubject = e.getMessage();
 
         StringBuffer buffer = new StringBuffer();
@@ -51,7 +54,7 @@ public class ConsoleEmailService implements EmailService {
         log.error("Exception occurred:");
         log.error(buffer.toString());
 
-        return send(recipientEmail, buffer.toString(), messageSubject);
+        return send(emailExceptionAddress, buffer.toString(), messageSubject);
     }
 
     /**

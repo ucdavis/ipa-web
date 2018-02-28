@@ -26,7 +26,6 @@ import java.util.Properties;
 @Profile({"production", "staging"})
 public class DefaultEmailService implements EmailService {
 	private static final Logger log = LoggerFactory.getLogger("EmailUtility");
-	private static final String exceptionRecipientEmail = "dssit-devs-exceptions@ucdavis.edu";
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 	@Value("${ipa.email.host}")
@@ -34,6 +33,9 @@ public class DefaultEmailService implements EmailService {
 
 	@Value("${ipa.email.from}")
 	String emailFrom;
+
+	@Value("${ipa.email.exceptions_addr}")
+	String emailExceptionAddress;
 
 	/**
 	 * Sends email if runningMode is production, else email is suppressed.
@@ -100,7 +102,7 @@ public class DefaultEmailService implements EmailService {
 		log.error("Exception occurred:");
 		log.error(buffer.toString());
 
-		return sendEmail(exceptionRecipientEmail, buffer.toString(), messageSubject, false);
+		return sendEmail(emailExceptionAddress, buffer.toString(), messageSubject, false);
 	}
 
 	private boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode) {

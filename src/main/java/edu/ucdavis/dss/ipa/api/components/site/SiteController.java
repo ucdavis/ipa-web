@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ public class SiteController {
 	@Inject UserService userService;
 	@Inject EmailService emailService;
 	@Inject Authorization authorization;
+
+	@Value("${ipa.email.exceptions_addr}")
+	String emailExceptionAddress;
 
 	/**
 	 * Provide /status.json for uptime checks. Designed to return
@@ -100,7 +104,7 @@ public class SiteController {
 		log.error(messageSubject);
 		log.error(messageBody);
 
-		emailService.send("dssit-devs-exceptions@ucdavis.edu", messageBody, messageSubject, false);
+		emailService.send(emailExceptionAddress, messageBody, messageSubject, false);
 	}
 
 	/**
