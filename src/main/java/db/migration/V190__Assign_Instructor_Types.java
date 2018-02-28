@@ -64,16 +64,31 @@ public class V190__Assign_Instructor_Types implements JdbcMigration {
                         break;
                 }
 
-                PreparedStatement psSetInstructorTypeCost = connection.prepareStatement(
-                    " UPDATE `InstructorTypeCosts` instructorTypeCost " +
-                            " SET instructorTypeCost.`InstructorTypeId` = ? " +
-                            " WHERE instructorTypeCost.`Id` = ?; "
-                );
+                // No value was set, so removing unneeded override object
+                // Or the group reference in the description didn't map to a instructorType (example: 'The Staff' or 'Adjunct Professor')
+                if (instructorTypeId == null || cost == null) {
+                    PreparedStatement psSetInstructorTypeCost = connection.prepareStatement(
+                            " DELETE FROM `InstructorTypeCosts` " +
+                                    " WHERE `Id` = ?; "
+                    );
 
-                psSetInstructorTypeCost.setLong(1, instructorTypeId);
-                psSetInstructorTypeCost.setLong(2, id);
-                psSetInstructorTypeCost.execute();
-                psSetInstructorTypeCost.close();
+                    psSetInstructorTypeCost.setLong(1, id);
+                    psSetInstructorTypeCost.execute();
+                    psSetInstructorTypeCost.close();
+
+                }
+                if (instructorTypeId != null) {
+                    PreparedStatement psSetInstructorTypeCost = connection.prepareStatement(
+                            " UPDATE `InstructorTypeCosts` instructorTypeCost " +
+                                    " SET instructorTypeCost.`InstructorTypeId` = ? " +
+                                    " WHERE instructorTypeCost.`Id` = ?; "
+                    );
+
+                    psSetInstructorTypeCost.setLong(1, instructorTypeId);
+                    psSetInstructorTypeCost.setLong(2, id);
+                    psSetInstructorTypeCost.execute();
+                    psSetInstructorTypeCost.close();
+                }
             }
 
             // Commit changes

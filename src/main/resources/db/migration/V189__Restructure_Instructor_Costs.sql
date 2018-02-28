@@ -14,3 +14,4 @@ INSERT INTO `InstructorTypes` (`Description`) VALUES ('Associate Instructor');
 INSERT INTO `InstructorTypes` (`Description`) VALUES ('Unit 18 Pre-Six Lecturer');
 INSERT INTO `InstructorTypes` (`Description`) VALUES ('Continuing Lecturer');
 INSERT INTO `InstructorTypes` (`Description`) VALUES ('Ladder Faculty');
+INSERT INTO `InstructorTypes` (`Description`) VALUES ('Generic Instructor');
