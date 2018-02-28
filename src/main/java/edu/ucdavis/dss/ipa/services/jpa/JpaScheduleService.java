@@ -89,6 +89,11 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
+	public List<Schedule> findByWorkgroupId(long workgroupId) {
+		return scheduleRepository.findByWorkgroupId(workgroupId);
+	}
+
+	@Override
 	public Schedule findByWorkgroupIdAndYear(long workgroupId, long year) {
 		return scheduleRepository.findOneByYearAndWorkgroupWorkgroupId(workgroupId, year);
 	}

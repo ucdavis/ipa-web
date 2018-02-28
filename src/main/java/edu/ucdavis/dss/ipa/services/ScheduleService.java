@@ -24,6 +24,8 @@ public interface ScheduleService {
 
 	Schedule findByWorkgroupIdAndYear(long workgroupId, long year);
 
+	List<Schedule> findByWorkgroupId(long workgroupId);
+
 	Schedule findOrCreateByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<User> getUserInstructorsByScheduleIdAndTermCode(Long scheduleId, String termCode);

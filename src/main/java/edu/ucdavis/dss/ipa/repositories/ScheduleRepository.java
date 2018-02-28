@@ -28,4 +28,6 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
 			" AND sg.termCode = t.termCode" +
 			" AND c.schedule.id = :scheduleId")
 	List<Term> getActiveTermsForScheduleId(@Param("scheduleId") long scheduleId);
+
+	List<Schedule> findByWorkgroupId(long workgroupId);
 }

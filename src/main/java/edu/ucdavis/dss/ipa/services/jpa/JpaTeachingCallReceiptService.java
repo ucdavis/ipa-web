@@ -56,20 +56,23 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	@Transactional
 	public void sendNotificationsByWorkgroupId(Long workgroupId) {
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		List<Schedule> schedules = scheduleService.findByWorkgroupId(workgroupId);
 
-		if (workgroup == null) {
-			log.error("sendNotificationsByWorkgroup() could not find workgroup with ID " + workgroupId);
+		if (schedules == null) {
+			log.error("sendNotificationsByWorkgroup() schedule list is null for workgroup ID " + workgroupId);
+			return;
+		}
+		if (schedules.size() == 0) {
+			log.debug("sendNotificationsByWorkgroup() schedule list not null but empty for workgroup ID " + workgroupId);
 			return;
 		}
 
 		Calendar now = Calendar.getInstance();
-		int currentYear = now.get(Calendar.YEAR);
 
 		java.util.Date utilDate = now.getTime();
 		java.sql.Date currentDate = new Date(utilDate.getTime());
 
-		for (Schedule schedule : workgroup.getSchedules()) {
+		for (Schedule schedule : schedules) {
 			// Check teachingCallReceipts to see if messages need to be sent
 			for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
 				// Send scheduled email if the send date has been passed
