@@ -101,7 +101,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         Long currentTime = currentDate.getTime();
 
         for (Schedule schedule : schedules) {
-            List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseRepository.findByScheduleIdAndSendEmailAndIsSubmitted(schedule.getId(), true, false);
+            List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseRepository.findByScheduleIdAndSendEmailAndSubmitted(schedule.getId(), true, false);
 
             // Check teachingCallReceipts to see if messages need to be sent
             for (StudentSupportCallResponse studentSupportCallResponse : studentSupportCallResponses) {

@@ -12,5 +12,5 @@ public interface StudentSupportCallResponseRepository extends CrudRepository<Stu
 
     StudentSupportCallResponse findByScheduleIdAndSupportStaffIdAndTermCode(long scheduleId, long supportStaffId, String termCode);
 
-    List<StudentSupportCallResponse> findByScheduleIdAndSendEmailAndIsSubmitted(long scheduleId, boolean sendEmail, boolean isSubmitted);
+    List<StudentSupportCallResponse> findByScheduleIdAndSendEmailAndSubmitted(long scheduleId, boolean sendEmail, boolean isSubmitted);
 }
