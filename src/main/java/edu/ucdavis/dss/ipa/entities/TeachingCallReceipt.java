@@ -22,7 +22,7 @@ public class TeachingCallReceipt implements Serializable {
 	private long id;
 
 	private Instructor instructor;
-	private Boolean isDone = false, showUnavailabilities = true;
+	private Boolean isDone = false, showUnavailabilities = true, sendEmail = false;
 	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
 	private String comment, termsBlob, message;
@@ -34,7 +34,6 @@ public class TeachingCallReceipt implements Serializable {
 	public long getId() {
 		return this.id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -46,7 +45,6 @@ public class TeachingCallReceipt implements Serializable {
 	public Instructor getInstructor() {
 		return instructor;
 	}
-
 	public void setInstructor(Instructor instructor) {
 		this.instructor = instructor;
 	}
@@ -58,7 +56,6 @@ public class TeachingCallReceipt implements Serializable {
 	public Schedule getSchedule() {
 		return schedule;
 	}
-
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
 	}
@@ -68,7 +65,6 @@ public class TeachingCallReceipt implements Serializable {
 	public Boolean getIsDone() {
 		return isDone;
 	}
-
 	public void setIsDone(Boolean isDone) {
 		this.isDone = isDone;
 	}
@@ -78,7 +74,6 @@ public class TeachingCallReceipt implements Serializable {
 	public String getComment() {
 		return comment;
 	}
-
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
@@ -86,15 +81,16 @@ public class TeachingCallReceipt implements Serializable {
 	public Boolean getShowUnavailabilities() {
 		return showUnavailabilities;
 	}
-
 	public void setShowUnavailabilities(Boolean showUnavailabilities) {
 		this.showUnavailabilities = showUnavailabilities;
 	}
 
+	public Boolean getSendEmail() { return sendEmail; }
+	public void setSendEmail(Boolean sendEmail) { this.sendEmail = sendEmail; }
+
 	public Date getLastContactedAt() {
 		return lastContactedAt;
 	}
-
 	public void setLastContactedAt(Date lastContactedAt) {
 		this.lastContactedAt = lastContactedAt;
 	}
@@ -102,7 +98,6 @@ public class TeachingCallReceipt implements Serializable {
 	public Date getNextContactAt() {
 		return nextContactAt;
 	}
-
 	public void setNextContactAt(Date nextContactAt) {
 		this.nextContactAt = nextContactAt;
 	}
@@ -110,7 +105,6 @@ public class TeachingCallReceipt implements Serializable {
 	public Date getDueDate() {
 		return dueDate;
 	}
-
 	public void setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
 	}
@@ -121,7 +115,6 @@ public class TeachingCallReceipt implements Serializable {
 	public String getTermsBlob() {
 		return termsBlob;
 	}
-
 	public void setTermsBlob(String termsBlob) {
 		this.termsBlob = termsBlob;
 	}
@@ -129,7 +122,6 @@ public class TeachingCallReceipt implements Serializable {
 	public String getMessage() {
 		return message;
 	}
-
 	public void setMessage(String message) {
 		this.message = message;
 	}

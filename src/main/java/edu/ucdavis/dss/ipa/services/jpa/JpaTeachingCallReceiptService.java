@@ -28,7 +28,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Inject TeachingCallReceiptRepository teachingCallReceiptRepository;
 	@Inject InstructorService instructorService;
 	@Inject UserService userService;
-	@Inject WorkgroupService workgroupService;
 	@Inject ScheduleService scheduleService;
 	@Inject EmailService emailService;
 
@@ -71,13 +70,15 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 		java.util.Date utilDate = now.getTime();
 		java.sql.Date currentDate = new Date(utilDate.getTime());
+		Long currentTime = currentDate.getTime();
 
 		for (Schedule schedule : schedules) {
+			List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptRepository.findByScheduleIdAndSendEmailAndIsDone(schedule.getId(), true, false);
+
 			// Check teachingCallReceipts to see if messages need to be sent
-			for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
+			for (TeachingCallReceipt teachingCallReceipt : teachingCallReceipts) {
 				// Send scheduled email if the send date has been passed
 				if (teachingCallReceipt.getNextContactAt() != null) {
-					long currentTime = currentDate.getTime();
 					long contactAtTime = teachingCallReceipt.getNextContactAt().getTime();
 
 					if (currentTime > contactAtTime) {
@@ -91,11 +92,10 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 				// 3) At least 3 days since last contact
 				// 4) There are less than 3 days between now and the dueDate
 				// 5) The dueDate has not yet passed
-				if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
+				if (teachingCallReceipt.getDueDate() != null) {
 					// Form hasn't been submitted and it has a due date
 					final Long threeDaysInMilliseconds = 259200000L;
 
-					Long currentTime = currentDate.getTime();
 					Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
 					Long warnTime = dueDateTime - threeDaysInMilliseconds;
 
@@ -123,6 +123,8 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	/**
 	 * Builds the email and triggers sending of the email.
+     * Also updates nextContactedAt and lastContactedAt.
+     *
 	 * @param teachingCallReceipt
 	 * @param currentDate
 	 */
@@ -244,6 +246,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			slotTeachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
 			slotTeachingCallReceipt.setInstructor(slotInstructor);
 			slotTeachingCallReceipt.setIsDone(false);
+			slotTeachingCallReceipt.setSendEmail(teachingCallReceiptDTO.getSendEmail());
 			slotTeachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
 			slotTeachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
 			slotTeachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
