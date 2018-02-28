@@ -25,12 +25,12 @@ public class InstructorTypeCostDeserializer extends JsonDeserializer<Object> {
             instructorTypeCost.setId(node.get("id").longValue());
         }
 
-        if (node.has("cost")) {
-            instructorTypeCost.setCost(node.get("cost").floatValue());
+        if (node.has("instructorTypeId")) {
+            instructorTypeCost.setId(node.get("instructorTypeId").longValue());
         }
 
-        if (node.has("description")) {
-            instructorTypeCost.setDescription(node.get("description").textValue());
+        if (node.has("cost")) {
+            instructorTypeCost.setCost(node.get("cost").floatValue());
         }
 
         return instructorTypeCost;

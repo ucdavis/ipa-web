@@ -86,7 +86,6 @@ public class JpaBudgetService implements BudgetService {
         for (String description : descriptions) {
             InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
             instructorTypeCost.setBudget(budget);
-            instructorTypeCost.setDescription(description);
             instructorTypeCost = instructorTypeCostService.findOrCreate(instructorTypeCost);
             newInstructorTypes.add(instructorTypeCost);
         }

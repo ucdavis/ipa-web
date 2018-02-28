@@ -12,5 +12,5 @@ public interface InstructorTypeCostRepository extends CrudRepository<InstructorT
 
     List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
-    InstructorTypeCost findByDescriptionAndBudgetId(String description, long budgetId);
+    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
 }

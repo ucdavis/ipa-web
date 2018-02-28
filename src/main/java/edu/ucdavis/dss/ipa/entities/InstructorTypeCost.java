@@ -32,7 +32,6 @@ public class InstructorTypeCost extends BaseEntity {
     private long id;
     private Budget budget;
     private Float cost;
-    private String description;
     private InstructorType instructorType;
     private List<InstructorCost> instructorCosts = new ArrayList<>();
 
@@ -63,7 +62,7 @@ public class InstructorTypeCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorTypeId", nullable = true)
+    @JoinColumn(name = "InstructorTypeId", nullable = false)
     @JsonIgnore
     public InstructorType getInstructorType() {
         return instructorType;
@@ -81,14 +80,6 @@ public class InstructorTypeCost extends BaseEntity {
         this.cost = cost;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "instructorTypeCost", cascade = {CascadeType.ALL})
     @JsonIgnore
     public List<InstructorCost> getInstructorCosts() {
@@ -97,6 +88,12 @@ public class InstructorTypeCost extends BaseEntity {
 
     public void setInstructorCosts(List<InstructorCost> instructorCosts) {
         this.instructorCosts = instructorCosts;
+    }
+
+    @Transient
+    @JsonProperty("description")
+    public String getDescription() {
+        return this.instructorType.getDescription();
     }
 
     @JsonProperty("budgetId")

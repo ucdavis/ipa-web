@@ -45,7 +45,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         }
 
         originalInstructorType.setCost(newInstructorType.getCost());
-        originalInstructorType.setDescription(newInstructorType.getDescription());
 
         return this.instructorTypeRepository.save(originalInstructorType);
     }
@@ -56,7 +55,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
-        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeRepository.findByDescriptionAndBudgetId(instructorTypeCostDTO.getDescription(), instructorTypeCostDTO.getBudget().getId());
+        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeRepository.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
 
         if (existingInstructorTypeCost != null) {
             return existingInstructorTypeCost;
@@ -65,7 +64,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
 
         instructorTypeCost.setBudget(instructorTypeCostDTO.getBudget());
-        instructorTypeCost.setDescription(instructorTypeCostDTO.getDescription());
         instructorTypeCost.setCost(instructorTypeCostDTO.getCost());
 
         return this.instructorTypeRepository.save(instructorTypeCost);
