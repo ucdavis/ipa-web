@@ -22,7 +22,7 @@ public class BudgetView {
     List<TeachingAssignment> teachingAssignments;
     List<SupportAssignment> supportAssignments;
     Set<User> users;
-    List<InstructorTypeCost> instructorTypes;
+    List<InstructorTypeCost> instructorTypeCosts;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -56,7 +56,7 @@ public class BudgetView {
         setTeachingAssignments(teachingAssignments);
         setSupportAssignments(supportAssignments);
         setUsers(users);
-        setInstructorTypes(instructorTypeCosts);
+        setInstructorTypeCosts(instructorTypeCosts);
     }
 
     public String getWorkgroupId() {
@@ -187,11 +187,11 @@ public class BudgetView {
         this.users = users;
     }
 
-    public List<InstructorTypeCost> getInstructorTypes() {
-        return instructorTypes;
+    public List<InstructorTypeCost> getInstructorTypeCosts() {
+        return instructorTypeCosts;
     }
 
-    public void setInstructorTypes(List<InstructorTypeCost> instructorTypeCosts) {
-        this.instructorTypes = instructorTypeCosts;
+    public void setInstructorTypeCosts(List<InstructorTypeCost> instructorTypeCosts) {
+        this.instructorTypeCosts = instructorTypeCosts;
     }
 }

@@ -93,7 +93,7 @@ public class InstructorTypeCost extends BaseEntity {
     @Transient
     @JsonProperty("description")
     public String getDescription() {
-        return this.instructorType.getDescription();
+        return this.getInstructorType().getDescription();
     }
 
     @JsonProperty("budgetId")

@@ -10,7 +10,7 @@ public interface InstructorTypeCostRepository extends CrudRepository<InstructorT
 
     void deleteById(long instructorTypeCostId);
 
-    List<InstructorTypeCost> findByBudgetId(Long budgetId);
-
     InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+
+    List<InstructorTypeCost> findByBudgetId(Long budgetId);
 }

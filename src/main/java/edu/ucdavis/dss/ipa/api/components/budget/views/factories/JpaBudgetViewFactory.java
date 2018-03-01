@@ -76,7 +76,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
-        List<InstructorTypeCost> instructorTypes = instructorTypeCostService.findByBudgetId(budget.getId());
+        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
 
         Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
@@ -107,7 +107,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 teachingAssignments,
                 supportAssignments,
                 users,
-                instructorTypes);
+                instructorTypeCosts);
 
         return budgetView;
     }

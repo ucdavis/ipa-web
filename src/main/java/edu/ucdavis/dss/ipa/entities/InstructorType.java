@@ -17,7 +17,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.InstructorTypeCostDeserializer;
 @Table(name = "InstructorTypes")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = InstructorTypeCostDeserializer.class)
-public class InstructorType extends BaseEntity {
+public class InstructorType {
     private long id;
     private String description;
 

@@ -13,17 +13,17 @@ import java.util.List;
 @Service
 public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Inject
-    InstructorTypeCostRepository instructorTypeRepository;
+    InstructorTypeCostRepository instructorTypeCostRepository;
     @Inject InstructorCostService instructorCostService;
 
     @Override
     public List<InstructorTypeCost> findByBudgetId(Long budgetId) {
-        return instructorTypeRepository.findByBudgetId(budgetId);
+        return instructorTypeCostRepository.findByBudgetId(budgetId);
     }
 
     @Override
     public InstructorTypeCost findById(Long instructorTypeId) {
-        return instructorTypeRepository.findById(instructorTypeId);
+        return instructorTypeCostRepository.findById(instructorTypeId);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
 
         instructorCostService.removeAssociationByInstructorTypeId(instructorTypeId);
 
-        instructorTypeRepository.deleteById(instructorTypeId);
+        instructorTypeCostRepository.deleteById(instructorTypeId);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
 
         originalInstructorType.setCost(newInstructorType.getCost());
 
-        return this.instructorTypeRepository.save(originalInstructorType);
+        return this.instructorTypeCostRepository.save(originalInstructorType);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
-        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeRepository.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
+        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
 
         if (existingInstructorTypeCost != null) {
             return existingInstructorTypeCost;
@@ -66,6 +66,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         instructorTypeCost.setBudget(instructorTypeCostDTO.getBudget());
         instructorTypeCost.setCost(instructorTypeCostDTO.getCost());
 
-        return this.instructorTypeRepository.save(instructorTypeCost);
+        return this.instructorTypeCostRepository.save(instructorTypeCost);
     }
 }
