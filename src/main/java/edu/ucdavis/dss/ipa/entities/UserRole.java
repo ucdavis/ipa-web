@@ -31,6 +31,7 @@ public class UserRole extends BaseEntity {
 	private User user;
 	private Workgroup workgroup;
 	private Role role;
+	private InstructorType instructorType;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,6 +66,17 @@ public class UserRole extends BaseEntity {
 
 	public void setWorkgroup(Workgroup workgroup) {
 		this.workgroup = workgroup;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "InstructorTypeId", nullable = true)
+	@JsonIgnore
+	public InstructorType getInstructorType() {
+		return instructorType;
+	}
+
+	public void setInstructorType(InstructorType instructorType) {
+		this.instructorType = instructorType;
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
