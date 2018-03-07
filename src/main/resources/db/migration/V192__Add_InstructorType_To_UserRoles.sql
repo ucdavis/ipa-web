@@ -1,1 +1,1 @@
-ALTER TABLE `UserROles` ADD COLUMN `InstructorTypeId` int(11) NULL;
+ALTER TABLE `UserRoles` ADD COLUMN `InstructorTypeId` int(11) NULL;

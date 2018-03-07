@@ -36,9 +36,9 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
 
                 // Find all userRoles for user
                 while(rsUserRoles.next()) {
-                    Long userRoleId = rsUsers.getLong("Id");
-                    Long workgroupId = rsUsers.getLong("WorkgroupId");
-                    Integer roleId = rsUsers.getInt("RoleId");
+                    Long userRoleId = rsUserRoles.getLong("Id");
+                    Long workgroupId = rsUserRoles.getLong("WorkgroupId");
+                    Integer roleId = rsUserRoles.getInt("RoleId");
 
                     // Instructor-ish roles:
                     // federationInstructor: 8
@@ -141,7 +141,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
         public List<Long> workgroupIdsForUser = new ArrayList<>();
         public List<Long> oldUserRoles = new ArrayList<>();
 
-        public HashMap<Long, RolesDTO> rolesForWorkgroup;
+        public HashMap<Long, RolesDTO> rolesForWorkgroup = new HashMap<Long, RolesDTO>();
     }
 
     public class RolesDTO {
