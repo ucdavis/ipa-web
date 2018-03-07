@@ -73,11 +73,51 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                     }
                 }
 
-                // If senate/federation and lecturer are present, ignore lecturer role as it is less precise.
+                // Create instructor userRoles based on the old userRoles
+                for (Long workgroupId: userRolesDTO.workgroupIdsForUser) {
+                    // We need to make one userRole for each workgroup the user is an instructor in
+                    Long roleId = 15L; // New role 'instructor'
 
-                // TODO: Create new userRole with instructorType association
+                    // Identify the instructorType to use in the new userRole
+                    Long instructorTypeId = null;
 
-                // TODO: DELETE all 'old userRoles'
+                    RolesDTO rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
+
+                    // If senate/federation and lecturer are present, ignore lecturer role as it is less precise.
+                    // Cannot be senate and federation simultaneously for a workgroup.
+                    if (rolesDTO.isSenate) {
+                        instructorTypeId = 6L;
+                    } else if (rolesDTO.isFederation) {
+                        instructorTypeId = 4L;
+                    } else if (rolesDTO.isLecturer) {
+                        instructorTypeId = 7L;
+                    }
+
+                    PreparedStatement psCreateUserRole = connection.prepareStatement(
+                            "INSERT INTO `UserRoles` (UserId, WorkgroupId, RoleId, InstructorTypeId) " +
+                                    "VALUES (?, ?, ?, ?);"
+                            , Statement.RETURN_GENERATED_KEYS
+                    );
+                    psCreateUserRole.setLong(1, userId);
+                    psCreateUserRole.setLong(2, workgroupId);
+                    psCreateUserRole.setLong(3, roleId);
+                    psCreateUserRole.setLong(4, instructorTypeId);
+                    psCreateUserRole.execute();
+                }
+
+
+                // Delete the old 'instructor'-ish userRoles
+                for (Long userRoleId: userRolesDTO.oldUserRoles) {
+                    PreparedStatement psDeleteUserRole = connection.prepareStatement(
+                            "DELETE FROM `UserRoles` WHERE `Id` = ?;"
+                    );
+
+                    psDeleteUserRole.setLong(1, userRoleId);
+
+                    psDeleteUserRole.execute();
+                    psDeleteUserRole.close();
+
+                }
             }
 
             // Commit changes
