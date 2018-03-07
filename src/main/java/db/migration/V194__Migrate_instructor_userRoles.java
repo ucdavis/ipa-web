@@ -54,7 +54,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                     RolesDTO rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
 
                     if (rolesDTO == null) {
-                        userRolesDTO.rolesForWorkgroup.put(workgroupId, new RolesDTO);
+                        userRolesDTO.rolesForWorkgroup.put(workgroupId, new RolesDTO());
                         rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
                     }
 
@@ -68,7 +68,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                         case 14: // Lecturer role
                             rolesDTO.isLecturer = true;
                             break;
-                        default;
+                        default:
                             break;
                     }
                 }
