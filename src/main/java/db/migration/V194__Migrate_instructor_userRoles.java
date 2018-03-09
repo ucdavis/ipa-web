@@ -5,7 +5,9 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class V194__Migrate_instructor_userRoles implements JdbcMigration {
 
@@ -42,13 +44,12 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
 
                     // Instructor-ish roles:
                     // federationInstructor: 8
-                    // senateInstructor: 9
+                    // senateInstructor: 1
                     // lecturer: 14
-                    if (roleId != 8 && roleId != 9 && roleId != 14) {
+                    if (roleId != 8 && roleId != 1 && roleId != 14) {
                         continue;
                     }
 
-                    userRolesDTO.oldUserRoles.add(userRoleId);
                     userRolesDTO.workgroupIdsForUser.add(workgroupId);
 
                     RolesDTO rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
@@ -62,7 +63,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                         case 8: // FederationInstructor role
                             rolesDTO.isFederation = true;
                             break;
-                        case 9: // SenateInstructor role
+                        case 1: // SenateInstructor role
                             rolesDTO.isSenate = true;
                             break;
                         case 14: // Lecturer role
@@ -104,20 +105,6 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                     psCreateUserRole.setLong(4, instructorTypeId);
                     psCreateUserRole.execute();
                 }
-
-
-                // Delete the old 'instructor'-ish userRoles
-                for (Long userRoleId: userRolesDTO.oldUserRoles) {
-                    PreparedStatement psDeleteUserRole = connection.prepareStatement(
-                            "DELETE FROM `UserRoles` WHERE `Id` = ?;"
-                    );
-
-                    psDeleteUserRole.setLong(1, userRoleId);
-
-                    psDeleteUserRole.execute();
-                    psDeleteUserRole.close();
-
-                }
             }
 
             // Commit changes
@@ -138,8 +125,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
     }
 
     public class UserRolesDTO {
-        public List<Long> workgroupIdsForUser = new ArrayList<>();
-        public List<Long> oldUserRoles = new ArrayList<>();
+        public Set<Long> workgroupIdsForUser = new HashSet<>();
 
         public HashMap<Long, RolesDTO> rolesForWorkgroup = new HashMap<Long, RolesDTO>();
     }
