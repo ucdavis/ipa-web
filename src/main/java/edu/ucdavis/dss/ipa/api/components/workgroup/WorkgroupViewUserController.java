@@ -219,7 +219,7 @@ public class WorkgroupViewUserController {
         }
     }
 
-    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userRoles/{userRoleId}/instructorTypes/{instructorTypeId", method = RequestMethod.PUT)
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userRoles/{userRoleId}/instructorTypes/{instructorTypeId}", method = RequestMethod.PUT)
     @ResponseBody
     public UserRole setInstructorTypeOnUserRole(@PathVariable Long workgroupId, @PathVariable Long userRoleId, @PathVariable Long instructorTypeId, HttpServletResponse httpResponse) {
         authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
@@ -231,6 +231,8 @@ public class WorkgroupViewUserController {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
+
+        userRole.setInstructorType(instructorType);
 
         return userRoleService.save(userRole);
     }
