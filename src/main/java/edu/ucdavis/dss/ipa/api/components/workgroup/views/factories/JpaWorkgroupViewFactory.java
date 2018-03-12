@@ -15,12 +15,14 @@ public class JpaWorkgroupViewFactory implements WorkgroupViewFactory {
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
 	@Inject RoleService roleService;
+	@Inject InstructorTypeService instructorTypeService;
 
 	@Override
 	public WorkgroupView createWorkgroupView(Long workgroupId) {
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		List<UserRole> userRoles = userRoleService.findByWorkgroup(workgroup);
 		List<Role> roles = roleService.getAllRoles();
+		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
 		List<User> users = new ArrayList<User>();
 
@@ -30,7 +32,7 @@ public class JpaWorkgroupViewFactory implements WorkgroupViewFactory {
 			}
 		}
 
-		return new WorkgroupView(workgroup, userRoles, roles, users);
+		return new WorkgroupView(workgroup, userRoles, roles, users, instructorTypes);
 	}
 
 }
