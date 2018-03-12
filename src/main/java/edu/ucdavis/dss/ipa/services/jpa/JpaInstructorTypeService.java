@@ -21,4 +21,9 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     public InstructorType findById(Long instructorTypeId) {
         return instructorTypeRepository.findById(instructorTypeId);
     }
+
+    @Override
+    public List<InstructorType> getAllInstructorTypes() {
+        return (List<InstructorType>) instructorTypeRepository.findAll();
+    }
 }

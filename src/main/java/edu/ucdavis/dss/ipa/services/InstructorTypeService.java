@@ -9,4 +9,6 @@ import java.util.List;
 @Validated
 public interface InstructorTypeService {
     InstructorType findById(Long instructorTypeId);
+
+    List<InstructorType> getAllInstructorTypes();
 }

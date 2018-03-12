@@ -3,12 +3,14 @@ package edu.ucdavis.dss.ipa.api.components.workgroup;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorizer;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -38,6 +40,8 @@ public class WorkgroupViewUserController {
     @Inject UserService userService;
     @Inject RoleService roleService;
     @Inject UserRoleService userRoleService;
+    @Inject InstructorTypeService instructorTypeService;
+
     @Inject CurrentUser currentUser;
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
@@ -213,5 +217,21 @@ public class WorkgroupViewUserController {
         } else {
             httpResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
         }
+    }
+
+    @RequestMapping(value = "/api/workgroupView/workgroups/{workgroupId}/userRoles/{userRoleId}/instructorTypes/{instructorTypeId", method = RequestMethod.PUT)
+    @ResponseBody
+    public UserRole setInstructorTypeOnUserRole(@PathVariable Long workgroupId, @PathVariable Long userRoleId, @PathVariable Long instructorTypeId, HttpServletResponse httpResponse) {
+        authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+        UserRole userRole = userRoleService.getOneById(userRoleId);
+        InstructorType instructorType = instructorTypeService.findById(instructorTypeId);
+
+        if (userRole == null || instructorType == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        return userRoleService.save(userRole);
     }
 }
