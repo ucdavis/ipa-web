@@ -14,9 +14,7 @@ public class AssignmentView {
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-    List<Long> senateInstructorIds = new ArrayList<Long>();
-    List<Long> federationInstructorIds = new ArrayList<Long>();
-    List<Long> lecturerInstructorIds = new ArrayList<>();
+    List<Long> instructorIds = new ArrayList<Long>();
     List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
     List<Tag> tags = new ArrayList<Tag>();
     long instructorId;
@@ -36,9 +34,7 @@ public class AssignmentView {
                           long userId,
                           long instructorId,
                           long scheduleId,
-                          List<Long> senateInstructorIds,
-                          List<Long> federationInstructorIds,
-                          List<Long> lecturerInstructorIds,
+                          List<Long> instructorIds,
                           List<Tag> tags,
                           List<SupportAssignment> supportAssignments,
                           List<SupportStaff> supportStaffList,
@@ -55,9 +51,7 @@ public class AssignmentView {
         setTeachingCallResponses(teachingCallResponses);
         setInstructorId(instructorId);
         setUserId(userId);
-        setFederationInstructorIds(federationInstructorIds);
-        setSenateInstructorIds(senateInstructorIds);
-        setLecturerInstructorIds(lecturerInstructorIds);
+        setInstructorIds(instructorIds);
         setScheduleId(scheduleId);
         setTags(tags);
         setSupportAssignments(supportAssignments);
@@ -146,20 +140,12 @@ public class AssignmentView {
         this.userId = userId;
     }
 
-    public List<Long> getSenateInstructorIds() {
-        return senateInstructorIds;
+    public List<Long> getInstructorIds() {
+        return instructorIds;
     }
 
-    public void setSenateInstructorIds(List<Long> senateInstructorIds) {
-        this.senateInstructorIds = senateInstructorIds;
-    }
-
-    public List<Long> getFederationInstructorIds() {
-        return federationInstructorIds;
-    }
-
-    public void setFederationInstructorIds(List<Long> federationInstructorIds) {
-        this.federationInstructorIds = federationInstructorIds;
+    public void setInstructorIds(List<Long> instructorIds) {
+        this.instructorIds = instructorIds;
     }
 
     public long getScheduleId() {
@@ -184,14 +170,6 @@ public class AssignmentView {
 
     public void setInstructorMasterList(List<Instructor> instructorMasterList) {
         this.instructorMasterList = instructorMasterList;
-    }
-
-    public List<Long> getLecturerInstructorIds() {
-        return lecturerInstructorIds;
-    }
-
-    public void setLecturerInstructorIds(List<Long> lecturerInstructorIds) {
-        this.lecturerInstructorIds = lecturerInstructorIds;
     }
 
     public List<SupportAssignment> getSupportAssignments() {

@@ -193,31 +193,27 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public List<Instructor> getInstructorsByWorkgroupId(long workgroupId) {
-		String[] INSTRUCTOR_ROLES = {"federationInstructor", "senateInstructor", "lecturer"};
-
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
-		for (String instructorRole: INSTRUCTOR_ROLES) {
-			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
-			for (UserRole userRole: instructorRoles) {
-				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
+		List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, "instructor");
+		for (UserRole userRole: instructorRoles) {
+			Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
 
-				if (instructor == null) {
-					// Create instructor if it does not exist
-					String firstName = userRole.getUser().getFirstName();
-					String lastName = userRole.getUser().getLastName();
-					String email = userRole.getUser().getEmail();
-					String loginId = userRole.getUser().getLoginId();
+			if (instructor == null) {
+				// Create instructor if it does not exist
+				String firstName = userRole.getUser().getFirstName();
+				String lastName = userRole.getUser().getLastName();
+				String email = userRole.getUser().getEmail();
+				String loginId = userRole.getUser().getLoginId();
 
-					instructor = instructorService.findOrCreate(firstName, lastName, email, loginId, workgroupId);
-				}
+				instructor = instructorService.findOrCreate(firstName, lastName, email, loginId, workgroupId);
+			}
 
-				// Add to list of instructors if not already there. This should never happen since
-				// an instructor should be either Senate OR Federation, but not both.
-				// Prevents getting the AJS dupes error
-				if (!workgroupInstructors.contains(instructor)) {
-					workgroupInstructors.add(instructor);
-				}
+			// Add to list of instructors if not already there. This should never happen since
+			// an instructor should be either Senate OR Federation, but not both.
+			// Prevents getting the AJS dupes error
+			if (!workgroupInstructors.contains(instructor)) {
+				workgroupInstructors.add(instructor);
 			}
 		}
 
@@ -226,27 +222,24 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgroupId, String roleToken) {
-		String[] INSTRUCTOR_ROLES = {roleToken};
-
 		List<Long> workgroupInstructorIds = new ArrayList<Long>();
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
-		for (String instructorRole: INSTRUCTOR_ROLES) {
-			List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, instructorRole);
-			for (UserRole userRole: instructorRoles) {
-				Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
-				if (instructor != null) {
-					// Add to list of instructors if not already there. This should never happen since
-					// an instructor should be either Senate OR Federation, but not both.
-					// Prevents getting the AJS dupes error
-					if (!workgroupInstructorIds.contains(instructor.getId())) {
-						workgroupInstructorIds.add(instructor.getId());
-						workgroupInstructors.add(instructor);
-					}
-				} else {
-					Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
-					emailService.reportException(e, this.getClass().getName());
+		List<UserRole> instructorUserRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, roleToken);
+
+		for (UserRole userRole: instructorUserRoles) {
+			Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
+			if (instructor != null) {
+				// Add to list of instructors if not already there. This should never happen since
+				// an instructor should be either Senate OR Federation, but not both.
+				// Prevents getting the AJS dupes error
+				if (!workgroupInstructorIds.contains(instructor.getId())) {
+					workgroupInstructorIds.add(instructor.getId());
+					workgroupInstructors.add(instructor);
 				}
+			} else {
+				Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
+				emailService.reportException(e, this.getClass().getName());
 			}
 		}
 

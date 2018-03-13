@@ -44,9 +44,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 		List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
-		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
-		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
-		List<Long> lecturerInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "lecturer");
+		List<Long> instructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "instructor");
 
 		List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
 		List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(scheduleId);
@@ -54,7 +52,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
-				senateInstructorIds, federationInstructorIds, lecturerInstructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences);
+				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences);
 	}
 
 	@Override
