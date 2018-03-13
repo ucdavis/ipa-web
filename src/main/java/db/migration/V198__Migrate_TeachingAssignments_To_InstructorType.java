@@ -27,15 +27,15 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
             while(rsTeachingAssignments.next()) {
                 Long teachingAssignmentId = rsTeachingAssignments.getLong("Id");
                 Long instructorId = rsTeachingAssignments.getLong("InstructorId");
-                Long sectionGroupId = rsTeachingAssignments.getLong("SectionGroupId");
+                Long scheduleId = rsTeachingAssignments.getLong("ScheduleId");
 
                 // Get workgroup
                 Long workgroupId = null;
 
                 PreparedStatement psWorkgroup = connection.prepareStatement(
-                    "SELECT Workgroups.Id FROM Workgroups, Schedules, Courses, SectionGroups WHERE SectionGroups.Id = ? AND SectionGroups.CourseId = Courses.Id AND Courses.ScheduleId = Schedules.Id AND Schedules.WorkgroupId = Workgroups.Id;"
+                    "SELECT Workgroups.Id FROM Workgroups, Schedules WHERE Schedules.Id = ? AND Schedules.WorkgroupId = Workgroups.Id;"
                 );
-                psWorkgroup.setLong(1, sectionGroupId);
+                psWorkgroup.setLong(1, scheduleId);
                 ResultSet rsWorkgroup = psWorkgroup.executeQuery();
 
                 while(rsWorkgroup.next()) {
@@ -61,7 +61,7 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
                 }
 
                 // If relevant userRole wasn't found, set instructorType to the generic 'instructor' type.
-                if (instructorTypeId == null) {
+                if (instructorTypeId == null || instructorTypeId == 0) {
                     instructorTypeId = 7L;
                 }
 
@@ -77,7 +77,6 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
 
             // Commit changes
             connection.commit();
-
         } catch(SQLException e) {
             e.printStackTrace();
             return;
