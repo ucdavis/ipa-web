@@ -102,9 +102,11 @@ public class JpaInstructorService implements InstructorService {
 		for(SectionGroup sectionGroup : sectionGroups) {
 			for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
 				Instructor slotInstructor = teachingAssignment.getInstructor();
-				if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-					uniqueInstructors.add(slotInstructor);
-					uniqueInstructorIds.add(slotInstructor.getId());
+				if (slotInstructor != null) {
+					if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+						uniqueInstructors.add(slotInstructor);
+						uniqueInstructorIds.add(slotInstructor.getId());
+					}
 				}
 			}
 		}

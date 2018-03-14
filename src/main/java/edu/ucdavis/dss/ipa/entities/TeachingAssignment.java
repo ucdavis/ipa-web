@@ -49,7 +49,7 @@ public class TeachingAssignment implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "InstructorId", nullable = false)
+	@JoinColumn(name = "InstructorId", nullable = true)
 	@NotNull
 	public Instructor getInstructor() {
 		return instructor;
@@ -174,8 +174,12 @@ public class TeachingAssignment implements Serializable {
 
 	@Transient
 	@JsonProperty("instructorId")
-	public long getInstructorIdentification() {
-		return this.instructor.getId();
+	public Long getInstructorIdentification() {
+		if (this.instructor != null) {
+			return this.instructor.getId();
+		} else {
+			return null;
+		}
 	}
 
 	@Transient
