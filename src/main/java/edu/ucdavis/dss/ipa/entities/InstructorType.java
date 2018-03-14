@@ -35,6 +35,7 @@ public class InstructorType {
         this.id = id;
     }
 
+    @JsonProperty
     public String getDescription() {
         return description;
     }

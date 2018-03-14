@@ -22,6 +22,7 @@ public class AssignmentView {
     long scheduleId;
     List<SupportStaff> supportStaffList;
     List<StudentSupportPreference> studentSupportPreferences;
+    List<InstructorType> instructorTypes = new ArrayList<>();
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
@@ -38,7 +39,8 @@ public class AssignmentView {
                           List<Tag> tags,
                           List<SupportAssignment> supportAssignments,
                           List<SupportStaff> supportStaffList,
-                          List<StudentSupportPreference> studentSupportPreferences) {
+                          List<StudentSupportPreference> studentSupportPreferences,
+                          List<InstructorType> instructorTypes) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -57,6 +59,7 @@ public class AssignmentView {
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setStudentSupportPreferences(studentSupportPreferences);
+        setInstructorTypes(instructorTypes);
     }
 
     public List<Course> getCourses() {
@@ -194,5 +197,13 @@ public class AssignmentView {
 
     public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
         this.studentSupportPreferences = studentSupportPreferences;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }

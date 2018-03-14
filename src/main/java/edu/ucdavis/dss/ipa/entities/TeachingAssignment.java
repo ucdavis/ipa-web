@@ -34,6 +34,7 @@ public class TeachingAssignment implements Serializable {
 	private String suggestedSubjectCode;
 	private String suggestedCourseNumber;
 	private String suggestedEffectiveTermCode;
+	private InstructorType instructorType;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,13 +51,23 @@ public class TeachingAssignment implements Serializable {
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "InstructorId", nullable = true)
-	@NotNull
 	public Instructor getInstructor() {
 		return instructor;
 	}
 
 	public void setInstructor(Instructor instructor) {
 		this.instructor = instructor;
+	}
+
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "InstructorTypeId", nullable = true)
+	public InstructorType getInstructorType() {
+		return instructorType;
+	}
+
+	public void setInstructorType(InstructorType instructorType) {
+		this.instructorType = instructorType;
 	}
 
 	@JsonIgnore
@@ -177,6 +188,16 @@ public class TeachingAssignment implements Serializable {
 	public Long getInstructorIdentification() {
 		if (this.instructor != null) {
 			return this.instructor.getId();
+		} else {
+			return null;
+		}
+	}
+
+	@Transient
+	@JsonProperty("instructorTypeId")
+	public Long getInstructorTypeIdentification() {
+		if (this.instructorType != null) {
+			return this.instructorType.getId();
 		} else {
 			return null;
 		}
