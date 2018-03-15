@@ -90,7 +90,6 @@ public class AssignmentViewController {
         teachingAssignment.setApproved(true);
 
         // Remove placeholderAI flag
-        sectionGroup.setShowPlaceholderAI(false);
         sectionGroupService.save(sectionGroup);
 
         return teachingAssignmentService.save(teachingAssignment);
