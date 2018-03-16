@@ -10,6 +10,8 @@ drop table if exists Courses_has_Tags;
 drop table if exists InstructorCosts;
 drop table if exists InstructorSupportCallResponses;
 drop table if exists InstructorSupportPreferences;
+drop table if exists InstructorTypes;
+drop table if exists InstructorTypeCosts;
 drop table if exists Instructors;
 drop table if exists LineItemCategories;
 drop table if exists LineItemComments;
@@ -37,6 +39,6 @@ drop table if exists Terms;
 drop table if exists UserRoles;
 drop table if exists Users;
 drop table if exists Workgroups;
-drop table if exists InstructorTypes;
 drop table if exists schema_version;
+
 SET FOREIGN_KEY_CHECKS = 1;
