@@ -90,7 +90,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 col = 1;
 
                 for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
-                    if (teachingAssignment.isApproved()) {
+                    if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
                         excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructor().getFullName());
                         break;
                     }
