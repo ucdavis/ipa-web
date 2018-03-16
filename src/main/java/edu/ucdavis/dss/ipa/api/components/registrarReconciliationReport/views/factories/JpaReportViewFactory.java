@@ -193,6 +193,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		Set<InstructorDiffDto> ipaInstructors = section.getSectionGroup()
 				.getTeachingAssignments().stream()
 				.filter(TeachingAssignment::isApproved)
+				.filter(ta -> ta.getInstructor() != null)
 				.map(ta -> new InstructorDiffDto(
 								ta.getInstructor().getFirstName(),
 								ta.getInstructor().getLastName(),
