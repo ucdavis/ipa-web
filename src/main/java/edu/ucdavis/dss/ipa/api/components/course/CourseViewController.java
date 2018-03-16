@@ -662,6 +662,7 @@ public class CourseViewController {
 							newTeachingAssignment.setApproved(true);
 							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
 							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
+							newTeachingAssignment.setInstructorType(historicalTeachingAssignment.getInstructorType());
 							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
 							newTeachingAssignment.setSectionGroup(newSectionGroup);
 							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
