@@ -25,17 +25,25 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
     @Inject BudgetScenarioService budgetScenarioService;
+    @Inject InstructorTypeService instructorTypeService;
+    @Inject UserRoleService userRoleService;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         Instructor instructor = null;
+        InstructorType instructorType = null;
+        List<UserRole> userRoles = userRoleService.findByLoginIdAndWorkgroup(teachingAssignment.getInstructor().getLoginId(), teachingAssignment.getSchedule().getWorkgroup());
 
         if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
             instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
         }
 
-        if (instructor == null) {
+        if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
+            instructorType = instructorTypeService.findById(teachingAssignment.getInstructorType().getId());
+        }
+
+        if (instructorType == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
@@ -54,6 +62,15 @@ public class AssignmentViewTeachingAssignmentController {
         // Either:
         // 1) teachingAssignment is a buyout/release/sabbatical/in residence/work life balance/leave of absence
         // 2) teachingAssignment has a sectionGroup
+        // 3) teachingAssignment is an instructorType assignment (no instructorId)
+
+        if (instructor == null && instructorType != null) {
+            teachingAssignment.setInstructorType(instructorType);
+            teachingAssignment.setSchedule(schedule);
+
+            return teachingAssignmentService.save(teachingAssignment);
+        }
+
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false

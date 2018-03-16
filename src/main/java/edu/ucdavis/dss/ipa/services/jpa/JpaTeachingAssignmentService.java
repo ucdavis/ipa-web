@@ -2,7 +2,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -22,9 +24,17 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 	@Inject ScheduleService scheduleService;
 	@Inject InstructorService instructorService;
+	@Inject InstructorTypeService instructorTypeService;
 
 	@Override
 	public TeachingAssignment save(TeachingAssignment teachingAssignment) {
+		// Attempt to automatically fill in the instructorType of the instructor (based on current userRoles). May leave it null if nothing relevant is found.
+		if (teachingAssignment.getInstructor() != null && teachingAssignment.getInstructorType() == null) {
+			InstructorType instructorType = instructorTypeService.findByInstructorAndSchedule(teachingAssignment.getInstructor(), teachingAssignment.getSchedule());
+
+			teachingAssignment.setInstructorType(instructorType);
+		}
+
 		return teachingAssignmentRepository.save(teachingAssignment);
 	}
 	

@@ -31,6 +31,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
     @Inject Authorization authorization;
     @Inject SupportAppointmentService supportAppointmentService;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -51,7 +52,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
 
         List<SupportStaff> assignedSupportStaff = supportStaffService.findByScheduleId(schedule.getId());
 
@@ -85,17 +86,17 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         String termCode = String.valueOf(academicYear) + shortTermCode;
 
         List<UserRole> userRoles = workgroup.getUserRoles();
-        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
 
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
-        List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<SupportStaff> mastersStudents = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
-        List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<SupportStaff> phdStudents = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
         List<Long> phdStudentIds = new ArrayList<>();
-        List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<SupportStaff> instructionalSupport = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
 
         for (SupportStaff supportStaff : mastersStudents) {
@@ -213,7 +214,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
         }
 
-        List<SupportStaff> supportStaffList = supportStaffService.findByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
+        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
 
         return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse);
     }

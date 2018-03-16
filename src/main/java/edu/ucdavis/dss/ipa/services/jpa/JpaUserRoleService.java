@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -333,6 +334,58 @@ public class JpaUserRoleService implements UserRoleService {
 		}
 
 		return uniqueInstructors;
+	}
+
+
+	/**
+	 * Returns a list of SupportStaff entities that are tied to userRoles for masters/phd/instructionalSupport roles.
+	 * These 3 populations will all have instructionalSupportStaff entities, and represent people
+	 * an academic planner might want to assign to an instructionalSupportAssignment.
+	 * @param workgroupId
+	 * @return
+	 */
+	@Override
+	public List<SupportStaff> findActiveSupportStaffByWorkgroupId(long workgroupId) {
+		List<UserRole> activeUserRoles = new ArrayList<UserRole>();
+
+		List<UserRole> mastersStudents = this.findByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+		List<UserRole> phdStudents = this.findByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+		List<UserRole> instructionalSupportStaffList = this.findByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+
+		activeUserRoles.addAll(mastersStudents);
+		activeUserRoles.addAll(phdStudents);
+		activeUserRoles.addAll(instructionalSupportStaffList);
+
+		List<SupportStaff> activeSupportStaffList = new ArrayList<SupportStaff>();
+
+		for (UserRole userRole : activeUserRoles) {
+			SupportStaff supportStaff = supportStaffService.findOrCreate(userRole.getUser().getFirstName(), userRole.getUser().getLastName(), userRole.getUser().getEmail(), userRole.getUser().getLoginId());
+			activeSupportStaffList.add(supportStaff);
+		}
+
+		return activeSupportStaffList;
+	}
+
+	@Override
+	public List<SupportStaff> findActiveSupportStaffByWorkgroupIdAndRoleToken(long workgroupId, String roleToken) {
+		List<UserRole> instructionalSupportStaffUserRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, roleToken);
+
+		List<SupportStaff> activeSupportStaffList = new ArrayList<SupportStaff>();
+
+		for (UserRole userRole : instructionalSupportStaffUserRoles) {
+			SupportStaff supportStaff = supportStaffService.findOrCreate(userRole.getUser().getFirstName(), userRole.getUser().getLastName(), userRole.getUser().getEmail(), userRole.getUser().getLoginId());
+			activeSupportStaffList.add(supportStaff);
+		}
+
+		return activeSupportStaffList;
+	}
+
+	@Override
+	public List<SupportStaff> findActiveSupportStaffByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences) {
+		Set<SupportStaff> supportStaff = new LinkedHashSet<>(studentPreferences.stream().map(preference -> preference.getSupportStaff()).collect(Collectors.toList()));
+		supportStaff.addAll(new LinkedHashSet<>(this.findActiveSupportStaffByWorkgroupId(workgroupId)));
+
+		return new ArrayList<>(supportStaff);
 	}
 }
 
