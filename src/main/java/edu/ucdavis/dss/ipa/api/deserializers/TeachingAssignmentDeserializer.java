@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 
@@ -42,6 +43,12 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             Instructor instructor = new Instructor();
             instructor.setId(node.get("instructorId").longValue());
             teachingAssignment.setInstructor(instructor);
+        }
+
+        if (node.has("instructorTypeId")) {
+            InstructorType instructorType = new InstructorType();
+            instructorType.setId(node.get("instructorTypeId").longValue());
+            teachingAssignment.setInstructorType(instructorType);
         }
 
         if (node.has("approved")) {

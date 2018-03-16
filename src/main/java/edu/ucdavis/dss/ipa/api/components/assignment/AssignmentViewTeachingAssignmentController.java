@@ -33,19 +33,13 @@ public class AssignmentViewTeachingAssignmentController {
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
         Instructor instructor = null;
         InstructorType instructorType = null;
-        List<UserRole> userRoles = userRoleService.findByLoginIdAndWorkgroup(teachingAssignment.getInstructor().getLoginId(), teachingAssignment.getSchedule().getWorkgroup());
 
         if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
             instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
         }
 
-        if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
+        if (teachingAssignment != null && teachingAssignment.getInstructorType() != null) {
             instructorType = instructorTypeService.findById(teachingAssignment.getInstructorType().getId());
-        }
-
-        if (instructorType == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
         }
 
         Schedule schedule = scheduleService.findById(scheduleId);
