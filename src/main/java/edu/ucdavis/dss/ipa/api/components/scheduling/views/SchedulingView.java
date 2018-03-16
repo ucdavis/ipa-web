@@ -13,10 +13,10 @@ public class SchedulingView {
 	private List<Instructor> instructors = new ArrayList<>();
 	private List<Activity> activities = new ArrayList<>();
 	private Term term;
-	private List<Section> sections;
-	private List<TeachingCallResponse> teachingCallResponses;
-	private List<TeachingAssignment> teachingAssignments;
-
+	private List<Section> sections = new ArrayList<>();
+	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
+	private List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+	private List<InstructorType> instructorTypes = new ArrayList<>();
 
 	public SchedulingView(
 			List<Course> courses,
@@ -28,7 +28,8 @@ public class SchedulingView {
 			Term term,
 			List<Section> sections,
 			List<TeachingCallResponse> teachingCallResponses,
-			List<TeachingAssignment> teachingAssignments
+			List<TeachingAssignment> teachingAssignments,
+			List<InstructorType> instructorTypes
 	) {
 		setSectionGroups(sectionGroups);
 		setCourses(courses);
@@ -40,6 +41,7 @@ public class SchedulingView {
 		setSections(sections);
 		setTeachingCallResponses(teachingCallResponses);
 		setTeachingAssignments(teachingAssignments);
+		setInstructorTypes(instructorTypes);
 	}
 
 	public List<SectionGroup> getSectionGroups() {
@@ -120,5 +122,13 @@ public class SchedulingView {
 
 	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
 		this.teachingAssignments = teachingAssignments;
+	}
+
+	public List<InstructorType> getInstructorTypes() {
+		return instructorTypes;
+	}
+
+	public void setInstructorTypes(List<InstructorType> instructorTypes) {
+		this.instructorTypes = instructorTypes;
 	}
 }
