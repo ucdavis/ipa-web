@@ -8,17 +8,20 @@ public class TeachingCallStatusView {
     List<Instructor> instructors = new ArrayList<Instructor>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<UserRole> userRoles = new ArrayList<>();
+    List<InstructorType> instructorTypes = new ArrayList<>();
     long scheduleId;
 
     public TeachingCallStatusView(List<Instructor> instructors,
                                   List<TeachingCallReceipt> teachingCallReceipts,
                                   long scheduleId,
-                                  List<UserRole> userRoles) {
+                                  List<UserRole> userRoles,
+                                  List<InstructorType> instructorTypes) {
 
         setInstructors(instructors);
         setTeachingCallReceipts(teachingCallReceipts);
         setScheduleId(scheduleId);
         setUserRoles(userRoles);
+        setInstructorTypes(instructorTypes);
     }
 
     public List<Instructor> getInstructors() {
@@ -51,5 +54,13 @@ public class TeachingCallStatusView {
 
     public void setUserRoles(List<UserRole> userRoles) {
         this.userRoles = userRoles;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }
