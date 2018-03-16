@@ -22,6 +22,7 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject LocationService locationService;
 	@Inject TagService tagService;
 	@Inject TermService termService;
+	@Inject InstructorTypeService instructorTypeService;
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode) {
@@ -35,8 +36,9 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 		List<Section> sections =sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<TeachingCallResponse> teachingCallResponses = teachingCallResponseService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findApprovedByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
-		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term, sections, teachingCallResponses, teachingAssignments);
+		return new SchedulingView(courses, sectionGroups, tags, locations, instructors, activities, term, sections, teachingCallResponses, teachingAssignments, instructorTypes);
 	}
 
 }
