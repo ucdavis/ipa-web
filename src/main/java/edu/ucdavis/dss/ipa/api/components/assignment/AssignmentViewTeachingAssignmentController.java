@@ -254,7 +254,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "instructor");
 
         Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
 

@@ -32,7 +32,7 @@ public class TeachingCallStatusViewController {
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/teachingCallStatus", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public TeachingCallStatusView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor");
 
         return teachingCallViewFactory.createTeachingCallStatusView(workgroupId, year);
     }
@@ -55,7 +55,7 @@ public class TeachingCallStatusViewController {
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/contactInstructors", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public List<TeachingCallReceipt> contactInstructors(@PathVariable long workgroupId, @PathVariable long year, @RequestBody ContactInstructorsDTO contactInstructorsDTO) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor");
 
         List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<>();
 
@@ -140,7 +140,7 @@ public class TeachingCallStatusViewController {
     @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/addInstructors", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public List<TeachingCallReceipt> addInstructorsToTeachingCall(@PathVariable long workgroupId, @PathVariable long year, @RequestBody AddInstructorsDTO addInstructorsDTO) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor");
 
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 

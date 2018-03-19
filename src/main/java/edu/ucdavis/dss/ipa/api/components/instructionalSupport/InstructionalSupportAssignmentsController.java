@@ -27,7 +27,7 @@ public class InstructionalSupportAssignmentsController {
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public InstructionalSupportAssignmentView getInstructionalSupportAssignmentView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String shortTermCode) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         return instructionalSupportViewFactory.createAssignmentView(workgroupId, year, shortTermCode);
     }

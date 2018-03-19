@@ -50,7 +50,7 @@ public class AssignmentViewController {
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor");
 
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
