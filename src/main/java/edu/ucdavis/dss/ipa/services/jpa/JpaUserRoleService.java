@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class JpaUserRoleService implements UserRoleService {
 	@Inject SupportStaffService supportStaffService;
 	@Inject EmailService emailService;
 	@Inject ScheduleService scheduleService;
+	@Inject InstructorTypeRepository instructorTypeRepository;
 
 	@Override
 	@Transactional
@@ -53,8 +55,6 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public UserRole findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(String loginId, Long workgroupId, String roleName) {
-		List<String> EXCLUSIVE_ROLES = Arrays.asList("senateInstructor", "federationInstructor");
-
 		User user = this.userService.findOrCreateByLoginId(loginId);
 		Workgroup workgroup = workgroupService.findOneById(workgroupId);
 		Role role = roleService.findOneByName(roleName);
@@ -71,29 +71,18 @@ public class JpaUserRoleService implements UserRoleService {
 			userRole.setWorkgroup(workgroup);
 			userRole.setUser(user);
 			userRole.setRole(role);
+			if (roleName.equals("instructor")) {
+				InstructorType instructorType = instructorTypeRepository.findById(7L);
+				userRole.setInstructorType(instructorType);
+			}
+
 			log.info("Creating userRole '" + userRole.getRole().getName() + "' for user '" + user.getLoginId() + "' and workgroup '" + workgroup.getName() + "'");
 			userRoleRepository.save(userRole);
 	
 			List<UserRole> userRoles = user.getUserRoles();
-
-			// Remove other exclusive roles if the role being added amongst them
-			if (EXCLUSIVE_ROLES.contains(roleName)) {
-				List<UserRole> rolesToBeRemoved = new ArrayList<UserRole>();
-				for (String exclusiveRole: EXCLUSIVE_ROLES) {
-					for (UserRole ur: this.findByLoginIdAndWorkgroup(loginId, workgroup)) {
-						if (ur.getRole().getName().equals(exclusiveRole)) {
-							rolesToBeRemoved.add(ur);
-						}
-					}
-				}
-				for (UserRole ur: rolesToBeRemoved) {
-					this.deleteByLoginIdAndWorkgroupIdAndRoleToken(loginId, workgroupId, ur.getRole().getName());
-				}
-			}
-
 			userRoles.add(userRole);
-
 			user.setUserRoles(userRoles);
+
 			userService.save(user);
 
 			if (roleName.equals("instructionalSupport") || roleName.equals("studentMasters") || roleName.equals("studentPhd")) {
@@ -105,7 +94,7 @@ public class JpaUserRoleService implements UserRoleService {
 						user.getLoginId());
 			}
 
-			if (roleName.equals("senateInstructor") || roleName.equals("federationInstructor") || roleName.equals("lecturer")) {
+			if (roleName.equals("instructor")) {
 				log.info("Creating instructor for user '" + user.getLoginId() + "'");
 				Instructor instructor = instructorService.findOrCreate(
 					user.getFirstName(),
@@ -141,10 +130,6 @@ public class JpaUserRoleService implements UserRoleService {
 				workgroupService.save(workgroup);
 
 				userRoleRepository.delete(userRole);
-
-				if(roleName.equals("senateInstructor") || roleName.equals("federationInstructor") ) {
-					instructorService.removeOrphanedByLoginId(loginId);
-				}
 				return;
 			}
 		}
