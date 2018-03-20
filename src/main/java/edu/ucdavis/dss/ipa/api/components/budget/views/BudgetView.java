@@ -23,6 +23,7 @@ public class BudgetView {
     List<SupportAssignment> supportAssignments;
     Set<User> users;
     List<InstructorTypeCost> instructorTypeCosts;
+    List<InstructorType> instructorTypes;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -40,7 +41,8 @@ public class BudgetView {
             List<TeachingAssignment> teachingAssignments,
             List<SupportAssignment> supportAssignments,
             Set<User> users,
-            List<InstructorTypeCost> instructorTypeCosts) {
+            List<InstructorTypeCost> instructorTypeCosts,
+            List<InstructorType> instructorTypes) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -57,6 +59,7 @@ public class BudgetView {
         setSupportAssignments(supportAssignments);
         setUsers(users);
         setInstructorTypeCosts(instructorTypeCosts);
+        setInstructorTypes(instructorTypes);
     }
 
     public String getWorkgroupId() {
@@ -193,5 +196,13 @@ public class BudgetView {
 
     public void setInstructorTypeCosts(List<InstructorTypeCost> instructorTypeCosts) {
         this.instructorTypeCosts = instructorTypeCosts;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }

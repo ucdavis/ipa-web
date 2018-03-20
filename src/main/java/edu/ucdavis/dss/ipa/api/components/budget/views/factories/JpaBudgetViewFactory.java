@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemCategory;
@@ -24,6 +25,7 @@ import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
@@ -60,8 +62,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject UserService userService;
-    @Inject
-    InstructorTypeCostService instructorTypeCostService;
+    @Inject InstructorTypeCostService instructorTypeCostService;
+    @Inject InstructorTypeService instructorTypeService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -77,7 +79,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
         List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
-
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
         Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
         instructors.addAll(assignedInstructors);
@@ -107,7 +109,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 teachingAssignments,
                 supportAssignments,
                 users,
-                instructorTypeCosts);
+                instructorTypeCosts,
+                instructorTypes);
 
         return budgetView;
     }
