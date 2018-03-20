@@ -149,7 +149,7 @@ public class JpaInstructorService implements InstructorService {
 		List<Instructor> instructors = new ArrayList<>();
 
 		for (TeachingAssignment teachingAssignment : schedule.getTeachingAssignments()) {
-			if (teachingAssignment.isApproved()) {
+			if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
 				instructors.add(teachingAssignment.getInstructor());
 			}
 		}
