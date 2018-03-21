@@ -88,7 +88,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         Long currentTime = currentDate.getTime();
 
         for (Schedule schedule : schedules) {
-            List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseRepository.findByScheduleIdAndSendEmailAndIsSubmitted(schedule.getId(), true, false);
+            List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseRepository.findByScheduleIdAndSendEmailAndSubmitted(schedule.getId(), true, false);
 
             // Check teachingCallReceipts to see if messages need to be sent
             for (InstructorSupportCallResponse instructorSupportCallResponse : instructorSupportCallResponses) {
