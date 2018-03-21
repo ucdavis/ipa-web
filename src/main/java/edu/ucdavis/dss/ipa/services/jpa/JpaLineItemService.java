@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -49,6 +49,8 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setAmount(lineItemDTO.getAmount());
         lineItem.setNotes(lineItemDTO.getNotes());
         lineItem.setDescription(lineItemDTO.getDescription());
+        lineItem.setTeachingAssignment(lineItemDTO.getTeachingAssignment());
+        lineItem.setHidden(lineItemDTO.getHidden());
 
         return lineItemRepository.save(lineItem);
     }
@@ -65,6 +67,7 @@ public class JpaLineItemService implements LineItemService {
         originalLineItem.setAmount(lineItem.getAmount());
         originalLineItem.setNotes(lineItem.getNotes());
         originalLineItem.setLineItemCategory(lineItem.getLineItemCategory());
+        originalLineItem.setHidden(lineItem.getHidden());
 
         return this.lineItemRepository.save(originalLineItem);
     }
@@ -89,30 +92,5 @@ public class JpaLineItemService implements LineItemService {
         for (Long lineItemId : lineItemIds) {
             this.deleteById(lineItemId);
         }
-    }
-
-    @Override
-    public void createLineItemFromTeachingAssignmentAndBudgetScenario(TeachingAssignment teachingAssignment, BudgetScenario budgetScenario) {
-        if (teachingAssignment.isApproved() == false || (teachingAssignment.isBuyout() == false && teachingAssignment.isWorkLifeBalance() == false)) {
-            return;
-        }
-
-        LineItem lineItemDTO = new LineItem();
-        lineItemDTO.setAmount(0f);
-        lineItemDTO.setBudgetScenario(budgetScenario);
-
-        String description = "";
-
-        if (teachingAssignment.isBuyout()) {
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Buyout Lecturer Replacement Funds"));
-            description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-        } else if (teachingAssignment.isWorkLifeBalance()) {
-            lineItemDTO.setLineItemCategory(lineItemCategoryService.findByDescription("Work-Life Balance Funds"));
-            description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
-        }
-
-        lineItemDTO.setDescription(description);
-
-        this.findOrCreate(lineItemDTO);
     }
 }

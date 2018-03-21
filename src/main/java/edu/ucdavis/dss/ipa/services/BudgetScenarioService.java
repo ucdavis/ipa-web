@@ -16,6 +16,4 @@ public interface BudgetScenarioService {
     BudgetScenario createFromExisting(Long scenarioId, String name);
 
     BudgetScenario update(BudgetScenario budgetScenario);
-
-    void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignment);
 }

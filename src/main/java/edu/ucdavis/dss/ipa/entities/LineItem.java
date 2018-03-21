@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 @SuppressWarnings("serial")
@@ -23,10 +22,12 @@ import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
-    private float amount = 0f;
+    private BigDecimal amount = new BigDecimal(0);
     private String description, notes;
     private LineItemCategory lineItemCategory;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
+    private Boolean hidden = false;
+    private TeachingAssignment teachingAssignment;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,11 +55,11 @@ public class LineItem extends BaseEntity {
         this.budgetScenario = budgetScenario;
     }
 
-    public float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -76,6 +77,20 @@ public class LineItem extends BaseEntity {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    /**
+     * May reference a teachingAssignment that no longer exists. Orphaning is intentional to allow user to decide whether or not to delete.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TeachingAssignmentId", nullable = true)
+    @JsonIgnore
+    public TeachingAssignment getTeachingAssignment() {
+        return teachingAssignment;
+    }
+
+    public void setTeachingAssignment(TeachingAssignment teachingAssignment) {
+        this.teachingAssignment = teachingAssignment;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -100,6 +115,16 @@ public class LineItem extends BaseEntity {
         this.lineItemComments = lineItemComments;
     }
 
+    @NotNull
+    @JsonProperty
+    public Boolean getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
+    }
+
     @JsonProperty("lineItemCategoryId")
     @Transient
     public long getLineItemCategoryId() {
@@ -107,6 +132,16 @@ public class LineItem extends BaseEntity {
             return lineItemCategory.getId();
         } else {
             return 0;
+        }
+    }
+
+    @JsonProperty("teachingAssignmentId")
+    @Transient
+    public Long getTeachingAssignmentIdIfExists() {
+        if(teachingAssignment != null) {
+            return teachingAssignment.getId();
+        } else {
+            return null;
         }
     }
 

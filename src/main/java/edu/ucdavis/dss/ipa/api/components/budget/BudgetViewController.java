@@ -14,6 +14,7 @@ import edu.ucdavis.dss.ipa.entities.LineItemComment;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
@@ -27,6 +28,7 @@ import edu.ucdavis.dss.ipa.services.LineItemService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +55,7 @@ public class BudgetViewController {
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorTypeService instructorTypeService;
     @Inject InstructorService instructorService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -155,6 +158,11 @@ public class BudgetViewController {
         if (budgetScenario == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
+        }
+
+        if (lineItemDTO.getTeachingAssignment() != null) {
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(lineItemDTO.getTeachingAssignment().getId());
+            lineItemDTO.setTeachingAssignment(teachingAssignment);
         }
 
         // Authorization check

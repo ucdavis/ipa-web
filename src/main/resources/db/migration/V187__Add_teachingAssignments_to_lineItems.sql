@@ -1,0 +1,1 @@
+ALTER TABLE `LineItems` ADD COLUMN `TeachingAssignmentId` int(11) NULL;

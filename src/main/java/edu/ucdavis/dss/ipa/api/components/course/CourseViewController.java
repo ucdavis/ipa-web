@@ -108,8 +108,14 @@ public class CourseViewController {
 
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
-	public SectionGroup updateSectionGroup(@PathVariable long sectionGroupId, @RequestBody SectionGroup sectionGroup) {
+	public SectionGroup updateSectionGroup(@PathVariable long sectionGroupId, @RequestBody SectionGroup sectionGroup, HttpServletResponse httpResponse) {
 		SectionGroup originalSectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+		if (originalSectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+			return null;
+		}
+
 		Workgroup workgroup = originalSectionGroup.getCourse().getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 

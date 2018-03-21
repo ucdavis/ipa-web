@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +74,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             if (teachingAssignment.isBuyout()) {
                 LineItem lineItemDTO = new LineItem();
                 lineItemDTO.setBudgetScenario(budgetScenario);
-                lineItemDTO.setAmount(0f);
+                lineItemDTO.setAmount(new BigDecimal(0));
                 lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(2));
 
                 String description = teachingAssignment.getInstructor().getFullName() + " Buyout Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
@@ -84,7 +85,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             } else if (teachingAssignment.isWorkLifeBalance()) {
                 LineItem lineItemDTO = new LineItem();
                 lineItemDTO.setBudgetScenario(budgetScenario);
-                lineItemDTO.setAmount(0f);
+                lineItemDTO.setAmount(new BigDecimal(0));
                 lineItemDTO.setLineItemCategory(lineItemCategoryService.findById(5));
 
                 String description = teachingAssignment.getInstructor().getFullName() + " Work-Life Balance Funds for " + Term.getRegistrarName(teachingAssignment.getTermCode());
@@ -125,7 +126,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setActiveTermsBlob(originalBudgetScenario.getActiveTermsBlob());
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        List<SectionGroupCost> sectionGroupCostList = new ArrayList<>();
+        List<SectionGroupCost> sectionGroupCostList = budgetScenario.getSectionGroupCosts();
 
         // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
@@ -153,19 +154,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Override
     public BudgetScenario update(BudgetScenario budgetScenario) {
         return budgetScenarioRepository.save(budgetScenario);
-    }
-
-    @Override
-    public void createLineItemsFromTeachingAssignment(TeachingAssignment teachingAssignmentDTO) {
-        if (teachingAssignmentDTO.isApproved() && (teachingAssignmentDTO.isBuyout() || teachingAssignmentDTO.isWorkLifeBalance())) {
-            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentDTO.getId());
-
-            Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(teachingAssignment.getSchedule().getWorkgroup().getId(), teachingAssignment.getSchedule().getYear());
-
-            for (BudgetScenario budgetScenario : budget.getBudgetScenarios()) {
-                lineItemService.createLineItemFromTeachingAssignmentAndBudgetScenario(teachingAssignment, budgetScenario);
-            }
-        }
     }
 
     @Override

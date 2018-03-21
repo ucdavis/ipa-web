@@ -30,7 +30,7 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
 
         if (node.has("cost")) {
             if (!node.get("cost").isNull()) {
-                sectionGroupCost.setCost(node.get("cost").floatValue());
+                sectionGroupCost.setCost(node.get("cost").decimalValue());
             }
         }
 

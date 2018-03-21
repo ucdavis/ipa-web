@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.deserializers;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,6 +38,12 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setLineItemCategory(lineItemCategory);
         }
 
+        if (node.has("teachingAssignmentId")) {
+            TeachingAssignment teachingAssignment = new TeachingAssignment();
+            teachingAssignment.setId(node.get("teachingAssignmentId").longValue());
+            lineItem.setTeachingAssignment(teachingAssignment);
+        }
+
         if (node.has("description")) {
             lineItem.setDescription(node.get("description").textValue());
         }
@@ -45,8 +52,12 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setNotes(node.get("notes").textValue());
         }
 
+        if (node.has("hidden")) {
+            lineItem.setHidden(node.get("hidden").booleanValue());
+        }
+
         if (node.has("amount")) {
-            float amount = node.get("amount").floatValue();
+            BigDecimal amount = node.get("amount").decimalValue();
             lineItem.setAmount(amount);
         }
 
