@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaInstructionalSupportViewFactory implements InstructionalSupportViewFactory {
@@ -52,7 +54,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
+        Set<SupportStaff> supportStaffList = new HashSet<SupportStaff>(userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId));
 
         List<SupportStaff> assignedSupportStaff = supportStaffService.findByScheduleId(schedule.getId());
 

@@ -3,12 +3,13 @@ package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class InstructionalSupportAssignmentView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
     List<SupportAssignment> supportAssignments;
-    List<SupportStaff> supportStaffList;
+    Set<SupportStaff> supportStaffList;
     List<SupportStaff> assignedSupportStaff;
     List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorSupportPreference> instructorSupportPreferences;
@@ -22,7 +23,7 @@ public class InstructionalSupportAssignmentView {
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
                                               List<SupportAssignment> supportAssignments,
-                                              List<SupportStaff> supportStaffList,
+                                              Set<SupportStaff> supportStaffList,
                                               List<SupportStaff> assignedSupportStaff,
                                               List<StudentSupportPreference> studentSupportPreferences,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
@@ -71,11 +72,11 @@ public class InstructionalSupportAssignmentView {
         this.supportAssignments = supportAssignments;
     }
 
-    public List<SupportStaff> getSupportStaffList() {
+    public Set<SupportStaff> getSupportStaffList() {
         return supportStaffList;
     }
 
-    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+    public void setSupportStaffList(Set<SupportStaff> supportStaffList) {
         this.supportStaffList = supportStaffList;
     }
 
