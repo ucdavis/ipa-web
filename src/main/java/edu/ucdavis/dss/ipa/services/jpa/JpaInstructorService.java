@@ -127,7 +127,7 @@ public class JpaInstructorService implements InstructorService {
 		List<UserRole> userRoles = workgroup.getUserRoles();
 
 		for (UserRole userRole : userRoles) {
-			if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor") || userRole.getRoleToken().equals("lecturer")) {
+			if (userRole.getRoleToken().equals("instructor")) {
 				String loginId = userRole.getUser().getLoginId();
 
 				Instructor slotInstructor = this.getOneByLoginId(loginId);
