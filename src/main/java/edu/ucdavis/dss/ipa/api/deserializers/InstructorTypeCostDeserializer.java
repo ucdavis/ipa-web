@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 
 public class InstructorTypeCostDeserializer extends JsonDeserializer<Object> {
@@ -26,7 +28,15 @@ public class InstructorTypeCostDeserializer extends JsonDeserializer<Object> {
         }
 
         if (node.has("instructorTypeId")) {
-            instructorTypeCost.setId(node.get("instructorTypeId").longValue());
+            InstructorType instructorType = new InstructorType();
+            instructorType.setId(node.get("instructorTypeId").longValue());
+            instructorTypeCost.setInstructorType(instructorType);
+        }
+
+        if (node.has("budgetId")) {
+            Budget budget = new Budget();
+            budget.setId(node.get("budgetId").longValue());
+            instructorTypeCost.setBudget(budget);
         }
 
         if (node.has("cost")) {
