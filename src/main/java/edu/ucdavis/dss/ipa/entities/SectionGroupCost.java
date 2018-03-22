@@ -30,6 +30,7 @@ public class SectionGroupCost extends BaseEntity {
     private BigDecimal cost;
     private Float taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
+    private InstructorType instructorType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -109,6 +110,17 @@ public class SectionGroupCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorTypeId", nullable = true)
+    @JsonIgnore
+    public InstructorType getInstructorType() {
+        return instructorType;
+    }
+
+    public void setInstructorType(InstructorType instructorType) {
+        this.instructorType = instructorType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OriginalInstructorId", nullable = true)
     @JsonIgnore
     public Instructor getOriginalInstructor() {
@@ -174,6 +186,16 @@ public class SectionGroupCost extends BaseEntity {
     public long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @JsonProperty("instructorTypeId")
+    @Transient
+    public long getInstructorTypeIdentification() {
+        if(instructorType != null) {
+            return instructorType.getId();
         } else {
             return 0;
         }
