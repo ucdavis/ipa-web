@@ -61,11 +61,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return existingInstructorTypeCost;
         }
 
-        InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
-
-        instructorTypeCost.setBudget(instructorTypeCostDTO.getBudget());
-        instructorTypeCost.setCost(instructorTypeCostDTO.getCost());
-
-        return this.instructorTypeCostRepository.save(instructorTypeCost);
+        return this.instructorTypeCostRepository.save(instructorTypeCostDTO);
     }
 }
