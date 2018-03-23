@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 
@@ -65,6 +66,12 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             Instructor instructor = new Instructor();
             instructor.setId(node.get("instructorId").longValue());
             sectionGroupCost.setInstructor(instructor);
+        }
+
+        if (node.has("instructorTypeId")) {
+            InstructorType instructorType = new InstructorType();
+            instructorType.setId(node.get("instructorTypeId").longValue());
+            sectionGroupCost.setInstructorType(instructorType);
         }
 
         if (node.has("originalInstructorId")) {
