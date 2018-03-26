@@ -64,16 +64,14 @@ public class AssignmentExcelView extends AbstractXlsView {
                 SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, state.getTermCode());
 
                 if (sectionGroup != null) {
-                    excelHeader.createCell(col).setCellValue(
-                            StringUtils.join(
-                                    sectionGroup.getTeachingAssignments()
-                                            .stream()
-                                            .filter(TeachingAssignment::isApproved)
-                                            .map(ta -> ta.getInstructor().getLastName() + " " + ta.getInstructor().getFirstName().charAt(0))
-                                            .collect(Collectors.toList())
-                                    , ", "
-                            )
-                    );
+                    String instructorNames = "";
+                    for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+                        String name = teachingAssignment.getInstructor() != null ? teachingAssignment.getInstructor().getLastName() + " " + teachingAssignment.getInstructor().getFirstName().charAt(0) : teachingAssignment.getInstructorType().getDescription();
+
+                        instructorNames += instructorNames.length() > 0 ? ", " + name : name;
+                    }
+
+                    excelHeader.createCell(col).setCellValue(instructorNames);
                 }
 
                 col++;
