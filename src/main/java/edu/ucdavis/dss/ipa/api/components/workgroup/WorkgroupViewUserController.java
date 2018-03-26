@@ -236,4 +236,22 @@ public class WorkgroupViewUserController {
 
         return userRoleService.save(userRole);
     }
+
+    @RequestMapping(value = "/api/workgroupView/userRoles/{userRoleId}/roles/{roleId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public UserRole updateUserRole(@PathVariable Long userRoleId, @PathVariable Long roleId, HttpServletResponse httpResponse) {
+        UserRole userRole = userRoleService.getOneById(userRoleId);
+        Role role = roleService.findOneById(roleId);
+
+        if (userRole == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        authorizer.hasWorkgroupRole(userRole.getWorkgroup().getId(), "academicPlanner");
+
+        userRole.setRole(role);
+
+        return userRoleService.save(userRole);
+    }
 }
