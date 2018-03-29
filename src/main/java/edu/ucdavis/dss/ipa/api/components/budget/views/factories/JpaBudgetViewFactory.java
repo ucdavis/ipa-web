@@ -20,6 +20,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
@@ -36,6 +37,7 @@ import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject UserService userService;
     @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject InstructorTypeService instructorTypeService;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -80,15 +83,15 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
         List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
-        Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
-        instructors.addAll(assignedInstructors);
+        List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroupId);
+        List<Instructor> assignedInstructors = instructorService.findAssignedByScheduleId(schedule.getId());
 
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 
+        List<UserRole> userRoles = userRoleService.findByWorkgroup(workgroup);
         Set<User> users = new HashSet<> (userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner"));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
         users.addAll(lineItemUsers);
@@ -104,13 +107,15 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 sectionGroups,
                 sections,
                 instructorCosts,
-                instructors,
+                activeInstructors,
+                assignedInstructors,
                 courses,
                 teachingAssignments,
                 supportAssignments,
                 users,
                 instructorTypeCosts,
-                instructorTypes);
+                instructorTypes,
+                userRoles);
 
         return budgetView;
     }

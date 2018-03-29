@@ -94,6 +94,24 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                         instructorTypeId = 7L;
                     }
 
+                    // Ensure UserRole does not already exist
+                    Long existingUserRoleId = null;
+
+                    PreparedStatement psExistingUserRole = connection.prepareStatement(
+                            "SELECT * FROM UserRoles WHERE UserId = ? AND WorkgroupId = ? AND RoleId = ?;"
+                    );
+                    psExistingUserRole.setLong(1, userId);
+                    psExistingUserRole.setLong(2, workgroupId);
+                    psExistingUserRole.setLong(3, roleId);
+                    ResultSet rsExistingUserRole = psExistingUserRole.executeQuery();
+
+                    while(rsExistingUserRole.next()) {
+                        existingUserRoleId = rsExistingUserRole.getLong("Id");
+                    }
+
+                    if (existingUserRoleId != null && existingUserRoleId > 0) { continue; }
+
+                    // Create userRole
                     PreparedStatement psCreateUserRole = connection.prepareStatement(
                             "INSERT INTO `UserRoles` (UserId, WorkgroupId, RoleId, InstructorTypeId) " +
                                     "VALUES (?, ?, ?, ?);"
