@@ -3,6 +3,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
@@ -186,6 +188,26 @@ public class JpaUserService implements UserService {
 		List<UserRole> userRoles = workgroup.getUserRoles();
 		for (UserRole userRole : userRoles) {
 			users.add(userRole.getUser());
+			if (userRole.getUser().getId() == 897) {
+				System.out.println("taco");
+			}
+		}
+
+		return users;
+	}
+
+	@Override
+	public List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+		List<User> users = new ArrayList<>();
+		List<Long> addedUserIds = new ArrayList<>();
+
+		for (TeachingAssignment teachingAssignment : teachingAssignments) {
+			User user = this.getOneByLoginId(teachingAssignment.getInstructor().getLoginId());
+
+			if (user != null) {
+				users.add(user);
+				addedUserIds.add(user.getId());
+			}
 		}
 
 		return users;

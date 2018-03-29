@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
 
@@ -51,6 +52,8 @@ public interface UserService {
 	List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken);
 
 	List<User> findAllByLineItems(List<LineItem> lineItems);
+
+	List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments);
 
 	List<User> findAllByWorkGroup(Workgroup workgroup);
 }
