@@ -79,24 +79,6 @@ public class JpaBudgetService implements BudgetService {
         budget.setSchedule(schedule);
         budget = budgetRepository.save(budget);
 
-        // Generate default instructorTypeCosts
-        List<String> descriptions = Arrays.asList("Emeriti", "Visiting Professor", "Associate Instructor", "Unit 18 Pre-six", "Continuing Lecturer", "Ladder Faculty", "Adjunct Professor", "Other");
-        List<InstructorTypeCost> newInstructorTypes = new ArrayList<>();
-
-        for (String description : descriptions) {
-            InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
-            instructorTypeCost.setBudget(budget);
-            instructorTypeCost = instructorTypeCostService.findOrCreate(instructorTypeCost);
-            newInstructorTypes.add(instructorTypeCost);
-        }
-
-        List<InstructorTypeCost> instructorTypeCosts = budget.getInstructorTypes();
-        instructorTypeCosts.addAll(newInstructorTypes);
-        budget.setInstructorTypes(instructorTypeCosts);
-        this.update(budget);
-
-        instructorCostService.findOrCreateManyFromBudget(budget);
-
         return budget;
     }
 }
