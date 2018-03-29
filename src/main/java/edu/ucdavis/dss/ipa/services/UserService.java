@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -50,4 +51,6 @@ public interface UserService {
 	List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken);
 
 	List<User> findAllByLineItems(List<LineItem> lineItems);
+
+	List<User> findAllByWorkGroup(Workgroup workgroup);
 }

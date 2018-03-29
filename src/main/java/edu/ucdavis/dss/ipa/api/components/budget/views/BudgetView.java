@@ -46,7 +46,8 @@ public class BudgetView {
             Set<User> users,
             List<InstructorTypeCost> instructorTypeCosts,
             List<InstructorType> instructorTypes,
-            List<UserRole> userRoles) {
+            List<UserRole> userRoles
+    ) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);

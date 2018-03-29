@@ -180,6 +180,18 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
+	public List<User> findAllByWorkGroup(Workgroup workgroup) {
+		List<User> users = new ArrayList<>();
+
+		List<UserRole> userRoles = workgroup.getUserRoles();
+		for (UserRole userRole : userRoles) {
+			users.add(userRole.getUser());
+		}
+
+		return users;
+	}
+
+	@Override
 	public List<User> searchByFirstLastAndLoginId(String query) {
 		return this.userRepository.findByFirstNameOrLastNameOrLoginId(query);
 	}
