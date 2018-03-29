@@ -202,11 +202,13 @@ public class JpaUserService implements UserService {
 		List<Long> addedUserIds = new ArrayList<>();
 
 		for (TeachingAssignment teachingAssignment : teachingAssignments) {
-			User user = this.getOneByLoginId(teachingAssignment.getInstructor().getLoginId());
+			if (teachingAssignment.getInstructor() != null) {
+				User user = this.getOneByLoginId(teachingAssignment.getInstructor().getLoginId());
 
-			if (user != null) {
-				users.add(user);
-				addedUserIds.add(user.getId());
+				if (user != null) {
+					users.add(user);
+					addedUserIds.add(user.getId());
+				}
 			}
 		}
 
