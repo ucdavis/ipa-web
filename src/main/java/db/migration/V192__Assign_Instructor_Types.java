@@ -5,6 +5,7 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import java.sql.*;
 
 public class V192__Assign_Instructor_Types implements JdbcMigration {
+    static Long INSTRUCTOR_ROLE = 15L;
 
     /**
      * For every instructorTypeCost, looks at the deprecrated description field and associate to the matching instructorType.
@@ -152,6 +153,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 PreparedStatement psWorkgroup = connection.prepareStatement(
                         "SELECT Workgroups.Id FROM Workgroups, Schedules, Budgets WHERE Budgets.Id = ? AND Schedules.WorkgroupId = Workgroups.Id AND Budgets.ScheduleId = Schedules.Id;"
                 );
+
                 psWorkgroup.setLong(1, budgetId);
                 ResultSet rsWorkgroup = psWorkgroup.executeQuery();
 
@@ -159,17 +161,27 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     workgroupId = rsWorkgroup.getLong("Id");
                 }
 
+                if (workgroupId == null || workgroupId == 0) {
+                    System.err.println("For InstructorCostId: " + instructorCostId + ", workgroupId was null based on instructorId: " + instructorId);
+                    continue;
+                }
+
                 // Get userId
                 Long userId = null;
 
                 PreparedStatement psUser = connection.prepareStatement(
-                        "SELECT Users.Id FROM Users, Instructors WHERE Instructors.Id = ? AND Users.LoginId = Instructors.LoginId;"
+                        "SELECT Users.Id FROM Users, Instructors WHERE Instructors.Id = ? AND LOWER(Users.LoginId) = LOWER(Instructors.LoginId);"
                 );
                 psUser.setLong(1, instructorId);
                 ResultSet rsUser = psUser.executeQuery();
 
                 while(rsUser.next()) {
                     userId = rsUser.getLong("Id");
+                }
+
+                if (userId == null || userId == 0) {
+                    System.err.println("For InstructorCostId: " + instructorCostId + ", UserId was null based on instructorId: " + instructorId);
+                    continue;
                 }
 
                 // Generate user role
@@ -181,7 +193,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
 
                 psCreateUserRole.setLong(1, userId);
                 psCreateUserRole.setLong(2, workgroupId);
-                psCreateUserRole.setLong(3, 15L);
+                psCreateUserRole.setLong(3, INSTRUCTOR_ROLE);
                 psCreateUserRole.setLong(4, instructorTypeId);
                 psCreateUserRole.execute();
             }
