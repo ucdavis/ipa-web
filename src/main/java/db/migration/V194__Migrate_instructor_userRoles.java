@@ -2,14 +2,27 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class V194__Migrate_instructor_userRoles implements JdbcMigration {
+    // Instructor Roles
+    public static final int SENATE_INSTRUCTOR_ROLE = 1;
+    public static final int FEDERATION_INSTRUCTOR_ROLE = 8;
+    public static final int LECTURER_ROLE = 14;
+
+    public static final long INSTRUCTOR_ROLE = 15;
+
+    // Instructor Types
+    public static final long UNIT_18_PRE_SIX = 4L;
+    public static final long LADDER_FACULTY = 6L;
+    public static final long INSTRUCTOR = 7L;
 
     /**
      * Converts any 'instructor'-ish userRoles into an instructor role with a relevant instructorType
@@ -33,8 +46,9 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                 psUserRoles.setLong(1, userId);
                 ResultSet rsUserRoles = psUserRoles.executeQuery();
 
-                // Will store structured data about the user's current userRoles to aid in creation/deletion.
-                UserRolesDTO userRolesDTO = new UserRolesDTO();
+                // Data about the user's current userRoles to aid in creation/deletion.
+                Set<Long> workgroupIdsForUser = new HashSet<>();
+                HashMap<Long, IdentifiedRoles> rolesForWorkgroup = new HashMap<Long, IdentifiedRoles>();
 
                 // Find all userRoles for user
                 while(rsUserRoles.next()) {
@@ -42,32 +56,28 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                     Long workgroupId = rsUserRoles.getLong("WorkgroupId");
                     Integer roleId = rsUserRoles.getInt("RoleId");
 
-                    // Instructor-ish roles:
-                    // federationInstructor: 8
-                    // senateInstructor: 1
-                    // lecturer: 14
-                    if (roleId != 8 && roleId != 1 && roleId != 14) {
+                    if (roleId != FEDERATION_INSTRUCTOR_ROLE && roleId != SENATE_INSTRUCTOR_ROLE && roleId != LECTURER_ROLE) {
                         continue;
                     }
 
-                    userRolesDTO.workgroupIdsForUser.add(workgroupId);
+                    workgroupIdsForUser.add(workgroupId);
 
-                    RolesDTO rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
+                    IdentifiedRoles identifiedRoles = rolesForWorkgroup.get(workgroupId);
 
-                    if (rolesDTO == null) {
-                        userRolesDTO.rolesForWorkgroup.put(workgroupId, new RolesDTO());
-                        rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
+                    if (identifiedRoles == null) {
+                        rolesForWorkgroup.put(workgroupId, new IdentifiedRoles());
+                        identifiedRoles = rolesForWorkgroup.get(workgroupId);
                     }
 
                     switch (roleId) {
-                        case 8: // FederationInstructor role
-                            rolesDTO.isFederation = true;
+                        case FEDERATION_INSTRUCTOR_ROLE: // FederationInstructor role
+                            identifiedRoles.isFederation = true;
                             break;
-                        case 1: // SenateInstructor role
-                            rolesDTO.isSenate = true;
+                        case SENATE_INSTRUCTOR_ROLE: // SenateInstructor role
+                            identifiedRoles.isSenate = true;
                             break;
-                        case 14: // Lecturer role
-                            rolesDTO.isLecturer = true;
+                        case LECTURER_ROLE: // Lecturer role
+                            identifiedRoles.isLecturer = true;
                             break;
                         default:
                             break;
@@ -75,23 +85,23 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
                 }
 
                 // Create instructor userRoles based on the old userRoles
-                for (Long workgroupId: userRolesDTO.workgroupIdsForUser) {
+                for (Long workgroupId: workgroupIdsForUser) {
                     // We need to make one userRole for each workgroup the user is an instructor in
-                    Long roleId = 15L; // New role 'instructor'
+                    Long roleId = INSTRUCTOR_ROLE; // New role 'instructor'
 
                     // Identify the instructorType to use in the new userRole
                     Long instructorTypeId = null;
 
-                    RolesDTO rolesDTO = userRolesDTO.rolesForWorkgroup.get(workgroupId);
+                    IdentifiedRoles identifiedRoles = rolesForWorkgroup.get(workgroupId);
 
                     // If senate/federation and lecturer are present, ignore lecturer role as it is less precise.
                     // Cannot be senate and federation simultaneously for a workgroup.
-                    if (rolesDTO.isSenate) {
-                        instructorTypeId = 6L;
-                    } else if (rolesDTO.isFederation) {
-                        instructorTypeId = 4L;
-                    } else if (rolesDTO.isLecturer) {
-                        instructorTypeId = 7L;
+                    if (identifiedRoles.isSenate) {
+                        instructorTypeId = LADDER_FACULTY;
+                    } else if (identifiedRoles.isFederation) {
+                        instructorTypeId = UNIT_18_PRE_SIX;
+                    } else if (identifiedRoles.isLecturer) {
+                        instructorTypeId = INSTRUCTOR;
                     }
 
                     // Ensure UserRole does not already exist
@@ -127,7 +137,6 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
 
             // Commit changes
             connection.commit();
-
         } catch(SQLException e) {
             e.printStackTrace();
             return;
@@ -142,13 +151,7 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
         }
     }
 
-    public class UserRolesDTO {
-        public Set<Long> workgroupIdsForUser = new HashSet<>();
-
-        public HashMap<Long, RolesDTO> rolesForWorkgroup = new HashMap<Long, RolesDTO>();
-    }
-
-    public class RolesDTO {
+    public class IdentifiedRoles {
         public boolean isSenate = false;
         public boolean isFederation = false;
         public boolean isLecturer = false;

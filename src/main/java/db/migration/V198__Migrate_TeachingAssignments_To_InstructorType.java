@@ -2,14 +2,14 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class V198__Migrate_TeachingAssignments_To_InstructorType implements JdbcMigration {
+    // Instructor Types
+    public static final long INSTRUCTOR = 7L;
 
     /**
      * Calculate instructorTypes for pre-existing teachingAssignments.
@@ -46,7 +46,15 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
                 Long instructorTypeId = null;
 
                 // If user based, look at userRoles to calculate
-                PreparedStatement psRoles = connection.prepareStatement("SELECT UserRoles.InstructorTypeId FROM Instructors, Users, UserRoles WHERE Instructors.Id = ? AND Instructors.LoginId = Users.LoginId AND UserRoles.UserId = Users.Id AND UserRoles.WorkgroupId = ?");
+                PreparedStatement psRoles = connection.prepareStatement(
+                    "SELECT UserRoles.InstructorTypeId " +
+                    "FROM Instructors, Users, UserRoles " +
+                    "WHERE Instructors.Id = ? " +
+                    "AND Instructors.LoginId = Users.LoginId " +
+                    "AND UserRoles.UserId = Users.Id " +
+                    "AND UserRoles.WorkgroupId = ?"
+                );
+
                 psRoles.setLong(1, instructorId);
                 psRoles.setLong(2, workgroupId);
 
@@ -62,7 +70,7 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
 
                 // If relevant userRole wasn't found, set instructorType to the generic 'instructor' type.
                 if (instructorTypeId == null || instructorTypeId == 0) {
-                    instructorTypeId = 7L;
+                    instructorTypeId = INSTRUCTOR;
                 }
 
                 // Update TeachingAssignment with instructorType

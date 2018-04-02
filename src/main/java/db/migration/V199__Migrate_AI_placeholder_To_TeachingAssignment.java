@@ -6,9 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcMigration {
+    static Long ASSOCIATE_INSTRUCTOR = 3L;
 
     /**
      * Migrates AI placeholders into new teachingAssignments with instructorType 'AI'
@@ -32,7 +32,11 @@ public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcM
                 Long scheduleId = null;
 
                 PreparedStatement psSchedule = connection.prepareStatement(
-                        "SELECT Schedules.Id FROM Schedules, Courses, SectionGroups WHERE SectionGroups.Id = ? AND SectionGroups.CourseId = Courses.Id AND Courses.ScheduleId = Schedules.Id;"
+                    "SELECT Schedules.Id " +
+                    "FROM Schedules, Courses, SectionGroups " +
+                    "WHERE SectionGroups.Id = ? " +
+                    "AND SectionGroups.CourseId = Courses.Id " +
+                    "AND Courses.ScheduleId = Schedules.Id;"
                 );
                 psSchedule.setLong(1, sectionGroupId);
                 ResultSet rsSchedule = psSchedule.executeQuery();
@@ -42,12 +46,6 @@ public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcM
                 }
 
 
-                // TermCode
-                // sectionGroupId
-                // ScheduleId
-                // Priority = 1
-                // Approved = 1
-                // InstructorTypeId = 3
 
                 // Create new teachingAssignment
                 PreparedStatement psCreateTeachingAssignment = connection.prepareStatement(
@@ -55,12 +53,18 @@ public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcM
                         "VALUES (?, ?, ?, ?, ?, ?);"
                 );
 
+                // Priority = 1
                 psCreateTeachingAssignment.setLong(1, 1);
+                // TermCode
                 psCreateTeachingAssignment.setString(2, termCode);
+                // ScheduleId
                 psCreateTeachingAssignment.setLong(3, scheduleId);
+                // Approved = 1
                 psCreateTeachingAssignment.setBoolean(4, true);
+                // SectionGroupId
                 psCreateTeachingAssignment.setLong(5, sectionGroupId);
-                psCreateTeachingAssignment.setLong(6, 3);
+                // InstructorTypeId
+                psCreateTeachingAssignment.setLong(6, ASSOCIATE_INSTRUCTOR);
 
                 psCreateTeachingAssignment.execute();
                 psCreateTeachingAssignment.close();

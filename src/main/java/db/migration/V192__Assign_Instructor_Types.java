@@ -115,6 +115,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 Long budgetId = rsInstructorCosts.getLong("BudgetId");
                 Long instructorId = rsInstructorCosts.getLong("InstructorId");
 
+                // If the instructorCost does not have an instructorTypeCost, it is not of interest to this migration, as we are looking to migrate these associations
                 if (instructorTypeCostId == null || instructorTypeCostId == 0) { continue; }
 
                 // Get instructorTypeId
@@ -163,7 +164,11 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 Long workgroupId = null;
 
                 PreparedStatement psWorkgroup = connection.prepareStatement(
-                        "SELECT Workgroups.Id FROM Workgroups, Schedules, Budgets WHERE Budgets.Id = ? AND Schedules.WorkgroupId = Workgroups.Id AND Budgets.ScheduleId = Schedules.Id;"
+                    "SELECT Workgroups.Id " +
+                    "FROM Workgroups, Schedules, Budgets " +
+                    "WHERE Budgets.Id = ? " +
+                    "AND Schedules.WorkgroupId = Workgroups.Id " +
+                    "AND Budgets.ScheduleId = Schedules.Id;"
                 );
 
                 psWorkgroup.setLong(1, budgetId);
@@ -173,6 +178,8 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     workgroupId = rsWorkgroup.getLong("Id");
                 }
 
+                // If workgroupId is null, the budget was either orphaned and does not have a schedule, or the schedule was orphaned and does not have a workgroup.
+                // If the workgroup cannot be identified, then we cannot create userRoles based on this data.
                 if (workgroupId == null || workgroupId == 0) {
                     System.err.println("For InstructorCostId: " + instructorCostId + ", workgroupId was null based on instructorId: " + instructorId);
                     continue;
@@ -191,6 +198,8 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     userId = rsUser.getLong("Id");
                 }
 
+                // If userId is null, then the instructor was not based on a user. This scenario can occur from historical data sources, or from a banner sync.
+                // If the user cannot be identified from the instructor, then we cannot create userRoles based on this data.
                 if (userId == null || userId == 0) {
                     System.err.println("For InstructorCostId: " + instructorCostId + ", UserId was null based on instructorId: " + instructorId);
                     continue;
@@ -212,7 +221,6 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
 
             // Commit changes
             connection.commit();
-
         } catch(SQLException e) {
             e.printStackTrace();
             return;
