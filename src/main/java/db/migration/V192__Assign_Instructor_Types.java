@@ -5,7 +5,6 @@ import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 public class V192__Assign_Instructor_Types implements JdbcMigration {
@@ -54,29 +53,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     psDeleteInstructorTypeCost.close();
                 }
 
-                Long instructorTypeId = null;
-
-                switch (description) {
-                    case "Visiting Professor":
-                    case "Visting professor":
-                        instructorTypeId = VISITING_PROFESSOR;
-                        break;
-                    case "Continuing Lecturer":
-                        instructorTypeId = CONTINUING_LECTURER;
-                        break;
-                    case "Unit 18 Pre-six":
-                        instructorTypeId = UNIT_18_PRE_SIX;
-                        break;
-                    case "Associate Instructor":
-                        instructorTypeId = ASSOCIATE_INSTRUCTOR;
-                        break;
-                    case "Emeriti":
-                        instructorTypeId = EMERITI;
-                        break;
-                    case "Ladder Faculty":
-                        instructorTypeId = LADDER_FACULTY;
-                        break;
-                }
+                Long instructorTypeId = this.getInstructorTypeIdFromDescription(description);
 
                 // No value was set, so removing unneeded override object
                 // Or the group reference in the description didn't map to a instructorType (example: 'The Staff' or 'Adjunct Professor')
@@ -129,32 +106,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 ResultSet rsInstructorTypeCost = psInstructorTypeCost.executeQuery();
 
                 while(rsInstructorTypeCost.next()) {
-                    String description = rsInstructorTypeCost.getString("Description");
-
-                    switch (description) {
-                        case "Visiting Professor":
-                        case "Visting professor":
-                            instructorTypeId = VISITING_PROFESSOR;
-                            break;
-                        case "Continuing Lecturer":
-                            instructorTypeId = CONTINUING_LECTURER;
-                            break;
-                        case "Unit 18 Pre-six":
-                            instructorTypeId = UNIT_18_PRE_SIX;
-                            break;
-                        case "Associate Instructor":
-                            instructorTypeId = ASSOCIATE_INSTRUCTOR;
-                            break;
-                        case "Emeriti":
-                            instructorTypeId = EMERITI;
-                            break;
-                        case "Ladder Faculty":
-                            instructorTypeId = LADDER_FACULTY;
-                            break;
-                        default:
-                            instructorTypeId = INSTRUCTOR;
-                            break;
-                    }
+                    instructorTypeId = this.getInstructorTypeIdFromDescription(rsInstructorTypeCost.getString("Description"));
                 }
 
                 // The type was un-identifiable
@@ -221,17 +173,43 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
 
             // Commit changes
             connection.commit();
-        } catch(SQLException e) {
-            e.printStackTrace();
-            return;
         } finally {
-            try {
-                if (psInstructorTypeCosts != null) {
-                    psInstructorTypeCosts.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (psInstructorTypeCosts != null) {
+                psInstructorTypeCosts.close();
             }
         }
     }
+
+
+    public Long getInstructorTypeIdFromDescription (String description) {
+        Long instructorTypeId = null;
+
+        switch (description) {
+            case "Visiting Professor":
+            case "Visting professor":
+                instructorTypeId = VISITING_PROFESSOR;
+                break;
+            case "Continuing Lecturer":
+                instructorTypeId = CONTINUING_LECTURER;
+                break;
+            case "Unit 18 Pre-six":
+                instructorTypeId = UNIT_18_PRE_SIX;
+                break;
+            case "Associate Instructor":
+                instructorTypeId = ASSOCIATE_INSTRUCTOR;
+                break;
+            case "Emeriti":
+                instructorTypeId = EMERITI;
+                break;
+            case "Ladder Faculty":
+                instructorTypeId = LADDER_FACULTY;
+                break;
+            default:
+                instructorTypeId = INSTRUCTOR;
+                break;
+        }
+
+        return instructorTypeId;
+    }
+
 }
