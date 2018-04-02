@@ -80,5 +80,4 @@ public class ScheduleInstructorNote {
 			return 0;
 		}
 	}
-
 }

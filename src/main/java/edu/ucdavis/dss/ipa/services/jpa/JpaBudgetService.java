@@ -21,8 +21,7 @@ public class JpaBudgetService implements BudgetService {
     @Inject BudgetRepository budgetRepository;
     @Inject ScheduleService scheduleService;
     @Inject InstructorCostService instructorCostService;
-    @Inject
-    InstructorTypeCostService instructorTypeCostService;
+    @Inject InstructorTypeCostService instructorTypeCostService;
 
     /**
      * Helper method to handle schedule checking. Intentionally private.

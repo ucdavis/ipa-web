@@ -71,14 +71,15 @@ public class AssignmentExcelView extends AbstractXlsView {
                 SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, state.getTermCode());
 
                 if (sectionGroup != null) {
-                    String instructorNames = "";
+                    List<String> instructorNames = new ArrayList<>();
                     for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
                         String name = teachingAssignment.getInstructorDisplayName();
 
-                        instructorNames += String.join(", ", instructorNames);
+                        instructorNames.add(name);
                     }
 
-                    excelHeader.createCell(col).setCellValue(instructorNames);
+                    String instructNamesFormatted = String.join(", ", instructorNames);
+                    excelHeader.createCell(col).setCellValue(instructNamesFormatted);
                 }
 
                 col++;

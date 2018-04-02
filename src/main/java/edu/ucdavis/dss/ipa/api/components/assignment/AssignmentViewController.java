@@ -92,7 +92,7 @@ public class AssignmentViewController {
         // Remove placeholderAI flag
         sectionGroupService.save(sectionGroup);
 
-        return teachingAssignmentService.save(teachingAssignment);
+        return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
     }
 
     @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)

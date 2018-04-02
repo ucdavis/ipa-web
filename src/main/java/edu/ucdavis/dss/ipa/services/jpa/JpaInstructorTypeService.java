@@ -44,6 +44,7 @@ public class JpaInstructorTypeService implements InstructorTypeService {
         for (UserRole userRole : userRoles) {
             if (userRole.getRoleToken().equals("instructor")) {
                 instructorType = userRole.getInstructorType();
+                break;
             }
         }
 

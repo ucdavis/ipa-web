@@ -34,15 +34,21 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         instructorTypeCostRepository.deleteById(instructorTypeId);
     }
 
+    /**
+     * Will return null if newInstructorTypeCost does not already exist in the database.
+     * Will only update the 'Cost' value on the instructorTypeCost.
+     * @param newInstructorTypeCost
+     * @return
+     */
     @Override
-    public InstructorTypeCost update(InstructorTypeCost newInstructorType) {
-        InstructorTypeCost originalInstructorType = this.findById(newInstructorType.getId());
+    public InstructorTypeCost update(InstructorTypeCost newInstructorTypeCost) {
+        InstructorTypeCost originalInstructorType = this.findById(newInstructorTypeCost.getId());
 
         if(originalInstructorType == null) {
             return null;
         }
 
-        originalInstructorType.setCost(newInstructorType.getCost());
+        originalInstructorType.setCost(newInstructorTypeCost.getCost());
 
         return this.instructorTypeCostRepository.save(originalInstructorType);
     }

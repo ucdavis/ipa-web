@@ -667,7 +667,7 @@ public class CourseViewController {
 							newTeachingAssignment.setSectionGroup(newSectionGroup);
 							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
 
-							teachingAssignmentService.save(newTeachingAssignment);
+							teachingAssignmentService.saveAndAddInstructorType(newTeachingAssignment);
 						}
 					}
 				}

@@ -34,5 +34,4 @@ public class JpaWorkgroupViewFactory implements WorkgroupViewFactory {
 
 		return new WorkgroupView(workgroup, userRoles, roles, users, instructorTypes);
 	}
-
 }

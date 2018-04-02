@@ -37,7 +37,7 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
             TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(supportAssignment.getSectionGroup(), instructor);
 
             teachingAssignment.setApproved(true);
-            teachingAssignmentService.save(teachingAssignment);
+            teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
         }
 
         return supportAssignment;
