@@ -31,22 +31,22 @@ public class AssignmentViewTeachingAssignmentController {
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
+        Schedule schedule = scheduleService.findById(scheduleId);
+
+        if (schedule == null || teachingAssignment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
         Instructor instructor = null;
         InstructorType instructorType = null;
 
-        if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
+        if (teachingAssignment.getInstructor() != null) {
             instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
         }
 
-        if (teachingAssignment != null && teachingAssignment.getInstructorType() != null) {
+        if (teachingAssignment.getInstructorType() != null) {
             instructorType = instructorTypeService.findById(teachingAssignment.getInstructorType().getId());
-        }
-
-        Schedule schedule = scheduleService.findById(scheduleId);
-
-        if (schedule == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
