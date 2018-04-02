@@ -29,8 +29,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Override
     @Transactional
     public void deleteById(long instructorTypeId) {
-        InstructorTypeCost instructorTypeCost = this.findById(instructorTypeId);
-
         instructorCostService.removeAssociationByInstructorTypeId(instructorTypeId);
 
         instructorTypeCostRepository.deleteById(instructorTypeId);

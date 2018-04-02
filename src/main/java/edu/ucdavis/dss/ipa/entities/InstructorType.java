@@ -9,8 +9,6 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ucdavis.dss.ipa.api.deserializers.InstructorTypeCostDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
@@ -24,13 +22,11 @@ public class InstructorType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
-    public long getId()
-    {
+    public long getId() {
         return this.id;
     }
 
-    public void setId(long id)
-    {
+    public void setId(long id) {
         this.id = id;
     }
 

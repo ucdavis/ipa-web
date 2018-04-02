@@ -14,6 +14,8 @@ import java.util.List;
 
 @Service
 public class JpaInstructorTypeService implements InstructorTypeService {
+    static long INSTRUCTOR_TYPE = 7L;
+
     @Inject InstructorTypeRepository instructorTypeRepository;
     @Inject UserRoleService userRoleService;
 
@@ -47,7 +49,7 @@ public class JpaInstructorTypeService implements InstructorTypeService {
 
         if (instructorType == null) {
             // Default to instructorType of '7', the generic 'instructor' type.
-            instructorType = this.findById(7L);
+            instructorType = this.findById(INSTRUCTOR_TYPE);
         }
 
         return instructorType;

@@ -39,13 +39,11 @@ public class InstructorTypeCost extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", unique = true, nullable = false)
     @JsonProperty
-    public long getId()
-    {
+    public long getId() {
         return this.id;
     }
 
-    public void setId(long id)
-    {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -102,11 +100,11 @@ public class InstructorTypeCost extends BaseEntity {
 
     @JsonProperty("budgetId")
     @Transient
-    public long getBudgetIdentification() {
+    public Long getBudgetIdentification() {
         if(budget != null) {
             return budget.getId();
         } else {
-            return 0;
+            return null;
         }
     }
 
