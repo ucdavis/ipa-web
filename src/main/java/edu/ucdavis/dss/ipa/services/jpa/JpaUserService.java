@@ -187,9 +187,6 @@ public class JpaUserService implements UserService {
 		List<UserRole> userRoles = workgroup.getUserRoles();
 		for (UserRole userRole : userRoles) {
 			users.add(userRole.getUser());
-			if (userRole.getUser().getId() == 897) {
-				System.out.println("taco");
-			}
 		}
 
 		return users;

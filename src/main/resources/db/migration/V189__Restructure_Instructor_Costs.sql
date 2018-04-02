@@ -5,7 +5,7 @@ ALTER TABLE `InstructorCosts` CHANGE COLUMN `InstructorTypeId` `InstructorTypeCo
 
 CREATE TABLE `InstructorTypes` (
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `Description` varchar(50) NOT NULL
+  `Description` varchar(32) NOT NULL
 );
 
 INSERT INTO `InstructorTypes` (`Description`) VALUES ('Emeriti - Recalled');
