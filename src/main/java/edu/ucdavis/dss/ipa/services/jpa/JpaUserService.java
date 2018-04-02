@@ -181,7 +181,7 @@ public class JpaUserService implements UserService {
 	}
 
 	@Override
-	public List<User> findAllByWorkGroup(Workgroup workgroup) {
+	public List<User> findAllByWorkgroup(Workgroup workgroup) {
 		List<User> users = new ArrayList<>();
 
 		List<UserRole> userRoles = workgroup.getUserRoles();

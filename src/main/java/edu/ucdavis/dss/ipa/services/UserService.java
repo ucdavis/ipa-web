@@ -55,5 +55,5 @@ public interface UserService {
 
 	List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments);
 
-	List<User> findAllByWorkGroup(Workgroup workgroup);
+	List<User> findAllByWorkgroup(Workgroup workgroup);
 }
