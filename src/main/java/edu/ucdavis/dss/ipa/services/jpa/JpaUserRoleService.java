@@ -24,6 +24,7 @@ import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
+import edu.ucdavis.dss.ipa.repositories.RoleRepository;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
@@ -230,7 +231,7 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgroupId, String roleToken) {
+	public List<Long> getInstructorsByWorkgroupIdAndRoleToken (long workgroupId, String roleToken) {
 		List<Long> workgroupInstructorIds = new ArrayList<Long>();
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
@@ -248,8 +249,11 @@ public class JpaUserRoleService implements UserRoleService {
 					workgroupInstructors.add(instructor);
 				}
 			} else {
-				Exception e = new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
-				emailService.reportException(e, this.getClass().getName());
+				try {
+					throw new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -369,13 +373,18 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	private List<UserRole> findByWorkgroupIdAndRoleTokens(long workgroupId, List<String> roleTokens) {
-		List<UserRole> userRoles = new ArrayList<>();
 
-		for (String roleToken : roleTokens) {
-			userRoles.addAll(this.findByWorkgroupIdAndRoleToken(workgroupId, roleToken));
+		// Get roleIds from roleTokens
+		List<Role> roles = roleService.getAllRoles();
+		List<Long> roleIds = new ArrayList<>();
+
+		for (Role role : roles) {
+			if (roleTokens.indexOf(role.getName()) > -1) {
+				roleIds.add(role.getId());
+			}
 		}
 
-		return userRoles;
+		return this.userRoleRepository.findByWorkgroupIdAndRoleIdIn(workgroupId, roleIds);
 	}
 
 	@Override
