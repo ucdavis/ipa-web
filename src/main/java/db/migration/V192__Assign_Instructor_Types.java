@@ -124,7 +124,8 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
             psWorkgroup.setLong(1, budgetId);
             ResultSet rsWorkgroup = psWorkgroup.executeQuery();
 
-            while(rsWorkgroup.next()) {
+            // if the rsWorkgroup has no rows, .next() will return false
+            if (rsWorkgroup.next()) {
                 workgroupId = rsWorkgroup.getLong("Id");
             }
 
@@ -144,7 +145,8 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
             psUser.setLong(1, instructorId);
             ResultSet rsUser = psUser.executeQuery();
 
-            while(rsUser.next()) {
+            // if the rsUser has no rows, .next() will return false
+            if (rsUser.next()) {
                 userId = rsUser.getLong("Id");
             }
 
