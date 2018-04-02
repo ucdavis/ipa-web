@@ -2,11 +2,16 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class V192__Assign_Instructor_Types implements JdbcMigration {
     static Long INSTRUCTOR_ROLE = 15L;
 
+    // Instructor Types
     static Long EMERITI = 1L;
     static Long VISITING_PROFESSOR = 2L;
     static Long ASSOCIATE_INSTRUCTOR = 3L;
@@ -33,7 +38,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
             ResultSet rsInstructorTypeCosts = psInstructorTypeCosts.executeQuery();
 
             while (rsInstructorTypeCosts.next()) {
-                Long id = rsInstructorTypeCosts.getLong("Id");
+                Long instructorTypeCostId = rsInstructorTypeCosts.getLong("Id");
                 String description = rsInstructorTypeCosts.getString("Description");
                 Long cost = rsInstructorTypeCosts.getLong("Cost");
 
@@ -43,7 +48,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                             "DELETE FROM `InstructorTypeCosts` WHERE `Id` = ?;"
                     );
 
-                    psDeleteInstructorTypeCost.setLong(1, id);
+                    psDeleteInstructorTypeCost.setLong(1, instructorTypeCostId);
 
                     psDeleteInstructorTypeCost.execute();
                     psDeleteInstructorTypeCost.close();
@@ -77,15 +82,14 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 // Or the group reference in the description didn't map to a instructorType (example: 'The Staff' or 'Adjunct Professor')
                 if (instructorTypeId == null || cost == null) {
                     PreparedStatement psSetInstructorTypeCost = connection.prepareStatement(
-                            " DELETE FROM `InstructorTypeCosts` " +
-                                    " WHERE `Id` = ?; "
+                            " DELETE FROM `InstructorTypeCosts` WHERE `Id` = ?; "
                     );
 
-                    psSetInstructorTypeCost.setLong(1, id);
+                    psSetInstructorTypeCost.setLong(1, instructorTypeCostId);
                     psSetInstructorTypeCost.execute();
                     psSetInstructorTypeCost.close();
-
                 }
+
                 if (instructorTypeId != null) {
                     PreparedStatement psSetInstructorTypeCost = connection.prepareStatement(
                             " UPDATE `InstructorTypeCosts` instructorTypeCost " +
@@ -94,7 +98,7 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     );
 
                     psSetInstructorTypeCost.setLong(1, instructorTypeId);
-                    psSetInstructorTypeCost.setLong(2, id);
+                    psSetInstructorTypeCost.setLong(2, instructorTypeCostId);
                     psSetInstructorTypeCost.execute();
                     psSetInstructorTypeCost.close();
                 }
