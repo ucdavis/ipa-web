@@ -1,14 +1,36 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.Role;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.RoleService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +93,7 @@ public class JpaUserRoleService implements UserRoleService {
 			userRole.setWorkgroup(workgroup);
 			userRole.setUser(user);
 			userRole.setRole(role);
+
 			if (roleName.equals("instructor")) {
 				InstructorType instructorType = instructorTypeRepository.findById(7L);
 				userRole.setInstructorType(instructorType);
@@ -215,6 +238,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 		for (UserRole userRole: instructorUserRoles) {
 			Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
+
 			if (instructor != null) {
 				// Add to list of instructors if not already there. This should never happen since
 				// an instructor should be either Senate OR Federation, but not both.
@@ -331,15 +355,8 @@ public class JpaUserRoleService implements UserRoleService {
 	 */
 	@Override
 	public List<SupportStaff> findActiveSupportStaffByWorkgroupId(long workgroupId) {
-		List<UserRole> activeUserRoles = new ArrayList<UserRole>();
-
-		List<UserRole> mastersStudents = this.findByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
-		List<UserRole> phdStudents = this.findByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
-		List<UserRole> instructionalSupportStaffList = this.findByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
-
-		activeUserRoles.addAll(mastersStudents);
-		activeUserRoles.addAll(phdStudents);
-		activeUserRoles.addAll(instructionalSupportStaffList);
+		List<String> roleTokens = new ArrayList<>(Arrays.asList("studentMasters", "studentPhd", "instructionalSupport"));
+		List<UserRole> activeUserRoles = this.findByWorkgroupIdAndRoleTokens(workgroupId, roleTokens);
 
 		List<SupportStaff> activeSupportStaffList = new ArrayList<SupportStaff>();
 
@@ -349,6 +366,16 @@ public class JpaUserRoleService implements UserRoleService {
 		}
 
 		return activeSupportStaffList;
+	}
+
+	private List<UserRole> findByWorkgroupIdAndRoleTokens(long workgroupId, List<String> roleTokens) {
+		List<UserRole> userRoles = new ArrayList<>();
+
+		for (String roleToken : roleTokens) {
+			userRoles.addAll(this.findByWorkgroupIdAndRoleToken(workgroupId, roleToken));
+		}
+
+		return userRoles;
 	}
 
 	@Override
