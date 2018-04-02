@@ -7,6 +7,14 @@ import java.sql.*;
 public class V192__Assign_Instructor_Types implements JdbcMigration {
     static Long INSTRUCTOR_ROLE = 15L;
 
+    static Long EMERITI = 1L;
+    static Long VISITING_PROFESSOR = 2L;
+    static Long ASSOCIATE_INSTRUCTOR = 3L;
+    static Long UNIT_18_PRE_SIX = 4L;
+    static Long CONTINUING_LECTURER = 5L;
+    static Long LADDER_FACULTY = 6L;
+    static Long INSTRUCTOR = 7L;
+
     /**
      * For every instructorTypeCost, looks at the deprecrated description field and associate to the matching instructorType.
      * Will also delete instructorTypeCosts with no amount set.
@@ -46,22 +54,22 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                 switch (description) {
                     case "Visiting Professor":
                     case "Visting professor":
-                        instructorTypeId = 2L;
+                        instructorTypeId = VISITING_PROFESSOR;
                         break;
                     case "Continuing Lecturer":
-                        instructorTypeId = 5L;
+                        instructorTypeId = CONTINUING_LECTURER;
                         break;
                     case "Unit 18 Pre-six":
-                        instructorTypeId = 4L;
+                        instructorTypeId = UNIT_18_PRE_SIX;
                         break;
                     case "Associate Instructor":
-                        instructorTypeId = 3L;
+                        instructorTypeId = ASSOCIATE_INSTRUCTOR;
                         break;
                     case "Emeriti":
-                        instructorTypeId = 1L;
+                        instructorTypeId = EMERITI;
                         break;
                     case "Ladder Faculty":
-                        instructorTypeId = 6L;
+                        instructorTypeId = LADDER_FACULTY;
                         break;
                 }
 
@@ -121,25 +129,25 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
                     switch (description) {
                         case "Visiting Professor":
                         case "Visting professor":
-                            instructorTypeId = 2L;
+                            instructorTypeId = VISITING_PROFESSOR;
                             break;
                         case "Continuing Lecturer":
-                            instructorTypeId = 5L;
+                            instructorTypeId = CONTINUING_LECTURER;
                             break;
                         case "Unit 18 Pre-six":
-                            instructorTypeId = 4L;
+                            instructorTypeId = UNIT_18_PRE_SIX;
                             break;
                         case "Associate Instructor":
-                            instructorTypeId = 3L;
+                            instructorTypeId = ASSOCIATE_INSTRUCTOR;
                             break;
                         case "Emeriti":
-                            instructorTypeId = 1L;
+                            instructorTypeId = EMERITI;
                             break;
                         case "Ladder Faculty":
-                            instructorTypeId = 6L;
+                            instructorTypeId = LADDER_FACULTY;
                             break;
                         default:
-                            instructorTypeId = 7L;
+                            instructorTypeId = INSTRUCTOR;
                             break;
                     }
                 }
