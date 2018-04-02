@@ -72,16 +72,9 @@ public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcM
 
             // Commit changes
             connection.commit();
-        } catch(SQLException e) {
-            e.printStackTrace();
-            return;
         } finally {
-            try {
-                if (psSectionGroups != null) {
-                    psSectionGroups.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (psSectionGroups != null) {
+                psSectionGroups.close();
             }
         }
     }

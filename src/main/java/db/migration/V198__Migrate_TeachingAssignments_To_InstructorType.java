@@ -85,16 +85,9 @@ public class V198__Migrate_TeachingAssignments_To_InstructorType implements Jdbc
 
             // Commit changes
             connection.commit();
-        } catch(SQLException e) {
-            e.printStackTrace();
-            return;
         } finally {
-            try {
-                if (psTeachingAssignments != null) {
-                    psTeachingAssignments.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (psTeachingAssignments != null) {
+                psTeachingAssignments.close();
             }
         }
     }

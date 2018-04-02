@@ -137,16 +137,9 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
 
             // Commit changes
             connection.commit();
-        } catch(SQLException e) {
-            e.printStackTrace();
-            return;
         } finally {
-            try {
-                if (psUsers != null) {
-                    psUsers.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (psUsers != null) {
+                psUsers.close();
             }
         }
     }
