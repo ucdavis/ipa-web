@@ -244,4 +244,9 @@ public class TeachingAssignment implements Serializable {
 	public void setSuggestedEffectiveTermCode(String suggestedEffectiveTermCode) {
 		this.suggestedEffectiveTermCode = suggestedEffectiveTermCode;
 	}
+
+	@Transient
+	public String getInstructorDisplayName() {
+		return this.getInstructor() != null ? this.getInstructor().getLastName() + " " + this.getInstructor().getFirstName().charAt(0) : this.getInstructorType().getDescription();
+	}
 }

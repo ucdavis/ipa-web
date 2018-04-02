@@ -66,7 +66,7 @@ public class AssignmentExcelView extends AbstractXlsView {
                 if (sectionGroup != null) {
                     String instructorNames = "";
                     for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
-                        String name = teachingAssignment.getInstructor() != null ? teachingAssignment.getInstructor().getLastName() + " " + teachingAssignment.getInstructor().getFirstName().charAt(0) : teachingAssignment.getInstructorType().getDescription();
+                        String name = teachingAssignment.getInstructorDisplayName();
 
                         instructorNames += instructorNames.length() > 0 ? ", " + name : name;
                     }
