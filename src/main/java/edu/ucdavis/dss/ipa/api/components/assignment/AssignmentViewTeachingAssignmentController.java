@@ -24,9 +24,7 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject InstructorService instructorService;
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
-    @Inject BudgetScenarioService budgetScenarioService;
     @Inject InstructorTypeService instructorTypeService;
-    @Inject UserRoleService userRoleService;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
@@ -184,13 +182,14 @@ public class AssignmentViewTeachingAssignmentController {
             } else {
                 // Necessary course was not found, need to create it
                 Course course = new Course();
+
                 course.setCourseNumber(teachingAssignment.getSuggestedCourseNumber());
                 course.setSchedule(schedule);
                 course.setEffectiveTermCode(teachingAssignment.getSuggestedEffectiveTermCode());
                 course.setSubjectCode(teachingAssignment.getSuggestedSubjectCode());
                 course.setSequencePattern("001");
 
-                DwCourse dwCourse = dwRepository.searchCourses(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), teachingAssignment.getSuggestedEffectiveTermCode());
+                DwCourse dwCourse = dwRepository.findCourse(teachingAssignment.getSuggestedSubjectCode(), teachingAssignment.getSuggestedCourseNumber(), teachingAssignment.getSuggestedEffectiveTermCode());
                 if (dwCourse != null && dwCourse.getTitle() != null) {
                     course.setTitle(dwCourse.getTitle());
                 } else {
@@ -217,6 +216,7 @@ public class AssignmentViewTeachingAssignmentController {
             originalTeachingAssignment.setSuggestedSubjectCode(null);
             originalTeachingAssignment.setSuggestedCourseNumber(null);
             originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
+
             teachingAssignmentService.saveAndAddInstructorType(originalTeachingAssignment);
 
             originalTeachingAssignment.setSuggestedCourseNumber(teachingAssignment.getSuggestedCourseNumber());

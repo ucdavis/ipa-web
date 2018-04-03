@@ -15,8 +15,9 @@ import javax.inject.Inject;
 import java.util.*;
 
 @Service
-@Profile({"production", "staging"})
+@Profile({"production", "staging", "development"})
 public class UpdateUsersTask {
+    final long ONE_WEEK_IN_MILLISECONDS = 604800000;
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
     private static final Logger log = LoggerFactory.getLogger("UpdateUsersTask");
 
@@ -26,11 +27,13 @@ public class UpdateUsersTask {
     /**
      * Ensures users have an IAM ID and will update the displayName if a new one is found
      */
-    @Scheduled( fixedDelay = 604800000 ) // every 7 days
+    @Scheduled( fixedDelay = ONE_WEEK_IN_MILLISECONDS )
     @Async
-    public void UpdateUsersTask() {
+    public void updateUsersFromDW() {
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
+
+        log.debug("updateUsersFromDW() started");
 
         List<User> users = this.userService.getAllUsers();
 
@@ -38,38 +41,39 @@ public class UpdateUsersTask {
             DwPerson dwPerson = dataWarehouseRepository.getPersonByLoginId(user.getLoginId());
 
             if (dwPerson == null) {
-                log.debug("Unable to update user in task: DW returned null for login ID " + user.getLoginId());
+                // Person may have left the university. This is not necessarily an issue.
                 continue;
             }
 
-            String iamId = dwPerson.getIamId();
-            String firstName = dwPerson.getdFirstName();
-            String lastName = dwPerson.getdLastName();
             String displayName = dwPerson.getdFullName();
-            String email = dwPerson.getEmail();
-
             if (displayName != null && displayName.length() > 0) {
                 user.setDisplayName(displayName);
             }
 
+            String firstName = dwPerson.getdFirstName();
             if (firstName != null && firstName.length() > 0) {
                 user.setFirstName(firstName);
             }
 
+            String lastName = dwPerson.getdLastName();
             if (lastName != null && lastName.length() > 0) {
                 user.setLastName(lastName);
             }
 
+            String iamId = dwPerson.getIamId();
             if (iamId != null && iamId.length() > 0) {
                 user.setIamId(Long.valueOf(iamId));
             }
 
+            String email = dwPerson.getEmail();
             if (email != null && email.length() > 0) {
                 user.setEmail(email);
             }
 
             userService.save(user);
         }
+
+        log.debug("updateUsersFromDW() finished");
 
         runningTask = false;
     }

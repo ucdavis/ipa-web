@@ -12,8 +12,9 @@ import javax.inject.Inject;
 import java.util.*;
 
 @Service
-@Profile({"production", "staging"})
+@Profile({"production", "staging", "development"})
 public class UpdateSectionsTask {
+    final long ONE_DAY_IN_MILLISECONDS = 86400000;
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
     private static final Logger log = LoggerFactory.getLogger("UpdateSectionsTask");
 
@@ -22,12 +23,13 @@ public class UpdateSectionsTask {
     /**
      * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
      */
-    @Scheduled( fixedDelay = 86400000 ) // every 24 hours
+    @Scheduled( fixedDelay = ONE_DAY_IN_MILLISECONDS )
     @Async
-    public void updateSectionsTaskFromDW() {
-
+    public void updateSectionsFromDW() {
         if(runningTask) return; // avoid multiple concurrent jobs
         runningTask = true;
+
+        log.debug("updateSectionsFromDW() started");
 
         this.scheduleOpsService.updateSectionsFromDW();
         try {
@@ -36,6 +38,8 @@ public class UpdateSectionsTask {
             log.error("TransactionSystemException while updating empty section groups!");
             log.error(e.toString());
         }
+
+        log.debug("updateSectionsFromDW() finished");
 
         runningTask = false;
     }

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class Course extends BaseEntity {
 	private long id;
 	private String title, subjectCode, courseNumber, effectiveTermCode, sequencePattern;
-	private float unitsLow, unitsHigh;
+	private Float unitsLow, unitsHigh;
 	private Schedule schedule;
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<Tag>(0);
@@ -113,22 +113,22 @@ public class Course extends BaseEntity {
 	@Basic
 	@Column(name = "UnitsLow", nullable = true)
 	@JsonProperty
-	public float getUnitsLow() {
+	public Float getUnitsLow() {
 		return unitsLow;
 	}
 
-	public void setUnitsLow(float unitsLow) {
+	public void setUnitsLow(Float unitsLow) {
 		this.unitsLow = unitsLow;
 	}
 
 	@Basic
 	@Column(name = "UnitsHigh", nullable = true)
 	@JsonProperty
-	public float getUnitsHigh() {
+	public Float getUnitsHigh() {
 		return unitsHigh;
 	}
 
-	public void setUnitsHigh(float unitsHigh) {
+	public void setUnitsHigh(Float unitsHigh) {
 		this.unitsHigh = unitsHigh;
 	}
 

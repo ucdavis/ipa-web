@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaCourseService implements CourseService {
 
 	@Inject CourseRepository courseRepository;
-	@Inject SectionGroupRepository sectionGroupRepository;
 	@Inject ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
@@ -71,18 +70,18 @@ public class JpaCourseService implements CourseService {
 	}
 
 	/**
-	 * Only updates units for use in syncing tasks where modification of historical courses may be appropriate.
-	 * @param newCourse
-	 * @return
+	 * Sets unitsLow and unitsHigh to given value and saves course to database
+	 * @param course - a course object from the database
+	 * @param unitsLow - units low value
+	 * @param unitsHigh - units high value
+	 * @return - the updated course
      */
 	@Transactional
-	public Course syncUnits (Course newCourse) {
-		Course originalCourse = this.getOneById(newCourse.getId());
+	public Course updateUnits(Course course, Float unitsLow, Float unitsHigh) {
+		course.setUnitsLow(unitsLow);
+		course.setUnitsHigh(unitsHigh);
 
-		originalCourse.setUnitsLow(newCourse.getUnitsLow());
-		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
-
-		return this.courseRepository.save(originalCourse);
+		return this.courseRepository.save(course);
 	}
 
 	@Override
@@ -93,6 +92,11 @@ public class JpaCourseService implements CourseService {
 	@Override
 	public Course findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId) {
 		return courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(subjectCode, courseNumber, sequencePattern, scheduleId);
+	}
+
+	@Override
+	public List<Course> findByUnitsLow(Float unitsLow) {
+		return courseRepository.findByUnitsLow(unitsLow);
 	}
 
 	@Override
@@ -149,12 +153,6 @@ public class JpaCourseService implements CourseService {
 
 		course.setTags(tags);
 		return this.courseRepository.save(course);
-	}
-
-	@Override
-	public List<Course> findByTagId(Long id) {
-		Tag tag = tagService.getOneById(id);
-		return tag.getCourses();
 	}
 
 	@Override
@@ -275,78 +273,4 @@ public class JpaCourseService implements CourseService {
 			}
 		}
 	}
-
-	/**
-	 * Will create a course based on supplied params. Will return null if an identical course already exists.
-	 * Can optionally copy tag/title data from a similar course in another year.
-	 * @param subjectCode
-	 * @param courseNumber
-	 * @param sequencePattern
-	 * @param title
-	 * @param effectiveTermCode
-	 * @param schedule
-	 * @param copyMetaData
-     * @return
-     */
-	@Override
-	public Course createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData) {
-
-		// Ensure this course doesn't already exist
-		Course course = courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndSchedule(
-				subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule);
-
-		if (course != null) {
-			return null;
-		}
-
-		List<Tag> tags = new ArrayList<>();
-		// Get the meta data (title, tags) from previous offerings if any
-		if (copyMetaData) {
-			Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
-					subjectCode, courseNumber, sequencePattern, effectiveTermCode, schedule.getWorkgroup().getId());
-			if (matchingCourse != null) {
-				title = matchingCourse.getTitle();
-				tags.addAll(matchingCourse.getTags());
-			}
-		}
-
-		course = new Course();
-		course.setSubjectCode(subjectCode);
-		course.setCourseNumber(courseNumber);
-		course.setSequencePattern(sequencePattern);
-		course.setTitle(title);
-		course.setEffectiveTermCode(effectiveTermCode);
-		course.setSchedule(schedule);
-		course.setTags(tags);
-		courseRepository.save(course);
-
-		return course;
-	}
-
-	@Override
-	public Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule) {
-		if (course == null || schedule == null) { return null; }
-
-		List<Tag> tags = new ArrayList<>();
-
-
-		Course matchingCourse = courseRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndEffectiveTermCodeAndHasTags(
-				course.getSubjectCode(),
-				course.getCourseNumber(),
-				course.getSequencePattern(),
-				course.getEffectiveTermCode(),
-				schedule.getWorkgroup().getId());
-
-		if (matchingCourse != null) {
-			course.setTitle(matchingCourse.getTitle());
-			tags.addAll(matchingCourse.getTags());
-		}
-
-		course.setSchedule(schedule);
-		course.setTags(tags);
-
-		return this.save(course);
-	}
-
 }

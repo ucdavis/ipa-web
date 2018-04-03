@@ -44,15 +44,14 @@ public class MockDataWarehouseRepository implements DataWarehouseRepository {
     }
 
     @Override
-    public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) {
+    public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) {
         return null;
     }
 
     @Override
-    public List<DwCourse> queryCourses(String query) {
+    public List<DwCourse> searchCourses(String query) {
         return null;
     }
-
 
     @Override
     public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {

@@ -36,7 +36,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 * @return
      */
 	public List<DwPerson> searchPeople(String query) {
-		DwClient dwClient = null;
+		DwClient dwClient;
 
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
@@ -53,7 +53,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 * @return a list of DwTerms
 	 */
 	public List<DwTerm> getTerms() {
-		DwClient dwClient = null;
+		DwClient dwClient;
 
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
@@ -72,7 +72,7 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 * @return
 	 */
 	public DwPerson getPersonByLoginId(String loginId) {
-		DwClient dwClient = null;
+		DwClient dwClient;
 
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
@@ -85,12 +85,13 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	@Override
-	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) {
-		DwClient dwClient = null;
+	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) {
+		DwClient dwClient;
+
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
-			return dwClient.searchCourses(subjectCode, courseNumber, effectiveTermCode);
+			return dwClient.findCourse(subjectCode, courseNumber, effectiveTermCode);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
@@ -98,22 +99,23 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	@Override
-	public List<DwCourse> queryCourses(String query) {
-		DwClient dwClient = null;
+	public List<DwCourse> searchCourses(String query) {
+		DwClient dwClient;
+
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
-			return dwClient.queryCourses(query);
+			return dwClient.searchCourses(query);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
 		}
 	}
-
 
 	@Override
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
-		DwClient dwClient = null;
+		DwClient dwClient;
+
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
@@ -140,7 +142,8 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
-		DwClient dwClient = null;
+		DwClient dwClient;
+
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 
@@ -155,7 +158,8 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) {
-		DwClient dwClient = null;
+		DwClient dwClient;
+
 		try {
 			dwClient = new DwClient(dwUrl, dwToken, dwPort);
 

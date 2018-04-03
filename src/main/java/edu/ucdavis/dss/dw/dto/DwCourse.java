@@ -4,12 +4,8 @@ package edu.ucdavis.dss.dw.dto;
  * Created by Lloyd on 10/4/16.
  */
 public class DwCourse {
-    String subjectCode;
-    String effectiveTermCode;
-    String title;
-    String courseNumber;
-    long creditHoursLow;
-    long creditHoursHigh;
+    String subjectCode, effectiveTermCode, title, courseNumber;
+    Float creditHoursLow, creditHoursHigh;
 
     public String getCourseNumber() {
         return courseNumber;
@@ -43,19 +39,19 @@ public class DwCourse {
         this.title = title;
     }
 
-    public long getCreditHoursLow() {
+    public Float getCreditHoursLow() {
         return creditHoursLow;
     }
 
-    public void setCreditHoursLow(long creditHoursLow) {
+    public void setCreditHoursLow(Float creditHoursLow) {
         this.creditHoursLow = creditHoursLow;
     }
 
-    public long getCreditHoursHigh() {
+    public Float getCreditHoursHigh() {
         return creditHoursHigh;
     }
 
-    public void setCreditHoursHigh(long creditHoursHigh) {
+    public void setCreditHoursHigh(Float creditHoursHigh) {
         this.creditHoursHigh = creditHoursHigh;
     }
 }
