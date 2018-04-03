@@ -249,11 +249,7 @@ public class JpaUserRoleService implements UserRoleService {
 					workgroupInstructors.add(instructor);
 				}
 			} else {
-				try {
-					throw new Exception("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				log.error("Could not find instructor entity for loginId: " + userRole.getUser().getLoginId());
 			}
 		}
 
