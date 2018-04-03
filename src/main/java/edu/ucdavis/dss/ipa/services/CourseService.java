@@ -20,21 +20,16 @@ public interface CourseService {
 
 	Course removeTag(Course course, Tag tag);
 
-	List<Course> findByTagId(Long id);
-
 	List<Course> findByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<Course> findVisibleByWorkgroupIdAndYear(long id, long year);
 
 	List<Course> findBySubjectCodeAndCourseNumberAndScheduleId(String subjectCode, String courseNumber, long id);
 
+	List<Course> findByUnitsLow(Float unitsLow);
+
 	Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
-
-	Course createBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
-			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
-
-	Course copyMetaDataAndAddToSchedule(Course course, Schedule schedule);
 
 	Course create(Course course);
 
@@ -42,7 +37,7 @@ public interface CourseService {
 
 	List<Course> getAllCourses();
 
-	Course syncUnits(Course course);
+	Course updateUnits(Course course, Float unitsLow, Float unitsHigh);
 
 	Course findOrCreateByCourse(Course courseDTO);
 

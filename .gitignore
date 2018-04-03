@@ -10,3 +10,4 @@ ipa-web.env
 certs/
 out/
 *.log
+bin/

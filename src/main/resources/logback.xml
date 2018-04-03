@@ -32,6 +32,8 @@
     <logger name="UpdateUsersTask" level="DEBUG" />
     <logger name="EmailNotificationTask" level="DEBUG" />
     <logger name="UpdateSectionsTask" level="DEBUG" />
+    <logger name="TermUpdateTask" level="DEBUG" />
+    <logger name="UpdateCourseTask" level="DEBUG" />
     
     <logger name="EmailUtility" level="INFO">
         <appender-ref ref="FILE" />

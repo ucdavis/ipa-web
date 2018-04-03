@@ -64,12 +64,5 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
 
     Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
 
-    /**
-     * Delete all Courses with ids specified in {@code ids} parameter
-     *
-     * @param courseIds List of user ids
-     */
-    @Modifying
-    @Query("delete from Course c where c.id in ?1")
-    void deleteCoursesWithIds(List<Long> courseIds);
+    List<Course> findByUnitsLow(Float unitsLow);
 }

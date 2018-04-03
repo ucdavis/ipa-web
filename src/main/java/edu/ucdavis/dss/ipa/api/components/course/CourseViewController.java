@@ -455,17 +455,6 @@ public class CourseViewController {
 
 					Term term = termHashMap.get(newTermCode);
 
-					Long unitsHigh = 0L;
-					Long unitsLow = 0L;
-
-					if (sectionGroupImport.getUnitsHigh() != null) {
-						unitsHigh = Long.valueOf(sectionGroupImport.getUnitsHigh());
-					}
-
-					if (sectionGroupImport.getUnitsLow() != null) {
-						unitsLow = Long.valueOf(sectionGroupImport.getUnitsLow());
-					}
-
 					Course courseDTO = new Course();
 					courseDTO.setSubjectCode(sectionGroupImport.getSubjectCode());
 					courseDTO.setCourseNumber(sectionGroupImport.getCourseNumber());
@@ -473,8 +462,18 @@ public class CourseViewController {
 					courseDTO.setTitle(sectionGroupImport.getTitle());
 					courseDTO.setEffectiveTermCode(sectionGroupImport.getEffectiveTermCode());
 					courseDTO.setSchedule(schedule);
-					courseDTO.setUnitsHigh(unitsHigh);
-					courseDTO.setUnitsLow(unitsLow);
+
+					Float unitsHigh, unitsLow;
+
+					if (sectionGroupImport.getUnitsHigh() != null) {
+						unitsHigh = Float.valueOf(sectionGroupImport.getUnitsHigh());
+						courseDTO.setUnitsHigh(unitsHigh);
+					}
+
+					if (sectionGroupImport.getUnitsLow() != null) {
+						unitsLow = Float.valueOf(sectionGroupImport.getUnitsLow());
+						courseDTO.setUnitsLow(unitsLow);
+					}
 
 					Course course = courseService.findOrCreateByCourse(courseDTO);
 

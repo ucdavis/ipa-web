@@ -221,7 +221,6 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 							if (sectionService.hasValidSequenceNumber(section)) {
 								section = this.sectionService.save(section);
 							}
-
 						}
 
 						activityService.syncActivityLocations(dwSection, section.getActivities());

@@ -22,8 +22,9 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
  *
  */
 @Service
-@Profile({"production", "staging"})
+@Profile({"production", "staging", "development"})
 public class EmailNotificationTask {
+	final long FIVE_MINUTES_IN_MILLISECONDS = 300000;
 	private final Logger log = LoggerFactory.getLogger("EmailNotificationTask");
 
 	@Inject WorkgroupService workgroupService;
@@ -33,7 +34,7 @@ public class EmailNotificationTask {
 
 	private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-	@Scheduled( fixedDelay = 300000 ) // Every 5 minutes
+	@Scheduled( fixedDelay = FIVE_MINUTES_IN_MILLISECONDS )
 	@Async
 	public void scanForEmailsToSend() {
 		if(runningTask) {
@@ -56,5 +57,4 @@ public class EmailNotificationTask {
 
 		log.debug("scanForEmailsToSend() finished");
 	}
-
 }

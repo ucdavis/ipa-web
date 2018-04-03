@@ -226,54 +226,30 @@ public class DwClient {
 		return dwPerson;
 	}
 
-	public DwCourse searchCourses(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
-		String query = subjectCode + " " + courseNumber;
+	/**
+	 * Finds a course in DW with the given subjectCode, courseNumber, and effectiveTermCode
+	 *
+	 * @param subjectCode e.g. ECS, PHY
+	 * @param courseNumber e.g. 101, 10A, 010
+	 * @param effectiveTermCode e.g. 200410
+	 * @return a DwCourse representing the found course or null if no course found
+	 * @throws IOException
+	 */
+	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
+		List<DwCourse> dwCourses = this.searchCourses(subjectCode + " " + courseNumber);
 
-		DwCourse dwCourse = new DwCourse();
-		List<DwCourse> dwCourses = null;
-
-		if (connect() && query != null) {
-			HttpGet httpget = new HttpGet("/courses/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
-
-			CloseableHttpResponse response = httpclient.execute(
-					targetHost, httpget, context);
-
-			StatusLine line = response.getStatusLine();
-			if(line.getStatusCode() != 200) {
-				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /courses/search?q=" + URLEncoder.encode(query, "UTF-8"));
-			}
-
-			HttpEntity entity = response.getEntity();
-
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
-			if (arrNode != null) {
-				dwCourses = mapper.readValue(
-						arrNode.toString(),
-						mapper.getTypeFactory().constructCollectionType(
-								List.class, DwCourse.class));
-			} else {
-				log.warn("searchUsers Response from DW returned null, for criterion = " + query);
-			}
-
-			response.close();
-		} else if (query == null) {
-			log.warn("No query given.");
-		}
-
-		for ( DwCourse slotDwCourse : dwCourses) {
-			if (slotDwCourse.getCourseNumber().equals(courseNumber)
-					&& slotDwCourse.getSubjectCode().equals(subjectCode)
-					&& slotDwCourse.getEffectiveTermCode().equals(effectiveTermCode)) {
-				return slotDwCourse;
+		for (DwCourse dwCourse : dwCourses) {
+			if (dwCourse.getCourseNumber().equals(courseNumber)
+					&& dwCourse.getSubjectCode().equals(subjectCode)
+					&& dwCourse.getEffectiveTermCode().equals(effectiveTermCode)) {
+				return dwCourse;
 			}
 		}
-		return dwCourse;
 
+		return null;
 	}
 
-	public List<DwCourse> queryCourses(String query) throws ClientProtocolException, IOException {
-		DwCourse dwCourse = new DwCourse();
+	public List<DwCourse> searchCourses(String query) throws IOException {
 		List<DwCourse> dwCourses = null;
 
 		if (connect() && query != null) {
