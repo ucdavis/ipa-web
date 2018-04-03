@@ -2,8 +2,16 @@ package edu.ucdavis.dss.ipa.entities;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,6 +42,7 @@ public class TeachingAssignment implements Serializable {
 	private String suggestedSubjectCode;
 	private String suggestedCourseNumber;
 	private String suggestedEffectiveTermCode;
+	private InstructorType instructorType;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,14 +58,24 @@ public class TeachingAssignment implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "InstructorId", nullable = false)
-	@NotNull
+	@JoinColumn(name = "InstructorId", nullable = true)
 	public Instructor getInstructor() {
 		return instructor;
 	}
 
 	public void setInstructor(Instructor instructor) {
 		this.instructor = instructor;
+	}
+
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "InstructorTypeId", nullable = true)
+	public InstructorType getInstructorType() {
+		return instructorType;
+	}
+
+	public void setInstructorType(InstructorType instructorType) {
+		this.instructorType = instructorType;
 	}
 
 	@JsonIgnore
@@ -174,8 +193,22 @@ public class TeachingAssignment implements Serializable {
 
 	@Transient
 	@JsonProperty("instructorId")
-	public long getInstructorIdentification() {
-		return this.instructor.getId();
+	public Long getInstructorIdentification() {
+		if (this.instructor != null) {
+			return this.instructor.getId();
+		} else {
+			return null;
+		}
+	}
+
+	@Transient
+	@JsonProperty("instructorTypeId")
+	public Long getInstructorTypeIdentification() {
+		if (this.instructorType != null) {
+			return this.instructorType.getId();
+		} else {
+			return null;
+		}
 	}
 
 	@Transient
@@ -218,5 +251,10 @@ public class TeachingAssignment implements Serializable {
 
 	public void setSuggestedEffectiveTermCode(String suggestedEffectiveTermCode) {
 		this.suggestedEffectiveTermCode = suggestedEffectiveTermCode;
+	}
+
+	@Transient
+	public String getInstructorDisplayName() {
+		return this.getInstructor() != null ? this.getInstructor().getLastName() + " " + this.getInstructor().getFirstName().charAt(0) : this.getInstructorType().getDescription();
 	}
 }

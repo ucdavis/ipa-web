@@ -14,9 +14,7 @@ public class AssignmentView {
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-    List<Long> senateInstructorIds = new ArrayList<Long>();
-    List<Long> federationInstructorIds = new ArrayList<Long>();
-    List<Long> lecturerInstructorIds = new ArrayList<>();
+    List<Long> instructorIds = new ArrayList<Long>();
     List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
     List<Tag> tags = new ArrayList<Tag>();
     long instructorId;
@@ -24,6 +22,7 @@ public class AssignmentView {
     long scheduleId;
     List<SupportStaff> supportStaffList;
     List<StudentSupportPreference> studentSupportPreferences;
+    List<InstructorType> instructorTypes = new ArrayList<>();
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
@@ -36,13 +35,12 @@ public class AssignmentView {
                           long userId,
                           long instructorId,
                           long scheduleId,
-                          List<Long> senateInstructorIds,
-                          List<Long> federationInstructorIds,
-                          List<Long> lecturerInstructorIds,
+                          List<Long> instructorIds,
                           List<Tag> tags,
                           List<SupportAssignment> supportAssignments,
                           List<SupportStaff> supportStaffList,
-                          List<StudentSupportPreference> studentSupportPreferences) {
+                          List<StudentSupportPreference> studentSupportPreferences,
+                          List<InstructorType> instructorTypes) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -55,14 +53,13 @@ public class AssignmentView {
         setTeachingCallResponses(teachingCallResponses);
         setInstructorId(instructorId);
         setUserId(userId);
-        setFederationInstructorIds(federationInstructorIds);
-        setSenateInstructorIds(senateInstructorIds);
-        setLecturerInstructorIds(lecturerInstructorIds);
+        setInstructorIds(instructorIds);
         setScheduleId(scheduleId);
         setTags(tags);
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setStudentSupportPreferences(studentSupportPreferences);
+        setInstructorTypes(instructorTypes);
     }
 
     public List<Course> getCourses() {
@@ -146,20 +143,12 @@ public class AssignmentView {
         this.userId = userId;
     }
 
-    public List<Long> getSenateInstructorIds() {
-        return senateInstructorIds;
+    public List<Long> getInstructorIds() {
+        return instructorIds;
     }
 
-    public void setSenateInstructorIds(List<Long> senateInstructorIds) {
-        this.senateInstructorIds = senateInstructorIds;
-    }
-
-    public List<Long> getFederationInstructorIds() {
-        return federationInstructorIds;
-    }
-
-    public void setFederationInstructorIds(List<Long> federationInstructorIds) {
-        this.federationInstructorIds = federationInstructorIds;
+    public void setInstructorIds(List<Long> instructorIds) {
+        this.instructorIds = instructorIds;
     }
 
     public long getScheduleId() {
@@ -186,14 +175,6 @@ public class AssignmentView {
         this.instructorMasterList = instructorMasterList;
     }
 
-    public List<Long> getLecturerInstructorIds() {
-        return lecturerInstructorIds;
-    }
-
-    public void setLecturerInstructorIds(List<Long> lecturerInstructorIds) {
-        this.lecturerInstructorIds = lecturerInstructorIds;
-    }
-
     public List<SupportAssignment> getSupportAssignments() {
         return supportAssignments;
     }
@@ -216,5 +197,13 @@ public class AssignmentView {
 
     public void setStudentSupportPreferences(List<StudentSupportPreference> studentSupportPreferences) {
         this.studentSupportPreferences = studentSupportPreferences;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }

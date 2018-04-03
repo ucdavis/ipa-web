@@ -16,18 +16,21 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
     @Inject SectionGroupService sectionGroupService;
     @Inject InstructorService instructorService;
     @Inject TeachingCallResponseService teachingCallResponseService;
+    @Inject InstructorTypeService instructorTypeService;
+    @Inject UserService userService;
 
     @Override
     public TeachingCallStatusView createTeachingCallStatusView(long workgroupId, long year) {
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         long scheduleId = schedule.getId();
+
         List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
         List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
-        List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
-        List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
-        List<Long> lecturerInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "lecturer");
+        List<UserRole> userRoles = userRoleService.findByWorkgroupIdAndRoleToken(workgroupId, "instructor");
+        List<User> users = userService.findAllByWorkgroupAndRoleToken(schedule.getWorkgroup(), "instructor");
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
-        return new TeachingCallStatusView(instructors, teachingCallReceipts, scheduleId, senateInstructorIds, federationInstructorIds, lecturerInstructorIds);
+        return new TeachingCallStatusView(instructors, teachingCallReceipts, scheduleId, userRoles, instructorTypes, users);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class AssignmentViewController {
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public AssignmentView getAssignmentViewByCode(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor");
 
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
@@ -90,10 +90,9 @@ public class AssignmentViewController {
         teachingAssignment.setApproved(true);
 
         // Remove placeholderAI flag
-        sectionGroup.setShowPlaceholderAI(false);
         sectionGroupService.save(sectionGroup);
 
-        return teachingAssignmentService.save(teachingAssignment);
+        return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
     }
 
     @RequestMapping(value = "/api/assignmentView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)

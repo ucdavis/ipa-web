@@ -25,26 +25,28 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
     @Inject BudgetScenarioService budgetScenarioService;
+    @Inject InstructorTypeService instructorTypeService;
+    @Inject UserRoleService userRoleService;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public TeachingAssignment addTeachingAssignment(@PathVariable long scheduleId, @RequestBody TeachingAssignment teachingAssignment, HttpServletResponse httpResponse) {
-        Instructor instructor = null;
+        Schedule schedule = scheduleService.findById(scheduleId);
 
-        if (teachingAssignment != null && teachingAssignment.getInstructor() != null) {
+        if (schedule == null || teachingAssignment == null) {
+            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+            return null;
+        }
+
+        Instructor instructor = null;
+        InstructorType instructorType = null;
+
+        if (teachingAssignment.getInstructor() != null) {
             instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
         }
 
-        if (instructor == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
-        }
-
-        Schedule schedule = scheduleService.findById(scheduleId);
-
-        if (schedule == null) {
-            httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-            return null;
+        if (teachingAssignment.getInstructorType() != null) {
+            instructorType = instructorTypeService.findById(teachingAssignment.getInstructorType().getId());
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
@@ -54,6 +56,15 @@ public class AssignmentViewTeachingAssignmentController {
         // Either:
         // 1) teachingAssignment is a buyout/release/sabbatical/in residence/work life balance/leave of absence
         // 2) teachingAssignment has a sectionGroup
+        // 3) teachingAssignment is an instructorType assignment (no instructorId)
+
+        if (instructor == null && instructorType != null) {
+            teachingAssignment.setInstructorType(instructorType);
+            teachingAssignment.setSchedule(schedule);
+
+            return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
+        }
+
         if (teachingAssignment.isBuyout() == false
             && teachingAssignment.isCourseRelease() == false
             && teachingAssignment.isSabbatical() == false
@@ -75,7 +86,7 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setInstructor(instructor);
             teachingAssignment.setSchedule(schedule);
 
-            TeachingAssignment newTeachingAssignment = teachingAssignmentService.save(teachingAssignment);
+            TeachingAssignment newTeachingAssignment = teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 
             return newTeachingAssignment;
         }
@@ -104,7 +115,7 @@ public class AssignmentViewTeachingAssignmentController {
                 sectionGroupService.save(sectionGroup);
             }
 
-            return teachingAssignmentService.save(existingTeachingAssignment);
+            return teachingAssignmentService.saveAndAddInstructorType(existingTeachingAssignment);
         }
 
         // Create a new Teaching Assignment
@@ -117,7 +128,7 @@ public class AssignmentViewTeachingAssignmentController {
             sectionGroupService.save(sectionGroup);
         }
 
-        return teachingAssignmentService.save(teachingAssignment);
+        return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 
     }
 
@@ -206,7 +217,7 @@ public class AssignmentViewTeachingAssignmentController {
             originalTeachingAssignment.setSuggestedSubjectCode(null);
             originalTeachingAssignment.setSuggestedCourseNumber(null);
             originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
-            teachingAssignmentService.save(originalTeachingAssignment);
+            teachingAssignmentService.saveAndAddInstructorType(originalTeachingAssignment);
 
             originalTeachingAssignment.setSuggestedCourseNumber(teachingAssignment.getSuggestedCourseNumber());
             originalTeachingAssignment.setSuggestedSubjectCode(teachingAssignment.getSuggestedSubjectCode());
@@ -223,7 +234,7 @@ public class AssignmentViewTeachingAssignmentController {
             sectionGroupService.save(sectionGroup);
         }
 
-        return teachingAssignmentService.save(originalTeachingAssignment);
+        return teachingAssignmentService.saveAndAddInstructorType(originalTeachingAssignment);
     }
 
     /**
@@ -243,7 +254,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRoles(workgroup.getId(), "senateInstructor", "federationInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "instructor");
 
         Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
 
@@ -373,7 +384,7 @@ public class AssignmentViewTeachingAssignmentController {
                 teachingAssignment.setFromInstructor(true);
                 Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
                 teachingAssignment.setPriority(priority);
-                teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
+                teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(teachingAssignment));
                 return teachingAssignments;
             }
 
@@ -390,7 +401,7 @@ public class AssignmentViewTeachingAssignmentController {
             Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
             teachingAssignment.setPriority(priority);
 
-            teachingAssignments.add(teachingAssignmentService.save(teachingAssignment));
+            teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(teachingAssignment));
         } else if (DTOsectionGroup != null && DTOcourse != null) {
             // Find courses that match this courseNumber, subjectCode, scheduleId
             List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
@@ -412,7 +423,7 @@ public class AssignmentViewTeachingAssignmentController {
 
                         Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
                         slotTeachingAssignment.setPriority(priority);
-                        teachingAssignments.add(teachingAssignmentService.save(slotTeachingAssignment));
+                        teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(slotTeachingAssignment));
                     }
                 }
             }

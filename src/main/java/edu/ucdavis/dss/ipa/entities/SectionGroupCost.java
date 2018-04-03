@@ -30,6 +30,7 @@ public class SectionGroupCost extends BaseEntity {
     private BigDecimal cost;
     private Float taCount, readerCount;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
+    private InstructorType instructorType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -109,6 +110,17 @@ public class SectionGroupCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorTypeId", nullable = true)
+    @JsonIgnore
+    public InstructorType getInstructorType() {
+        return instructorType;
+    }
+
+    public void setInstructorType(InstructorType instructorType) {
+        this.instructorType = instructorType;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OriginalInstructorId", nullable = true)
     @JsonIgnore
     public Instructor getOriginalInstructor() {
@@ -151,41 +163,51 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("budgetScenarioId")
     @Transient
-    public long getBudgetScenarioIdentification() {
+    public Long getBudgetScenarioIdentification() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
         } else {
-            return 0;
+            return null;
         }
     }
 
     @JsonProperty("sectionGroupId")
     @Transient
-    public long getSectionGroupIdentification() {
+    public Long getSectionGroupIdentification() {
         if(sectionGroup != null) {
             return sectionGroup.getId();
         } else {
-            return 0;
+            return null;
         }
     }
 
     @JsonProperty("instructorId")
     @Transient
-    public long getInstructorIdentification() {
+    public Long getInstructorIdentification() {
         if(instructor != null) {
             return instructor.getId();
         } else {
-            return 0;
+            return null;
+        }
+    }
+
+    @JsonProperty("instructorTypeId")
+    @Transient
+    public Long getInstructorTypeIdentification() {
+        if(instructorType != null) {
+            return instructorType.getId();
+        } else {
+            return null;
         }
     }
 
     @JsonProperty("originalInstructorId")
     @Transient
-    public long getOriginalInstructorIdentification() {
+    public Long getOriginalInstructorIdentification() {
         if(originalInstructor != null) {
             return originalInstructor.getId();
         } else {
-            return 0;
+            return null;
         }
     }
 }

@@ -18,6 +18,6 @@ public interface InstructorCostRepository extends CrudRepository<InstructorCost,
     InstructorCost findByInstructorIdAndBudgetId(long id, long id1);
 
     @Modifying
-    @Query("UPDATE InstructorCost ic SET ic.instructorType = NULL WHERE ic.instructorType.id = :instructorTypeId")
-    void removeAssociationByInstructorTypeId(@Param("instructorTypeId") long instructorTypeId);
+    @Query("UPDATE InstructorCost ic SET ic.instructorTypeCost = NULL WHERE ic.instructorTypeCost.id = :instructorTypeCostId")
+    void removeAssociationByInstructorTypeId(@Param("instructorTypeCost") long instructorTypeCostId);
 }

@@ -1,14 +1,26 @@
 package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportPreference;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
+import edu.ucdavis.dss.ipa.entities.SupportAppointment;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 
 import java.util.List;
+import java.util.Set;
 
 public class InstructionalSupportAssignmentView {
     List<SectionGroup> sectionGroups;
     List<Course> courses;
     List<SupportAssignment> supportAssignments;
-    List<SupportStaff> supportStaffList;
+    Set<SupportStaff> supportStaffList;
     List<SupportStaff> assignedSupportStaff;
     List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorSupportPreference> instructorSupportPreferences;
@@ -22,7 +34,7 @@ public class InstructionalSupportAssignmentView {
     public InstructionalSupportAssignmentView(List<SectionGroup> sectionGroups,
                                               List<Course> courses,
                                               List<SupportAssignment> supportAssignments,
-                                              List<SupportStaff> supportStaffList,
+                                              Set<SupportStaff> supportStaffList,
                                               List<SupportStaff> assignedSupportStaff,
                                               List<StudentSupportPreference> studentSupportPreferences,
                                               List<StudentSupportCallResponse> studentSupportCallResponses,
@@ -71,11 +83,11 @@ public class InstructionalSupportAssignmentView {
         this.supportAssignments = supportAssignments;
     }
 
-    public List<SupportStaff> getSupportStaffList() {
+    public Set<SupportStaff> getSupportStaffList() {
         return supportStaffList;
     }
 
-    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+    public void setSupportStaffList(Set<SupportStaff> supportStaffList) {
         this.supportStaffList = supportStaffList;
     }
 

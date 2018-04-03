@@ -16,4 +16,6 @@ public interface UserRoleRepository extends CrudRepository<UserRole, Long> {
 	List<UserRole> findByLoginId(@Param("loginId") String loginId);
 
 	List<UserRole> findByUserLoginId(String loginId);
+
+	List<UserRole> findByWorkgroupIdAndRoleIdIn(long workgroupId, List<Long> roleIds);
 }

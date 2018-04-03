@@ -34,11 +34,13 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<Instructor> instructors = new ArrayList<>();
 
         for (TeachingAssignment teachingAssignment : teachingAssignments) {
-            Instructor instructor = teachingAssignment.getInstructor();
+            if (teachingAssignment.getInstructor() != null) {
+                Instructor instructor = teachingAssignment.getInstructor();
 
-            // Only add new instances of the instructor
-            if (instructors.indexOf(instructor) == -1) {
-                instructors.add(instructor);
+                // Only add new instances of the instructor
+                if (instructors.indexOf(instructor) == -1) {
+                    instructors.add(instructor);
+                }
             }
         }
 

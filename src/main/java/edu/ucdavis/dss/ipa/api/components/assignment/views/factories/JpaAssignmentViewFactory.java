@@ -23,10 +23,10 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject UserRoleService userRoleService;
 	@Inject TeachingCallReceiptService teachingCallReceiptService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
-	@Inject UserService userService;
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject SupportStaffService supportStaffService;
 	@Inject StudentSupportPreferenceService studentSupportPreferenceService;
+	@Inject InstructorTypeService instructorTypeService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
@@ -37,6 +37,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<Instructor> instructorMasterList = userRoleService.findActiveInstructorsByScheduleId(scheduleId);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
+		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
 		List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
@@ -44,17 +45,18 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 		List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
-		List<Long> senateInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "senateInstructor");
-		List<Long> federationInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "federationInstructor");
-		List<Long> lecturerInstructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "lecturer");
+		List<Long> instructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "instructor");
 
-		List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+		List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
 		List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(scheduleId);
 
-		return new AssignmentView(courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
+		return new AssignmentView(
+				courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
-				senateInstructorIds, federationInstructorIds, lecturerInstructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences);
+				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
+				instructorTypes
+		);
 	}
 
 	@Override

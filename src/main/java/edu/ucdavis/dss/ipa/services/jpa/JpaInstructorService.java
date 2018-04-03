@@ -102,9 +102,11 @@ public class JpaInstructorService implements InstructorService {
 		for(SectionGroup sectionGroup : sectionGroups) {
 			for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
 				Instructor slotInstructor = teachingAssignment.getInstructor();
-				if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-					uniqueInstructors.add(slotInstructor);
-					uniqueInstructorIds.add(slotInstructor.getId());
+				if (slotInstructor != null) {
+					if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
+						uniqueInstructors.add(slotInstructor);
+						uniqueInstructorIds.add(slotInstructor.getId());
+					}
 				}
 			}
 		}
@@ -125,7 +127,7 @@ public class JpaInstructorService implements InstructorService {
 		List<UserRole> userRoles = workgroup.getUserRoles();
 
 		for (UserRole userRole : userRoles) {
-			if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor") || userRole.getRoleToken().equals("lecturer")) {
+			if (userRole.getRoleToken().equals("instructor")) {
 				String loginId = userRole.getUser().getLoginId();
 
 				Instructor slotInstructor = this.getOneByLoginId(loginId);
@@ -147,7 +149,7 @@ public class JpaInstructorService implements InstructorService {
 		List<Instructor> instructors = new ArrayList<>();
 
 		for (TeachingAssignment teachingAssignment : schedule.getTeachingAssignments()) {
-			if (teachingAssignment.isApproved()) {
+			if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
 				instructors.add(teachingAssignment.getInstructor());
 			}
 		}

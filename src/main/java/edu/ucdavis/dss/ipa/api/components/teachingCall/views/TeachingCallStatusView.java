@@ -7,24 +7,24 @@ import java.util.List;
 public class TeachingCallStatusView {
     List<Instructor> instructors = new ArrayList<Instructor>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
-    List<Long> senateInstructorIds = new ArrayList<Long>();
-    List<Long> federationInstructorIds = new ArrayList<Long>();
-    List<Long> lecturerInstructorIds = new ArrayList<>();
+    List<UserRole> userRoles = new ArrayList<>();
+    List<InstructorType> instructorTypes = new ArrayList<>();
+    List<User> users = new ArrayList<>();
     long scheduleId;
 
     public TeachingCallStatusView(List<Instructor> instructors,
                                   List<TeachingCallReceipt> teachingCallReceipts,
                                   long scheduleId,
-                                  List<Long> senateInstructorIds,
-                                  List<Long> federationInstructorIds,
-                                  List<Long> lecturerInstructorIds) {
+                                  List<UserRole> userRoles,
+                                  List<InstructorType> instructorTypes,
+                                  List<User> users) {
 
         setInstructors(instructors);
         setTeachingCallReceipts(teachingCallReceipts);
-        setFederationInstructorIds(federationInstructorIds);
-        setSenateInstructorIds(senateInstructorIds);
         setScheduleId(scheduleId);
-        setLecturerInstructorIds(lecturerInstructorIds);
+        setUserRoles(userRoles);
+        setInstructorTypes(instructorTypes);
+        setUsers(users);
     }
 
     public List<Instructor> getInstructors() {
@@ -43,22 +43,6 @@ public class TeachingCallStatusView {
         this.teachingCallReceipts = teachingCallReceipts;
     }
 
-    public List<Long> getSenateInstructorIds() {
-        return senateInstructorIds;
-    }
-
-    public void setSenateInstructorIds(List<Long> senateInstructorIds) {
-        this.senateInstructorIds = senateInstructorIds;
-    }
-
-    public List<Long> getFederationInstructorIds() {
-        return federationInstructorIds;
-    }
-
-    public void setFederationInstructorIds(List<Long> federationInstructorIds) {
-        this.federationInstructorIds = federationInstructorIds;
-    }
-
     public long getScheduleId() {
         return scheduleId;
     }
@@ -67,11 +51,27 @@ public class TeachingCallStatusView {
         this.scheduleId = scheduleId;
     }
 
-    public List<Long> getLecturerInstructorIds() {
-        return lecturerInstructorIds;
+    public List<UserRole> getUserRoles() {
+        return userRoles;
     }
 
-    public void setLecturerInstructorIds(List<Long> lecturerInstructorIds) {
-        this.lecturerInstructorIds = lecturerInstructorIds;
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

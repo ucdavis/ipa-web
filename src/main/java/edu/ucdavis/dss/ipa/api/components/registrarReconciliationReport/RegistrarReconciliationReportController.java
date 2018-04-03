@@ -124,14 +124,14 @@ public class RegistrarReconciliationReportController {
 
 			// Add the "senateInstructor" role to the new user (This will also create the instructor)
 			userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(
-						instructor.getLoginId(), workgroup.getId(), "senateInstructor");
+						instructor.getLoginId(), workgroup.getId(), "instructor");
 
 			instructorToAssign = instructorService.getOneByLoginId(instructor.getLoginId());
 		}
 
 		TeachingAssignment assignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);
 		assignment.setApproved(true);
-		return teachingAssignmentService.save(assignment);
+		return teachingAssignmentService.saveAndAddInstructorType(assignment);
 	}
 
 
@@ -163,7 +163,7 @@ public class RegistrarReconciliationReportController {
 
 		teachingAssignment.setApproved(false);
 
-		return teachingAssignmentService.save(teachingAssignment);
+		return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 	}
 
 	@RequestMapping(value = "/api/reportView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
@@ -346,7 +346,7 @@ public class RegistrarReconciliationReportController {
 				// Make a teachingAssignment for that instructor
 				TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
 				teachingAssignment.setApproved(true);
-				teachingAssignmentService.save(teachingAssignment);
+				teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 			}
 		}
 

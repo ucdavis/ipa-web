@@ -2,7 +2,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import javax.inject.Inject;
 
+import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -22,12 +24,29 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 	@Inject ScheduleService scheduleService;
 	@Inject InstructorService instructorService;
+	@Inject InstructorTypeService instructorTypeService;
 
+	/**
+	 * If instructor exists, will attempt to fill in the instructorType of the instructor, based on relevant userRoles.
+	 * InstructorType may remain null if nothing is found.
+	 * @param teachingAssignment
+	 * @return
+     */
 	@Override
+	public TeachingAssignment saveAndAddInstructorType(TeachingAssignment teachingAssignment) {
+		if (teachingAssignment.getInstructor() != null && teachingAssignment.getInstructorType() == null) {
+			InstructorType instructorType = instructorTypeService.findByInstructorAndSchedule(teachingAssignment.getInstructor(), teachingAssignment.getSchedule());
+
+			teachingAssignment.setInstructorType(instructorType);
+		}
+
+		return this.save(teachingAssignment);
+	}
+
 	public TeachingAssignment save(TeachingAssignment teachingAssignment) {
 		return teachingAssignmentRepository.save(teachingAssignment);
 	}
-	
+
 	@Override
 	@Transactional
 	public void delete(Long id) {

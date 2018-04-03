@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.User;
 import org.springframework.validation.annotation.Validated;
 
@@ -48,4 +50,10 @@ public interface UserRoleService {
 	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
 
 	List<Instructor> findActiveInstructorsByScheduleId(long scheduleId);
+
+	List<SupportStaff> findActiveSupportStaffByWorkgroupId(long workgroupId);
+
+	List<SupportStaff> findActiveSupportStaffByWorkgroupIdAndRoleToken(long workgroupId, String studentMasters);
+
+	List<SupportStaff> findActiveSupportStaffByWorkgroupIdAndPreferences(long workgroupId, List<StudentSupportPreference> studentPreferences);
 }

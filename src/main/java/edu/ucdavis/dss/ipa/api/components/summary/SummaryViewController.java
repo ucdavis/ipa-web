@@ -25,7 +25,7 @@ public class SummaryViewController {
     @RequestMapping(value = "/api/summaryView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public SummaryView getInitialSummaryView(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
         // Determine if user is an instructor

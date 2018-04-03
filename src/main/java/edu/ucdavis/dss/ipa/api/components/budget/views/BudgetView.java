@@ -1,9 +1,24 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
+import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.LineItemCategory;
+import edu.ucdavis.dss.ipa.entities.LineItemComment;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
 
-import javax.sound.sampled.Line;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,14 +32,17 @@ public class BudgetView {
     List<SectionGroup> sectionGroups;
     List<Section> sections;
     List<InstructorCost> instructorCosts;
-    Set<Instructor> instructors;
+    List<Instructor> activeInstructors;
+    List<Instructor> assignedInstructors;
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<LineItemComment> lineItemComments;
     List<Course> courses;
     List<TeachingAssignment> teachingAssignments;
     List<SupportAssignment> supportAssignments;
     Set<User> users;
+    List<InstructorTypeCost> instructorTypeCosts;
     List<InstructorType> instructorTypes;
+    List<UserRole> userRoles;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -37,12 +55,16 @@ public class BudgetView {
             List<SectionGroup> sectionGroups,
             List<Section> sections,
             List<InstructorCost> instructorCosts,
-            Set<Instructor> instructors,
+            List<Instructor> activeInstructors,
+            List<Instructor> assignedInstructors,
             List<Course> courses,
             List<TeachingAssignment> teachingAssignments,
             List<SupportAssignment> supportAssignments,
             Set<User> users,
-            List<InstructorType> instructorTypes) {
+            List<InstructorTypeCost> instructorTypeCosts,
+            List<InstructorType> instructorTypes,
+            List<UserRole> userRoles
+    ) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -51,14 +73,17 @@ public class BudgetView {
         setBudget(budget);
         setLineItemCategories(lineItemCategories);
         setInstructorCosts(instructorCosts);
-        setInstructors(instructors);
         setSectionGroupCostComments(sectionGroupCostComments);
         setLineItemComments(lineItemComments);
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
         setSupportAssignments(supportAssignments);
         setUsers(users);
+        setInstructorTypeCosts(instructorTypeCosts);
         setInstructorTypes(instructorTypes);
+        setActiveInstructors(activeInstructors);
+        setAssignedInstructors(assignedInstructors);
+        setUserRoles(userRoles);
     }
 
     public String getWorkgroupId() {
@@ -133,12 +158,12 @@ public class BudgetView {
         this.instructorCosts = instructorCosts;
     }
 
-    public Set<Instructor> getInstructors() {
-        return instructors;
+    public List<Instructor> getActiveInstructors() {
+        return activeInstructors;
     }
 
-    public void setInstructors(Set<Instructor> instructors) {
-        this.instructors = instructors;
+    public void setActiveInstructors(List<Instructor> activeInstructors) {
+        this.activeInstructors = activeInstructors;
     }
 
     public List<SectionGroupCostComment> getSectionGroupCostComments() {
@@ -189,11 +214,35 @@ public class BudgetView {
         this.users = users;
     }
 
+    public List<InstructorTypeCost> getInstructorTypeCosts() {
+        return instructorTypeCosts;
+    }
+
+    public void setInstructorTypeCosts(List<InstructorTypeCost> instructorTypeCosts) {
+        this.instructorTypeCosts = instructorTypeCosts;
+    }
+
     public List<InstructorType> getInstructorTypes() {
         return instructorTypes;
     }
 
     public void setInstructorTypes(List<InstructorType> instructorTypes) {
         this.instructorTypes = instructorTypes;
+    }
+
+    public List<Instructor> getAssignedInstructors() {
+        return assignedInstructors;
+    }
+
+    public void setAssignedInstructors(List<Instructor> assignedInstructors) {
+        this.assignedInstructors = assignedInstructors;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 }

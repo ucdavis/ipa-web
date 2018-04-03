@@ -4,14 +4,47 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallInstructorFormView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.InstructorSupportPreference;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
+import edu.ucdavis.dss.ipa.entities.SupportAppointment;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.SupportStaff;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorization;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.ActivityService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
+import edu.ucdavis.dss.ipa.services.InstructorSupportPreferenceService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
+import edu.ucdavis.dss.ipa.services.StudentSupportPreferenceService;
+import edu.ucdavis.dss.ipa.services.SupportAppointmentService;
+import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
+import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaInstructionalSupportViewFactory implements InstructionalSupportViewFactory {
@@ -31,6 +64,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject InstructorSupportPreferenceService instructorSupportPreferenceService;
     @Inject Authorization authorization;
     @Inject SupportAppointmentService supportAppointmentService;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -51,7 +85,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        Set<SupportStaff> supportStaffList = new HashSet<SupportStaff>(userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId));
 
         List<SupportStaff> assignedSupportStaff = supportStaffService.findByScheduleId(schedule.getId());
 
@@ -85,17 +119,17 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         String termCode = String.valueOf(academicYear) + shortTermCode;
 
         List<UserRole> userRoles = workgroup.getUserRoles();
-        List<SupportStaff> supportStaffList = supportStaffService.findActiveByWorkgroupId(workgroupId);
+        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
 
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<InstructorSupportCallResponse> instructorSupportCallResponses = instructorSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
-        List<SupportStaff> mastersStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
+        List<SupportStaff> mastersStudents = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "studentMasters");
         List<Long> mastersStudentIds = new ArrayList<>();
-        List<SupportStaff> phdStudents = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
+        List<SupportStaff> phdStudents = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "studentPhd");
         List<Long> phdStudentIds = new ArrayList<>();
-        List<SupportStaff> instructionalSupport = supportStaffService.findActiveByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
+        List<SupportStaff> instructionalSupport = userRoleService.findActiveSupportStaffByWorkgroupIdAndRoleToken(workgroupId, "instructionalSupport");
         List<Long> instructionalSupportIds = new ArrayList<>();
 
         for (SupportStaff supportStaff : mastersStudents) {
@@ -213,7 +247,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
         }
 
-        List<SupportStaff> supportStaffList = supportStaffService.findByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
+        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
 
         return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse);
     }

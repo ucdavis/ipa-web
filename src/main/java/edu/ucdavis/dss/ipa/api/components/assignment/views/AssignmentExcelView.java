@@ -1,6 +1,13 @@
 package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.Tag;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -64,16 +71,15 @@ public class AssignmentExcelView extends AbstractXlsView {
                 SectionGroup sectionGroup = this.getSectionGroupByCourseAndTermCode(course, state.getTermCode());
 
                 if (sectionGroup != null) {
-                    excelHeader.createCell(col).setCellValue(
-                            StringUtils.join(
-                                    sectionGroup.getTeachingAssignments()
-                                            .stream()
-                                            .filter(TeachingAssignment::isApproved)
-                                            .map(ta -> ta.getInstructor().getLastName() + " " + ta.getInstructor().getFirstName().charAt(0))
-                                            .collect(Collectors.toList())
-                                    , ", "
-                            )
-                    );
+                    List<String> instructorNames = new ArrayList<>();
+                    for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+                        String name = teachingAssignment.getInstructorDisplayName();
+
+                        instructorNames.add(name);
+                    }
+
+                    String instructNamesFormatted = String.join(", ", instructorNames);
+                    excelHeader.createCell(col).setCellValue(instructNamesFormatted);
                 }
 
                 col++;

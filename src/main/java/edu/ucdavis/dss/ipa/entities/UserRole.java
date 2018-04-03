@@ -31,6 +31,7 @@ public class UserRole extends BaseEntity {
 	private User user;
 	private Workgroup workgroup;
 	private Role role;
+	private InstructorType instructorType;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,6 +66,17 @@ public class UserRole extends BaseEntity {
 
 	public void setWorkgroup(Workgroup workgroup) {
 		this.workgroup = workgroup;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "InstructorTypeId", nullable = true)
+	@JsonIgnore
+	public InstructorType getInstructorType() {
+		return instructorType;
+	}
+
+	public void setInstructorType(InstructorType instructorType) {
+		this.instructorType = instructorType;
 	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -136,6 +148,12 @@ public class UserRole extends BaseEntity {
 		return isMasters || isPhD || isInstructionalSupport;
 	}
 
+	@JsonProperty("roleId")
+	@Transient
+	public Long getRoleIdentification() {
+		return role.getId();
+	}
+
 	@JsonProperty("userId")
 	@Transient
 	@JsonView({UserViews.Simple.class,UserViews.Detailed.class})
@@ -146,6 +164,16 @@ public class UserRole extends BaseEntity {
 			return user.getId();
 		} else {
 			return 0;
+		}
+	}
+
+	@JsonProperty("instructorTypeId")
+	@Transient
+	public Long getInstructorTypeIdentification() {
+		if (instructorType != null) {
+			return instructorType.getId();
+		} else {
+			return null;
 		}
 	}
 }

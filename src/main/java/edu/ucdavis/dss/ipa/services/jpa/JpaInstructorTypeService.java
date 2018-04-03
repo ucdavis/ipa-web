@@ -1,25 +1,23 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
 
 @Service
 public class JpaInstructorTypeService implements InstructorTypeService {
-    @Inject InstructorTypeRepository instructorTypeRepository;
-    @Inject InstructorCostService instructorCostService;
+    static long INSTRUCTOR_TYPE = 7L;
 
-    @Override
-    public List<InstructorType> findByBudgetId(Long budgetId) {
-        return instructorTypeRepository.findByBudgetId(budgetId);
-    }
+    @Inject InstructorTypeRepository instructorTypeRepository;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public InstructorType findById(Long instructorTypeId) {
@@ -27,47 +25,34 @@ public class JpaInstructorTypeService implements InstructorTypeService {
     }
 
     @Override
-    @Transactional
-    public void deleteById(long instructorTypeId) {
-        InstructorType instructorType = this.findById(instructorTypeId);
-
-        instructorCostService.removeAssociationByInstructorTypeId(instructorTypeId);
-
-        instructorTypeRepository.deleteById(instructorTypeId);
+    public List<InstructorType> getAllInstructorTypes() {
+        return (List<InstructorType>) instructorTypeRepository.findAll();
     }
 
+    /**
+     * Attempt to find the relevant instructorType for the instructor based on userRoles. Will return 'instructor' as a default type if none are found.
+     * @param instructor
+     * @param schedule
+     * @return
+     */
     @Override
-    public InstructorType update(InstructorType newInstructorType) {
-        InstructorType originalInstructorType = this.findById(newInstructorType.getId());
+    public InstructorType findByInstructorAndSchedule(Instructor instructor, Schedule schedule) {
+        List<UserRole> userRoles = userRoleService.findByLoginIdAndWorkgroup(instructor.getLoginId(), schedule.getWorkgroup());
 
-        if(originalInstructorType == null) {
-            return null;
+        InstructorType instructorType = null;
+
+        for (UserRole userRole : userRoles) {
+            if (userRole.getRoleToken().equals("instructor")) {
+                instructorType = userRole.getInstructorType();
+                break;
+            }
         }
 
-        originalInstructorType.setCost(newInstructorType.getCost());
-        originalInstructorType.setDescription(newInstructorType.getDescription());
-
-        return this.instructorTypeRepository.save(originalInstructorType);
-    }
-
-    @Override
-    public InstructorType findOrCreate(InstructorType instructorTypeDTO) {
-        if (instructorTypeDTO == null || instructorTypeDTO.getBudget() == null) {
-            return null;
+        if (instructorType == null) {
+            // Default to instructorType of '7', the generic 'instructor' type.
+            instructorType = this.findById(INSTRUCTOR_TYPE);
         }
 
-        InstructorType existingInstructorType = this.instructorTypeRepository.findByDescriptionAndBudgetId(instructorTypeDTO.getDescription(), instructorTypeDTO.getBudget().getId());
-
-        if (existingInstructorType != null) {
-            return existingInstructorType;
-        }
-
-        InstructorType instructorType = new InstructorType();
-
-        instructorType.setBudget(instructorTypeDTO.getBudget());
-        instructorType.setDescription(instructorTypeDTO.getDescription());
-        instructorType.setCost(instructorTypeDTO.getCost());
-
-        return this.instructorTypeRepository.save(instructorType);
+        return instructorType;
     }
 }

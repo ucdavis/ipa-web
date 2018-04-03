@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemCategory;
 import edu.ucdavis.dss.ipa.entities.LineItemComment;
@@ -21,6 +22,7 @@ import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
@@ -53,9 +55,10 @@ public class BudgetViewController {
     @Inject LineItemCommentService lineItemCommentService;
     @Inject Authorizer authorizer;
     @Inject SectionGroupService sectionGroupService;
-    @Inject InstructorTypeService instructorTypeService;
+    @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject InstructorService instructorService;
     @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject InstructorTypeService instructorTypeService;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -177,15 +180,20 @@ public class BudgetViewController {
         return lineItem;
     }
 
-    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypes", method = RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypeCosts", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public InstructorType createInstructorType(@PathVariable long budgetId,
-                                   @RequestBody InstructorType newInstructorType,
-                                   HttpServletResponse httpResponse) {
+    public InstructorTypeCost createInstructorTypeCost(@PathVariable long budgetId,
+                                                   @RequestBody InstructorTypeCost newInstructorTypeCost,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
+        InstructorType instructorType = null;
 
-        if (budget == null) {
+        if (newInstructorTypeCost.getInstructorType() != null) {
+            instructorType = instructorTypeService.findById(newInstructorTypeCost.getInstructorType().getId());
+        }
+
+        if (budget == null || instructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
@@ -194,11 +202,11 @@ public class BudgetViewController {
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        // Build lineItem
-        newInstructorType.setBudget(budget);
-        InstructorType instructorType = instructorTypeService.findOrCreate(newInstructorType);
+        newInstructorTypeCost.setBudget(budget);
+        newInstructorTypeCost.setInstructorType(instructorType);
+        InstructorTypeCost instructorTypeCost = instructorTypeCostService.findOrCreate(newInstructorTypeCost);
 
-        return instructorType;
+        return instructorTypeCost;
     }
 
     @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}", method = RequestMethod.DELETE, produces="application/json")
@@ -251,13 +259,13 @@ public class BudgetViewController {
         return lineItemService.update(lineItemDTO);
     }
 
-    @RequestMapping(value = "/api/budgetView/instructorTypes/{instructorTypeId}", method = RequestMethod.PUT, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/instructorTypeCosts/{instructorTypeId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
-    public InstructorType updateInstructorType(@PathVariable long instructorTypeId,
-                                   @RequestBody InstructorType newInstructorType,
-                                   HttpServletResponse httpResponse) {
+    public InstructorTypeCost updateInstructorTypeCost(@PathVariable long instructorTypeId,
+                                                   @RequestBody InstructorTypeCost newInstructorType,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorType originalInstructorType = instructorTypeService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorType = instructorTypeCostService.findById(instructorTypeId);
 
         if (originalInstructorType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -268,28 +276,7 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        return instructorTypeService.update(newInstructorType);
-    }
-
-    @RequestMapping(value = "/api/budgetView/instructorTypes/{instructorTypeId}", method = RequestMethod.DELETE, produces="application/json")
-    @ResponseBody
-    public Long deleteInstructorType(@PathVariable long instructorTypeId,
-                                               HttpServletResponse httpResponse) {
-        // Ensure valid params
-        InstructorType originalInstructorType = instructorTypeService.findById(instructorTypeId);
-
-        if (originalInstructorType == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        // Authorization check
-        Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
-        instructorTypeService.deleteById(instructorTypeId);
-
-        return instructorTypeId;
+        return instructorTypeCostService.update(newInstructorType);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
@@ -374,13 +361,13 @@ public class BudgetViewController {
         Long workGroupId = originalInstructorCost.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        InstructorType instructorType = null;
+        InstructorTypeCost instructorTypeCost = null;
 
-        if (instructorCostDTO.getInstructorType() != null) {
-            instructorType = instructorTypeService.findById(instructorCostDTO.getInstructorType().getId());
+        if (instructorCostDTO.getInstructorTypeCost() != null) {
+            instructorTypeCost = instructorTypeCostService.findById(instructorCostDTO.getInstructorTypeCost().getId());
         }
 
-        instructorCostDTO.setInstructorType(instructorType);
+        instructorCostDTO.setInstructorTypeCost(instructorTypeCost);
 
         return instructorCostService.update(instructorCostDTO);
     }

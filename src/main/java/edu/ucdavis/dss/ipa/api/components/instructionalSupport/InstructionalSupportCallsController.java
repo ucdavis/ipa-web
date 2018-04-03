@@ -72,7 +72,7 @@ public class InstructionalSupportCallsController {
     public List<InstructorSupportCallResponse> contactInstructorsSupportCall(@PathVariable long scheduleId, @RequestBody InstructorSupportCallContactDTO instructorSupportCallContactDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         List<InstructorSupportCallResponse> instructorResponses = new ArrayList<>();
 
@@ -161,7 +161,7 @@ public class InstructionalSupportCallsController {
     public List<StudentSupportCallResponse> contactStudentsSupportCall(@PathVariable long scheduleId, @RequestBody StudentSupportCallContactDTO studentSupportCallContactDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         List<StudentSupportCallResponse> studentResponses = new ArrayList<>();
 
@@ -248,7 +248,7 @@ public class InstructionalSupportCallsController {
     public List<InstructorSupportCallResponse> addInstructorsToSupportCall(@PathVariable long scheduleId, @RequestBody AddInstructorsDTO addInstructorsDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         InstructorSupportCallResponse instructorResponseDTO = new InstructorSupportCallResponse();
 
@@ -377,7 +377,7 @@ public class InstructionalSupportCallsController {
     public List<StudentSupportCallResponse> addStudentsToSupportCall(@PathVariable long scheduleId, @RequestBody AddStudentsDTO addStudentsDTO) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         StudentSupportCallResponse studentResponseDTO = new StudentSupportCallResponse();
 
@@ -665,7 +665,7 @@ public class InstructionalSupportCallsController {
     public Long removeInstructorFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         InstructorSupportCallResponse supportCallResponse = instructorSupportCallResponseService.findOneById(supportCallResponseId);
 
@@ -681,7 +681,7 @@ public class InstructionalSupportCallsController {
     public Long removeStudentFromSupportCall(@PathVariable long scheduleId, @PathVariable long supportCallResponseId) {
         Schedule schedule = scheduleService.findById(scheduleId);
 
-        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "senateInstructor", "federationInstructor");
+        authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor");
 
         StudentSupportCallResponse supportCallResponse = studentSupportCallResponseService.findOneById(supportCallResponseId);
 

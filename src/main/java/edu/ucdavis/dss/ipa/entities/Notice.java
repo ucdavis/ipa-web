@@ -81,5 +81,4 @@ public class Notice implements Serializable {
             return 0;
         }
     }
-
 }

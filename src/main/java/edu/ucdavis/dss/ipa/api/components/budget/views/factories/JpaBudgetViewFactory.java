@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemCategory;
 import edu.ucdavis.dss.ipa.entities.LineItemComment;
@@ -19,10 +20,12 @@ import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemCommentService;
@@ -34,6 +37,7 @@ import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.stereotype.Service;
@@ -60,7 +64,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject UserService userService;
+    @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject InstructorTypeService instructorTypeService;
+    @Inject UserRoleService userRoleService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -75,20 +81,23 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = instructorCostService.findOrCreateManyFromBudget(budget);
-        List<InstructorType> instructorTypes = instructorTypeService.findByBudgetId(budget.getId());
-
-        Set<Instructor> instructors = new HashSet<> (instructorService.findByInstructorCosts(instructorCosts));
-        Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
-        instructors.addAll(assignedInstructors);
+        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+        List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroupId);
+        List<Instructor> assignedInstructors = instructorService.findAssignedByScheduleId(schedule.getId());
 
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 
-        Set<User> users = new HashSet<> (userService.findAllByWorkgroupAndRoleToken(workgroup, "academicPlanner"));
+        List<UserRole> userRoles = userRoleService.findByWorkgroup(workgroup);
+        Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
+        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByTeachingAssignments(teachingAssignments));
+
         users.addAll(lineItemUsers);
+        users.addAll(teachingAssignmentUsers);
 
         BudgetView budgetView = new BudgetView(
                 budgetScenarios,
@@ -101,12 +110,15 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 sectionGroups,
                 sections,
                 instructorCosts,
-                instructors,
+                activeInstructors,
+                assignedInstructors,
                 courses,
                 teachingAssignments,
                 supportAssignments,
                 users,
-                instructorTypes);
+                instructorTypeCosts,
+                instructorTypes,
+                userRoles);
 
         return budgetView;
     }

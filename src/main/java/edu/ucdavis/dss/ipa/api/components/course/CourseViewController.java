@@ -121,7 +121,6 @@ public class CourseViewController {
 
 		originalSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
 		originalSectionGroup.setShowTheStaff(sectionGroup.getShowTheStaff());
-		originalSectionGroup.setShowPlaceholderAI(sectionGroup.getShowPlaceholderAI());
 
 		originalSectionGroup.setTeachingAssistantAppointments(sectionGroup.getTeachingAssistantAppointments());
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
@@ -663,11 +662,12 @@ public class CourseViewController {
 							newTeachingAssignment.setApproved(true);
 							newTeachingAssignment.setFromInstructor(historicalTeachingAssignment.isFromInstructor());
 							newTeachingAssignment.setInstructor(historicalTeachingAssignment.getInstructor());
+							newTeachingAssignment.setInstructorType(historicalTeachingAssignment.getInstructorType());
 							newTeachingAssignment.setSchedule(newSectionGroup.getCourse().getSchedule());
 							newTeachingAssignment.setSectionGroup(newSectionGroup);
 							newTeachingAssignment.setTermCode(newSectionGroup.getTermCode());
 
-							teachingAssignmentService.save(newTeachingAssignment);
+							teachingAssignmentService.saveAndAddInstructorType(newTeachingAssignment);
 						}
 					}
 				}

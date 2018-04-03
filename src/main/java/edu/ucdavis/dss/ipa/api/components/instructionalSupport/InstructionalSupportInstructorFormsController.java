@@ -37,7 +37,7 @@ public class InstructionalSupportInstructorFormsController {
     @ResponseBody
     public InstructorSupportPreference addPreference(@PathVariable long sectionGroupId, @PathVariable long supportStaffId) {
         Long workgroupId = sectionGroupService.getOneById(sectionGroupId).getCourse().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         Instructor instructor = instructorService.getOneByLoginId(currentUser.getLoginId());
@@ -50,7 +50,7 @@ public class InstructionalSupportInstructorFormsController {
     public InstructorSupportCallResponse updateInstructorSupportCallResponse(@PathVariable long instructorSupportCallResponseId, @RequestBody InstructorSupportCallResponse instructorSupportCallResponseDTO) {
         InstructorSupportCallResponse originalSupportCallResponse = instructorSupportCallResponseService.findOneById(instructorSupportCallResponseId);
         Long workgroupId = originalSupportCallResponse.getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         originalSupportCallResponse.setGeneralComments(instructorSupportCallResponseDTO.getGeneralComments());
         originalSupportCallResponse.setSubmitted(instructorSupportCallResponseDTO.isSubmitted());
@@ -62,7 +62,7 @@ public class InstructionalSupportInstructorFormsController {
     @ResponseBody
     public List<Long> updatePreferencesOrder(@PathVariable long scheduleId, @PathVariable long sectionGroupId, @RequestBody List<Long> preferenceIdsParams) {
         Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "senateInstructor", "federationInstructor", "studentPhd", "studentMasters", "instructionalSupport");
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
         instructorSupportPreferenceService.updatePriorities(preferenceIdsParams);
 

@@ -22,7 +22,7 @@ public class InstructorCost extends BaseEntity {
     private Instructor instructor;
     private BigDecimal cost;
     private Boolean lecturer = false;
-    private InstructorType instructorType;
+    private InstructorTypeCost instructorTypeCost;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,14 +63,14 @@ public class InstructorCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorTypeId", nullable = false)
+    @JoinColumn(name = "InstructorTypeCostId", nullable = false)
     @JsonIgnore
-    public InstructorType getInstructorType() {
-        return instructorType;
+    public InstructorTypeCost getInstructorTypeCost() {
+        return instructorTypeCost;
     }
 
-    public void setInstructorType(InstructorType instructorType) {
-        this.instructorType = instructorType;
+    public void setInstructorTypeCost(InstructorTypeCost instructorTypeCost) {
+        this.instructorTypeCost = instructorTypeCost;
     }
 
     public BigDecimal getCost() {
@@ -102,8 +102,8 @@ public class InstructorCost extends BaseEntity {
     @JsonProperty("instructorTypeId")
     @Transient
     public long getInstructorTypeIdentification() {
-        if(instructorType != null) {
-            return instructorType.getId();
+        if(instructorTypeCost != null) {
+            return instructorTypeCost.getId();
         } else {
             return 0;
         }

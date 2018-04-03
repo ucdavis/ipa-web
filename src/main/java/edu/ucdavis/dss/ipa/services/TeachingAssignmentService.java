@@ -16,7 +16,7 @@ public interface TeachingAssignmentService {
 
 	TeachingAssignment findOneById(Long id);
 
-	TeachingAssignment save(@NotNull @Valid TeachingAssignment teachingAssignment);
+	TeachingAssignment saveAndAddInstructorType(@NotNull @Valid TeachingAssignment teachingAssignment);
 
 	void delete(Long id);
 

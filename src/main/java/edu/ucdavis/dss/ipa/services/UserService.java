@@ -2,11 +2,13 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
 
@@ -50,4 +52,8 @@ public interface UserService {
 	List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken);
 
 	List<User> findAllByLineItems(List<LineItem> lineItems);
+
+	List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments);
+
+	List<User> findAllByWorkgroup(Workgroup workgroup);
 }
