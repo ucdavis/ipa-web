@@ -54,4 +54,14 @@ public class DwActivity {
 	public void setSsrmeet_schd_code(char ssrmeet_schd_code) {
 		this.ssrmeet_schd_code = ssrmeet_schd_code;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Day indicator: " + day_indicator + "," +
+				"begin time: " + ssrmeet_begin_time + "," +
+				"end time: " + ssrmeet_end_time + "," +
+				"room code: " + ssrmeet_room_code + "," +
+				"bldg code: " + ssrmeet_bldg_code + "," +
+				"schd code: " + ssrmeet_schd_code);
+	}
 }

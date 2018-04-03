@@ -70,48 +70,47 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		java.sql.Date currentDate = new Date(utilDate.getTime());
 
 		for (Schedule schedule : workgroup.getSchedules()) {
-			// Ignore historical schedules
-			if (schedule.getYear() >= currentYear) {
+			// Check teachingCallReceipts to see if messages need to be sent
+			for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
+				// Send scheduled email if the send date has been passed
+				if (teachingCallReceipt.getNextContactAt() != null) {
+					long currentTime = currentDate.getTime();
+					long contactAtTime = teachingCallReceipt.getNextContactAt().getTime();
 
-				// Check teachingCallReceipts to see if messages need to be sent
-				for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
+					if (currentTime > contactAtTime) {
+						sendTeachingCall(teachingCallReceipt, currentDate);
+					}
+				}
 
-					// Is an email scheduled to be sent?
-					if (teachingCallReceipt.getNextContactAt() != null) {
-						long currentTime = currentDate.getTime();
-						long contactAtTime = teachingCallReceipt.getNextContactAt().getTime();
+				// Warnings are sent if the following are all true:
+				// 1) form is incomplete
+				// 2) A due date is set
+				// 3) At least 3 days since last contact
+				// 4) There are less than 3 days between now and the dueDate
+				// 5) The dueDate has not yet passed
+				if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
+					// Form hasn't been submitted and it has a due date
+					final Long threeDaysInMilliseconds = 259200000L;
 
-						// Is it time to send that email?
-						if (currentTime > contactAtTime) {
-							sendTeachingCall(teachingCallReceipt, currentDate);
-						}
+					Long currentTime = currentDate.getTime();
+					Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
+					Long warnTime = dueDateTime - threeDaysInMilliseconds;
+
+					Long timeSinceLastContact = null;
+
+					if (teachingCallReceipt.getLastContactedAt() != null) {
+						timeSinceLastContact = currentTime - teachingCallReceipt.getLastContactedAt().getTime();
 					}
 
-					// Is a warning scheduled to be sent?
-					if (teachingCallReceipt.getDueDate() != null && teachingCallReceipt.getIsDone() == false) {
-						// Form hasn't been submitted and it has a due date
-						final Long threeDaysInMilliseconds = 259200000L;
-
-						Long currentTime = currentDate.getTime();
-						Long dueDateTime = teachingCallReceipt.getDueDate().getTime();
-						Long warnTime = dueDateTime - threeDaysInMilliseconds;
-
-						Long timeSinceLastContact = null;
-
-						if (teachingCallReceipt.getLastContactedAt() != null) {
-							timeSinceLastContact = currentTime - teachingCallReceipt.getLastContactedAt().getTime();
-						}
-
-						// Is it time to send a warning email?
-						// Warning emails are sent 3 days before dueDate
-						// To avoid spamming, warning email cannot happen within 3 days of previous contact.
-						// Warning emails are suppressed if the due Date has passed
-						if (currentTime > warnTime && currentTime < dueDateTime) {
-							// Valid time to send a warning
-							if (timeSinceLastContact == null || timeSinceLastContact > threeDaysInMilliseconds) {
-								// Haven't contacted them recently, and we haven't passed the due date
-								sendTeachingCallWarning(teachingCallReceipt, currentDate);
-							}
+					// Is it time to send a warning email?
+					// Warning emails are sent 3 days before dueDate
+					// To avoid spamming, warning email cannot happen within 3 days of previous contact.
+					// Warning emails are suppressed if the due Date has passed
+					if (currentTime > warnTime && currentTime < dueDateTime) {
+						// Valid time to send a warning
+						if (timeSinceLastContact == null || timeSinceLastContact > threeDaysInMilliseconds) {
+							// Haven't contacted them recently, and we haven't passed the due date
+							sendTeachingCallWarning(teachingCallReceipt, currentDate);
 						}
 					}
 				}

@@ -64,6 +64,10 @@ public class DefaultEmailService implements EmailService {
 	public boolean reportException(Exception e, String additionalDetails) {
 		String messageSubject = e.getMessage();
 
+		if(messageSubject == null) {
+			messageSubject = "Exception Report";
+		}
+
 		StringBuffer buffer = new StringBuffer();
 
 		buffer.append("Exception Report:");
@@ -101,6 +105,10 @@ public class DefaultEmailService implements EmailService {
 
 	private boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
+
+		if(messageSubject == null) {
+			messageSubject = "No subject given";
+		}
 
 		log.info("To: '" + recipientEmail + "', subject '" + messageSubject + "', body: '" + messageBody + "'");
 

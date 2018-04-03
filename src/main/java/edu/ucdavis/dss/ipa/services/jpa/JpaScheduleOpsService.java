@@ -41,18 +41,12 @@ import java.util.Map;
 public class JpaScheduleOpsService implements ScheduleOpsService {
 	private static final Logger log = LoggerFactory.getLogger("ScheduleOps");
 
-	@Inject ScheduleRepository scheduleRepository;
 	@Inject ScheduleService scheduleService;
-	@Inject ScheduleTermStateService scheduleTermStateService;
 	@Inject CourseService courseService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
-	@Inject UserService userService;
 	@Inject InstructorService instructorService;
-	@Inject RoleService roleService;
-	@Inject UserRoleService userRoleService;
-	@Inject WorkgroupService workgroupService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject JdbcTemplate jdbcTemplate;
 	@Inject TermService termService;
@@ -171,26 +165,6 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	}
 
 	/**
-	 * Adjusts the year in termCode, e.g. 199710 becomes 201610
-	 * 
-	 * @param termCode the termCode to be adjusted
-	 * @param toYear the academic year to be adjusted to, e.g. 2016-17 should be "2016"
-	 * @return the updated termCode
-	 */
-	private String adjustTermCodeYear(String termCode, Long toYear) {
-		if(termCode == null) return null;
-		
-		String term = termCode.substring(4);
-		
-		// Academic year, e.g. 2016, is 2016-2017 where 201605 is the start and 201704 is the end,
-		// so if the term code is less than 5, we need to increment the toYear.
-		String newYear = Long.valueOf(term) < 5 ? String.valueOf(toYear + 1) : String.valueOf(toYear);
-		String newTermCode = newYear + term;
-
-		return newTermCode;
-	}
-
-	/**
 	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
 	 */
 	@Transactional
@@ -256,12 +230,11 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				}
 			}
 		}
-
-		// Sync data from banner into empty ipa SectionGroups
-		this.updateEmptySectionGroups();
 	}
 
-	private void updateEmptySectionGroups() {
+	@Transactional
+	@Override
+	public void updateEmptySectionGroups() {
 		// Find emptySectionGroups in IPA
 		List<SectionGroup> emptySectionGroups = sectionGroupService.findEmpty();
 
@@ -321,10 +294,16 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 						Activity activity = activityService.createFromDwActivity(dwActivity);
 
 						Term term = termService.getOneByTermCode(sectionGroup.getTermCode());
+
 						activity.setEndDate(term.getEndDate());
 						activity.setBeginDate(term.getStartDate());
 						activity.setSection(section);
-						activityService.saveActivity(activity);
+
+						try {
+							activityService.saveActivity(activity);
+						} catch (javax.validation.ConstraintViolationException e) {
+							log.error("Could not save activity based on DW activity:" + dwActivity);
+						}
 					}
 				}
 			}
