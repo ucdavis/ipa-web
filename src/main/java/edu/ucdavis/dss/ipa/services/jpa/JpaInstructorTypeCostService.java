@@ -12,8 +12,7 @@ import java.util.List;
 
 @Service
 public class JpaInstructorTypeCostService implements InstructorTypeCostService {
-    @Inject
-    InstructorTypeCostRepository instructorTypeCostRepository;
+    @Inject InstructorTypeCostRepository instructorTypeCostRepository;
     @Inject InstructorCostService instructorCostService;
 
     @Override
