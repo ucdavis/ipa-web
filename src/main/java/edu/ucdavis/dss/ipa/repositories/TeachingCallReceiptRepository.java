@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface TeachingCallReceiptRepository extends CrudRepository<TeachingCallReceipt, Long> {
 
+  TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId);
 }

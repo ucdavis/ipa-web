@@ -21,7 +21,7 @@ public interface TeachingCallReceiptService {
 
 	TeachingCallReceipt create(TeachingCallReceipt teachingCallReceipt);
 
-	List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
+	List<TeachingCallReceipt> createOrUpdateMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
 
 	boolean delete(Long id);
 }

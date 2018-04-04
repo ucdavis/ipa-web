@@ -158,7 +158,7 @@ public class TeachingCallStatusViewController {
             receiptDTO.setNextContactAt(now);
         }
 
-        List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.createMany(addInstructorsDTO.getInstructorIds(), receiptDTO);
+        List<TeachingCallReceipt> teachingCallReceipts = teachingCallReceiptService.createOrUpdateMany(addInstructorsDTO.getInstructorIds(), receiptDTO);
 
         return teachingCallReceipts;
     }
