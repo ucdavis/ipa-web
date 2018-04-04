@@ -239,12 +239,12 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 			if (teachingCallReceipt == null) {
 				teachingCallReceipt = new TeachingCallReceipt();
+				Instructor slotInstructor = instructorService.getOneById(instructorId);
+
+				teachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
+				teachingCallReceipt.setInstructor(slotInstructor);
 			}
 
-			Instructor slotInstructor = instructorService.getOneById(instructorId);
-
-			teachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
-			teachingCallReceipt.setInstructor(slotInstructor);
 			teachingCallReceipt.setIsDone(false);
 			teachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
 			teachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
