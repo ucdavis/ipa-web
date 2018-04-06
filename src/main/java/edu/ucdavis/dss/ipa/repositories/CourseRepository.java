@@ -65,4 +65,6 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
     Course findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(String subjectCode, String courseNumber, String sequencePattern, long scheduleId);
 
     List<Course> findByUnitsLow(Float unitsLow);
+
+    List<Course> findByScheduleIn(List<Schedule> scheduleIds);
 }

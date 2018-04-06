@@ -13,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public interface ScheduleService {
 	List<Schedule> findAll();
+
+	List<Schedule> findAllCurrentAndFuture();
 	
 	Schedule saveSchedule(Schedule schedule);
 
@@ -25,10 +27,6 @@ public interface ScheduleService {
 	Schedule findByWorkgroupIdAndYear(long workgroupId, long year);
 
 	Schedule findOrCreateByWorkgroupIdAndYear(long workgroupId, long year);
-
-	List<User> getUserInstructorsByScheduleIdAndTermCode(Long scheduleId, String termCode);
-
-	boolean deleteByScheduleId(long scheduleId);
 
 	boolean isScheduleClosed(long scheduleId);
 

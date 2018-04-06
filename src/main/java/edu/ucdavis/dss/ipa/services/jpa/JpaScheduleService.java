@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,7 +24,6 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 public class JpaScheduleService implements ScheduleService {
 	@Inject ScheduleRepository scheduleRepository;
 	@Inject WorkgroupService workgroupService;
-	@Inject UserService userService;
 	@Inject TermService termService;
 
 	@Override
@@ -68,29 +68,22 @@ public class JpaScheduleService implements ScheduleService {
 	}
 
 	@Override
-	public List<User> getUserInstructorsByScheduleIdAndTermCode(Long scheduleId, String termCode) {
-		List<User> users = new ArrayList<User>();
-		Schedule schedule = this.findById(scheduleId);
-
-		for(TeachingAssignment teachingAssignment : schedule.getTeachingAssignments() ) {
-
-			if( teachingAssignment.isApproved() && teachingAssignment.getTermCode().equals(termCode)) {
-
-				String loginId = teachingAssignment.getInstructor().getLoginId();
-				User user = userService.getOneByLoginId(loginId);
-
-				if (user != null) {
-					users.add(user);
-				}
-
-			}
-		}
-		return users;
-	}
-
-	@Override
 	public Schedule findByWorkgroupIdAndYear(long workgroupId, long year) {
 		return scheduleRepository.findOneByYearAndWorkgroupWorkgroupId(workgroupId, year);
+	}
+
+	/**
+	 * Returns all schedules related to the current year and all future years.
+	 *
+	 * Note, uses current year and subtracts one to handle the case where we're
+	 * in the Winter or Spring of an academic year. This will result in some
+	 * recent but non-current schedules being included.
+	 *
+	 * @return
+	 */
+	@Override
+	public List<Schedule> findAllCurrentAndFuture() {
+		return scheduleRepository.findByYearGreaterThanEqual(Year.now().getValue() - 1);
 	}
 
 	@Override
@@ -100,12 +93,6 @@ public class JpaScheduleService implements ScheduleService {
 			schedule = this.createSchedule(workgroupId, year);
 		}
 		return schedule;
-	}
-
-	@Override
-	public boolean deleteByScheduleId(long scheduleId) {
-		scheduleRepository.delete(scheduleId);
-		return true;
 	}
 
 	@Override

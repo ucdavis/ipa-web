@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JpaCourseService implements CourseService {
-
 	@Inject CourseRepository courseRepository;
 	@Inject ScheduleService scheduleService;
 	@Inject TagService tagService;
@@ -119,7 +118,6 @@ public class JpaCourseService implements CourseService {
 
 			return true;
 		} catch (EmptyResultDataAccessException e) {
-
 			// Could not delete the course offering group because it doesn't exist.
 			// Don't worry about this.
 		}
@@ -153,6 +151,11 @@ public class JpaCourseService implements CourseService {
 
 		course.setTags(tags);
 		return this.courseRepository.save(course);
+	}
+
+	@Override
+	public List<Course> findByScheduleIn(List<Schedule> scheduleIds) {
+		return this.courseRepository.findByScheduleIn(scheduleIds);
 	}
 
 	@Override

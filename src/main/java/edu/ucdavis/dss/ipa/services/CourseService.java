@@ -28,6 +28,8 @@ public interface CourseService {
 
 	List<Course> findByUnitsLow(Float unitsLow);
 
+	List<Course> findByScheduleIn(List<Schedule> scheduleIds);
+
 	Course findOrCreateBySubjectCodeAndCourseNumberAndSequencePatternAndTitleAndEffectiveTermCodeAndScheduleId(
 			String subjectCode, String courseNumber, String sequencePattern, String title, String effectiveTermCode, Schedule schedule, boolean copyMetaData);
 
