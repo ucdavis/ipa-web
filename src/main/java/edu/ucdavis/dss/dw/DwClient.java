@@ -386,13 +386,13 @@ public class DwClient {
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
 
+			// It is allowable for DW to return null if the subject code is incorrect or
+			// the termCode refers to a future term not yet in Banner.
 			if ((arrNode != null) && (arrNode.get(0) != null)) {
 				dwSections = mapper.readValue(
 						arrNode.toString(),
 						mapper.getTypeFactory().constructCollectionType(
 								List.class, DwSection.class));
-			} else {
-				log.warn("getSectionBySubjectCodeAndTermCode Response from DW returned null, for criterion = " + subjectCode + ", " + termCode);
 			}
 
 			response.close();
