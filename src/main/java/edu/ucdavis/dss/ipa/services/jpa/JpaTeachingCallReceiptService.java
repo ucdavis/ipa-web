@@ -231,28 +231,37 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	}
 
 	@Override
-	public List<TeachingCallReceipt> createMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceiptDTO) {
+	public List<TeachingCallReceipt> createOrUpdateMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceiptDTO) {
 		List<TeachingCallReceipt> receipts = new ArrayList<>();
 
 		for (Long instructorId : instructorIds) {
-			Instructor slotInstructor = instructorService.getOneById(instructorId);
-			TeachingCallReceipt slotTeachingCallReceipt = new TeachingCallReceipt();
+			TeachingCallReceipt teachingCallReceipt = this.findByInstructorIdAndScheduleId(instructorId, teachingCallReceiptDTO.getSchedule().getId());
 
-			slotTeachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
-			slotTeachingCallReceipt.setInstructor(slotInstructor);
-			slotTeachingCallReceipt.setIsDone(false);
-			slotTeachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
-			slotTeachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
-			slotTeachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
-			slotTeachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
-			slotTeachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
+			if (teachingCallReceipt == null) {
+				teachingCallReceipt = new TeachingCallReceipt();
+				Instructor slotInstructor = instructorService.getOneById(instructorId);
 
-			slotTeachingCallReceipt = this.save(slotTeachingCallReceipt);
+				teachingCallReceipt.setSchedule(teachingCallReceiptDTO.getSchedule());
+				teachingCallReceipt.setInstructor(slotInstructor);
+			}
 
-			receipts.add(slotTeachingCallReceipt);
+			teachingCallReceipt.setIsDone(false);
+			teachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
+			teachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
+			teachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
+			teachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
+			teachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
+
+			teachingCallReceipt = this.save(teachingCallReceipt);
+
+			receipts.add(teachingCallReceipt);
 		}
 
 		return receipts;
+	}
+
+	private TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId) {
+		return this.teachingCallReceiptRepository.findByInstructorIdAndScheduleId(instructorId, scheduleId);
 	}
 
 	@Override
