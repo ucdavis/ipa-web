@@ -246,45 +246,48 @@ public class AssignmentViewTeachingAssignmentController {
     @RequestMapping(value = "/api/assignmentView/preferences/{teachingAssignmentId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public List<TeachingAssignment> removePreference(@PathVariable long teachingAssignmentId, HttpServletResponse httpResponse) {
-        TeachingAssignment DTOteachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
+        TeachingAssignment teachingAssignmentDto = teachingAssignmentService.findOneById(teachingAssignmentId);
 
-        if (DTOteachingAssignment == null) {
+        if (teachingAssignmentDto == null) {
             httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
             return null;
         }
 
-        Workgroup workgroup = DTOteachingAssignment.getSchedule().getWorkgroup();
+        Workgroup workgroup = teachingAssignmentDto.getSchedule().getWorkgroup();
         authorizer.hasWorkgroupRoles(workgroup.getId(), "instructor");
 
-        Instructor DTOinstructor = DTOteachingAssignment.getInstructor();
+        Instructor instructorDto = teachingAssignmentDto.getInstructor();
 
         List<Long> teachingAssignmentIdsToDelete = new ArrayList<Long>();
         List<TeachingAssignment> teachingAssignmentsToDelete = new ArrayList<TeachingAssignment>();
 
         // Delete a preference tied to 1 to many sectionGroups
-        if (DTOteachingAssignment.getSectionGroup() != null) {
-            SectionGroup DTOsectionGroup = DTOteachingAssignment.getSectionGroup();
-            Course DTOcourse = DTOsectionGroup.getCourse();
+        if (teachingAssignmentDto.getSectionGroup() != null) {
+            SectionGroup sectionGroupDto = teachingAssignmentDto.getSectionGroup();
+            Course courseDto = sectionGroupDto.getCourse();
 
             // Find any other courses that match this pattern
-            List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(DTOcourse.getSubjectCode(), DTOcourse.getCourseNumber(), DTOcourse.getSchedule().getId());
-
-            boolean oneIsApproved = false;
+            List<Course> courses = courseService.findBySubjectCodeAndCourseNumberAndScheduleId(courseDto.getSubjectCode(), courseDto.getCourseNumber(), courseDto.getSchedule().getId());
 
             // Find all relevant teachingAssignments
             // If at least one of the teachingAssignments is approved, do nothing
             for (Course slotCourse : courses) {
                 for (SectionGroup slotSectionGroup : slotCourse.getSectionGroups()) {
                     for (TeachingAssignment slotTeachingAssignment : slotSectionGroup.getTeachingAssignments()) {
+                        Instructor slotTeachingAssignmentInstructor = slotTeachingAssignment.getInstructor();
+
+                        // This has occurred in production. What does it mean?
+                        if(slotTeachingAssignmentInstructor == null) { continue; }
+
                         // Looking for teachingAssignments from the relevant instructor
-                        if (slotTeachingAssignment.getInstructor().getId() == DTOinstructor.getId()
-                        && slotTeachingAssignment.getTermCode().equals(DTOteachingAssignment.getTermCode())) {
+                        if (slotTeachingAssignmentInstructor.getId() == instructorDto.getId()
+                        && slotTeachingAssignment.getTermCode().equals(teachingAssignmentDto.getTermCode())) {
                             if (slotTeachingAssignment.isApproved()) {
                                 continue;
                             }
 
                             teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
-                            teachingAssignmentsToDelete.add((slotTeachingAssignment));
+                            teachingAssignmentsToDelete.add(slotTeachingAssignment);
                         }
                     }
                 }
@@ -296,9 +299,8 @@ public class AssignmentViewTeachingAssignmentController {
         }
         // Delete a course release / sabbatical / buyout
         else {
-            teachingAssignmentsToDelete.add(DTOteachingAssignment);
-            teachingAssignmentService.delete((teachingAssignmentId));
-
+            teachingAssignmentsToDelete.add(teachingAssignmentDto);
+            teachingAssignmentService.delete(teachingAssignmentId);
         }
 
         return teachingAssignmentsToDelete;
