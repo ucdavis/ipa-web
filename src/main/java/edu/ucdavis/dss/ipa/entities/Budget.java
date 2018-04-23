@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Budget extends BaseEntity {
     private long id;
     private Schedule schedule;
-    private float taCost = 0f, readerCost = 0f, lecturerCost = 0f;
+    private float taCost = 0f, readerCost = 0f;
     private List<BudgetScenario> budgetScenarios = new ArrayList<>();
     private List<InstructorCost> instructorCosts = new ArrayList<>();
     private List<InstructorTypeCost> instructorTypes = new ArrayList<>();
@@ -66,14 +66,6 @@ public class Budget extends BaseEntity {
 
     public void setReaderCost(float readerCost) {
         this.readerCost = readerCost;
-    }
-
-    public float getLecturerCost() {
-        return lecturerCost;
-    }
-
-    public void setLecturerCost(float lecturerCost) {
-        this.lecturerCost = lecturerCost;
     }
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
