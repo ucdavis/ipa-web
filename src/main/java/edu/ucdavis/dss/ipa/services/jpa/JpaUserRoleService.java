@@ -219,8 +219,7 @@ public class JpaUserRoleService implements UserRoleService {
 				instructor = instructorService.findOrCreate(firstName, lastName, email, loginId, workgroupId);
 			}
 
-			// Add to list of instructors if not already there. This should never happen since
-			// an instructor should be either Senate OR Federation, but not both.
+			// Add to list of instructors if not already there.
 			// Prevents getting the AJS dupes error
 			if (!workgroupInstructors.contains(instructor)) {
 				workgroupInstructors.add(instructor);
@@ -241,8 +240,7 @@ public class JpaUserRoleService implements UserRoleService {
 			Instructor instructor = instructorService.getOneByLoginId(userRole.getUser().getLoginId());
 
 			if (instructor != null) {
-				// Add to list of instructors if not already there. This should never happen since
-				// an instructor should be either Senate OR Federation, but not both.
+				// Add to list of instructors if not already there.
 				// Prevents getting the AJS dupes error
 				if (!workgroupInstructorIds.contains(instructor.getId())) {
 					workgroupInstructorIds.add(instructor.getId());
@@ -295,7 +293,7 @@ public class JpaUserRoleService implements UserRoleService {
 		UserRole userRole = new UserRole();
 		userRole.setUser(user);
 		userRole.setWorkgroup(workgroup);
-		Role role = roleService.findOneByName("senateInstructor");
+		Role role = roleService.findOneByName("instructor");
 		userRole.setRole(role);
 
 		this.save(userRole);
