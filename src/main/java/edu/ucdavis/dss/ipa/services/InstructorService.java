@@ -39,8 +39,6 @@ public interface InstructorService {
 
 	List<Instructor> findAssignedByScheduleId(long scheduleId);
 
-	List<Instructor> findActiveByWorkgroupIdAndLecturer(long id, boolean b);
-
 	List<Instructor> findByInstructorCosts(List<InstructorCost> instructorCosts);
 
 	List<Instructor> findBySectionGroups(List<SectionGroup> sectionGroups);

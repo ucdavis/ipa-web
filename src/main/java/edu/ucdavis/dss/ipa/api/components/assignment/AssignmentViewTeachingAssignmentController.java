@@ -325,7 +325,7 @@ public class AssignmentViewTeachingAssignmentController {
 
         Workgroup workgroup = schedule.getWorkgroup();
 
-        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "instructor");
 
         SectionGroup DTOsectionGroup = null;
         Course DTOcourse = null;
@@ -445,7 +445,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
-        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor", "lecturer");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "instructor");
 
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.updatePreferenceOrder(sortedTeachingPreferenceIds);
 

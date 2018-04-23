@@ -158,33 +158,6 @@ public class JpaInstructorService implements InstructorService {
 	}
 
 	@Override
-	public List<Instructor> findActiveByWorkgroupIdAndLecturer(long workgroupId, boolean isLecturer) {
-		List<Instructor> activeInstructors = new ArrayList<Instructor>();
-		Workgroup workgroup = workgroupService.findOneById(workgroupId);
-		List<UserRole> userRoles = workgroup.getUserRoles();
-
-		for (UserRole userRole : userRoles) {
-			if (isLecturer) {
-				if (userRole.getRoleToken().equals("lecturer")) {
-					String loginId = userRole.getUser().getLoginId();
-
-					Instructor slotInstructor = this.getOneByLoginId(loginId);
-					activeInstructors.add(slotInstructor);
-				}
-			} else {
-				if (userRole.getRoleToken().equals("senateInstructor") || userRole.getRoleToken().equals("federationInstructor") || userRole.getRoleToken().equals("lecturer")) {
-					String loginId = userRole.getUser().getLoginId();
-
-					Instructor slotInstructor = this.getOneByLoginId(loginId);
-					activeInstructors.add(slotInstructor);
-				}
-			}
-		}
-
-		return activeInstructors;
-	}
-
-	@Override
 	public List<Instructor> findByInstructorCosts(List<InstructorCost> instructorCosts) {
 		List<Instructor> instructors = new ArrayList<>();
 

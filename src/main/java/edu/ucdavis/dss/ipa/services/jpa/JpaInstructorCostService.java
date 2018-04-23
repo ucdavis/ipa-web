@@ -104,22 +104,10 @@ public class JpaInstructorCostService implements InstructorCostService {
             }
         }
 
-        // Add instructorCosts from lecturers
-        List<Instructor> lecturers = instructorService.findActiveByWorkgroupIdAndLecturer(workgroup.getId(), true);
-        List<InstructorCost> lecturerInstructorCosts = this.findOrCreateFromInstructors(lecturers, budget, true);
+        List<Instructor> instructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
+        List<InstructorCost> newInstructorCosts = this.findOrCreateFromInstructors(instructors, budget, true);
 
-        for (InstructorCost instructorCost : lecturerInstructorCosts) {
-            if (instructorCostIdsHash.indexOf(instructorCost.getId()) == -1) {
-                instructorCosts.add(instructorCost);
-                instructorCostIdsHash.add(instructorCost.getId());
-            }
-        }
-
-        // Add non lecturer instructorCosts
-        List<Instructor> nonLecturers = instructorService.findActiveByWorkgroupIdAndLecturer(workgroup.getId(), false);
-        List<InstructorCost> nonLecturerInstructorCosts = this.findOrCreateFromInstructors(nonLecturers, budget, false);
-
-        for (InstructorCost instructorCost : nonLecturerInstructorCosts) {
+        for (InstructorCost instructorCost : newInstructorCosts) {
             if (instructorCostIdsHash.indexOf(instructorCost.getId()) == -1) {
                 instructorCosts.add(instructorCost);
                 instructorCostIdsHash.add(instructorCost.getId());

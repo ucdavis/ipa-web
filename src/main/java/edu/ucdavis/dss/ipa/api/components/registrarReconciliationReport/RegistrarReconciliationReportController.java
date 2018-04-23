@@ -122,7 +122,7 @@ public class RegistrarReconciliationReportController {
 				return null;
 			}
 
-			// Add the "senateInstructor" role to the new user (This will also create the instructor)
+			// Add the "instructor" role to the new user (This will also create the instructor)
 			userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(
 						instructor.getLoginId(), workgroup.getId(), "instructor");
 

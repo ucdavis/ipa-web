@@ -83,7 +83,7 @@ public class AssignmentViewController {
         Instructor instructor = instructorService.findOrCreate(supportStaff.getFirstName(), supportStaff.getLastName(), supportStaff.getEmail(), supportStaff.getLoginId(), workgroup.getId());
 
         // Ensure lecturer role is given
-        userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "lecturer");
+        userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "instructor");
 
         // Assign supportStaff to AI
         TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);

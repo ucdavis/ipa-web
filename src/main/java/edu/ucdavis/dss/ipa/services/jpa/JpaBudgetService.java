@@ -67,7 +67,6 @@ public class JpaBudgetService implements BudgetService {
 
         originalBudget.setTaCost(budgetDTO.getTaCost());
         originalBudget.setReaderCost(budgetDTO.getReaderCost());
-        originalBudget.setLecturerCost(budgetDTO.getLecturerCost());
 
         return this.budgetRepository.save(originalBudget);
     }

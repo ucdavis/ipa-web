@@ -125,10 +125,7 @@ public class UserRole extends BaseEntity {
 	public static boolean isInstructor(UserRole userRole) {
 		if (userRole == null || userRole.getRoleToken() == null) { return false; }
 
-		boolean isFederation = userRole.getRoleToken().equals("federationInstructor");
-		boolean isSenate = userRole.getRoleToken().equals("senateInstructor");
-		boolean isLecturer = userRole.getRoleToken().equals("lecturer");
-		return isFederation || isSenate || isLecturer;
+		return userRole.getRoleToken().equals("instructor");
 	}
 
 	/**

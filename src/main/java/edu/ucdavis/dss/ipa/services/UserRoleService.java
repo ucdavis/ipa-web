@@ -41,7 +41,7 @@ public interface UserRoleService {
 	List<UserRole> findByLoginId(String loginId);
 
 	/**
-	 * If the user does not already have an 'instructor' type role (senate/fed/lect), they will be assiged a senate role
+	 * If the user does not already have an 'instructor' role, they will be assiged the 'instructor' role and type
 	 * @param workgroup
 	 * @param user
 	 */
