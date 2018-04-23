@@ -55,7 +55,7 @@ public class AssignmentViewTeachingCallResponseController {
 
         // Authorize user
         Workgroup workgroup = schedule.getWorkgroup();
-        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "federationInstructor", "senateInstructor");
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "instructor");
 
         TeachingCallResponse teachingCallResponse = teachingCallResponseService.findOrCreateOneByScheduleIdAndInstructorIdAndTermCode(schedule.getId(), instructor.getId(), teachingCallResponseDTO.getTermCode());
 
