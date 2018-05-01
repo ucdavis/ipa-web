@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class JpaReportViewFactory implements ReportViewFactory {
-
 	@Inject SectionService sectionService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject DataWarehouseRepository dwRepository;

@@ -11,7 +11,6 @@ import java.util.List;
 
 @Service
 public class JpaWorkgroupViewFactory implements WorkgroupViewFactory {
-
 	@Inject WorkgroupService workgroupService;
 	@Inject UserRoleService userRoleService;
 	@Inject RoleService roleService;

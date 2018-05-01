@@ -12,16 +12,10 @@ import java.util.List;
 
 @Service
 public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory {
-
     @Inject ScheduleService scheduleService;
-
-    @Inject CourseService courseService;
     @Inject SectionGroupService sectionGroupService;
     @Inject SectionService sectionService;
     @Inject ActivityService activityService;
-
-    @Inject TeachingAssignmentService teachingAssignmentService;
-    @Inject InstructorService instructorService;
     @Inject UserRoleService userRoleService;
 
     @Override

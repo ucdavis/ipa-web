@@ -12,10 +12,8 @@ import java.util.List;
 
 @Service
 public class JpaSummaryViewFactory implements SummaryViewFactory {
-    @Inject WorkgroupService workgroupService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject ScheduleService scheduleService;
-    @Inject CourseService courseService;
     @Inject TermService termService;
     @Inject InstructorService instructorService;
     @Inject SupportStaffService supportStaffService;
