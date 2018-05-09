@@ -24,11 +24,12 @@ public class SectionGroupController {
   @Inject Authorizer authorizer;
   @Inject SectionGroupService sectionGroupService;
 
-  @RequestMapping(value = "/api/schedules/{scheduleId}/sectionGroups", method = RequestMethod.GET, produces="application/json")
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/year/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<SectionGroup> getSectionGroups(@PathVariable long scheduleId,
+  public List<SectionGroup> getSectionGroups(@PathVariable long workgroupId,
+                                             @PathVariable long year,
                                                HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findById(scheduleId);
+    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -37,6 +38,6 @@ public class SectionGroupController {
     }
     authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
-    return sectionGroupService.findByScheduleId(scheduleId);
+    return sectionGroupService.findByScheduleId(schedule.getId());
   }
 }

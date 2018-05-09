@@ -22,11 +22,12 @@ public class CourseController {
   @Inject ScheduleService scheduleService;
   @Inject Authorizer authorizer;
 
-  @RequestMapping(value = "/api/schedules/{scheduleId}/courses", method = RequestMethod.GET, produces="application/json")
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/courses", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<Course> getInstructorTypes(@PathVariable long scheduleId,
+  public List<Course> getInstructorTypes(@PathVariable long workgroupId,
+                                         @PathVariable long year,
                                          HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findById(scheduleId);
+    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());

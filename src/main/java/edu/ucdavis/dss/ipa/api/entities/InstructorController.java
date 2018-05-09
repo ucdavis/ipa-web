@@ -27,11 +27,12 @@ public class InstructorController {
   @Inject InstructorService instructorService;
   @Inject Authorizer authorizer;
 
-  @RequestMapping(value = "/api/schedules/{scheduleId}/instructors", method = RequestMethod.GET, produces="application/json")
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/instructors", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public Set<Instructor> getInstructors(@PathVariable long scheduleId,
+  public Set<Instructor> getInstructors(@PathVariable long workgroupId,
+                                        @PathVariable long year,
                                          HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findById(scheduleId);
+    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -42,7 +43,7 @@ public class InstructorController {
 
     Set<Instructor> instructors = new HashSet<>();
     Set<Instructor> activeInstructors = new HashSet<>(instructorService.findActiveByWorkgroupId(schedule.getWorkgroup().getId()));
-    Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(scheduleId));
+    Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
 
     instructors.addAll(assignedInstructors);
     instructors.addAll(activeInstructors);
