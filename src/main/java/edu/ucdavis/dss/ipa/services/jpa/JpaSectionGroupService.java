@@ -65,6 +65,18 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
+	public List<SectionGroup> findByScheduleId(long scheduleId) {
+		Schedule schedule = this.scheduleService.findById(scheduleId);
+		List<SectionGroup> sectionGroups = schedule.getCourses()
+				.stream()
+				.map(course -> course.getSectionGroups().stream()
+						.collect(Collectors.toList()))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+		return sectionGroups;
+	}
+
+	@Override
 	public List<SectionGroup> findByWorkgroupIdAndYear(long workgroupId, long year) {
 		return sectionGroupRepository.findByCourseScheduleWorkgroupIdAndCourseScheduleYear(workgroupId, year);
 	}
