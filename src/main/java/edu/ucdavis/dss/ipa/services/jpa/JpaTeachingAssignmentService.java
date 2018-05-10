@@ -115,6 +115,11 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
+	public List<TeachingAssignment> findApprovedByWorkgroupIdAndYear(long workgroupId, long year) {
+		return teachingAssignmentRepository.findByScheduleWorkgroupIdAndScheduleYearAndApprovedTrue(workgroupId, year);
+	}
+
+	@Override
 	public List<TeachingAssignment> findByScheduleId(long scheduleId) {
 		return teachingAssignmentRepository.findByScheduleId(scheduleId);
 	}

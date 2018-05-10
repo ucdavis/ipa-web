@@ -39,4 +39,6 @@ public interface TeachingAssignmentService {
 	List<TeachingAssignment> findAllByIds(List<Long> teachingAssignmentIds);
 
 	List<TeachingAssignment> updatePreferenceOrder(List<Long> sortedTeachingPreferenceIds);
+
+	List<TeachingAssignment> findApprovedByWorkgroupIdAndYear(long workgroupId, long year);
 }
