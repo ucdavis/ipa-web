@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.api.entities;
 
-import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.security.Authorizer;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RestController

@@ -24,7 +24,7 @@ public class SectionGroupController {
   @Inject Authorizer authorizer;
   @Inject SectionGroupService sectionGroupService;
 
-  @RequestMapping(value = "/api/workgroups/{workgroupId}/year/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/sectionGroups", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
   public List<SectionGroup> getSectionGroups(@PathVariable long workgroupId,
                                              @PathVariable long year,
