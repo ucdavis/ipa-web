@@ -35,8 +35,8 @@ public class SectionController {
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
       return null;
-
     }
+
     authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
     return sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);

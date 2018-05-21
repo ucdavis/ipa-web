@@ -38,8 +38,8 @@ public class UserRoleController {
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
       return null;
-
     }
+
     authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
     return userRoleService.findByWorkgroup(workgroup);

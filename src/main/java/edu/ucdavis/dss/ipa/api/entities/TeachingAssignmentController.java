@@ -34,10 +34,9 @@ public class TeachingAssignmentController {
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
       return null;
-
     }
-    authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
+    authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
     return teachingAssignmentService.findApprovedByWorkgroupIdAndYear(workgroupId, year);
   }

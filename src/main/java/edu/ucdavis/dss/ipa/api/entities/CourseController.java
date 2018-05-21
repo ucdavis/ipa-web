@@ -24,7 +24,7 @@ public class CourseController {
 
   @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/courses", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<Course> getInstructorTypes(@PathVariable long workgroupId,
+  public List<Course> getCourses(@PathVariable long workgroupId,
                                          @PathVariable long year,
                                          HttpServletResponse httpResponse) {
     Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
@@ -32,8 +32,8 @@ public class CourseController {
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
       return null;
-
     }
+
     authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
     return schedule.getCourses();
