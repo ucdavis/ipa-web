@@ -33,4 +33,6 @@ public interface SectionGroupService {
 	SectionGroup findOrCreateByCourseIdAndTermCode(Long courseId, String termCode);
 
 	SectionGroup identifyAndCondenseSharedActivities(SectionGroup sectionGroup);
+
+	List<SectionGroup> findByScheduleId(long scheduleId);
 }
