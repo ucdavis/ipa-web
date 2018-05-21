@@ -6,9 +6,11 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -104,7 +106,16 @@ public class InstructionalSupportStudentFormsController {
 
     @RequestMapping(value = "/api/instructionalSupportStudentFormView/studentInstructionalSupportPreferences/{studentPreferenceId}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
-    public Long deletePreference(@PathVariable long studentPreferenceId) {
+    public Long deletePreference(@PathVariable long studentPreferenceId, HttpServletResponse httpResponse) {
+        StudentSupportPreference studentPreference = studentSupportPreferenceService.findById(studentPreferenceId);
+
+        if (studentPreference == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return studentPreferenceId;
+        }
+
+        authorizer.hasWorkgroupRoles(studentPreference.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId(), "studentMasters", "studentPhd", "instructionalSupport");
+
         studentSupportPreferenceService.delete(studentPreferenceId);
 
         return studentPreferenceId;
