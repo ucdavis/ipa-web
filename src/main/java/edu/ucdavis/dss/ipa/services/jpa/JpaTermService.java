@@ -132,6 +132,7 @@ public class JpaTermService implements TermService {
 	@Override
 	public String getTermCodeFromYearAndTerm(Long year, String term) {
 		String termCode = null;
+
 		if (Long.valueOf(term) < 4) {
 			termCode = String.valueOf(year - 1) + term;
 		} else {
