@@ -92,7 +92,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 Row excelHeader = sheet.createRow(row);
                 excelHeader.createCell(col).setCellValue(course.getShortDescription());
 
-                // Set Assigned column
+                // Set Instructors column
                 col = 1;
 
                 for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
@@ -109,15 +109,12 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
                     if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
 
-                    String displayName = supportAssignment.getSupportStaff().getFirstName() + " " + supportAssignment.getSupportStaff().getLastName();
-                    if (taNames.length() > 0) {
-                        taNames += ", ";
-                    }
-
+                    String displayName = supportAssignment.getSupportStaff().getFullName();
                     taNames += displayName;
                 }
 
-                excelHeader.createCell(col).setCellValue(taNames);
+                String formattedTAs = String.join(", ", taNames);
+                excelHeader.createCell(col).setCellValue(formattedTAs);
 
                 // Set course values
                 for (Section section : sectionGroup.getSections()) {
@@ -226,7 +223,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         Row excelHeader = excelSheet.createRow(0);
 
         excelHeader.createCell(0).setCellValue("Course");
-        excelHeader.createCell(1).setCellValue("Assigned");
+        excelHeader.createCell(1).setCellValue("Instructors");
         excelHeader.createCell(2).setCellValue("TAs");
         excelHeader.createCell(3).setCellValue("Section");
         excelHeader.createCell(4).setCellValue("CRN");
