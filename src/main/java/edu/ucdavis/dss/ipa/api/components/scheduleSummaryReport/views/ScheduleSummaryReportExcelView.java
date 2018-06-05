@@ -1,7 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
-import edu.ucdavis.dss.ipa.entities.*;
-import org.apache.commons.lang3.StringUtils;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -9,8 +13,11 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     private ScheduleSummaryReportView scheduleSummaryReportViewDTO = null;
@@ -77,7 +84,6 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
             int col = 0;
 
             for (SectionGroup sectionGroup : course.getSectionGroups()) {
-
                 // Course will include sectionGroups from all terms in the year, but the view is scoped to a term
                 if (termCode.equals(sectionGroup.getTermCode()) == false) {
                     continue;
@@ -96,45 +102,80 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                     }
                 }
 
-                for (Section section : sectionGroup.getSections()) {
+                // Set TAs column
+                col = 2;
+                String taNames = "";
 
+                for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
+                    if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
+
+                    String displayName = supportAssignment.getSupportStaff().getFirstName() + " " + supportAssignment.getSupportStaff().getLastName();
+                    if (taNames.length() > 0) {
+                        taNames += ", ";
+                    }
+
+                    taNames += displayName;
+                }
+
+                excelHeader.createCell(col).setCellValue(taNames);
+
+                // Set course values
+                for (Section section : sectionGroup.getSections()) {
                     // Set Sequence Pattern
-                    col = 2;
+                    col = 3;
                     excelHeader.createCell(col).setCellValue(section.getSequenceNumber());
 
                     // Set CRN
-                    col = 3;
+                    col = 4;
                     excelHeader.createCell(col).setCellValue(section.getCrn());
 
                     // Set Seats
-                    col = 4;
+                    col = 5;
                     if (section.getSeats() != null) {
                         excelHeader.createCell(col).setCellValue(section.getSeats());
                     }
 
+                    // Set section TAs
+                    col = 6;
+                    String sectionTAs = "";
+
+                    for (SupportAssignment supportAssignment : section.getSupportAssignments()) {
+                        if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
+
+                        String displayName = supportAssignment.getSupportStaff().getFirstName() + " " + supportAssignment.getSupportStaff().getLastName();
+                        if (sectionTAs.length() > 0) {
+                            sectionTAs += ", ";
+                        }
+
+                        sectionTAs += displayName;
+                    }
+
+                    excelHeader.createCell(col).setCellValue(sectionTAs);
+
+
                     for (Activity activity : sectionGroup.getActivities()) {
                         // Set Activity Type Code Description
-                        col = 5;
+                        col = 7;
                         excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
 
                         // Set Days
-                        col = 6;
+                        col = 8;
                         excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
 
                         // Set Start
                         if (activity.getStartTime() != null) {
-                            col = 7;
+                            col = 9;
                             excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
 
                         // Set Start
                         if (activity.getEndTime() != null) {
-                            col = 8;
+                            col = 10;
                             excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
 
                         if (activity.getLocationDescription() != null) {
-                            col = 9;
+                            col = 11;
                             excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
                         }
 
@@ -144,27 +185,27 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
 
                     for (Activity activity : section.getActivities()) {
                         // Set Activity Type Code Description
-                        col = 5;
+                        col = 7;
                         excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
 
                         // Set Days
-                        col = 6;
+                        col = 8;
                         excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
 
                         // Set Start
                         if (activity.getStartTime() != null) {
-                            col = 7;
+                            col = 9;
                             excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
 
                         // Set Start
                         if (activity.getEndTime() != null) {
-                            col = 8;
+                            col = 10;
                             excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
 
                         if (activity.getLocationDescription() != null) {
-                            col = 9;
+                            col = 11;
                             excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
                         }
 
@@ -186,13 +227,15 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
 
         excelHeader.createCell(0).setCellValue("Course");
         excelHeader.createCell(1).setCellValue("Assigned");
-        excelHeader.createCell(2).setCellValue("Section");
-        excelHeader.createCell(3).setCellValue("CRN");
-        excelHeader.createCell(4).setCellValue("Seats");
-        excelHeader.createCell(5).setCellValue("Activity");
-        excelHeader.createCell(6).setCellValue("Days");
-        excelHeader.createCell(7).setCellValue("Start");
-        excelHeader.createCell(8).setCellValue("End");
-        excelHeader.createCell(9).setCellValue("Location");
+        excelHeader.createCell(2).setCellValue("TAs");
+        excelHeader.createCell(3).setCellValue("Section");
+        excelHeader.createCell(4).setCellValue("CRN");
+        excelHeader.createCell(5).setCellValue("Seats");
+        excelHeader.createCell(6).setCellValue("Section TAs");
+        excelHeader.createCell(7).setCellValue("Activity");
+        excelHeader.createCell(8).setCellValue("Days");
+        excelHeader.createCell(9).setCellValue("Start");
+        excelHeader.createCell(10).setCellValue("End");
+        excelHeader.createCell(11).setCellValue("Location");
     }
 }
