@@ -20,6 +20,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject SupportStaffService supportStaffService;
     @Inject TermService termService;
+    @Inject InstructorTypeService instructorTypeService;
 
     @Override
     public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
@@ -32,8 +33,8 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
-
-        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year, supportAssignments, supportStaffList);
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes);
     }
 
     @Override

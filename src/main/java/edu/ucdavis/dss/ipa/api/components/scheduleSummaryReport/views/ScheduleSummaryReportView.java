@@ -13,6 +13,7 @@ public class ScheduleSummaryReportView {
     List<SupportStaff> supportStaffList = new ArrayList<>();
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
+    List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
 
@@ -25,7 +26,8 @@ public class ScheduleSummaryReportView {
                                      String termCode,
                                      Long year,
                                      List<SupportAssignment> supportAssignments,
-                                     List<SupportStaff> supportStaffList) {
+                                     List<SupportStaff> supportStaffList,
+                                     List<InstructorType> instructorTypes) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -36,6 +38,7 @@ public class ScheduleSummaryReportView {
         setYear(year);
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
+        setInstructorTypes(instructorTypes);
     }
 
     public List<Course> getCourses() {
@@ -116,5 +119,13 @@ public class ScheduleSummaryReportView {
 
     public void setSupportStaffList(List<SupportStaff> supportStaffList) {
         this.supportStaffList = supportStaffList;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }
