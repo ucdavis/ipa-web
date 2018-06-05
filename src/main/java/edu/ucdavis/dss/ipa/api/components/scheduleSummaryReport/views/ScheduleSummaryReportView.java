@@ -9,9 +9,11 @@ public class ScheduleSummaryReportView {
     List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
     List<Section> sections = new ArrayList<>();
     List<Activity> activities = new ArrayList<>();
-
+    List<SupportAssignment> supportAssignments = new ArrayList<>();
+    List<SupportStaff> supportStaffList = new ArrayList<>();
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
+    List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
 
@@ -22,7 +24,10 @@ public class ScheduleSummaryReportView {
                                      List<TeachingAssignment> teachingAssignments,
                                      List<Instructor> instructors,
                                      String termCode,
-                                     Long year) {
+                                     Long year,
+                                     List<SupportAssignment> supportAssignments,
+                                     List<SupportStaff> supportStaffList,
+                                     List<InstructorType> instructorTypes) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -31,6 +36,9 @@ public class ScheduleSummaryReportView {
         setInstructors(instructors);
         setTermCode(termCode);
         setYear(year);
+        setSupportAssignments(supportAssignments);
+        setSupportStaffList(supportStaffList);
+        setInstructorTypes(instructorTypes);
     }
 
     public List<Course> getCourses() {
@@ -95,5 +103,29 @@ public class ScheduleSummaryReportView {
 
     public void setYear(Long year) {
         this.year = year;
+    }
+
+    public List<SupportAssignment> getSupportAssignments() {
+        return supportAssignments;
+    }
+
+    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
+        this.supportAssignments = supportAssignments;
+    }
+
+    public List<SupportStaff> getSupportStaffList() {
+        return supportStaffList;
+    }
+
+    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+        this.supportStaffList = supportStaffList;
+    }
+
+    public List<InstructorType> getInstructorTypes() {
+        return instructorTypes;
+    }
+
+    public void setInstructorTypes(List<InstructorType> instructorTypes) {
+        this.instructorTypes = instructorTypes;
     }
 }

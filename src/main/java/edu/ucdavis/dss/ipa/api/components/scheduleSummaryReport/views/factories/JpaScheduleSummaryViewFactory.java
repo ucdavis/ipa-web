@@ -17,19 +17,24 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject SectionService sectionService;
     @Inject ActivityService activityService;
     @Inject UserRoleService userRoleService;
+    @Inject SupportAssignmentService supportAssignmentService;
+    @Inject SupportStaffService supportStaffService;
+    @Inject TermService termService;
+    @Inject InstructorTypeService instructorTypeService;
 
     @Override
     public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
-
         List<Course> courses = schedule.getCourses();
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
         List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
-
-        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year);
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
+        List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes);
     }
 
     @Override

@@ -36,4 +36,6 @@ public interface TermService {
 	List<Term> findAll();
 
 	Long getAcademicYearFromTermCode(String termCode);
+
+	String getTermCodeFromYearAndTerm(Long year, String term);
 }
