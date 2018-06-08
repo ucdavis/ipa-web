@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 @Profile({"production", "staging", "development"})
 public class UpdateSectionsTask {
-    final long ONE_DAY_IN_MILLISECONDS = 86400000;
+    final long SIX_HOURS_IN_MILLISECONDS = 21600000;
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
     private static final Logger log = LoggerFactory.getLogger("UpdateSectionsTask");
 
@@ -23,7 +23,7 @@ public class UpdateSectionsTask {
     /**
      * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
      */
-    @Scheduled( fixedDelay = ONE_DAY_IN_MILLISECONDS )
+    @Scheduled( fixedDelay = SIX_HOURS_IN_MILLISECONDS )
     @Async
     public void updateSectionsFromDW() {
         if(runningTask) return; // avoid multiple concurrent jobs
