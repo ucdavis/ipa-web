@@ -69,6 +69,7 @@ public class AssignmentViewTeachingAssignmentController {
             && teachingAssignment.isInResidence() == false
             && teachingAssignment.isWorkLifeBalance() == false
             && teachingAssignment.isLeaveOfAbsence() == false
+            && teachingAssignment.isSabbaticalInResidence() == false
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
@@ -79,6 +80,7 @@ public class AssignmentViewTeachingAssignmentController {
                 || teachingAssignment.isInResidence() == true
                 || teachingAssignment.isWorkLifeBalance() == true
                 || teachingAssignment.isLeaveOfAbsence() == true
+                || teachingAssignment.isSabbaticalInResidence() == false
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
@@ -393,8 +395,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // Make a single teaching Preference if its a non sectiongroup assignment
-        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance() || teachingAssignment.isLeaveOfAbsence()) {
-
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance() || teachingAssignment.isLeaveOfAbsence() || teachingAssignment.isSabbaticalInResidence()) {
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);
             teachingAssignment.setInstructor(instructor);
