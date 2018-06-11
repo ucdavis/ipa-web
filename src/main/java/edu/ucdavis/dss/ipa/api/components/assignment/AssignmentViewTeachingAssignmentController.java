@@ -80,7 +80,7 @@ public class AssignmentViewTeachingAssignmentController {
                 || teachingAssignment.isInResidence() == true
                 || teachingAssignment.isWorkLifeBalance() == true
                 || teachingAssignment.isLeaveOfAbsence() == true
-                || teachingAssignment.isSabbaticalInResidence() == false
+                || teachingAssignment.isSabbaticalInResidence() == true
                 || teachingAssignment.isSabbatical() == true) {
 
             teachingAssignment.setInstructor(instructor);
