@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaAssignmentViewFactory implements AssignmentViewFactory {
@@ -22,6 +24,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportPreferenceService studentSupportPreferenceService;
 	@Inject InstructorTypeService instructorTypeService;
+	@Inject UserService userService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
@@ -41,16 +44,20 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 		List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
 		List<Long> instructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "instructor");
-
+		List<UserRole> userRoles = workgroup.getUserRoles();
 		List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
 		List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(scheduleId);
+		List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
+
+		Set<User> activeUsers = new HashSet<>(userService.findAllByWorkgroup(workgroup));
+		Set<User> assignedUsers = new HashSet<>(userService.findAllByTeachingAssignments(schedule.getTeachingAssignments()));
 
 		return new AssignmentView(
 				courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
 				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
-				instructorTypes
+				instructorTypes, userRoles, activeUsers
 		);
 	}
 
