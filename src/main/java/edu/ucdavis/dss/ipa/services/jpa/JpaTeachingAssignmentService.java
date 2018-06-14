@@ -142,7 +142,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		if (teachingAssignmentDTO.getSectionGroup() != null) {
 			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(teachingAssignmentDTO.getSectionGroup(), teachingAssignmentDTO.getInstructor());
 		} else {
-			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsence(
+			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsenceAndSabbaticalInResidence(
 				teachingAssignmentDTO.getInstructor().getId(),
 				teachingAssignmentDTO.getSchedule().getId(),
 				teachingAssignmentDTO.getTermCode(),
@@ -151,7 +151,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 				teachingAssignmentDTO.isSabbatical(),
 				teachingAssignmentDTO.isInResidence(),
 				teachingAssignmentDTO.isWorkLifeBalance(),
-				teachingAssignmentDTO.isWorkLifeBalance()
+				teachingAssignmentDTO.isWorkLifeBalance(),
+				teachingAssignmentDTO.isSabbaticalInResidence()
 			);
 		}
 
