@@ -1,8 +1,10 @@
 package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
-        import edu.ucdavis.dss.ipa.entities.*;
-        import java.util.ArrayList;
-        import java.util.List;
+import edu.ucdavis.dss.ipa.entities.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AssignmentView {
     List<Course> courses = new ArrayList<Course>();
@@ -23,6 +25,8 @@ public class AssignmentView {
     List<SupportStaff> supportStaffList;
     List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorType> instructorTypes = new ArrayList<>();
+    List<UserRole> userRoles = new ArrayList<>();
+    Set<User> users = new HashSet<>();
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
@@ -40,7 +44,9 @@ public class AssignmentView {
                           List<SupportAssignment> supportAssignments,
                           List<SupportStaff> supportStaffList,
                           List<StudentSupportPreference> studentSupportPreferences,
-                          List<InstructorType> instructorTypes) {
+                          List<InstructorType> instructorTypes,
+                          List<UserRole> userRoles,
+                          Set<User> users) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -60,6 +66,8 @@ public class AssignmentView {
         setSupportStaffList(supportStaffList);
         setStudentSupportPreferences(studentSupportPreferences);
         setInstructorTypes(instructorTypes);
+        setUserRoles(userRoles);
+        setUsers(users);
     }
 
     public List<Course> getCourses() {
@@ -205,5 +213,21 @@ public class AssignmentView {
 
     public void setInstructorTypes(List<InstructorType> instructorTypes) {
         this.instructorTypes = instructorTypes;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }
