@@ -1,10 +1,10 @@
 package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
-        import edu.ucdavis.dss.ipa.entities.*;
-        import java.util.ArrayList;
-        import java.util.HashSet;
-        import java.util.List;
-        import java.util.Set;
+import edu.ucdavis.dss.ipa.entities.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AssignmentView {
     List<Course> courses = new ArrayList<Course>();
