@@ -37,6 +37,9 @@ public class AuthController {
     @Value("${ipa.url.api}")
     String ipaUrlApi;
 
+    @Value("${ipa.cas.url}")
+    String ipaCasUrl;
+
     /**
      * Returns successful JWT token if logged into CAS, else
      * returns a redirect URL to be performed by the client to
@@ -128,7 +131,7 @@ public class AuthController {
             securityDTO.setRealUserDisplayName(realUser.getFirstName() + " " + realUser.getLastName());
         } else {
             // Looks like we need to redirect to CAS
-            securityDTO.setRedirect("https://cas.ucdavis.edu/cas/login?service=" + ipaUrlApi + "/post-login");
+            securityDTO.setRedirect(ipaCasUrl + "/cas/login?service=" + ipaUrlApi + "/post-login");
         }
 
         return securityDTO;
@@ -153,7 +156,7 @@ public class AuthController {
         session.invalidate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "https://cas.ucdavis.edu/cas/logout");
+        headers.add("Location", ipaCasUrl + "/cas/logout");
 
         return new ResponseEntity<byte[]>(null, headers, HttpStatus.FOUND);
     }
