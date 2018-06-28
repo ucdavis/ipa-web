@@ -25,6 +25,10 @@ public class Application {
     @Value("${ipa.jwt.signingkey}")
     String jwtSigningKey;
 
+    /* e.g. https://cas.ucdavis.edu/cas */
+    @Value("${cas.url}")
+    String casUrl;
+
     // Configure JWT
     @Bean
     public FilterRegistrationBean jwtFilter() {
@@ -58,7 +62,7 @@ public class Application {
 
         cas20.setFilter(new Cas20ProxyReceivingTicketValidationFilter());
         cas20.addUrlPatterns("/login", "/post-login");
-        cas20.addInitParameter("casServerUrlPrefix", "https://cas.ucdavis.edu/cas");
+        cas20.addInitParameter("casServerUrlPrefix", casUrl);
         cas20.addInitParameter("serverName", ipaUrlApi);
         cas20.addInitParameter("encoding", "UTF-8");
 
