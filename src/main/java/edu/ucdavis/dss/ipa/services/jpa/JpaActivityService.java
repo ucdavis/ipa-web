@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
@@ -55,6 +56,14 @@ public class JpaActivityService implements ActivityService {
 		// Activity frequency should be a minimum of once a week
 		if (activity.getFrequency() < 1) {
 			activity.setFrequency(1);
+		}
+
+		// If activity is numeric, then it should always be tied to a sectionGroup and not a section
+		if (activity.getSection() != null) {
+			if (Utilities.isNumeric(activity.getSection().getSequenceNumber()) == true) {
+				activity.setSectionGroup(activity.getSection().getSectionGroup());
+				activity.setSection(null);
+			}
 		}
 
 		return this.activityRepository.save(activity);
