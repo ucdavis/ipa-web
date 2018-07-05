@@ -16,6 +16,7 @@ public class JpaSectionService implements SectionService {
 	@Inject SectionRepository sectionRepository;
 
 	@Override
+	@Transactional
 	public Section save(@Valid Section section) {
 		return sectionRepository.save(section);
 	}

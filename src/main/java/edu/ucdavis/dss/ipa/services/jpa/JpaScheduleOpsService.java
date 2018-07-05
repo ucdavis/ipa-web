@@ -183,6 +183,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 			// Query the subjectCode/year pair if necessary
 			if (allDwSections.get(dwSectionKey) == null) {
 				List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
+
 				if (dwSections == null) {
 					// If query fails to return results for the query, don't attempt to requery on a later section
 					allDwSections.put(dwSectionKey, new ArrayList<DwSection>());
@@ -192,35 +193,35 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 				allDwSections.put(dwSectionKey, dwSections);
 			}
 
-			// Loop through course children
 			for (SectionGroup sectionGroup : course.getSectionGroups()) {
 				for (Section section : sectionGroup.getSections()) {
 					// Find relevant dwSections to sync from
 					for (DwSection dwSection : allDwSections.get(dwSectionKey)) {
-						// Ensure dwSection identification data is valid
-						if (dwSection.getTermCode() == null || dwSection.getTermCode().length() == 0
-								|| dwSection.getSequenceNumber() == null || dwSection.getSequenceNumber().length() == 0) {
+						// DwSection doesn't have a crn
+						if (dwSection.getCrn() == null) { continue; }
+
+						String dwTermCode = dwSection.getTermCode() != null ? dwSection.getTermCode() : null;
+						String dwSequenceNumber = dwSection.getSequenceNumber() != null ? dwSection.getSequenceNumber() : null;
+						String dwSubjectCode = dwSection.getSubjectCode() != null ? dwSection.getSubjectCode() : null;
+						String dwCourseNumber = dwSection.getCourseNumber() != null ? dwSection.getCourseNumber() : null;
+
+						String ipaTermCode = section.getSectionGroup().getTermCode();
+						String ipaSequenceNumber = section.getSequenceNumber();
+						String ipaSubjectCode = section.getSectionGroup().getCourse().getSubjectCode();
+						String ipaCourseNumber = section.getSectionGroup().getCourse().getCourseNumber();
+
+						// DwSection doesn't match ipa section
+						if (dwTermCode.equals(ipaTermCode) == false
+						|| dwSequenceNumber.equals(ipaSequenceNumber) == false
+						|| dwSubjectCode.equals(ipaSubjectCode) == false
+						|| dwCourseNumber.equals(ipaCourseNumber) == false) {
 							continue;
 						}
 
-						// Check termCode matches
-						if (sectionGroup.getTermCode().equals(dwSection.getTermCode()) == false) {
-							continue;
-						}
-
-						// Check sequenceNumber matches
-						if (section.getSequenceNumber().equals(dwSection.getSequenceNumber()) == false) {
-							continue;
-						}
-
-						// Sync crn if DW data is valid and different
-						if (dwSection.getCrn() != null && dwSection.getCrn().length() > 0
-								&& dwSection.getCrn().equals(section.getCrn()) == false) {
+						// Ensure crn doesn't already match
+						if (dwSection.getCrn().equals(section.getCrn()) == false) {
 							section.setCrn(dwSection.getCrn());
-
-							if (sectionService.hasValidSequenceNumber(section)) {
-								section = this.sectionService.save(section);
-							}
+							section = this.sectionService.save(section);
 						}
 
 						activityService.syncActivityLocations(dwSection, section.getActivities());
