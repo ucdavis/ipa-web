@@ -23,6 +23,7 @@ public class V204__Fix_orphaned_activities implements JdbcMigration {
     // Set the sectionGroup and null the section, and save
 
 
+    System.out.println("start");
     PreparedStatement psActivities = connection.prepareStatement("SELECT a.Id, s.sectionGroupId FROM Sections s, Activities a WHERE s.SequenceNumber > 0 AND a.SectionId IS NOT NULL AND a.sectionId = s.Id;");
     connection.setAutoCommit(false);
 
@@ -32,22 +33,21 @@ public class V204__Fix_orphaned_activities implements JdbcMigration {
       Long activityId = rsActivities.getLong("Id");
       Long sectionGroupId = rsActivities.getLong("SectionGroupId");
 
-      // Get activity
-      PreparedStatement psActivity = connection.prepareStatement(
-          "SELECT * " +
-              "FROM Activities " +
-              "WHERE Id = ?;"
+      // Update Activity
+      PreparedStatement psUpdateActivity = connection.prepareStatement(
+          " UPDATE `Activities` SET `SectionId` = NULL AND `SectionGroupId` = ? WHERE `Id` = ?;"
       );
 
-      psActivity.setLong(1, activityId);
-      ResultSet rsActivity = psActivity.executeQuery();
+      psUpdateActivity.setLong(1, sectionGroupId);
+      psUpdateActivity.setLong(2, activityId);
 
-      while (rsActivity.next()) {
-        // Update activity
-      }
+      psUpdateActivity.execute();
+      psUpdateActivity.close();
 
       // Commit changes
       connection.commit();
     }
+    System.out.println("end");
+
   }
 }
