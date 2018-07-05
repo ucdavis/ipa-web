@@ -59,11 +59,9 @@ public class JpaActivityService implements ActivityService {
 		}
 
 		// If activity is numeric, then it should always be tied to a sectionGroup and not a section
-		if (activity.getSection() != null) {
-			if (Utilities.isNumeric(activity.getSection().getSequenceNumber()) == true) {
-				activity.setSectionGroup(activity.getSection().getSectionGroup());
-				activity.setSection(null);
-			}
+		if (activity.getSection() != null && Utilities.isNumeric(activity.getSection().getSequenceNumber()) == true) {
+			activity.setSectionGroup(activity.getSection().getSectionGroup());
+			activity.setSection(null);
 		}
 
 		return this.activityRepository.save(activity);
