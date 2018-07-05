@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class V204__Fix_orphaned_activities implements JdbcMigration {
+public class V204__Fix_numeric_activities implements JdbcMigration {
 
   /**
    * Identify activities that are inappropriately connected to sections that are numeric,
@@ -16,14 +16,6 @@ public class V204__Fix_orphaned_activities implements JdbcMigration {
    */
   @Override
   public void migrate(Connection connection) throws Exception {
-
-    // Look at all activities with a sectionId
-    // If they have a numeric sequence pattern,
-    // Find their sectionGroupId,
-    // Set the sectionGroup and null the section, and save
-
-
-    System.out.println("start");
     PreparedStatement psActivities = connection.prepareStatement("SELECT a.Id, s.sectionGroupId FROM Sections s, Activities a WHERE s.SequenceNumber > 0 AND a.SectionId IS NOT NULL AND a.sectionId = s.Id;");
     connection.setAutoCommit(false);
 
@@ -35,7 +27,7 @@ public class V204__Fix_orphaned_activities implements JdbcMigration {
 
       // Update Activity
       PreparedStatement psUpdateActivity = connection.prepareStatement(
-          " UPDATE `Activities` SET `SectionId` = NULL AND `SectionGroupId` = ? WHERE `Id` = ?;"
+          " UPDATE `Activities` SET `SectionId` = NULL, `SectionGroupId` = ? WHERE `Id` = ?;"
       );
 
       psUpdateActivity.setLong(1, sectionGroupId);
@@ -43,11 +35,9 @@ public class V204__Fix_orphaned_activities implements JdbcMigration {
 
       psUpdateActivity.execute();
       psUpdateActivity.close();
-
-      // Commit changes
-      connection.commit();
     }
-    System.out.println("end");
 
+    // Commit changes
+    connection.commit();
   }
 }
