@@ -16,7 +16,6 @@ public class JpaSectionService implements SectionService {
 	@Inject SectionRepository sectionRepository;
 
 	@Override
-	@Transactional
 	public Section save(@Valid Section section) {
 		return sectionRepository.save(section);
 	}
@@ -24,7 +23,6 @@ public class JpaSectionService implements SectionService {
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		Section section = this.getOneById(id);
 		this.sectionRepository.delete(id);
 		return true;
 	}

@@ -145,4 +145,6 @@ public interface SectionGroupRepository extends CrudRepository<SectionGroup, Lon
 			@Param("termCode") String termCode);
 
 	SectionGroup findByCourseIdAndTermCode(Long courseId, String termCode);
+
+	List<SectionGroup> findByCourseId(long courseId);
 }
