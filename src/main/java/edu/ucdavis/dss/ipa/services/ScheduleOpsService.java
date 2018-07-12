@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.Course;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,7 @@ public interface ScheduleOpsService {
 	/**
 	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
 	 */
-	void updateSectionsFromDW();
+	void updateSectionsByCourseFromDW(Course course);
 
 	void updateEmptySectionGroups();
 }

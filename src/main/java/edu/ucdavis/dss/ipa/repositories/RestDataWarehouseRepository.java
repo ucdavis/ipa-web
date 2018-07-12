@@ -112,6 +112,13 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		}
 	}
 
+	/**
+	 * Returns sections based on the given parameters.
+	 *
+	 * @param termCode e.g. 201810
+	 * @param uniqueKeys e.g. "ECS-010A-001", "ECS-1100-A01"
+	 * @return
+	 */
 	@Override
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
 		DwClient dwClient;

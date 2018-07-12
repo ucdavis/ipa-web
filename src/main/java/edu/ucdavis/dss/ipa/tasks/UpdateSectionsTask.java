@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.tasks;
 
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ public class UpdateSectionsTask {
     private static final Logger log = LoggerFactory.getLogger("UpdateSectionsTask");
 
     @Inject ScheduleOpsService scheduleOpsService;
+    @Inject CourseService courseService;
 
     /**
      * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
@@ -31,7 +34,12 @@ public class UpdateSectionsTask {
 
         log.debug("updateSectionsFromDW() started");
 
-        this.scheduleOpsService.updateSectionsFromDW();
+        List<Course> courses = this.courseService.getAllCourses();
+
+        for (Course course : courses) {
+            this.scheduleOpsService.updateSectionsByCourseFromDW(course);
+        }
+
         try {
             this.scheduleOpsService.updateEmptySectionGroups();
         } catch (org.springframework.transaction.TransactionSystemException e) {

@@ -23,7 +23,6 @@ public class JpaSectionService implements SectionService {
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		Section section = this.getOneById(id);
 		this.sectionRepository.delete(id);
 		return true;
 	}

@@ -96,6 +96,11 @@ public class JpaSectionGroupService implements SectionGroupService {
 	}
 
 	@Override
+	public List<SectionGroup> findByCourse(Course course) {
+		return this.sectionGroupRepository.findByCourseId(course.getId());
+	}
+
+	@Override
 	public List<SectionGroup> findByCourses(List<Course> courses) {
 		List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
 

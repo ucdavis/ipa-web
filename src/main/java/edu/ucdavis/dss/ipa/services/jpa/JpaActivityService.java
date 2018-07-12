@@ -106,13 +106,14 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	public void syncActivityLocations(DwSection dwSection, List<Activity> activities) {
 		for (Activity activity : activities) {
+			// Only sync locations when allowed (i.e. not custom space)
 			if (activity.isSyncLocation() == false) {
 				continue;
 			}
 
 			String dayIndicator = "";
 			if (activity.getDayIndicator() != null) {
-				dayIndicator = activity.getDayIndicator().toString();
+				dayIndicator = activity.getDayIndicator();
 			}
 
 			String startTime = "";

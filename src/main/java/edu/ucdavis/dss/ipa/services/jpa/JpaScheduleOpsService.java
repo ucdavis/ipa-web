@@ -32,17 +32,13 @@ import org.springframework.stereotype.Service;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class JpaScheduleOpsService implements ScheduleOpsService {
 	private static final Logger log = LoggerFactory.getLogger("ScheduleOps");
 
 	@Inject ScheduleService scheduleService;
-	@Inject CourseService courseService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
@@ -167,65 +163,41 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 	/**
 	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
 	 */
-	@Transactional
 	@Override
-	public void updateSectionsFromDW() {
-		List<Course> courses = this.courseService.getAllCourses();
+	@Transactional
+	public void updateSectionsByCourseFromDW(Course course) {
+		String ipaSubjectCode = course.getSubjectCode();
+		String ipaCourseNumber = course.getCourseNumber();
 
-		// Map Keys will look like allDwSections.get(PSC-2017);
-		Map<String, List<DwSection>> allDwSections = new HashMap<>();
+		List<SectionGroup> sectionGroups = this.sectionGroupService.findByCourse(course);
 
-		for (Course course : courses) {
-			Long year = course.getSchedule().getYear();
-			String subjectCode = course.getSubjectCode();
-			String dwSectionKey = subjectCode + "-" + year;
+		for (SectionGroup sectionGroup : sectionGroups) {
+			String ipaTermCode = sectionGroup.getTermCode();
 
-			// Query the subjectCode/year pair if necessary
-			if (allDwSections.get(dwSectionKey) == null) {
-				List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, year);
-				if (dwSections == null) {
-					// If query fails to return results for the query, don't attempt to requery on a later section
-					allDwSections.put(dwSectionKey, new ArrayList<DwSection>());
-					continue;
-				}
+			for (Section section : sectionGroup.getSections()) {
+				String ipaSequenceNumber = section.getSequenceNumber();
 
-				allDwSections.put(dwSectionKey, dwSections);
-			}
+				String uniqueKey = ipaSubjectCode + "-" + ipaCourseNumber + "-" + ipaSequenceNumber;
 
-			// Loop through course children
-			for (SectionGroup sectionGroup : course.getSectionGroups()) {
-				for (Section section : sectionGroup.getSections()) {
-					// Find relevant dwSections to sync from
-					for (DwSection dwSection : allDwSections.get(dwSectionKey)) {
-						// Ensure dwSection identification data is valid
-						if (dwSection.getTermCode() == null || dwSection.getTermCode().length() == 0
-								|| dwSection.getSequenceNumber() == null || dwSection.getSequenceNumber().length() == 0) {
-							continue;
-						}
+				List<DwSection> _allDwSections = this.dwRepository.getSectionsByTermCodeAndUniqueKeys(ipaTermCode, Arrays.asList(uniqueKey));
 
-						// Check termCode matches
-						if (sectionGroup.getTermCode().equals(dwSection.getTermCode()) == false) {
-							continue;
-						}
+				DwSection dwSection = _allDwSections.stream().filter(s ->
+						ipaTermCode.equals(s.getTermCode())
+								&& ipaSequenceNumber.equals(s.getSequenceNumber())
+								&& ipaSubjectCode.equals(s.getSubjectCode())
+								&& ipaCourseNumber.equals(s.getCourseNumber())
+								&& (s.getCrn() != null)
+				).findFirst().orElse(null);
 
-						// Check sequenceNumber matches
-						if (section.getSequenceNumber().equals(dwSection.getSequenceNumber()) == false) {
-							continue;
-						}
-
-						// Sync crn if DW data is valid and different
-						if (dwSection.getCrn() != null && dwSection.getCrn().length() > 0
-								&& dwSection.getCrn().equals(section.getCrn()) == false) {
-							section.setCrn(dwSection.getCrn());
-
-							if (sectionService.hasValidSequenceNumber(section)) {
-								section = this.sectionService.save(section);
-							}
-						}
-
-						activityService.syncActivityLocations(dwSection, section.getActivities());
-						activityService.syncActivityLocations(dwSection, sectionGroup.getActivities());
+				if(dwSection != null) {
+					// Set CRN if necessary
+					if (dwSection.getCrn().equals(section.getCrn()) == false) {
+						section.setCrn(dwSection.getCrn());
+						section = this.sectionService.save(section);
 					}
+
+					activityService.syncActivityLocations(dwSection, section.getActivities());
+					activityService.syncActivityLocations(dwSection, sectionGroup.getActivities());
 				}
 			}
 		}
