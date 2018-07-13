@@ -93,4 +93,9 @@ public class JpaLineItemService implements LineItemService {
             this.deleteById(lineItemId);
         }
     }
+
+    @Override
+    public List<LineItem> findbyWorkgroupIdAndYear(long workgroupId, long year) {
+        return lineItemRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
 }

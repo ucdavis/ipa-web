@@ -136,4 +136,9 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
         return this.sectionGroupCostRepository.save(originalSectionGroupCost);
     }
+
+    @Override
+    public List<SectionGroupCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
+        return this.sectionGroupCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
 }

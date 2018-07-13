@@ -16,4 +16,6 @@ public interface SectionGroupCostService {
     SectionGroupCost findById(long sectionGroupCostId);
 
     SectionGroupCost update(SectionGroupCost sectionGroupCostDTO);
+
+    List<SectionGroupCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
 }

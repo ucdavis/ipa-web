@@ -66,4 +66,9 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
 
         return this.instructorTypeCostRepository.save(instructorTypeCostDTO);
     }
+
+    @Override
+    public List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
+        return this.instructorTypeCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
 }
