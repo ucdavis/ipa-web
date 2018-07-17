@@ -27,20 +27,18 @@ public class UserRoleController {
   @Inject UserRoleService userRoleService;
   @Inject WorkgroupService workgroupService;
 
-  @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/userRoles", method = RequestMethod.GET, produces="application/json")
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/userRoles", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
   public List<UserRole> getSectionGroups(@PathVariable long workgroupId,
-                                         @PathVariable long year,
                                          HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
     Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
-    if (schedule == null) {
+    if (workgroup == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
       return null;
     }
 
-    authorizer.hasWorkgroupRoles(schedule.getWorkgroup().getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
+    authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
     return userRoleService.findByWorkgroup(workgroup);
   }
