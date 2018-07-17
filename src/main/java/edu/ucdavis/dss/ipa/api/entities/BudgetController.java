@@ -27,8 +27,8 @@ public class BudgetController {
   @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/budget", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
   public Budget getBudget(@PathVariable long workgroupId,
-                                 @PathVariable long year,
-                                 HttpServletResponse httpResponse) {
+                          @PathVariable long year,
+                          HttpServletResponse httpResponse) {
     Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
     if (budget == null) {
