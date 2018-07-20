@@ -16,4 +16,6 @@ public interface InstructorTypeCostService {
     InstructorTypeCost update(InstructorTypeCost instructorTypeCost);
 
     InstructorTypeCost findOrCreate(InstructorTypeCost instructorTypeCostDTO);
+
+    List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
 }

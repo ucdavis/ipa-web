@@ -21,4 +21,6 @@ public interface InstructorCostService {
     List<InstructorCost> findOrCreateManyFromBudget(Budget budget);
 
     void removeAssociationByInstructorTypeId(long instructorTypeId);
+
+    List<InstructorCost> findByWorkgroupIdAndYear(long workgroupId, long year);
 }

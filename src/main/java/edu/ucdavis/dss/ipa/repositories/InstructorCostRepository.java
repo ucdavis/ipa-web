@@ -20,4 +20,13 @@ public interface InstructorCostRepository extends CrudRepository<InstructorCost,
     @Modifying
     @Query("UPDATE InstructorCost ic SET ic.instructorTypeCost = NULL WHERE ic.instructorTypeCost.id = :instructorTypeCostId")
     void removeAssociationByInstructorTypeId(@Param("instructorTypeCost") long instructorTypeCostId);
+
+    @Query( " SELECT DISTINCT ic" +
+    " FROM Schedule s, Workgroup w, Budget b, InstructorCost ic" +
+    " WHERE ic.budget = b" +
+    " AND b.schedule = s" +
+    " AND s.workgroup = w" +
+    " AND w.id = :workgroupId" +
+    " AND s.year = :year")
+    List<InstructorCost> findByWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
 }

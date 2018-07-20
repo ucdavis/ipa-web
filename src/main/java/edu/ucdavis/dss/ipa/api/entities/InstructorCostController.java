@@ -1,11 +1,9 @@
 package edu.ucdavis.dss.ipa.api.entities;
 
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,16 +19,17 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-public class UserRoleController {
-  @Inject ScheduleService scheduleService;
-  @Inject Authorizer authorizer;
-  @Inject UserRoleService userRoleService;
+public class InstructorCostController {
+  @Inject InstructorCostService instructorCostService;
   @Inject WorkgroupService workgroupService;
 
-  @RequestMapping(value = "/api/workgroups/{workgroupId}/userRoles", method = RequestMethod.GET, produces="application/json")
+  @Inject Authorizer authorizer;
+
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/instructorCosts", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<UserRole> getUserRoles(@PathVariable long workgroupId,
-                                         HttpServletResponse httpResponse) {
+  public List<InstructorCost> getInstructorCosts(@PathVariable long workgroupId,
+                                                 @PathVariable long year,
+                                                 HttpServletResponse httpResponse) {
     Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
     if (workgroup == null) {
@@ -38,8 +37,9 @@ public class UserRoleController {
       return null;
     }
 
-    authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
+    authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
+    List<InstructorCost> instructorCosts = instructorCostService.findByWorkgroupIdAndYear(workgroupId, year);
 
-    return userRoleService.findByWorkgroup(workgroup);
+    return instructorCosts;
   }
 }
