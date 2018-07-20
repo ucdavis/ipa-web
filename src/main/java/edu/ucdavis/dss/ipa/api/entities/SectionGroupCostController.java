@@ -40,10 +40,7 @@ public class SectionGroupCostController {
     }
 
     authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
-
-
     List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findbyWorkgroupIdAndYear(workgroupId, year);
-
 
     return sectionGroupCosts;
   }

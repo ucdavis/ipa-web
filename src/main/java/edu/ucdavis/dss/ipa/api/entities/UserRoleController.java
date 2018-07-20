@@ -29,7 +29,7 @@ public class UserRoleController {
 
   @RequestMapping(value = "/api/workgroups/{workgroupId}/userRoles", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<UserRole> getSectionGroups(@PathVariable long workgroupId,
+  public List<UserRole> getUserRoles(@PathVariable long workgroupId,
                                          HttpServletResponse httpResponse) {
     Workgroup workgroup = workgroupService.findOneById(workgroupId);
 

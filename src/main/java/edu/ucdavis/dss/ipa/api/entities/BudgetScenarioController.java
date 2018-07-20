@@ -38,10 +38,7 @@ public class BudgetScenarioController {
     }
 
     authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
-
-
     List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
-
 
     return budgetScenarios;
   }

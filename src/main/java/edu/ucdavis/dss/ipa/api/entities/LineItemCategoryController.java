@@ -22,7 +22,7 @@ public class LineItemCategoryController {
 
   @RequestMapping(value = "/api/lineItemCategories", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public List<LineItemCategory> getInstructorTypes() {
+  public List<LineItemCategory> getLineItemCategories() {
     authorizer.isAuthorized();
 
     return lineItemCategoryService.findAll();

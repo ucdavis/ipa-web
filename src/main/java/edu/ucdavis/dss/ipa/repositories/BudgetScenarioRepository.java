@@ -1,8 +1,6 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.LineItem;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -22,5 +20,4 @@ public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario,
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
     List<BudgetScenario> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
-
 }

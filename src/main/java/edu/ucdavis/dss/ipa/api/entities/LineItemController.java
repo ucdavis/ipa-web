@@ -38,10 +38,7 @@ public class LineItemController {
     }
 
     authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
-
-
     List<LineItem> lineItems = lineItemService.findbyWorkgroupIdAndYear(workgroupId, year);
-
 
     return lineItems;
   }

@@ -38,10 +38,7 @@ public class InstructorCostController {
     }
 
     authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
-
-
     List<InstructorCost> instructorCosts = instructorCostService.findByWorkgroupIdAndYear(workgroupId, year);
-
 
     return instructorCosts;
   }
