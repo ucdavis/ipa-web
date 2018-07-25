@@ -17,7 +17,7 @@ import java.util.*;
 @Service
 @Profile({"production", "staging", "development"})
 public class UpdateUsersTask {
-    final long ONE_WEEK_IN_MILLISECONDS = 604800000;
+    final long ONE_DAY_IN_MILLISECONDS = 86400000;
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
     private static final Logger log = LoggerFactory.getLogger("UpdateUsersTask");
 
@@ -27,7 +27,7 @@ public class UpdateUsersTask {
     /**
      * Ensures users have an IAM ID and will update the displayName if a new one is found
      */
-    @Scheduled( fixedDelay = ONE_WEEK_IN_MILLISECONDS )
+    @Scheduled( fixedDelay = ONE_DAY_IN_MILLISECONDS )
     @Async
     public void updateUsersFromDW() {
         if(runningTask) return; // avoid multiple concurrent jobs
