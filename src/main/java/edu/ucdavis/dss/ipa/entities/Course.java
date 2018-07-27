@@ -27,6 +27,7 @@ public class Course extends BaseEntity {
 	private Schedule schedule;
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<Tag>(0);
+	private String note;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -177,5 +178,13 @@ public class Course extends BaseEntity {
 		} else {
 			return 0;
 		}
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 }
