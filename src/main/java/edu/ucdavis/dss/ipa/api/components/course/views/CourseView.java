@@ -10,17 +10,20 @@ public class CourseView {
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<>();
 	private List<Term> terms = new ArrayList<>();
+	private List<InstructorNote> instructorNotes = new ArrayList<>();
 
 	public CourseView(
 			List<Course> courses,
 			List<SectionGroup> sectionGroups,
 			List<Tag> tags,
-			List<Term> terms) {
+			List<Term> terms,
+			List<InstructorNote> instructorNotes) {
 
 		setCourses(courses);
 		setSectionGroups(sectionGroups);
 		setTags(tags);
 		setTerms(terms);
+		setInstructorNotes(instructorNotes);
 	}
 
 	public List<Course> getCourses() {
@@ -53,5 +56,13 @@ public class CourseView {
 
 	public void setTerms(List<Term> terms) {
 		this.terms = terms;
+	}
+
+	public List<InstructorNote> getInstructorNotes() {
+		return instructorNotes;
+	}
+
+	public void setInstructorNotes(List<InstructorNote> instructorNotes) {
+		this.instructorNotes = instructorNotes;
 	}
 }
