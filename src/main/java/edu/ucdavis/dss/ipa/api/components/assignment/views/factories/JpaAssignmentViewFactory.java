@@ -36,6 +36,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
 		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+		List<InstructorNote> instructorNotes = schedule.getInstructorNotes();
 
 		List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
@@ -57,7 +58,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
 				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
-				instructorTypes, userRoles, activeUsers
+				instructorTypes, userRoles, activeUsers, instructorNotes
 		);
 	}
 
