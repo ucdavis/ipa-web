@@ -12,7 +12,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.repositories.SectionGroupRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -64,6 +63,7 @@ public class JpaCourseService implements CourseService {
 		originalCourse.setUnitsLow(newCourse.getUnitsLow());
 		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
 		originalCourse.setSequencePattern(newCourse.getSequencePattern());
+		originalCourse.setNote(newCourse.getNote());
 
 		return this.courseRepository.save(originalCourse);
 	}
