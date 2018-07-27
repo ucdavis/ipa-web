@@ -180,6 +180,7 @@ public class Course extends BaseEntity {
 		}
 	}
 
+	@JsonProperty("note")
 	public String getNote() {
 		return note;
 	}

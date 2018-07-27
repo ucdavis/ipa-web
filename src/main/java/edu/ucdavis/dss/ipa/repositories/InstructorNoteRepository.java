@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface InstructorNoteRepository extends CrudRepository<InstructorNote, Long> {
   InstructorNote findById(Long id);
 
-  InstructorNote findOrCreateByScheduleIdAndInstructorId(long scheduleId, long instructorId);
+  InstructorNote findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
 }

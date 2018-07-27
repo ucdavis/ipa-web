@@ -15,10 +15,13 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.InstructorNoteDeserializer;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "InstructorNotes")
+@JsonDeserialize(using = InstructorNoteDeserializer.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class InstructorNote extends BaseEntity {
   private long id;
@@ -64,6 +67,7 @@ public class InstructorNote extends BaseEntity {
     this.instructor = instructor;
   }
 
+  @JsonProperty
   public String getNote() {
     return note;
   }
