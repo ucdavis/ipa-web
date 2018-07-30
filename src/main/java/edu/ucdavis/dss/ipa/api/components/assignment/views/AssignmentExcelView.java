@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.api.components.assignment.views;
 
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorNote;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
@@ -60,9 +59,6 @@ public class AssignmentExcelView extends AbstractXlsView {
             excelHeader.createCell(col).setCellValue(course.getShortDescription());
             col++;
 
-            excelHeader.createCell(col).setCellValue(course.getNote());
-            col++;
-
             excelHeader.createCell(col).setCellValue(course.getUnitsLow());
             col++;
 
@@ -101,10 +97,6 @@ public class AssignmentExcelView extends AbstractXlsView {
             excelHeader.createCell(col).setCellValue(instructor.getLastName() + ", " + instructor.getFirstName());
             col++;
 
-            InstructorNote instructorNote = this.getInstructorNoteByInstructor(instructor);
-            excelHeader.createCell(col).setCellValue(instructorNote.getNote());
-            col++;
-
             for(ScheduleTermState state : scheduleTermStates) {
                 excelHeader.createCell(col).setCellValue(
                         StringUtils.join(
@@ -128,9 +120,6 @@ public class AssignmentExcelView extends AbstractXlsView {
         int col = 0;
 
         excelHeader.createCell(col).setCellValue(firstHeader);
-        col++;
-
-        excelHeader.createCell(col).setCellValue("Notes");
         col++;
 
         if ("Course".equals(firstHeader)) {
@@ -157,11 +146,6 @@ public class AssignmentExcelView extends AbstractXlsView {
         } else {
             return null;
         }
-    }
-
-    private InstructorNote getInstructorNoteByInstructor(Instructor instructor) {
-        System.out.println("taco");
-        return null;
     }
 
 }
