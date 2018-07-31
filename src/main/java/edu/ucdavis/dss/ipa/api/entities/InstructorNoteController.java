@@ -44,6 +44,6 @@ public class InstructorNoteController {
     InstructorNote originalInstructorNote = instructorNoteService.findOrCreateByScheduleIdAndInstructorId(scheduleId, instructorId);
     originalInstructorNote.setNote(newInstructorNote.getNote());
 
-    return instructorNoteService.update(newInstructorNote);
+    return instructorNoteService.update(originalInstructorNote);
   }
 }
