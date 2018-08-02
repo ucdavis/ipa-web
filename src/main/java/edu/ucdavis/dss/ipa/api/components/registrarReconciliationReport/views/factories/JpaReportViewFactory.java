@@ -210,8 +210,8 @@ public class JpaReportViewFactory implements ReportViewFactory {
 								a.getActivityTypeCode().getActivityTypeCode(),
 								a.getLocationDescription(),
 								a.getDayIndicator(),
-								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
-								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : null,
+								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : null,
 								section.getSectionGroup().getCourse().getSubjectCode(),
 								section.getSectionGroup().getCourse().getCourseNumber(),
 								section.getSequenceNumber()
@@ -227,8 +227,8 @@ public class JpaReportViewFactory implements ReportViewFactory {
 								a.getActivityTypeCode().getActivityTypeCode(),
 								a.getLocationDescription(),
 								a.getDayIndicator(),
-								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : "",
-								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : "",
+								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : null,
+								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : null,
 								section.getSectionGroup().getCourse().getSubjectCode(),
 								section.getSectionGroup().getCourse().getCourseNumber(),
 								section.getSequenceNumber()
