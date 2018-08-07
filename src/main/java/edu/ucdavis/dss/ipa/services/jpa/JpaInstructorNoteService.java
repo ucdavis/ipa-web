@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.repositories.InstructorNoteRepository;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.InstructorNoteService;
+import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -50,13 +51,8 @@ public class JpaInstructorNoteService implements InstructorNoteService {
   }
 
   @Override
-  public InstructorNote update(InstructorNote newInstructorNote) {
+  public InstructorNote update(InstructorNote newInstructorNote) throws NullPointerException {
     InstructorNote originalInstructorNote = this.findById(newInstructorNote.getId());
-
-    if(originalInstructorNote == null) {
-      return null;
-    }
-
     originalInstructorNote.setNote(newInstructorNote.getNote());
 
     return this.instructorNoteRepository.save(originalInstructorNote);
