@@ -2,7 +2,9 @@ package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ScheduleSummaryReportView {
     List<Course> courses = new ArrayList<Course>();
@@ -12,7 +14,7 @@ public class ScheduleSummaryReportView {
     List<SupportAssignment> supportAssignments = new ArrayList<>();
     List<SupportStaff> supportStaffList = new ArrayList<>();
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
-    List<Instructor> instructors = new ArrayList<Instructor>();
+    Set<Instructor> instructors = new HashSet<>();
     List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
@@ -22,7 +24,7 @@ public class ScheduleSummaryReportView {
                                      List<Section> sections,
                                      List<Activity> activities,
                                      List<TeachingAssignment> teachingAssignments,
-                                     List<Instructor> instructors,
+                                     Set<Instructor> instructors,
                                      String termCode,
                                      Long year,
                                      List<SupportAssignment> supportAssignments,
@@ -65,11 +67,11 @@ public class ScheduleSummaryReportView {
         this.teachingAssignments = teachingAssignments;
     }
 
-    public List<Instructor> getInstructors() {
+    public Set<Instructor> getInstructors() {
         return instructors;
     }
 
-    public void setInstructors(List<Instructor> instructors) {
+    public void setInstructors(Set<Instructor> instructors) {
         this.instructors = instructors;
     }
 
