@@ -33,7 +33,40 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 			Long sectionGroupId = rsSectionGroups.getLong("Id");
 			String termCode = rsSectionGroups.getString("TermCode");
 			Long scheduleId = rsSectionGroups.getLong("ScheduleId");
+			Long teachingAssistantAppointments = rsSectionGroups.getLong("TeachingAssistantAppointments");
+			Long readerAppointments = rsSectionGroups.getLong("ReaderAppointments");
 
+			// Find the instructor/instructorType of record
+			Long instructorId = null;
+			Long instructorTypeId = null;
+			PreparedStatement psTeachingAssignments = connection.prepareStatement("SELECT * FROM TeachingAssignments t WHERE t.SectionGroupId = ?;");
+			psTeachingAssignments.setLong(1, sectionGroupId);
+			ResultSet rsTeachingAssignments = psTeachingAssignments.executeQuery();
+
+			rsTeachingAssignments.last();
+
+			if (rsTeachingAssignments.getRow() > 0) {
+				rsTeachingAssignments.first();
+				instructorId = rsTeachingAssignments.getLong("InstructorId");
+				instructorTypeId = rsTeachingAssignments.getLong("InstructorTypeId");
+			}
+
+			// Find sectionCount/enrollment
+			int sectionCount = 0;
+			int enrollment = 0;
+			PreparedStatement psSections = connection.prepareStatement("SELECT * FROM Sections s WHERE s.SectionGroupId = ?;");
+			psSections.setLong(1, sectionGroupId);
+			ResultSet rsSections = psSections.executeQuery();
+
+			rsSections.last();
+
+			if (rsSections.getRow() > 0) {
+				rsSections.first();
+				sectionCount += 1;
+				enrollment += rsTeachingAssignments.getLong("Seats");
+			}
+
+			// Find budgetScenarios that connect to the same schedule
 			PreparedStatement psBudgetScenarios = connection.prepareStatement("SELECT bs.Id FROM BudgetScenarios bs, Budgets b WHERE bs.BudgetId = b.Id AND b.ScheduleId = ?;");
 			psBudgetScenarios.setLong(1, scheduleId);
 			ResultSet rsBudgetScenarios = psBudgetScenarios.executeQuery();
@@ -51,24 +84,54 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				rsSectionGroupCosts.first();
 
 				if (rowCount > 0) {
-					while(rsBudgetScenarios.next()) {
-						/* TODO: fill in any null fields */
-						System.out.println("debug");
+					while(rsSectionGroupCosts.next()) {
+						Long sectionGroupCostId = rsSectionGroupCosts.getLong("Id");
+
+						PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
+							" UPDATE `SectionGroupCosts`" +
+							" SET `BudgetScenarioId` = ?," +
+							" SET `SectionGroupId` = ?," +
+							" SET `ReaderAppointments` = ?," +
+							" SET `TeachingAssistantAppointments` = ?," +
+							" SET `InstructorId` = ?," +
+							" SET `InstructorTypeId` = ?," +
+							" SET `SectionCount` = ?," +
+							" SET `Enrollment` = ?," +
+							" WHERE `Id` = ?;"
+						);
+
+						psUpdateSectionGroupCost.setLong(1, budgetScenarioId);
+						psUpdateSectionGroupCost.setLong(2, sectionGroupId);
+						psUpdateSectionGroupCost.setLong(3, readerAppointments);
+						psUpdateSectionGroupCost.setLong(4, teachingAssistantAppointments);
+						psUpdateSectionGroupCost.setLong(5, instructorId);
+						psUpdateSectionGroupCost.setLong(6, instructorTypeId);
+						psUpdateSectionGroupCost.setLong(7, sectionCount);
+						psUpdateSectionGroupCost.setLong(8, enrollment);
+						psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
+
+						psUpdateSectionGroupCost.execute();
+						psUpdateSectionGroupCost.close();
 					}
 				} else {
-					/* TODO: Create a sectionGroupCost using relevant pieces of data */
-					System.out.println("debug");
+					PreparedStatement psCreateSectionGroupCost = connection.prepareStatement(
+						" INSERT INTO `SectionGroupCosts`" +
+						" (BudgetScenarioId, SectionGroupId, ReaderAppointments, TeachingAssistantAppointments," +
+						" InstructorId, InstructorTypeId, SectionCount, Enrollment)" +
+						" VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+					);
 
-					// budgetScenarioId
-					// sectionGroupId
-					// taCount
-					// readerCount
+					psCreateSectionGroupCost.setLong(1, budgetScenarioId);
+					psCreateSectionGroupCost.setLong(2, sectionGroupId);
+					psCreateSectionGroupCost.setLong(3, readerAppointments);
+					psCreateSectionGroupCost.setLong(4, teachingAssistantAppointments);
+					psCreateSectionGroupCost.setLong(5, instructorId);
+					psCreateSectionGroupCost.setLong(6, instructorTypeId);
+					psCreateSectionGroupCost.setLong(7, sectionCount);
+					psCreateSectionGroupCost.setLong(8, enrollment);
 
-					// sectionCount
-					// enrollment
-
-					// instructorId
-					// instructorTypeId
+					psCreateSectionGroupCost.execute();
+					psCreateSectionGroupCost.close();
 				}
 			}
 		}
