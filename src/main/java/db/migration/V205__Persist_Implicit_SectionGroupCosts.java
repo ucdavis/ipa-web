@@ -86,6 +86,12 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				if (rowCount > 0) {
 					while(rsSectionGroupCosts.next()) {
 						Long sectionGroupCostId = rsSectionGroupCosts.getLong("Id");
+						Long overrideReaderAppointments = rsSectionGroupCosts.getLong("ReaderCount");
+						Long overrideTaAppointments = rsSectionGroupCosts.getLong("TaCount");
+						Long overrideInstructorId = rsSectionGroupCosts.getLong("InstructorId");
+						Long overrideInstructorTypeId = rsSectionGroupCosts.getLong("InstructorTypeId");
+						Long overrideSectionCount = rsSectionGroupCosts.getLong("SectionCount");
+						Long overrideEnrollment = rsSectionGroupCosts.getLong("Enrollment");
 
 						PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
 							" UPDATE `SectionGroupCosts`" +
@@ -102,12 +108,12 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 						psUpdateSectionGroupCost.setLong(1, budgetScenarioId);
 						psUpdateSectionGroupCost.setLong(2, sectionGroupId);
-						psUpdateSectionGroupCost.setLong(3, readerAppointments);
-						psUpdateSectionGroupCost.setLong(4, teachingAssistantAppointments);
-						psUpdateSectionGroupCost.setLong(5, instructorId);
-						psUpdateSectionGroupCost.setLong(6, instructorTypeId);
-						psUpdateSectionGroupCost.setLong(7, sectionCount);
-						psUpdateSectionGroupCost.setLong(8, enrollment);
+						psUpdateSectionGroupCost.setLong(3, overrideReaderAppointments != null ? overrideReaderAppointments : readerAppointments);
+						psUpdateSectionGroupCost.setLong(4, overrideTaAppointments != null ? overrideTaAppointments : teachingAssistantAppointments);
+						psUpdateSectionGroupCost.setLong(5, overrideInstructorId != null ? overrideInstructorId : instructorId);
+						psUpdateSectionGroupCost.setLong(6, overrideInstructorTypeId != null ? overrideInstructorTypeId : instructorTypeId);
+						psUpdateSectionGroupCost.setLong(7, overrideSectionCount != null ? overrideSectionCount : sectionCount);
+						psUpdateSectionGroupCost.setLong(8, overrideEnrollment != null ? overrideEnrollment : enrollment);
 						psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
 
 						psUpdateSectionGroupCost.execute();
