@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory {
@@ -21,6 +23,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject SupportStaffService supportStaffService;
     @Inject TermService termService;
     @Inject InstructorTypeService instructorTypeService;
+    @Inject InstructorService instructorService;
 
     @Override
     public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
@@ -30,7 +33,13 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
-        List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+
+        Set<Instructor> instructors = new HashSet<Instructor>();
+        Set<Instructor> activeInstructors = new HashSet<>(userRoleService.getInstructorsByWorkgroupId(workgroupId));
+        Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
+        instructors.addAll(activeInstructors);
+        instructors.addAll(assignedInstructors);
+
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
