@@ -31,6 +31,7 @@ public class SectionGroupCost extends BaseEntity {
     private Float taCount, readerCount, unitsHigh, unitsLow;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
     private InstructorType instructorType;
+	private boolean disabled;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -288,5 +289,14 @@ public class SectionGroupCost extends BaseEntity {
 
 	public void setTermCode(String termCode) {
 		this.termCode = termCode;
+	}
+
+	@JsonProperty
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 }
