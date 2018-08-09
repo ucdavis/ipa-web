@@ -8,6 +8,7 @@ drop table if exists Budgets;
 drop table if exists Courses;
 drop table if exists Courses_has_Tags;
 drop table if exists InstructorCosts;
+drop table if exists InstructorNotes;
 drop table if exists InstructorSupportCallResponses;
 drop table if exists InstructorSupportPreferences;
 drop table if exists InstructorTypes;
