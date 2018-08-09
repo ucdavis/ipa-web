@@ -26,9 +26,9 @@ public class SectionGroupCost extends BaseEntity {
     private Long enrollment;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String reason;
+    private String reason, title, subjectCode, courseNumber, effectiveTermCode, sequencePattern, termCode;
     private BigDecimal cost;
-    private Float taCount, readerCount;
+    private Float taCount, readerCount, unitsHigh, unitsLow;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
     private InstructorType instructorType;
 
@@ -210,4 +210,83 @@ public class SectionGroupCost extends BaseEntity {
             return null;
         }
     }
+
+    @Basic
+    @Column(name = "Title", nullable = false, length = 45)
+    @JsonProperty
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Basic
+    @Column(name = "UnitsLow", nullable = true)
+    @JsonProperty
+    public Float getUnitsLow() {
+        return unitsLow;
+    }
+
+    public void setUnitsLow(Float unitsLow) {
+        this.unitsLow = unitsLow;
+    }
+
+    @Basic
+    @Column(name = "UnitsHigh", nullable = true)
+    @JsonProperty
+    public Float getUnitsHigh() {
+        return unitsHigh;
+    }
+
+    public void setUnitsHigh(Float unitsHigh) {
+        this.unitsHigh = unitsHigh;
+    }
+
+    @JsonProperty
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
+
+    @JsonProperty
+    public String getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
+    }
+
+	@NotNull
+	@JsonProperty
+	public String getEffectiveTermCode() {
+		return effectiveTermCode;
+	}
+
+	public void setEffectiveTermCode(String effectiveTermCode) {
+		this.effectiveTermCode = effectiveTermCode;
+	}
+
+	@JsonProperty
+	public String getSequencePattern() {
+		return sequencePattern;
+	}
+
+	public void setSequencePattern(String sequencePattern) {
+		this.sequencePattern = sequencePattern;
+	}
+
+	@JsonProperty
+	public String getTermCode() {
+		return termCode;
+	}
+
+	public void setTermCode(String termCode) {
+		this.termCode = termCode;
+	}
 }
