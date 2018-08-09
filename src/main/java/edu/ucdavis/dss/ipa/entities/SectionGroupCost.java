@@ -20,7 +20,6 @@ import java.util.List;
 @JsonDeserialize(using = SectionGroupCostDeserializer.class)
 public class SectionGroupCost extends BaseEntity {
     private long id;
-    private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
     private Integer sectionCount;
     private Long enrollment;
@@ -45,18 +44,6 @@ public class SectionGroupCost extends BaseEntity {
     public void setId(long id)
     {
         this.id = id;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SectionGroupId", nullable = true)
-    @NotNull
-    @JsonIgnore
-    public SectionGroup getSectionGroup() {
-        return sectionGroup;
-    }
-
-    public void setSectionGroup(SectionGroup sectionGroup) {
-        this.sectionGroup = sectionGroup;
     }
 
     public Long getEnrollment() {
@@ -167,16 +154,6 @@ public class SectionGroupCost extends BaseEntity {
     public Long getBudgetScenarioIdentification() {
         if(budgetScenario != null) {
             return budgetScenario.getId();
-        } else {
-            return null;
-        }
-    }
-
-    @JsonProperty("sectionGroupId")
-    @Transient
-    public Long getSectionGroupIdentification() {
-        if(sectionGroup != null) {
-            return sectionGroup.getId();
         } else {
             return null;
         }
