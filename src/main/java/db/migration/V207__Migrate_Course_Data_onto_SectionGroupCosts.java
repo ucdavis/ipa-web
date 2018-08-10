@@ -16,9 +16,6 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 	 */
 	@Override
 	public void migrate(Connection connection) throws Exception {
-		System.out.println("[MIGRATION] 207 START");
-		// For every sectionGroupCost, find the relevant sectionGroup, and course, and copy data off them
-
 		PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts;");
 		connection.setAutoCommit(false);
 
@@ -34,7 +31,6 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 
 			currentSectionGroupCost += 1;
 
-			// TODO: logic goes here
 			String title = null;
 			String subjectCode = null;
 			String courseNumber = null;
@@ -51,8 +47,8 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 
 			Long courseId = null;
 			while(rsSectionGroup.next()) {
-				termCode = rsSectionGroupCosts.getString("TermCode");
-				courseId = rsSectionGroupCosts.getLong("CourseId");
+				termCode = rsSectionGroup.getString("TermCode");
+				courseId = rsSectionGroup.getLong("CourseId");
 
 				PreparedStatement psCourse = connection.prepareStatement("SELECT * FROM Courses c WHERE c.Id = ?;");
 				psCourse.setLong(1, courseId);
@@ -70,15 +66,15 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 
 				PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
 					" UPDATE `SectionGroupCosts`" +
-						" SET `Title` = ?," +
-						" SET `CourseNumber` = ?," +
-						" SET `SubjectCode` = ?," +
-						" SET `SequenceNumber` = ?," +
-						" SET `EffectiveTermCode` = ?," +
-						" SET `UnitsLow` = ?," +
-						" SET `UnitsHigh` = ?," +
-						" SET `TermCode` = ?," +
-						" WHERE `Id` = ?;"
+					" SET `Title` = ?," +
+					" SET `CourseNumber` = ?," +
+					" SET `SubjectCode` = ?," +
+					" SET `SequenceNumber` = ?," +
+					" SET `EffectiveTermCode` = ?," +
+					" SET `UnitsLow` = ?," +
+					" SET `UnitsHigh` = ?," +
+					" SET `TermCode` = ?," +
+					" WHERE `Id` = ?;"
 				);
 
 				psUpdateSectionGroupCost.setString(1, title);
@@ -94,15 +90,12 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 				psUpdateSectionGroupCost.execute();
 				psUpdateSectionGroupCost.close();
 
-
 				if (currentSectionGroupCost % 1000 == 0) {
 					System.out.println("sectionGroups processed: " + currentSectionGroupCost + " / " + totalSectionGroupCosts);
 					System.out.println(Math.round(((currentSectionGroupCost * 1.0 / totalSectionGroupCosts) * 100)) + "%");
 				}
 			}
 		}
-
-		System.out.println("[MIGRATION] 205 COMPLETE");
 
 		// Commit changes
 		connection.commit();

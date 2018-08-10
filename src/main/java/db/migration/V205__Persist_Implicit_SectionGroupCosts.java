@@ -17,13 +17,11 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 	 */
 	@Override
 	public void migrate(Connection connection) throws Exception {
-		System.out.println("[MIGRATION] 205 START: ");
 		// For each sectionGroup
 		// For each budgetScenario in the same schedule as the sectionGroup
 		// Query for a sectionGroupCost that matches the sectionGroupId and budgetScenarioId
 		// If found, update all null fields on the sectionGroupCost with current data (from sectionGroup and course)
 		// If note found, create and mirror all fields (from sectionGroup and course)
-
 
 		PreparedStatement psSectionGroups = connection.prepareStatement("SELECT sg.Id, sg.TeachingAssistantAppointments, sg.ReaderAppointments, sg.TermCode, c.ScheduleId FROM SectionGroups sg, Courses c WHERE sg.CourseId = c.Id;");
 		connection.setAutoCommit(false);
@@ -145,6 +143,7 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 					psCreateSectionGroupCost.setLong(4, teachingAssistantAppointments);
 					psCreateSectionGroupCost.setLong(5, sectionCount);
 					psCreateSectionGroupCost.setLong(6, enrollment);
+
 					if (instructorId != null) {
 						psCreateSectionGroupCost.setLong(7, instructorId);
 					} else {
@@ -157,20 +156,11 @@ public class V205__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 						psCreateSectionGroupCost.setNull(8, java.sql.Types.INTEGER);
 					}
 
-
-
 					psCreateSectionGroupCost.execute();
 					psCreateSectionGroupCost.close();
 				}
 			}
-
-			if (currentSectionGroup % 1000 == 0) {
-				System.out.println("sectionGroups processed: " + currentSectionGroup + " / " + totalSectionGroups);
-				System.out.println( Math.round(((currentSectionGroup * 1.0 / totalSectionGroups) * 100)) + "%");
-			}
 		}
-
-		System.out.println("[MIGRATION] 205 COMPLETE");
 
 		// Commit changes
 		connection.commit();

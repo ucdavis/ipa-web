@@ -36,4 +36,6 @@ public interface SectionGroupCostRepository extends CrudRepository<SectionGroupC
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
     List<SectionGroupCost> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
+
+    SectionGroupCost findBySubjectCodeAndCourseNumberAndSequenceNumberAndBudgetScenarioId(String subjectCode, String courseNumber, String sequencePattern, long id);
 }
