@@ -23,11 +23,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
     @Override
     public SectionGroupCost createOrUpdateFrom(SectionGroupCost originalSectionGroupCost, BudgetScenario budgetScenario) {
-        if (originalSectionGroupCost == null || originalSectionGroupCost.getSectionGroup() == null || budgetScenario == null) {
+        if (originalSectionGroupCost == null || budgetScenario == null) {
             return null;
         }
 
-        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySectionGroupIdAndBudgetScenarioId(originalSectionGroupCost.getSectionGroup().getId(), budgetScenario.getId());
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySectionGroupIdAndBudgetScenarioId(budgetScenario.getId());
 
         if (sectionGroupCost == null) {
             sectionGroupCost = new SectionGroupCost();
@@ -45,7 +45,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         sectionGroupCost.setBudgetScenario(budgetScenario);
         sectionGroupCost.setInstructorType(originalSectionGroupCost.getInstructorType());
-        sectionGroupCost.setSectionGroup(originalSectionGroupCost.getSectionGroup());
         sectionGroupCost.setEnrollment(originalSectionGroupCost.getEnrollment());
         sectionGroupCost.setOriginalInstructor(originalSectionGroupCost.getOriginalInstructor());
         sectionGroupCost.setReaderCount(originalSectionGroupCost.getReaderCount());
@@ -62,18 +61,33 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         SectionGroupCost sectionGroupCost = new SectionGroupCost();
 
         sectionGroupCost.setBudgetScenario(budgetScenario);
-        sectionGroupCost.setSectionGroup(sectionGroup);
+        sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+        sectionGroupCost.setCourseNumber(sectionGroup.getCourse().getCourseNumber());
+        sectionGroupCost.setTitle(sectionGroup.getCourse().getTitle());
+        sectionGroupCost.setSubjectCode(sectionGroup.getCourse().getSubjectCode());
+        sectionGroupCost.setSequencePattern(sectionGroup.getCourse().getSequencePattern());
+        sectionGroupCost.setEffectiveTermCode(sectionGroup.getCourse().getEffectiveTermCode());
+        sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
+        sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsLow());
+        sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+        sectionGroupCost.setTaCount(sectionGroup.getTeachingAssistantAppointments());
+        sectionGroupCost.setReaderCount(sectionGroup.getReaderAppointments());
 
         // Set instructor
         Instructor instructor = null;
+        InstructorType instructorType = null;
+
         for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
             Instructor instructorDTO = teachingAssignment.getInstructor();
+            InstructorType instructorTypeDTO = teachingAssignment.getInstructorType();
             if (instructorDTO != null) {
                 instructor = instructorDTO;
+                instructorType = instructorTypeDTO;
             }
         }
 
         sectionGroupCost.setInstructor(instructor);
+        sectionGroupCost.setInstructorType(instructorType);
 
         // Set sectionCount
         Integer sectionCount = sectionGroup.getSections().size();
@@ -89,24 +103,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         }
 
         sectionGroupCost.setEnrollment(enrollment);
-
-        // Set reader and ta count
-        Float readerCount = 0F;
-        Float taCount = 0F;
-
-        for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
-            if (supportAssignment.getAppointmentType().equals("teachingAssistant")) {
-                Long taAmount = supportAssignment.getAppointmentPercentage() / 50;
-                taCount += taAmount;
-            }
-            if (supportAssignment.getAppointmentType().equals("reader")) {
-                Long readerAmount = supportAssignment.getAppointmentPercentage() / 50;
-                readerCount += readerAmount;
-            }
-        }
-
-        sectionGroupCost.setReaderCount(readerCount);
-        sectionGroupCost.setTaCount(taCount);
 
         return sectionGroupCostRepository.save(sectionGroupCost);
     }
