@@ -27,7 +27,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequenceNumberAndBudgetScenarioId(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId());
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioId(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId());
 
         if (sectionGroupCost == null) {
             sectionGroupCost = new SectionGroupCost();
