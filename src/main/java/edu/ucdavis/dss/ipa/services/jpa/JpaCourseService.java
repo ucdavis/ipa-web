@@ -39,6 +39,7 @@ public class JpaCourseService implements CourseService {
 	@Transactional
 	public Course update (Course newCourse) {
 		Course originalCourse = this.getOneById(newCourse.getId());
+		newCourse.setSchedule(originalCourse.getSchedule());
 
 		// If changing the course sequencePattern
 		if (originalCourse.getSequencePattern().equals(newCourse.getSequencePattern()) == false) {

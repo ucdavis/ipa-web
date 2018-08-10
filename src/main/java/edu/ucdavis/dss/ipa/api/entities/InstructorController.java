@@ -30,7 +30,7 @@ public class InstructorController {
   public Set<Instructor> getInstructors(@PathVariable long workgroupId,
                                         @PathVariable long year,
                                          HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+    Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
     if (schedule == null) {
       httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
