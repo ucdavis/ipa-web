@@ -29,9 +29,9 @@ public class InstructorNoteController {
 	@RequestMapping(value = "/api/schedules/{scheduleId}/instructors/{instructorId}/instructorNotes", method = RequestMethod.PUT, produces="application/json")
 	@ResponseBody
 	public InstructorNote createOrUpdateInstructorNote(@PathVariable long scheduleId,
-													   @PathVariable long instructorId,
-													   @RequestBody InstructorNote newInstructorNote,
-													   HttpServletResponse httpResponse) {
+	                                                   @PathVariable long instructorId,
+	                                                   @RequestBody InstructorNote newInstructorNote,
+	                                                   HttpServletResponse httpResponse) {
 		Schedule schedule = scheduleService.findById(scheduleId);
 
 		if (schedule == null) {

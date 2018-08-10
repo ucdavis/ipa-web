@@ -75,21 +75,21 @@ public class InstructorNote extends BaseEntity {
 
 	@JsonProperty("instructorId")
 	@Transient
-	public long getInstructorIdentification() {
+	public Long getInstructorIdentification() {
 		if(instructor != null) {
 			return instructor.getId();
 		} else {
-			return 0;
+			return null;
 		}
 	}
 
 	@JsonProperty("scheduleId")
 	@Transient
-	public long getScheduleIdentification() {
+	public Long getScheduleIdentification() {
 		if(schedule != null) {
 			return schedule.getId();
 		} else {
-			return 0;
+			return null;
 		}
 	}
 }

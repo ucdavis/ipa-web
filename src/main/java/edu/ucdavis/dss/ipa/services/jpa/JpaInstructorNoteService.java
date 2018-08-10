@@ -37,11 +37,8 @@ public class JpaInstructorNoteService implements InstructorNoteService {
 
   private InstructorNote create(long scheduleId, long instructorId) {
     InstructorNote instructorNote = new InstructorNote();
-    Schedule schedule = scheduleRepository.findOne(scheduleId);
-    Instructor instructor = instructorRepository.findById(instructorId);
-
-    instructorNote.setSchedule(schedule);
-    instructorNote.setInstructor(instructor);
+    instructorNote.setSchedule(scheduleRepository.findOne(scheduleId));
+    instructorNote.setInstructor(instructorRepository.findById(instructorId));
 
     return instructorNoteRepository.save(instructorNote);
   }
