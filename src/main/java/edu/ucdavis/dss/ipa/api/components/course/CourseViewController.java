@@ -185,6 +185,7 @@ public class CourseViewController {
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
+		courseDTO.setSchedule(course.getSchedule());
 		return courseService.update(courseDTO);
 	}
 

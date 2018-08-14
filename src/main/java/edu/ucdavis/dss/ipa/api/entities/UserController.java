@@ -34,7 +34,7 @@ public class UserController {
   public Set<User> getSectionGroups(@PathVariable long workgroupId,
                                     @PathVariable long year,
                                     HttpServletResponse httpResponse) {
-    Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+    Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
     Workgroup workgroup = workgroupService.findOneById(workgroupId);
 
     if (schedule == null) {
