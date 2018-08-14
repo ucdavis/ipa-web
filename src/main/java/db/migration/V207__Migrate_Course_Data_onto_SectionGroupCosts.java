@@ -55,10 +55,6 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 				continue;
 			}
 
-			if (courseId == null) {
-				System.out.println("debug");
-			}
-
 			PreparedStatement psCourse = connection.prepareStatement("SELECT * FROM Courses c WHERE c.Id = ?;");
 			psCourse.setLong(1, courseId);
 			ResultSet rsCourse = psCourse.executeQuery();
@@ -73,33 +69,30 @@ public class V207__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 				unitsHigh = rsCourse.getFloat("UnitsHigh");
 			}
 
-			PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
-				" UPDATE `SectionGroupCosts`" +
-				" SET `Title` = ?," +
-				" SET `CourseNumber` = ?," +
-				" SET `SubjectCode` = ?," +
-				" SET `SequencePattern` = ?," +
-				" SET `EffectiveTermCode` = ?," +
-				" SET `UnitsLow` = ?," +
-				" SET `UnitsHigh` = ?," +
-				" SET `TermCode` = ?," +
-				" WHERE `Id` = ?;"
+			rsCourse.close();
+
+			PreparedStatement psSetReceiptMetadata = connection.prepareStatement(
+				" UPDATE `SectionGroupCosts` receipt " +
+					" SET receipt.`Title` = ?, " +
+					"     receipt.`CourseNumber` = ?, " +
+					"     receipt.`SubjectCode` = ?, " +
+					"     receipt.`SequencePattern` = ?, " +
+					"     receipt.`UnitsHigh` = ?, " +
+					"     receipt.`UnitsLow` = ?, " +
+					"     receipt.`EffectiveTermCode` = ? " +
+					" WHERE receipt.`Id` = ?; "
 			);
 
-			System.out.println("taco");
-
-			psUpdateSectionGroupCost.setString(1, title);
-			psUpdateSectionGroupCost.setString(2, courseNumber);
-			psUpdateSectionGroupCost.setString(3, subjectCode);
-			psUpdateSectionGroupCost.setString(4, "000");
-			psUpdateSectionGroupCost.setString(5, effectiveTermCode);
-			psUpdateSectionGroupCost.setFloat(6, unitsLow);
-			psUpdateSectionGroupCost.setFloat(7, unitsHigh);
-			psUpdateSectionGroupCost.setString(8, termCode);
-			psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
-
-			psUpdateSectionGroupCost.execute();
-			psUpdateSectionGroupCost.close();
+			psSetReceiptMetadata.setString(1, title);
+			psSetReceiptMetadata.setString(2, courseNumber);
+			psSetReceiptMetadata.setString(3, subjectCode);
+			psSetReceiptMetadata.setString(4, sequencePattern);
+			psSetReceiptMetadata.setString(5, effectiveTermCode);
+			psSetReceiptMetadata.setFloat(6, unitsHigh);
+			psSetReceiptMetadata.setFloat(7, unitsLow);
+			psSetReceiptMetadata.setLong(8, sectionGroupCostId);
+			psSetReceiptMetadata.execute();
+			psSetReceiptMetadata.close();
 		}
 
 		// Commit changes
