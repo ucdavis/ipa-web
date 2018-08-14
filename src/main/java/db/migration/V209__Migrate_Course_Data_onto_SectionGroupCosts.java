@@ -77,6 +77,7 @@ public class V209__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 					"     receipt.`CourseNumber` = ?, " +
 					"     receipt.`SubjectCode` = ?, " +
 					"     receipt.`SequencePattern` = ?, " +
+					"     receipt.`TermCode` = ?, " +
 					"     receipt.`UnitsHigh` = ?, " +
 					"     receipt.`UnitsLow` = ?, " +
 					"     receipt.`EffectiveTermCode` = ? " +
@@ -87,10 +88,11 @@ public class V209__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMig
 			psSetReceiptMetadata.setString(2, courseNumber);
 			psSetReceiptMetadata.setString(3, subjectCode);
 			psSetReceiptMetadata.setString(4, sequencePattern);
-			psSetReceiptMetadata.setString(5, effectiveTermCode);
+			psSetReceiptMetadata.setString(5, termCode);
 			psSetReceiptMetadata.setFloat(6, unitsHigh);
 			psSetReceiptMetadata.setFloat(7, unitsLow);
-			psSetReceiptMetadata.setLong(8, sectionGroupCostId);
+			psSetReceiptMetadata.setString(8, effectiveTermCode);
+			psSetReceiptMetadata.setLong(9, sectionGroupCostId);
 			psSetReceiptMetadata.execute();
 			psSetReceiptMetadata.close();
 		}
