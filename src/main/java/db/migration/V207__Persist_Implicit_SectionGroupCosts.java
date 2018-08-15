@@ -70,10 +70,9 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				psSections.setLong(1, sectionGroupId);
 				ResultSet rsSections = psSections.executeQuery();
 
-				rsSections.last();
 
-				if (rsSections.getRow() > 0) {
-					rsSections.first();
+
+				while(rsSections.next()) {
 					sectionCount += 1;
 					enrollment += rsSections.getLong("Seats");
 				}
@@ -82,7 +81,7 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 			rsBudgetScenarios.first();
 
 			while(rsBudgetScenarios.next()) {
-				Long budgetScenarioId = rsSectionGroups.getLong("Id");
+				Long budgetScenarioId = rsBudgetScenarios.getLong("Id");
 
 				PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts sgc WHERE sgc.BudgetScenarioId = ? AND sgc.SectionGroupId = ?;");
 				psSectionGroupCosts.setLong(1, budgetScenarioId);
@@ -107,8 +106,8 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 							" UPDATE `SectionGroupCosts`" +
 							" SET `BudgetScenarioId` = ?," +
 							" SET `SectionGroupId` = ?," +
-							" SET `ReaderAppointments` = ?," +
-							" SET `TeachingAssistantAppointments` = ?," +
+							" SET `ReaderCount` = ?," +
+							" SET `TaCount` = ?," +
 							" SET `InstructorId` = ?," +
 							" SET `InstructorTypeId` = ?," +
 							" SET `SectionCount` = ?," +
