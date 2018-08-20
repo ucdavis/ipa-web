@@ -62,6 +62,15 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             budgetScenario.setTermInActiveTermsBlob(sectionGroup.getTermCode(), true);
         }
 
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
+
+        for (SectionGroup sectionGroup : sectionGroups) {
+            SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
+            sectionGroupCosts.add(sectionGroupCost);
+        }
+
+        budgetScenario.setSectionGroupCosts(sectionGroupCosts);
+
         // Generate Line items automatically from buyouts
         List<LineItem> lineItems = budgetScenario.getLineItems();
         List<LineItem> newLineItems = new ArrayList<>();
