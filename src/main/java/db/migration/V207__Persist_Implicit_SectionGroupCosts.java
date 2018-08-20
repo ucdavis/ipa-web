@@ -55,7 +55,7 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				readerAppointments = rsSectionGroups.wasNull() == false ? readerAppointments : null;
 
 				// Find the instructor/instructorType of record
-				PreparedStatement psTeachingAssignments = connection.prepareStatement("SELECT * FROM TeachingAssignments t WHERE t.SectionGroupId = ?;");
+				PreparedStatement psTeachingAssignments = connection.prepareStatement("SELECT * FROM TeachingAssignments t WHERE t.SectionGroupId = ? AND t.Approved = 1;");
 				psTeachingAssignments.setLong(1, sectionGroupId);
 				ResultSet rsTeachingAssignments = psTeachingAssignments.executeQuery();
 
