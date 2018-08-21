@@ -186,10 +186,6 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 					psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
 
-					if (sectionGroupId == 198975) {
-						String sql = psUpdateSectionGroupCost.toString();
-						System.out.println("taco");
-					}
 					psUpdateSectionGroupCost.execute();
 					psUpdateSectionGroupCost.close();
 				}
