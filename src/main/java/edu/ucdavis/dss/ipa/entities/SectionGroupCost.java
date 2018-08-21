@@ -20,17 +20,17 @@ import java.util.List;
 @JsonDeserialize(using = SectionGroupCostDeserializer.class)
 public class SectionGroupCost extends BaseEntity {
     private long id;
-    private SectionGroup sectionGroup;
     private BudgetScenario budgetScenario;
     private Integer sectionCount;
     private Long enrollment;
     private Instructor instructor;
     private Instructor originalInstructor;
-    private String reason;
+    private String reason, title, subjectCode, courseNumber, effectiveTermCode, sequencePattern, termCode;
     private BigDecimal cost;
-    private Float taCount, readerCount;
+    private Float taCount, readerCount, unitsHigh, unitsLow;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
     private InstructorType instructorType;
+	private boolean disabled;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,18 +44,6 @@ public class SectionGroupCost extends BaseEntity {
     public void setId(long id)
     {
         this.id = id;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SectionGroupId", nullable = true)
-    @NotNull
-    @JsonIgnore
-    public SectionGroup getSectionGroup() {
-        return sectionGroup;
-    }
-
-    public void setSectionGroup(SectionGroup sectionGroup) {
-        this.sectionGroup = sectionGroup;
     }
 
     public Long getEnrollment() {
@@ -171,16 +159,6 @@ public class SectionGroupCost extends BaseEntity {
         }
     }
 
-    @JsonProperty("sectionGroupId")
-    @Transient
-    public Long getSectionGroupIdentification() {
-        if(sectionGroup != null) {
-            return sectionGroup.getId();
-        } else {
-            return null;
-        }
-    }
-
     @JsonProperty("instructorId")
     @Transient
     public Long getInstructorIdentification() {
@@ -210,4 +188,92 @@ public class SectionGroupCost extends BaseEntity {
             return null;
         }
     }
+
+    @Basic
+    @Column(name = "Title", nullable = false, length = 45)
+    @JsonProperty
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Basic
+    @Column(name = "UnitsLow", nullable = true)
+    @JsonProperty
+    public Float getUnitsLow() {
+        return unitsLow;
+    }
+
+    public void setUnitsLow(Float unitsLow) {
+        this.unitsLow = unitsLow;
+    }
+
+    @Basic
+    @Column(name = "UnitsHigh", nullable = true)
+    @JsonProperty
+    public Float getUnitsHigh() {
+        return unitsHigh;
+    }
+
+    public void setUnitsHigh(Float unitsHigh) {
+        this.unitsHigh = unitsHigh;
+    }
+
+    @JsonProperty
+    public String getSubjectCode() {
+        return subjectCode;
+    }
+
+    public void setSubjectCode(String subjectCode) {
+        this.subjectCode = subjectCode;
+    }
+
+    @JsonProperty
+    public String getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(String courseNumber) {
+        this.courseNumber = courseNumber;
+    }
+
+	@NotNull
+	@JsonProperty
+	public String getEffectiveTermCode() {
+		return effectiveTermCode;
+	}
+
+	public void setEffectiveTermCode(String effectiveTermCode) {
+		this.effectiveTermCode = effectiveTermCode;
+	}
+
+	@JsonProperty
+	public String getSequencePattern() {
+		return sequencePattern;
+	}
+
+	public void setSequencePattern(String sequencePattern) {
+		this.sequencePattern = sequencePattern;
+	}
+
+	@JsonProperty
+	public String getTermCode() {
+		return termCode;
+	}
+
+	public void setTermCode(String termCode) {
+		this.termCode = termCode;
+	}
+
+	@JsonProperty
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
 }
