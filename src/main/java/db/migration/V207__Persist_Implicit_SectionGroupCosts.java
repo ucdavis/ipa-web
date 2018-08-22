@@ -133,7 +133,6 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 					Long calculatedReaders = originalReaderAppointments != null ? originalReaderAppointments : readerAppointments;
 
-					calculatedReaders = 88L;
 					if (calculatedReaders != null) {
 						psUpdateSectionGroupCost.setLong(3, calculatedReaders);
 					} else {
@@ -142,7 +141,6 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 					Long calculatedTAs = originalTaAppointments != null ? originalTaAppointments : teachingAssistantAppointments;
 
-					calculatedReaders = 99L;
 					if (calculatedTAs != null) {
 						psUpdateSectionGroupCost.setLong(4, calculatedTAs);
 					} else {
@@ -151,25 +149,22 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 					Long calculatedInstructorId = originalInstructorId != null ? originalInstructorId : instructorId;
 
-					calculatedInstructorId = 123L;
 					if (calculatedInstructorId != null) {
-						psUpdateSectionGroupCost.setInt(5, 123);
+						psUpdateSectionGroupCost.setLong(5, calculatedInstructorId);
 					} else {
 						psUpdateSectionGroupCost.setNull(5, java.sql.Types.INTEGER);
 					}
 
 					Long calculatedInstructorTypeId = originalInstructorTypeId != null ? originalInstructorTypeId : instructorTypeId;
 
-					calculatedInstructorTypeId = 123L;
 					if (calculatedInstructorTypeId != null) {
-						psUpdateSectionGroupCost.setInt(6, 456);
+						psUpdateSectionGroupCost.setLong(6, calculatedInstructorTypeId);
 					} else {
 						psUpdateSectionGroupCost.setNull(6, java.sql.Types.INTEGER);
 					}
 
 					Long calculatedSectionCount = originalSectionCount != null ? originalSectionCount : sectionCount;
 
-					calculatedSectionCount = 123L;
 					if (calculatedSectionCount != null) {
 						psUpdateSectionGroupCost.setLong(7, calculatedSectionCount);
 					} else {
