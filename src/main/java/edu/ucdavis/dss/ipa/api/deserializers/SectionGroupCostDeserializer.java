@@ -86,6 +86,10 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             sectionGroupCost.setBudgetScenario(budgetScenario);
         }
 
+        if (node.has("disabled")) {
+            sectionGroupCost.setDisabled(node.get("disabled").booleanValue());
+        }
+
         return sectionGroupCost;
     }
 }

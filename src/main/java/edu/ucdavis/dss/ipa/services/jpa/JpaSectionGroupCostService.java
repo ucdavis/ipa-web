@@ -126,6 +126,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setSectionCount(sectionGroupCostDTO.getSectionCount());
         originalSectionGroupCost.setCost(sectionGroupCostDTO.getCost());
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
+        originalSectionGroupCost.setDisabled(sectionGroupCostDTO.isDisabled());
 
         originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
         originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
