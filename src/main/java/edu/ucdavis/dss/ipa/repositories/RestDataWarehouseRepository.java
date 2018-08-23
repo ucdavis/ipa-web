@@ -20,13 +20,13 @@ import java.util.List;
 public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	@Inject EmailService emailService;
 
-	@Value("${dw.url}")
+	@Value("${DW_URL}")
 	String dwUrl;
 
-	@Value("${dw.token}")
+	@Value("${DW_TOKEN}")
 	String dwToken;
 
-	@Value("${dw.port}")
+	@Value("${DW_PORT}")
 	String dwPort;
 
 	/**

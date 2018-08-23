@@ -29,10 +29,10 @@ public class DefaultEmailService implements EmailService {
 	private static final String exceptionRecipientEmail = "dssit-devs-exceptions@ucdavis.edu";
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	@Value("${ipa.email.host}")
+	@Value("${SMTP_HOST}")
 	String smtpHost;
 
-	@Value("${ipa.email.from}")
+	@Value("${SMTP_EMAIL_FROM}")
 	String emailFrom;
 
 	/**

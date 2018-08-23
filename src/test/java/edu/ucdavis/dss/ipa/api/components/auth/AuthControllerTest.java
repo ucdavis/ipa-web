@@ -50,10 +50,10 @@ public class AuthControllerTest {
 
     private MockMvc mockMvc;
 
-    @Value("${ipa.jwt.signingkey}")
+    @Value("${IPA_JWT_SIGNING_KEY}")
     String jwtSigningKey;
 
-    @Value("${ipa.jwt.timeout}")
+    @Value("${IPA_JWT_TIMEOUT}")
     String jwtTimeout;
 
     @Autowired

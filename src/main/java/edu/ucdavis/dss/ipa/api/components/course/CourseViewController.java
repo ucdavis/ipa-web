@@ -50,7 +50,7 @@ public class CourseViewController {
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject Authorizer authorizer;
 
-	@Value("${ipa.url.api}")
+	@Value("${IPA_URL_API}")
 	String ipaUrlApi;
 
 	/**
