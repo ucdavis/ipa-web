@@ -27,14 +27,8 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 		connection.setAutoCommit(false);
 
 		ResultSet rsSectionGroups = psSectionGroups.executeQuery();
-		int currentSectionGroup = 0;
-		rsSectionGroups.last();
-		int totalSectionGroups = rsSectionGroups.getRow();
-		rsSectionGroups.first();
 
 		while(rsSectionGroups.next()) {
-			currentSectionGroup += 1;
-
 			Long sectionGroupId = rsSectionGroups.getLong("Id");
 			Long scheduleId = rsSectionGroups.getLong("ScheduleId");
 
@@ -42,17 +36,18 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 			PreparedStatement psBudgetScenarios = connection.prepareStatement("SELECT bs.Id FROM BudgetScenarios bs, Budgets b WHERE bs.BudgetId = b.Id AND b.ScheduleId = ?;");
 			psBudgetScenarios.setLong(1, scheduleId);
 			ResultSet rsBudgetScenarios = psBudgetScenarios.executeQuery();
-
 			rsBudgetScenarios.last();
+			int budgetScenarioCount = rsBudgetScenarios.getRow();
+			rsBudgetScenarios.beforeFirst();
 			// Only get other resources if necessary
 			Long teachingAssistantAppointments = null, readerAppointments = null, instructorId = null, instructorTypeId = null, sectionCount = null, enrollment = null;
 
-			if (rsBudgetScenarios.getRow() > 0) {
+			if (budgetScenarioCount > 0) {
 				teachingAssistantAppointments = rsSectionGroups.getLong("TeachingAssistantAppointments");
-				teachingAssistantAppointments = rsSectionGroups.wasNull() == false ? teachingAssistantAppointments : null;
+				teachingAssistantAppointments = rsSectionGroups.wasNull() ? null : teachingAssistantAppointments;
 
 				readerAppointments = rsSectionGroups.getLong("ReaderAppointments");
-				readerAppointments = rsSectionGroups.wasNull() == false ? readerAppointments : null;
+				readerAppointments = rsSectionGroups.wasNull() ? null : readerAppointments;
 
 				// Find the instructor/instructorType of record
 				PreparedStatement psTeachingAssignments = connection.prepareStatement("SELECT * FROM TeachingAssignments t WHERE t.SectionGroupId = ? AND t.Approved = 1;");
@@ -64,15 +59,16 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				if (rsTeachingAssignments.getRow() > 0) {
 					rsTeachingAssignments.first();
 					instructorId = rsTeachingAssignments.getLong("InstructorId");
+					instructorId = rsTeachingAssignments.wasNull() ? null : instructorId;
+
 					instructorTypeId = rsTeachingAssignments.getLong("InstructorTypeId");
+					instructorTypeId = rsTeachingAssignments.wasNull() ? null : instructorTypeId;
 				}
 
 				// Find sectionCount/enrollment
 				PreparedStatement psSections = connection.prepareStatement("SELECT * FROM Sections s WHERE s.SectionGroupId = ?;");
 				psSections.setLong(1, sectionGroupId);
 				ResultSet rsSections = psSections.executeQuery();
-
-
 
 				while(rsSections.next()) {
 					if (sectionCount == null) { sectionCount = 0L; }
@@ -83,9 +79,8 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 				}
 			}
 
-			rsBudgetScenarios.first();
-
 			while(rsBudgetScenarios.next()) {
+				// Found a specific budgetScenario relevant to the sectionGroup
 				Long budgetScenarioId = rsBudgetScenarios.getLong("Id");
 
 				PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts sgc WHERE sgc.BudgetScenarioId = ? AND sgc.SectionGroupId = ?;");
@@ -95,88 +90,102 @@ public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 				rsSectionGroupCosts.last();
 				int rowCount = rsSectionGroupCosts.getRow();
-				rsSectionGroupCosts.first();
+				rsSectionGroupCosts.beforeFirst();
 
+				// Found the sectionGroupCost that matched the unique scenarioId/sectionGroupId pair
 				if (rowCount > 0) {
-					while(rsSectionGroupCosts.next()) {
-						Long sectionGroupCostId = rsSectionGroupCosts.getLong("Id");
-						Long overrideReaderAppointments = rsSectionGroupCosts.getLong("ReaderCount");
-						Long overrideTaAppointments = rsSectionGroupCosts.getLong("TaCount");
-						Long overrideInstructorId = rsSectionGroupCosts.getLong("InstructorId");
-						Long overrideInstructorTypeId = rsSectionGroupCosts.getLong("InstructorTypeId");
-						Long overrideSectionCount = rsSectionGroupCosts.getLong("SectionCount");
-						Long overrideEnrollment = rsSectionGroupCosts.getLong("Enrollment");
+					rsSectionGroupCosts.next();
 
-						PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
-							" UPDATE `SectionGroupCosts`" +
-							" SET `BudgetScenarioId` = ?," +
-							" SET `SectionGroupId` = ?," +
-							" SET `ReaderCount` = ?," +
-							" SET `TaCount` = ?," +
-							" SET `InstructorId` = ?," +
-							" SET `InstructorTypeId` = ?," +
-							" SET `SectionCount` = ?," +
-							" SET `Enrollment` = ?," +
-							" WHERE `Id` = ?;"
-						);
+					Long sectionGroupCostId = rsSectionGroupCosts.getLong("Id");
+					Long originalReaderAppointments = rsSectionGroupCosts.getLong("ReaderCount");
+					originalReaderAppointments = rsSectionGroupCosts.wasNull() ? null : originalReaderAppointments;
 
-						psUpdateSectionGroupCost.setLong(1, budgetScenarioId);
-						psUpdateSectionGroupCost.setLong(2, sectionGroupId);
+					Long originalTaAppointments = rsSectionGroupCosts.getLong("TaCount");
+					originalTaAppointments = rsSectionGroupCosts.wasNull() ? null : originalTaAppointments;
 
-						Long readers = overrideReaderAppointments != null ? overrideReaderAppointments : readerAppointments;
+					Long originalInstructorId = rsSectionGroupCosts.getLong("InstructorId");
+					originalInstructorId = rsSectionGroupCosts.wasNull() ? null : originalInstructorId;
 
-						if (readers != null) {
-							psUpdateSectionGroupCost.setLong(3, readers);
-						} else {
-							psUpdateSectionGroupCost.setNull(3, java.sql.Types.FLOAT);
-						}
+					Long originalInstructorTypeId = rsSectionGroupCosts.getLong("InstructorTypeId");
+					originalInstructorTypeId = rsSectionGroupCosts.wasNull() ? null : originalInstructorTypeId;
 
-						Long tas = overrideTaAppointments != null ? overrideTaAppointments : teachingAssistantAppointments;
+					Long originalSectionCount = rsSectionGroupCosts.getLong("SectionCount");
+					originalSectionCount = rsSectionGroupCosts.wasNull() ? null : originalSectionCount;
 
-						if (tas != null) {
-							psUpdateSectionGroupCost.setFloat(4, tas);
-						} else {
-							psUpdateSectionGroupCost.setNull(4, java.sql.Types.FLOAT);
-						}
+					Long originalEnrollment = rsSectionGroupCosts.getLong("Enrollment");
+					originalEnrollment = rsSectionGroupCosts.wasNull() ? null : originalEnrollment;
 
-						Long _instructorId = overrideInstructorId != null ? overrideInstructorId : instructorId;
+					PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
+						" UPDATE SectionGroupCosts" +
+						" SET BudgetScenarioId = ?," +
+						" SectionGroupId = ?," +
+						" ReaderCount = ?," +
+						" TaCount = ?," +
+						" InstructorId = ?," +
+						" InstructorTypeId = ?," +
+						" SectionCount = ?," +
+						" Enrollment = ?" +
+						" WHERE Id = ?;"
+					);
 
-						if (_instructorId != null) {
-							psUpdateSectionGroupCost.setFloat(5, _instructorId);
-						} else {
-							psUpdateSectionGroupCost.setNull(5, java.sql.Types.FLOAT);
-						}
+					psUpdateSectionGroupCost.setLong(1, budgetScenarioId);
+					psUpdateSectionGroupCost.setLong(2, sectionGroupId);
 
-						Long _instructorTypeId = overrideInstructorTypeId != null ? overrideInstructorTypeId : instructorTypeId;
+					Long calculatedReaders = originalReaderAppointments != null ? originalReaderAppointments : readerAppointments;
 
-						if (_instructorTypeId != null) {
-							psUpdateSectionGroupCost.setFloat(6, _instructorTypeId);
-						} else {
-							psUpdateSectionGroupCost.setNull(6, java.sql.Types.FLOAT);
-						}
-
-						Long _sectionCount = overrideSectionCount != null ? overrideSectionCount : sectionCount;
-
-						if (_sectionCount != null) {
-							psUpdateSectionGroupCost.setLong(7, instructorId);
-						} else {
-							psUpdateSectionGroupCost.setNull(7, java.sql.Types.INTEGER);
-						}
-
-						Long _enrollment = overrideEnrollment != null ? overrideEnrollment : enrollment;
-
-						if (_enrollment != null) {
-							psUpdateSectionGroupCost.setLong(8, _enrollment);
-						} else {
-							psUpdateSectionGroupCost.setNull(8, java.sql.Types.INTEGER);
-						}
-
-						psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
-
-						psUpdateSectionGroupCost.execute();
-						psUpdateSectionGroupCost.close();
+					if (calculatedReaders != null) {
+						psUpdateSectionGroupCost.setLong(3, calculatedReaders);
+					} else {
+						psUpdateSectionGroupCost.setNull(3, java.sql.Types.FLOAT);
 					}
-				} else {
+
+					Long calculatedTAs = originalTaAppointments != null ? originalTaAppointments : teachingAssistantAppointments;
+
+					if (calculatedTAs != null) {
+						psUpdateSectionGroupCost.setLong(4, calculatedTAs);
+					} else {
+						psUpdateSectionGroupCost.setNull(4, java.sql.Types.FLOAT);
+					}
+
+					Long calculatedInstructorId = originalInstructorId != null ? originalInstructorId : instructorId;
+
+					if (calculatedInstructorId != null) {
+						psUpdateSectionGroupCost.setLong(5, calculatedInstructorId);
+					} else {
+						psUpdateSectionGroupCost.setNull(5, java.sql.Types.INTEGER);
+					}
+
+					Long calculatedInstructorTypeId = originalInstructorTypeId != null ? originalInstructorTypeId : instructorTypeId;
+
+					if (calculatedInstructorTypeId != null) {
+						psUpdateSectionGroupCost.setLong(6, calculatedInstructorTypeId);
+					} else {
+						psUpdateSectionGroupCost.setNull(6, java.sql.Types.INTEGER);
+					}
+
+					Long calculatedSectionCount = originalSectionCount != null ? originalSectionCount : sectionCount;
+
+					if (calculatedSectionCount != null) {
+						psUpdateSectionGroupCost.setLong(7, calculatedSectionCount);
+					} else {
+						psUpdateSectionGroupCost.setNull(7, java.sql.Types.INTEGER);
+					}
+
+					Long calculatedEnrollment = originalEnrollment != null ? originalEnrollment : enrollment;
+
+					if (calculatedEnrollment != null) {
+						psUpdateSectionGroupCost.setLong(8, calculatedEnrollment);
+					} else {
+						psUpdateSectionGroupCost.setNull(8, java.sql.Types.INTEGER);
+					}
+
+					psUpdateSectionGroupCost.setLong(9, sectionGroupCostId);
+
+					psUpdateSectionGroupCost.execute();
+					psUpdateSectionGroupCost.close();
+				}
+				// Make new sectionGroupCost instead
+				else {
 					PreparedStatement psCreateSectionGroupCost = connection.prepareStatement(
 						" INSERT INTO `SectionGroupCosts`" +
 						" (BudgetScenarioId, SectionGroupId, ReaderCount, TaCount," +
