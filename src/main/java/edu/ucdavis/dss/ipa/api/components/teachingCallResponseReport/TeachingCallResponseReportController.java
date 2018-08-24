@@ -23,7 +23,7 @@ public class TeachingCallResponseReportController {
     @Inject TeachingCallResponseReportViewFactory teachingCallResponseReportViewFactory;
     @Inject Authorizer authorizer;
 
-    @Value("${ipa.url.api}")
+    @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
     @RequestMapping(value = "/api/teachingCallResponseReportView/workgroups/{workgroupId}/years/{year}", method = RequestMethod.GET, produces = "application/json")

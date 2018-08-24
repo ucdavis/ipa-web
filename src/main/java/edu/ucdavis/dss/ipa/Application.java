@@ -19,14 +19,14 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 @EnableScheduling
 @SpringBootApplication
 public class Application {
-    @Value("${ipa.url.api}")
+    @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
-    @Value("${ipa.jwt.signingkey}")
+    @Value("${IPA_JWT_SIGNING_KEY}")
     String jwtSigningKey;
 
     /* e.g. https://cas.ucdavis.edu/cas */
-    @Value("${cas.url}")
+    @Value("${CAS_URL}")
     String casUrl;
 
     // Configure JWT

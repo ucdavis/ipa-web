@@ -44,7 +44,7 @@ public class AssignmentViewController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject UserRoleService userRoleService;
 
-    @Value("${ipa.url.api}")
+    @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
     @RequestMapping(value = "/api/assignmentView/{workgroupId}/{year}", method = RequestMethod.GET, produces="application/json")

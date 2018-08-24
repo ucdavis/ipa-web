@@ -7,7 +7,6 @@ target/
 build/
 .gradle
 ipa-web.env
-certs/
 out/
 *.log
 bin/

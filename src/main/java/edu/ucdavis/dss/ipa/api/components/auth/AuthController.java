@@ -28,16 +28,16 @@ public class AuthController {
     @Inject UserService userService;
     @Inject ScheduleTermStateService scheduleTermStateService;
 
-    @Value("${ipa.jwt.signingkey}")
+    @Value("${IPA_JWT_SIGNING_KEY}")
     String jwtSigningKey;
 
-    @Value("${ipa.jwt.timeout}")
+    @Value("${IPA_JWT_TIMEOUT}")
     String jwtTimeout;
 
-    @Value("${ipa.url.api}")
+    @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
-    @Value("${cas.url}")
+    @Value("${CAS_URL}")
     String casUrl;
 
     /**

@@ -28,7 +28,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
     @Inject UserService userService;
     @Inject EmailService emailService;
 
-    @Value("${ipa.url.frontend}")
+    @Value("${IPA_URL_FRONTEND}")
     String ipaUrlFrontend;
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");

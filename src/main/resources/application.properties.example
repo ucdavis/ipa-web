@@ -1,5 +1,3 @@
-logging.level.org.springframework=INFO
-
 spring.datasource.url=jdbc:mysql://localhost:3306/IPA
 spring.datasource.username=root
 spring.datasource.password=

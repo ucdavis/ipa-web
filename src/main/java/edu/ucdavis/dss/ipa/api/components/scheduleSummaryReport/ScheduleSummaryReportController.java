@@ -23,7 +23,7 @@ public class ScheduleSummaryReportController {
     @Inject ScheduleSummaryViewFactory scheduleSummaryViewFactory;
     @Inject Authorizer authorizer;
 
-    @Value("${ipa.url.api}")
+    @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
     @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/terms/{termCode}", method = RequestMethod.GET, produces = "application/json")
