@@ -92,7 +92,6 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		List<DwSection> dwSectionMatches = new ArrayList<>();
 
 		for (DwSection dwSection : dwSections) {
-
 			// Convert sequenceNumber to sequencePattern
 			Character dwSequenceNumberStart = dwSection.getSequenceNumber().charAt(0);
 			String sequencePattern = null;
@@ -283,7 +282,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 					.map(a -> new ActivityDiffDto(
 							0,
 							a.getSsrmeet_schd_code(),
-							a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
+							a.getSsrmeet_bldg_code() != null ? a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code() : null,
 							a.getDay_indicator(),
 							a.getSsrmeet_begin_time(),
 							a.getSsrmeet_end_time(),
@@ -334,7 +333,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				.map(a -> new ActivityDiffDto(
 						0,
 						a.getSsrmeet_schd_code(),
-						a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code(),
+						a.getSsrmeet_bldg_code() != null ? a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code() : null,
 						a.getDay_indicator(),
 						a.getSsrmeet_begin_time(),
 						a.getSsrmeet_end_time(),
