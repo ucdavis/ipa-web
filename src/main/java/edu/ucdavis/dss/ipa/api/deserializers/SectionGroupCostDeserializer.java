@@ -90,6 +90,37 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             sectionGroupCost.setDisabled(node.get("disabled").booleanValue());
         }
 
+        if (node.has("effectiveTermCode")) {
+            sectionGroupCost.setEffectiveTermCode(node.get("effectiveTermCode").textValue());
+        }
+        if (node.has("termCode")) {
+            sectionGroupCost.setTermCode(node.get("termCode").textValue());
+        }
+        if (node.has("title")) {
+            sectionGroupCost.setTitle(node.get("title").textValue());
+        }
+        if (node.has("courseNumber")) {
+            sectionGroupCost.setCourseNumber(node.get("courseNumber").textValue());
+        }
+        if (node.has("sequencePattern")) {
+            sectionGroupCost.setSequencePattern(node.get("sequencePattern").textValue());
+        }
+        if (node.has("subjectCode")) {
+            sectionGroupCost.setSubjectCode(node.get("subjectCode").textValue());
+        }
+
+        if (node.has("unitsHigh")) {
+            if (node.get("unitsHigh").isNull() == false) {
+                sectionGroupCost.setUnitsHigh(node.get("unitsHigh").floatValue());
+            }
+        }
+
+        if (node.has("unitsLow")) {
+            if (node.get("unitsLow").isNull() == false) {
+                sectionGroupCost.setUnitsLow(node.get("unitsLow").floatValue());
+            }
+        }
+
         return sectionGroupCost;
     }
 }

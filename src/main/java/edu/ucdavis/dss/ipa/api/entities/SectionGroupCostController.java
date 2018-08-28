@@ -54,8 +54,8 @@ public class SectionGroupCostController {
   @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/sectionGroups/{sectionGroupId}/sectionGroupCosts", method = RequestMethod.POST, produces="application/json")
   @ResponseBody
   public SectionGroupCost createSectionGroupCostComment(@PathVariable long budgetScenarioId,
-                                                               @PathVariable long sectionGroupId,
-                                                               HttpServletResponse httpResponse) {
+                                                        @PathVariable long sectionGroupId,
+                                                        HttpServletResponse httpResponse) {
     SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
     BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
@@ -71,4 +71,24 @@ public class SectionGroupCostController {
 
     return sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
   }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/sectionGroupCosts", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public SectionGroupCost createSectionGroupCost(@PathVariable long budgetScenarioId,
+                                                          @RequestBody SectionGroupCost sectionGroupCost,
+                                                          HttpServletResponse httpResponse) {
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+
+        return sectionGroupCostService.createOrUpdateFrom(sectionGroupCost, budgetScenario);
+    }
 }
