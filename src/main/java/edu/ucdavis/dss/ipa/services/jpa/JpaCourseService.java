@@ -248,6 +248,9 @@ public class JpaCourseService implements CourseService {
 		course.setEffectiveTermCode(courseDTO.getEffectiveTermCode());
 		course.setSchedule(courseDTO.getSchedule());
 		course.setTags(tags);
+		course.setUnitsHigh(courseDTO.getUnitsHigh());
+		course.setUnitsLow(courseDTO.getUnitsLow());
+
 		courseRepository.save(course);
 
 		return course;
