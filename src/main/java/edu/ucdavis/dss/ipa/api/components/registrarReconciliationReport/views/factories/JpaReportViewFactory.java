@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories;
 
+import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.ActivityDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.InstructorDiffDto;
@@ -201,40 +202,66 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				)
 				.collect(Collectors.toSet());
 
-		// Unshared activities
-		List<ActivityDiffDto> ipaActivities = section
-				.getActivities().stream()
-				.map(a -> new ActivityDiffDto(
-								a.getId(),
-								a.getActivityTypeCode().getActivityTypeCode(),
-								a.getLocationDescription(),
-								a.getDayIndicator(),
-								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : null,
-								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : null,
-								section.getSectionGroup().getCourse().getSubjectCode(),
-								section.getSectionGroup().getCourse().getCourseNumber(),
-								section.getSequenceNumber()
-						)
-				)
-				.collect(Collectors.toList());
+		Map<String, Long> instancesOfKey = new HashMap<String, Long>();
+		List<ActivityDiffDto> ipaActivities = new ArrayList<>();
+
+		// Non-shared activities
+		for (Activity activity : section.getActivities()) {
+			String subjectCode = activity.getSection().getSectionGroup().getCourse().getSubjectCode();
+			String courseNumber = activity.getSection().getSectionGroup().getCourse().getCourseNumber();
+			String sequenceNumber = activity.getSection().getSequenceNumber();
+			char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
+
+			String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
+
+			Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
+			keyCount += 1L;
+			instancesOfKey.put(key, 1L);
+
+			String uniqueKey = key + "-" + keyCount;
+
+			ActivityDiffDto activityDiffDto = new ActivityDiffDto(
+				activity.getId(),
+				activity.getActivityTypeCode().getActivityTypeCode(),
+				activity.getLocationDescription(),
+				activity.getDayIndicator(),
+				activity.getStartTime() != null ? new SimpleDateFormat("HHmm").format(activity.getStartTime()) : null,
+				activity.getEndTime() != null ? new SimpleDateFormat("HHmm").format(activity.getEndTime()) : null,
+				uniqueKey
+			);
+
+			ipaActivities.add(activityDiffDto);
+		}
+
+		instancesOfKey = new HashMap<String, Long>();
 
 		// Shared activities
-		ipaActivities.addAll(section.getSectionGroup().getActivities()
-				.stream()
-				.map(a -> new ActivityDiffDto(
-								a.getId(),
-								a.getActivityTypeCode().getActivityTypeCode(),
-								a.getLocationDescription(),
-								a.getDayIndicator(),
-								a.getStartTime() != null ? new SimpleDateFormat("HHmm").format(a.getStartTime()) : null,
-								a.getEndTime() != null ? new SimpleDateFormat("HHmm").format(a.getEndTime()) : null,
-								section.getSectionGroup().getCourse().getSubjectCode(),
-								section.getSectionGroup().getCourse().getCourseNumber(),
-								section.getSequenceNumber()
-						)
-				)
-				.collect(Collectors.toSet())
-		);
+		for (Activity activity : section.getSectionGroup().getActivities()) {
+			String subjectCode = activity.getSectionGroup().getCourse().getSubjectCode();
+			String courseNumber = activity.getSectionGroup().getCourse().getCourseNumber();
+			String sequenceNumber = activity.getSectionGroup().getCourse().getSequencePattern();
+			char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
+
+			String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
+
+			Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
+			keyCount += 1L;
+			instancesOfKey.put(key, 1L);
+
+			String uniqueKey = key + "-" + keyCount;
+
+			ActivityDiffDto activityDiffDto = new ActivityDiffDto(
+				activity.getId(),
+				activity.getActivityTypeCode().getActivityTypeCode(),
+				activity.getLocationDescription(),
+				activity.getDayIndicator(),
+				activity.getStartTime() != null ? new SimpleDateFormat("HHmm").format(activity.getStartTime()) : null,
+				activity.getEndTime() != null ? new SimpleDateFormat("HHmm").format(activity.getEndTime()) : null,
+				uniqueKey
+			);
+
+			ipaActivities.add(activityDiffDto);
+		}
 
 		// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
 		ipaActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
@@ -277,20 +304,35 @@ public class JpaReportViewFactory implements ReportViewFactory {
 					.collect(Collectors.toSet());
 
 			// DW Section activities
-			List<ActivityDiffDto> dwActivities = dwSection.get()
-					.getActivities().stream()
-					.map(a -> new ActivityDiffDto(
-							0,
-							a.getSsrmeet_schd_code(),
-							a.getSsrmeet_bldg_code() != null ? a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code() : null,
-							a.getDay_indicator(),
-							a.getSsrmeet_begin_time(),
-							a.getSsrmeet_end_time(),
-							dwSection.get().getSubjectCode(),
-							dwSection.get().getCourseNumber(),
-							dwSection.get().getSequenceNumber()
-					))
-					.collect(Collectors.toList());
+			List<ActivityDiffDto> dwActivities = new ArrayList<>();
+			Map<String, Long> instancesOfKey = new HashMap<String, Long>();
+
+			for (DwActivity dwActivity : dwSection.get().getActivities()) {
+				String subjectCode = dwSection.get().getSubjectCode();
+				String courseNumber = dwSection.get().getCourseNumber();
+				String sequenceNumber = dwSection.get().getSequenceNumber();
+				char typeCode = dwActivity.getSsrmeet_schd_code();
+
+				String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
+
+				Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
+				keyCount += 1L;
+				instancesOfKey.put(key, 1L);
+
+				String uniqueKey = key + "-" + keyCount;
+
+				ActivityDiffDto dwActivityDiffDto = new ActivityDiffDto(
+					0,
+					dwActivity.getSsrmeet_schd_code(),
+					dwActivity.getSsrmeet_bldg_code() != null ? dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code() : null,
+					dwActivity.getDay_indicator(),
+					dwActivity.getSsrmeet_begin_time(),
+					dwActivity.getSsrmeet_end_time(),
+					uniqueKey
+				);
+
+				dwActivities.add(dwActivityDiffDto);
+			}
 
 			// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
 			dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
@@ -328,20 +370,35 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				.collect(Collectors.toSet());
 
 		// DW Section activities
-		List<ActivityDiffDto> dwActivities = dwSection
-				.getActivities().stream()
-				.map(a -> new ActivityDiffDto(
-						0,
-						a.getSsrmeet_schd_code(),
-						a.getSsrmeet_bldg_code() != null ? a.getSsrmeet_bldg_code() + " " + a.getSsrmeet_room_code() : null,
-						a.getDay_indicator(),
-						a.getSsrmeet_begin_time(),
-						a.getSsrmeet_end_time(),
-						dwSection.getSubjectCode(),
-						dwSection.getCourseNumber(),
-						dwSection.getSequenceNumber()
-				))
-				.collect(Collectors.toList());
+		List<ActivityDiffDto> dwActivities = new ArrayList<>();
+		Map<String, Long> instancesOfKey = new HashMap<String, Long>();
+
+		for (DwActivity dwActivity : dwSection.getActivities()) {
+			String subjectCode = dwSection.getSubjectCode();
+			String courseNumber = dwSection.getCourseNumber();
+			String sequenceNumber = dwSection.getSequenceNumber();
+			char typeCode = dwActivity.getSsrmeet_schd_code();
+
+			String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
+
+			Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
+			keyCount += 1L;
+			instancesOfKey.put(key, 1L);
+
+			String uniqueKey = key + "-" + keyCount;
+
+			ActivityDiffDto dwActivityDiffDto = new ActivityDiffDto(
+				0,
+				dwActivity.getSsrmeet_schd_code(),
+				dwActivity.getSsrmeet_bldg_code() != null ? dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code() : null,
+				dwActivity.getDay_indicator(),
+				dwActivity.getSsrmeet_begin_time(),
+				dwActivity.getSsrmeet_end_time(),
+				uniqueKey
+			);
+
+			dwActivities.add(dwActivityDiffDto);
+		}
 
 		// Sort the activities by their uniqueKeys to have Javers compare the correct ones together
 		dwActivities.sort(Comparator.comparing(ActivityDiffDto::getUniqueKey));
