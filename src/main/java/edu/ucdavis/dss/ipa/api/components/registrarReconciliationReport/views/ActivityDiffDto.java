@@ -23,11 +23,9 @@ public class ActivityDiffDto {
 			String dayIndicator,
 			String startTime,
 			String endTime,
-			String subjectCode,
-			String courseNumber,
-			String sequenceNumber) {
+			String uniqueKey) {
 		setId(activityId);
-		setUniqueKey(subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode);
+		setUniqueKey(uniqueKey);
 		setTypeCode(typeCode);
 
 		setBannerLocation(bannerLocation);
