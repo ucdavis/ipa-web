@@ -10,3 +10,4 @@ ipa-web.env
 out/
 *.log
 bin/
+.DS_Store

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.dw.dto.DwActivity;
+import edu.ucdavis.dss.dw.dto.DwInstructor;
+import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
@@ -26,6 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +42,7 @@ import java.util.*;
 @RestController
 @CrossOrigin
 public class CourseViewController {
+	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.dw.DwClient");
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject	ScheduleService scheduleService;
@@ -47,6 +52,7 @@ public class CourseViewController {
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
+	@Inject InstructorService instructorService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject Authorizer authorizer;
 
@@ -595,6 +601,27 @@ public class CourseViewController {
 								createdSharedActivityKeys.add(activityKey);
 								activityService.saveActivity(activity);
 							}
+						}
+					}
+
+					if (importAssignments) {
+						for (DwInstructor dwInstructor : dwSection.getInstructors()) {
+							DwPerson dwPerson = dwRepository.getPersonByLoginId(dwInstructor.getLoginId());
+
+							if (dwPerson == null) {
+								log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + dwInstructor.getLoginId());
+								continue;
+							}
+
+							String instructorEmail = dwPerson.getEmail();
+
+							// Find or create an instructor
+							Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId);
+							instructor = instructorService.save(instructor);
+
+							// Find or create a teachingAssignment
+							TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+							teachingAssignment.setApproved(true);
 						}
 					}
 				}
