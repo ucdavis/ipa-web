@@ -617,11 +617,11 @@ public class CourseViewController {
 
 							// Find or create an instructor
 							Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId);
-							instructor = instructorService.save(instructor);
 
 							// Find or create a teachingAssignment
 							TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
 							teachingAssignment.setApproved(true);
+							teachingAssignment = teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 						}
 					}
 				}
