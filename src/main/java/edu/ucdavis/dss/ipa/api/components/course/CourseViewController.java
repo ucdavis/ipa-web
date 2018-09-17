@@ -418,15 +418,8 @@ public class CourseViewController {
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 			for (DwSection dwSection : dwSections) {
 				// Calculate sequencePattern from sequenceNumber
-				String dwSequencePattern = null;
 				Character c = dwSection.getSequenceNumber().charAt(0);
-				Boolean isLetter = Character.isLetter(c);
-
-				if (isLetter) {
-					dwSequencePattern = String.valueOf(c);
-				} else {
-					dwSequencePattern = dwSection.getSequenceNumber();
-				}
+				String dwSequencePattern = Character.isLetter(c) ? String.valueOf(c) : dwSection.getSequenceNumber();
 
 				// Compare termCode endings
 				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
