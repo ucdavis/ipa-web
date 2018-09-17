@@ -426,9 +426,11 @@ public class CourseViewController {
 			// Ignore numeric sections
 			if (Character.isLetter(c) == false) { continue; }
 
-			String dwSectionKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + String.valueOf(c);
+			String dwSectionKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + String.valueOf(c) + dwSection.getTermCode();
+
 			List<DwSection> sections = dwSectionGroups.get(dwSectionKey) != null ? dwSectionGroups.get(dwSectionKey) : new ArrayList<>();
 			sections.add(dwSection);
+			dwSectionGroups.put(dwSectionKey, sections);
 
 			if (dwSectionKeys.contains(dwSectionKey) == false) {
 				dwSectionKeys.add(dwSectionKey);
@@ -437,6 +439,7 @@ public class CourseViewController {
 
 		// Identify activities that are 'shared'
 		List<String> sharedActivityKeys = new ArrayList<>();
+		List<String> createdSharedActivityKeys = new ArrayList<>();
 
 		for (String dwSectionKey: dwSectionKeys) {
 			Map<String, Long> activityKeyCounts = new HashMap<String, Long>();
@@ -450,9 +453,12 @@ public class CourseViewController {
 					String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
 					String activityType = String.valueOf(dwActivity.getSsrmeet_schd_code());
 					String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
-					String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType + dayIndicator + startTime + endTime;
+					String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType + dayIndicator + startTime + endTime + dwSection.getTermCode();
 
-					activityKeys.add(activityKey);
+					if (activityKeys.indexOf(activityKey) == -1) {
+						activityKeys.add(activityKey);
+					}
+
 					Long activityCount = activityKeyCounts.get(activityKey) != null ? activityKeyCounts.get(activityKey) : 0L;
 					activityCount += 1;
 					activityKeyCounts.put(activityKey, activityCount);
@@ -464,7 +470,6 @@ public class CourseViewController {
 					sharedActivityKeys.add(activityKey);
 				}
 			}
-
 		}
 
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
@@ -579,21 +584,22 @@ public class CourseViewController {
 						String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
 						String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
 						String sequencePattern = String.valueOf(dwSection.getSequenceNumber().charAt(0));
-						String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType + dayIndicator + startTime + endTime;
+						String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType.getActivityTypeCode() + dayIndicator + startTime + endTime + dwSection.getTermCode();
 
 						if (sharedActivityKeys.indexOf(activityKey) == -1) {
 							activity.setSection(section);
+							activityService.saveActivity(activity);
 						} else {
-							activity.setSectionGroup(sectionGroup);
+							if (createdSharedActivityKeys.indexOf(activityKey) == -1) {
+								activity.setSectionGroup(sectionGroup);
+								createdSharedActivityKeys.add(activityKey);
+								activityService.saveActivity(activity);
+							}
 						}
-
-						activityService.saveActivity(activity);
 					}
 				}
 			}
 		}
-
-		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}
