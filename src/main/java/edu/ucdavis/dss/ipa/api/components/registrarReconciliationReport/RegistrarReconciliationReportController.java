@@ -306,20 +306,30 @@ public class RegistrarReconciliationReportController {
 		for (Activity activityDto : sectionDto.getActivities()) {
 			// Make activities
 			Activity activity = new Activity();
-			activity.setSection(section);
-			activity.setActivityState(ActivityState.DRAFT);
 
+			activity.setActivityState(ActivityState.DRAFT);
 			activity.setBannerLocation(activityDto.getBannerLocation());
 			activity.setActivityTypeCode(activityDto.getActivityTypeCode());
 			activity.setDayIndicator(activityDto.getDayIndicator());
-
 			activity.setStartTime(activityDto.getStartTime());
 			activity.setEndTime(activityDto.getEndTime());
 			activity.setBeginDate(activityDto.getBeginDate());
 			activity.setEndDate(activityDto.getEndDate());
+
+			activity.setSection(section);
 			activity = activityService.saveActivity(activity);
 
-			activities.add(activity);
+			boolean contains = false;
+
+			for (Activity slotActivity : activities) {
+				if (slotActivity.getId() == activity.getId()) {
+					contains = true;
+				}
+			}
+
+			if (contains == false) {
+				activities.add(activity);
+			}
 		}
 
 		section.setActivities(activities);
