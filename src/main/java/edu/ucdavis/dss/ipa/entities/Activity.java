@@ -8,13 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.entities.validation.ValidActivity;
-import org.springframework.data.annotation.*;
 
 import javax.persistence.*;
 import javax.persistence.Id;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
@@ -35,7 +32,9 @@ public class Activity extends BaseEntity {
 	private String dayIndicator, bannerLocation;
 	private ActivityState activityState;
 	private int frequency;
-	private boolean virtual, syncLocation;
+	private Long category;
+	private boolean virtual;
+	private boolean syncLocation;
 	private Location location;
 	private ActivityType activityTypeCode;
 	
@@ -95,6 +94,23 @@ public class Activity extends BaseEntity {
 
 	public void setEndTime(Time endTime) {
 		this.endTime = endTime;
+	}
+
+	@Basic
+	@Column(name = "category", nullable = false)
+	@JsonProperty
+	public Long getCategory() {
+		return this.category;
+	}
+
+	public void setCategory(Long category) {
+		this.category = category;
+	}
+
+	@Transient
+	@JsonProperty
+	public boolean isPrimary() {
+		return (this.category == 1);
 	}
 
 	/**
