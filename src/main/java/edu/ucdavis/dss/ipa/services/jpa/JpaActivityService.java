@@ -5,7 +5,6 @@ import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
-import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
@@ -207,6 +205,12 @@ public class JpaActivityService implements ActivityService {
 		String startTime = activity.getStartTime().toString() != null ? activity.getStartTime().toString() : "";
 		String endTime = activity.getEndTime().toString() != null ? activity.getEndTime().toString() : "";
 		String days = activity.getDayIndicator().toString();
+
+		// Activities with null days/times cannot be considered shared
+		if (startTime == "" || endTime == "" || days.indexOf("1") == -1) {
+			return null;
+		}
+
 		String activityKey = typeCode + startTime + endTime + days;
 
 		Activity sharedActivity = null;
