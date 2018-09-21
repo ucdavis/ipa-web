@@ -81,6 +81,12 @@ public class V211__Fix_incorrectly_separated_sharedActivities implements JdbcMig
                     String typeCode = rsActivities.getString("ActivityTypeCode");
                     String startTime = rsActivities.getTime("StartTime") != null ? rsActivities.getTime("StartTime").toString() : "";
                     String endTime = rsActivities.getTime("EndTime") != null ? rsActivities.getTime("EndTime").toString() : "";
+
+                    // Ignore activities that don't have days/times set
+                    if (dayIndicator.indexOf("1") == -1 || startTime == "" || endTime == "") {
+                        continue;
+                    }
+
                     String activityKey = typeCode + startTime + endTime + dayIndicator;
                     activityKeys.add(activityKey);
 
