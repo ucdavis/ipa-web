@@ -604,11 +604,18 @@ public class CourseViewController {
 						}
 					}
 
+
 					if (importAssignments) {
 						for (DwInstructor dwInstructor : dwSection.getInstructors()) {
+
+							if (dwInstructor.getEmployeeId().equals("989999999")) {
+								sectionGroup.setShowTheStaff(true);
+								continue;
+							}
+
 							DwPerson dwPerson = dwRepository.getPersonByLoginId(dwInstructor.getLoginId());
 
-							if (dwPerson == null) {
+							if ((dwPerson == null) || (dwPerson.getUserId() == null && dwPerson.getoFullName() == null)) {
 								log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + dwInstructor.getLoginId());
 								continue;
 							}
@@ -616,12 +623,12 @@ public class CourseViewController {
 							String instructorEmail = dwPerson.getEmail();
 
 							// Find or create an instructor
-							Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId);
+							Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId, dwInstructor.getEmployeeId());
 
 							// Find or create a teachingAssignment
 							TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
 							teachingAssignment.setApproved(true);
-							teachingAssignment = teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
+							teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 						}
 					}
 				}
