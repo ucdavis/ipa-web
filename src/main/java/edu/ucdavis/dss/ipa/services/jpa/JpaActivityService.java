@@ -127,11 +127,13 @@ public class JpaActivityService implements ActivityService {
 			String startTime = "";
 			if (activity.getStartTime() != null) {
 				startTime = activity.getStartTime().toString();
+				startTime = "" + startTime.charAt(0) + startTime.charAt(1) + startTime.charAt(3) + startTime.charAt(4);
 			}
 
 			String endTime = "";
 			if (activity.getEndTime() != null) {
 				endTime = activity.getEndTime().toString();
+				endTime = "" + endTime.charAt(0) + endTime.charAt(1) + endTime.charAt(3) + endTime.charAt(4);
 			}
 
 			String typeCode = String.valueOf(activity.getActivityTypeCode().getActivityTypeCode());
@@ -158,7 +160,6 @@ public class JpaActivityService implements ActivityService {
 					// Update category data
 					if (activity.getCategory() == null) {
 						activity.setCategory(Long.valueOf(dwActivity.getCatagory()));
-						System.out.println("set catagory value");
 					}
 
 					// Update location data
