@@ -110,7 +110,11 @@ public class Activity extends BaseEntity {
 	@Transient
 	@JsonProperty
 	public boolean isPrimary() {
-		return (this.category == 1);
+		if (this.category == null) {
+			return false;
+		}
+
+		return (this.category != 1);
 	}
 
 	/**
