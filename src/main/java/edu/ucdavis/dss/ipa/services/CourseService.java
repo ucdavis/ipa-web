@@ -46,4 +46,6 @@ public interface CourseService {
 	void deleteMultiple(List<Long> courseId);
 
 	void massAddTagsToCourses(List<Long> tagsToAdd, List<Long> tagsToRemove, List<Long> courseIds);
+
+	List<Course> findByScheduleId(long l);
 }
