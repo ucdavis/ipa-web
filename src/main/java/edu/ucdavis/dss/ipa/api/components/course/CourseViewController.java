@@ -732,6 +732,7 @@ public class CourseViewController {
 						newActivity.setBeginDate(term.getStartDate());
 						newActivity.setEndDate(term.getEndDate());
 						newActivity.setActivityState(ActivityState.DRAFT);
+						newActivity.setCategory(historicalActivity.getCategory());
 						activityService.saveActivity(newActivity);
 					}
 				}

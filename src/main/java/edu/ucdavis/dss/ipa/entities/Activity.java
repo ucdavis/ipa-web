@@ -97,7 +97,7 @@ public class Activity extends BaseEntity {
 	}
 
 	@Basic
-	@Column(name = "category", nullable = false)
+	@Column(name = "category", nullable = true)
 	@JsonProperty
 	public Long getCategory() {
 		return this.category;

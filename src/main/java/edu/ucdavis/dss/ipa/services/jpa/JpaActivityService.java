@@ -113,8 +113,10 @@ public class JpaActivityService implements ActivityService {
 	public void syncActivityLocations(DwSection dwSection, List<Activity> activities) {
 		for (Activity activity : activities) {
 			// Only sync locations when allowed (i.e. not custom space)
+			boolean shouldSyncLocation = true;
+
 			if (activity.isSyncLocation() == false) {
-				continue;
+				shouldSyncLocation = false;
 			}
 
 			String dayIndicator = "";
@@ -140,10 +142,12 @@ public class JpaActivityService implements ActivityService {
 				String dwEndTime = dwActivity.getSsrmeet_end_time();
 				String dwTypeCode = String.valueOf(dwActivity.getSsrmeet_schd_code());
 
+				boolean isDwLocationValid = true;
+
 				// Ensure DW location data is valid
 				if (dwActivity.getSsrmeet_bldg_code() == null || dwActivity.getSsrmeet_bldg_code().length() > 0
 				|| dwActivity.getSsrmeet_room_code() == null || dwActivity.getSsrmeet_room_code().length() > 0) {
-					continue;
+					isDwLocationValid = false;
 				}
 
 				// Ensure DW data is referring to the same activity
@@ -151,9 +155,18 @@ public class JpaActivityService implements ActivityService {
 				&& startTime.equals(dwStartTime)
 				&& endTime.equals(dwEndTime)
 				&& typeCode.equals(dwTypeCode) ) {
+					// Update category data
+					if (activity.getCategory() == null) {
+						activity.setCategory(Long.valueOf(dwActivity.getCatagory()));
+						System.out.println("set catagory value");
+					}
+
 					// Update location data
-					String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
-					activity.setBannerLocation(bannerLocation);
+					if (shouldSyncLocation && isDwLocationValid) {
+						String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
+						activity.setBannerLocation(bannerLocation);
+					}
+
 					this.saveActivity(activity);
 				}
 			}
