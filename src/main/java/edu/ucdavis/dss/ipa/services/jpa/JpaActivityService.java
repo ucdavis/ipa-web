@@ -144,6 +144,12 @@ public class JpaActivityService implements ActivityService {
 				String dwEndTime = dwActivity.getSsrmeet_end_time();
 				String dwTypeCode = String.valueOf(dwActivity.getSsrmeet_schd_code());
 
+				// Update category data
+				if (typeCode.equals(dwTypeCode) && dwActivity.getCatagory() != null) {
+					activity.setCategory(Long.valueOf(dwActivity.getCatagory()));
+					this.saveActivity(activity);
+				}
+
 				boolean isDwLocationValid = true;
 
 				// Ensure DW location data is valid
@@ -157,11 +163,6 @@ public class JpaActivityService implements ActivityService {
 				&& startTime.equals(dwStartTime)
 				&& endTime.equals(dwEndTime)
 				&& typeCode.equals(dwTypeCode) ) {
-					// Update category data
-					if (activity.getCategory() == null) {
-						activity.setCategory(Long.valueOf(dwActivity.getCatagory()));
-					}
-
 					// Update location data
 					if (shouldSyncLocation && isDwLocationValid) {
 						String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();

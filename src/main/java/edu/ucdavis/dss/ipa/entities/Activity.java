@@ -114,7 +114,7 @@ public class Activity extends BaseEntity {
 			return false;
 		}
 
-		return (this.category != 1);
+		return (this.category == 1);
 	}
 
 	/**
