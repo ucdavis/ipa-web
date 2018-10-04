@@ -1,0 +1,2 @@
+ALTER TABLE `LineItems` CHANGE COLUMN `Notes` `Notes` VARCHAR(750) NULL;
+ALTER TABLE `LineItems` CHANGE COLUMN `Description` `Description` VARCHAR(500) NULL;
