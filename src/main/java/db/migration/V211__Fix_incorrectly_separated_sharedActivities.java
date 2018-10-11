@@ -42,7 +42,7 @@ public class V211__Fix_incorrectly_separated_sharedActivities implements JdbcMig
 
             Boolean sectionGroupIsNumeric = true;
 
-            while(rsCourse.next()) {
+            if (rsCourse.first()) {
                 String sequencePattern = rsCourse.getString("SequencePattern");
                 if (sequencePattern != null && sequencePattern.length() > 0) {
                     sectionGroupIsNumeric = Character.isDigit(rsCourse.getString("SequencePattern").charAt(0));
