@@ -27,10 +27,19 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioId(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId());
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId(), originalSectionGroupCost.getTermCode());
 
         if (sectionGroupCost == null) {
             sectionGroupCost = new SectionGroupCost();
+            sectionGroupCost.setUnitsHigh(originalSectionGroupCost.getUnitsHigh());
+            sectionGroupCost.setUnitsLow(originalSectionGroupCost.getUnitsLow());
+            sectionGroupCost.setEffectiveTermCode(originalSectionGroupCost.getEffectiveTermCode());
+            sectionGroupCost.setTermCode(originalSectionGroupCost.getTermCode());
+            sectionGroupCost.setTitle(originalSectionGroupCost.getTitle());
+            sectionGroupCost.setSubjectCode(originalSectionGroupCost.getSubjectCode());
+            sectionGroupCost.setCourseNumber(originalSectionGroupCost.getCourseNumber());
+            sectionGroupCost.setBudgetScenario(budgetScenario);
+            sectionGroupCost.setSequencePattern(originalSectionGroupCost.getSequencePattern());
         }
 
         if (originalSectionGroupCost.getInstructorType() != null) {
@@ -126,6 +135,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setSectionCount(sectionGroupCostDTO.getSectionCount());
         originalSectionGroupCost.setCost(sectionGroupCostDTO.getCost());
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
+        originalSectionGroupCost.setDisabled(sectionGroupCostDTO.isDisabled());
 
         originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
         originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
