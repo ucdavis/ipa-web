@@ -80,8 +80,8 @@ public class SectionDeserializer extends JsonDeserializer<Object> {
 					activity.setEndTime(endTime);
 				}
 
-				if (String.valueOf(objNode.get("typeCode")) != null && String.valueOf(objNode.get("typeCode")).length() > 0) {
-					Character typeCode = String.valueOf(objNode.get("typeCode")).charAt(0);
+				if (objNode.get("typeCode").textValue() != null && objNode.get("typeCode").textValue().length() > 0) {
+					Character typeCode = objNode.get("typeCode").textValue().charAt(0);
 					activity.setActivityTypeCode(new ActivityType(typeCode));
 				}
 

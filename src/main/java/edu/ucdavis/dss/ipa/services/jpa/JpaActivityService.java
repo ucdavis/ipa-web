@@ -5,6 +5,7 @@ import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
 import edu.ucdavis.dss.ipa.services.ActivityService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
 
@@ -62,6 +62,12 @@ public class JpaActivityService implements ActivityService {
 		if (activity.getSection() != null && Utilities.isNumeric(activity.getSection().getSequenceNumber()) == true) {
 			activity.setSectionGroup(activity.getSection().getSectionGroup());
 			activity.setSection(null);
+		}
+
+		// If activity matches an existing shared activity, do nothing
+		Activity sharedActivity = this.getSharedActivity(activity, activity.getSection().getSectionGroup());
+		if (sharedActivity != null) {
+			return sharedActivity;
 		}
 
 		return this.activityRepository.save(activity);
@@ -191,5 +197,36 @@ public class JpaActivityService implements ActivityService {
 		activity.setActivityState(ActivityState.DRAFT);
 
 		return activity;
+	}
+
+	@Override
+	public Activity getSharedActivity(Activity activity, SectionGroup sectionGroup) {
+		char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
+		String startTime = activity.getStartTime().toString() != null ? activity.getStartTime().toString() : "";
+		String endTime = activity.getEndTime().toString() != null ? activity.getEndTime().toString() : "";
+		String days = activity.getDayIndicator().toString();
+
+		// Activities with null days/times cannot be considered shared
+		if (startTime == "" || endTime == "" || days.indexOf("1") == -1) {
+			return null;
+		}
+
+		String activityKey = typeCode + startTime + endTime + days;
+
+		Activity sharedActivity = null;
+
+		for (Activity slotActivity : sectionGroup.getActivities()) {
+			char slotTypeCode = slotActivity.getActivityTypeCode().getActivityTypeCode();
+			String slotStartTime = slotActivity.getStartTime().toString() != null ? slotActivity.getStartTime().toString() : "";
+			String slotEndTime = slotActivity.getEndTime().toString() != null ? slotActivity.getEndTime().toString() : "";
+			String slotDays = slotActivity.getDayIndicator().toString();
+			String slotActivityKey = slotTypeCode + slotStartTime + slotEndTime + slotDays;
+
+			if (slotActivityKey.equals(activityKey)) {
+				sharedActivity = slotActivity;
+			}
+		}
+
+		return sharedActivity;
 	}
 }

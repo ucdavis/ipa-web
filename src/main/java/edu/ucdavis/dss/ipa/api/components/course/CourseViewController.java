@@ -415,18 +415,68 @@ public class CourseViewController {
 
 		List<DwSection> dwSections = dwRepository.getSectionsBySubjectCodeAndYear(subjectCode, yearToImportFrom);
 
+		// Group dwSections into related groups
+		// Mapped to a key (example : 'ECS030A')
+		Map<String, List<DwSection>> dwSectionGroups = new HashMap<String, List<DwSection>>();
+		List<String> dwSectionKeys = new ArrayList<>();
+
+		for (DwSection dwSection : dwSections) {
+			Character c = dwSection.getSequenceNumber().charAt(0);
+
+			// Ignore numeric sections
+			if (Character.isLetter(c) == false) { continue; }
+
+			String dwSectionKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + String.valueOf(c) + dwSection.getTermCode();
+
+			List<DwSection> sections = dwSectionGroups.get(dwSectionKey) != null ? dwSectionGroups.get(dwSectionKey) : new ArrayList<>();
+			sections.add(dwSection);
+			dwSectionGroups.put(dwSectionKey, sections);
+
+			if (dwSectionKeys.contains(dwSectionKey) == false) {
+				dwSectionKeys.add(dwSectionKey);
+			}
+		}
+
+		// Identify activities that are 'shared'
+		List<String> sharedActivityKeys = new ArrayList<>();
+		List<String> createdSharedActivityKeys = new ArrayList<>();
+
+		for (String dwSectionKey: dwSectionKeys) {
+			Map<String, Long> activityKeyCounts = new HashMap<String, Long>();
+			List<String> activityKeys = new ArrayList<>();
+
+			for (DwSection dwSection : dwSectionGroups.get(dwSectionKey)) {
+				String sequencePattern = String.valueOf(dwSection.getSequenceNumber().charAt(0));
+
+				for (DwActivity dwActivity : dwSection.getActivities()) {
+					String startTime = dwActivity.getSsrmeet_begin_time() != null ? dwActivity.getSsrmeet_begin_time() : "";
+					String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
+					String activityType = String.valueOf(dwActivity.getSsrmeet_schd_code());
+					String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
+					String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType + dayIndicator + startTime + endTime + dwSection.getTermCode();
+
+					if (activityKeys.indexOf(activityKey) == -1) {
+						activityKeys.add(activityKey);
+					}
+
+					Long activityCount = activityKeyCounts.get(activityKey) != null ? activityKeyCounts.get(activityKey) : 0L;
+					activityCount += 1;
+					activityKeyCounts.put(activityKey, activityCount);
+				}
+			}
+
+			for (String activityKey : activityKeys) {
+				if (activityKeyCounts.get(activityKey) == dwSectionGroups.get(dwSectionKey).size()) {
+					sharedActivityKeys.add(activityKey);
+				}
+			}
+		}
+
 		for (SectionGroupImport sectionGroupImport : sectionGroupImportList) {
 			for (DwSection dwSection : dwSections) {
 				// Calculate sequencePattern from sequenceNumber
-				String dwSequencePattern = null;
 				Character c = dwSection.getSequenceNumber().charAt(0);
-				Boolean isLetter = Character.isLetter(c);
-
-				if (isLetter) {
-					dwSequencePattern = String.valueOf(c);
-				} else {
-					dwSequencePattern = dwSection.getSequenceNumber();
-				}
+				String dwSequencePattern = Character.isLetter(c) ? String.valueOf(c) : dwSection.getSequenceNumber();
 
 				// Compare termCode endings
 				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
@@ -530,19 +580,26 @@ public class CourseViewController {
 						activity.setActivityState(ActivityState.DRAFT);
 
 						// Activities in numeric sectionGroups should always be 'shared' activities
-						if (Utilities.isNumeric(dwSequencePattern)) {
-							activity.setSectionGroup(sectionGroup);
-						} else {
-							activity.setSection(section);
-						}
+						String startTime = dwActivity.getSsrmeet_begin_time() != null ? dwActivity.getSsrmeet_begin_time() : "";
+						String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
+						String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
+						String sequencePattern = String.valueOf(dwSection.getSequenceNumber().charAt(0));
+						String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType.getActivityTypeCode() + dayIndicator + startTime + endTime + dwSection.getTermCode();
 
-						activityService.saveActivity(activity);
+						if (sharedActivityKeys.indexOf(activityKey) == -1) {
+							activity.setSection(section);
+							activityService.saveActivity(activity);
+						} else {
+							if (createdSharedActivityKeys.indexOf(activityKey) == -1) {
+								activity.setSectionGroup(sectionGroup);
+								createdSharedActivityKeys.add(activityKey);
+								activityService.saveActivity(activity);
+							}
+						}
 					}
 				}
 			}
 		}
-
-		// TODO: Look through the sectionGroups in the created course, and find any activityTypes on the sections, that should instead be a 'shared activity' on the sectionGroup
 
 		return annualViewFactory.createCourseView(workgroupId, year, showDoNotPrint);
 	}

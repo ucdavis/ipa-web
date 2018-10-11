@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import org.springframework.validation.annotation.Validated;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
@@ -48,4 +50,6 @@ public interface ActivityService {
 	void syncActivityLocations(DwSection dwSection, List<Activity> activities);
 
 	Activity createFromDwActivity(DwActivity dwActivity);
+
+	Activity getSharedActivity(Activity activity, SectionGroup sectionGroup);
 }
