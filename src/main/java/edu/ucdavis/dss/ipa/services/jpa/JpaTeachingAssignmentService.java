@@ -35,7 +35,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	@Override
 	public TeachingAssignment saveAndAddInstructorType(TeachingAssignment teachingAssignment) {
 		if (teachingAssignment.getInstructor() != null && teachingAssignment.getInstructorType() == null) {
-			InstructorType instructorType = instructorTypeService.findByInstructorAndSchedule(teachingAssignment.getInstructor(), teachingAssignment.getSchedule());
+			InstructorType instructorType = instructorTypeService.findByInstructorAndWorkgroup(teachingAssignment.getInstructor(), teachingAssignment.getSchedule().getWorkgroup());
 
 			teachingAssignment.setInstructorType(instructorType);
 		}

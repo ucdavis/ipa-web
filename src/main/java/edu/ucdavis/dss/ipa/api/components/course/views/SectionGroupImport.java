@@ -9,7 +9,6 @@ public class SectionGroupImport {
 	{
 		return subjectCode;
 	}
-
 	public void setSubjectCode(String subjectCode) {
 		this.subjectCode = subjectCode;
 	}
@@ -17,7 +16,6 @@ public class SectionGroupImport {
 	public String getCourseNumber() {
 		return courseNumber;
 	}
-
 	public void setCourseNumber(String courseNumber) {
 		this.courseNumber = courseNumber;
 	}
@@ -25,7 +23,6 @@ public class SectionGroupImport {
 	public String getSequencePattern() {
 		return sequencePattern;
 	}
-
 	public void setSequencePattern(String sequencePattern) {
 		this.sequencePattern = sequencePattern;
 	}
@@ -33,7 +30,6 @@ public class SectionGroupImport {
 	public String getTermCode() {
 		return termCode;
 	}
-
 	public void setTermCode(String termCode) {
 		this.termCode = termCode;
 	}
@@ -41,7 +37,6 @@ public class SectionGroupImport {
 	public int getPlannedSeats() {
 		return plannedSeats;
 	}
-
 	public void setPlannedSeats(int plannedSeats) {
 		this.plannedSeats = plannedSeats;
 	}
@@ -49,7 +44,6 @@ public class SectionGroupImport {
 	public String getTitle() {
 		return title;
 	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -57,15 +51,11 @@ public class SectionGroupImport {
 	public String getEffectiveTermCode() {
 		return effectiveTermCode;
 	}
-
-	public void setEffectiveTermCode(String effectiveTermCode) {
-		this.effectiveTermCode = effectiveTermCode;
-	}
+	public void setEffectiveTermCode(String effectiveTermCode) { this.effectiveTermCode = effectiveTermCode; }
 
 	public Long getUnitsLow() {
 		return unitsLow;
 	}
-
 	public void setUnitsLow(Long unitsLow) {
 		this.unitsLow = unitsLow;
 	}
@@ -73,7 +63,6 @@ public class SectionGroupImport {
 	public Long getUnitsHigh() {
 		return unitsHigh;
 	}
-
 	public void setUnitsHigh(Long unitsHigh) {
 		this.unitsHigh = unitsHigh;
 	}

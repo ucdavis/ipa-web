@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -13,5 +13,5 @@ public interface InstructorTypeService {
 
     List<InstructorType> getAllInstructorTypes();
 
-    InstructorType findByInstructorAndSchedule(Instructor instructor, Schedule schedule);
+    InstructorType findByInstructorAndWorkgroup(Instructor instructor, Workgroup workgroup);
 }

@@ -16,19 +16,6 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 @Validated
 public interface ScheduleOpsService {
 	/**
-	 * Creates a new schedule by copying an existing one, as opposed to importing it from Data Warehouse.
-	 * 
-	 * @param workgroupId the ID of the workgroup who will own the schedule
-	 * @param scheduleYear the year the new schedule should belong to
-	 * @param copyFromYear the year of the schedule to copy. Must belong to the same workgroup.
-	 * @param copyInstructors set to true if you want to copy instructors
-	 * @param copyRooms set to true if you want to copy rooms
-	 * @param copyTimes set to true if you want to copy activity times
-	 * @return
-	 */
-	Schedule createScheduleFromExisting(Long workgroupId, Long scheduleYear, Long copyFromYear, Boolean copyInstructors, Boolean copyRooms, Boolean copyTimes);
-
-	/**
 	 * Syncs CRN and location data from DW to IPA, assuming the section/activities already exist
 	 */
 	void updateSectionsByCourseFromDW(Course course);

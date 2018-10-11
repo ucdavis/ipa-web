@@ -22,8 +22,7 @@ public final class ActivityType {
 		this.activityTypeCode = Character.toUpperCase(code);
 	}
 
-	public ActivityType() {
-	}
+	public ActivityType() { }
 
 	public char getActivityTypeCode() {
 		return this.activityTypeCode;
@@ -31,6 +30,11 @@ public final class ActivityType {
 	
 	public void setActivityTypeCode(char activityTypeCode) {
 		this.activityTypeCode = activityTypeCode;
+	}
+
+	@Transient
+	public String GetDescription() {
+		return this.GetDescription(this.getActivityTypeCode());
 	}
 	
 	@Transient

@@ -196,6 +196,9 @@ public class Activity extends BaseEntity {
 	public void setActivityTypeCode(ActivityType activityTypeCode) {
 		this.activityTypeCode = activityTypeCode;
 	}
+	public void setActivityTypeCode(char code) {
+		this.activityTypeCode = new ActivityType(code);
+	}
 
 	/**
 	 * Frequency is a simple integer that defaults to 1 indicating a weekly repetition,
@@ -367,113 +370,6 @@ public class Activity extends BaseEntity {
 	@JsonIgnore
 	@Transient
 	public String getActivityTypeCodeDescription() {
-		String description = null;
-
-		switch(this.activityTypeCode.getActivityTypeCode()) {
-			case '%':
-				description = "World Wide Web Electronic Discussion";
-				break;
-			case '0':
-				description = "World Wide Web Virtual Lecture";
-				break;
-			case '1':
-				description = "Conference";
-				break;
-			case '2':
-				description = "Term Paper/Discussion";
-				break;
-			case '3':
-				description = "Film Viewing";
-				break;
-			case '6':
-				// Not for use by departments
-				description = "Dummy Course";
-				break;
-			case '7':
-				// Course with more than one activity
-				description = "Combined Schedule";
-				break;
-			case '8':
-				description = "Project";
-				break;
-			case '9':
-				description = "Extensive Writing or Discussion";
-				break;
-			case 'A':
-				description = "Lecture";
-				break;
-			case 'B':
-				description = "Lecture/Discussion";
-				break;
-			case 'C':
-				description = "Laboratory";
-				break;
-			case 'D':
-				description = "Discussion";
-				break;
-			case 'E':
-				description = "Seminar";
-				break;
-			case 'F':
-				description = "Fieldwork";
-				break;
-			case 'G':
-				description = "Discussion/Laboratory";
-				break;
-			case 'H':
-				description = "Laboratory/Discussion";
-				break;
-			case 'I':
-				description = "Internship";
-				break;
-			case 'J':
-				description = "Independent Study";
-				break;
-			case 'K':
-				description = "Workshop";
-				break;
-			case 'L':
-				description = "Lecture/Lab";
-				break;
-			case 'O':
-				description = "Clinic";
-				break;
-			case 'P':
-				description = "PE Activity";
-				break;
-			case 'Q':
-				description = "Listening";
-				break;
-			case 'R':
-				description = "Recitation";
-				break;
-			case 'S':
-				description = "Studio";
-				break;
-			case 'T':
-				description = "Tutorial";
-				break;
-			case 'U':
-				description = "Auto Tutorial";
-				break;
-			case 'V':
-				description = "Variable";
-				break;
-			case 'W':
-				description = "Practice";
-				break;
-			case 'X':
-				description = "Performance Instruction";
-				break;
-			case 'Y':
-				description = "Rehearsal";
-				break;
-			case 'Z':
-				description = "Term Paper";
-				break;
-		}
-
-		return description;
+		return this.activityTypeCode.GetDescription();
 	}
-
 }

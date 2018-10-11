@@ -107,7 +107,7 @@ public class JpaCourseService implements CourseService {
 	@Override
 	public boolean delete(Long id) {
 		Course course = this.getOneById(id);
-		
+
 		if (course == null) {
 			return false;
 		}
@@ -206,6 +206,7 @@ public class JpaCourseService implements CourseService {
 			course.setEffectiveTermCode(effectiveTermCode);
 			course.setSchedule(schedule);
 			course.setTags(tags);
+
 			courseRepository.save(course);
 		}
 
@@ -241,6 +242,7 @@ public class JpaCourseService implements CourseService {
 		}
 
 		course = new Course();
+
 		course.setSubjectCode(courseDTO.getSubjectCode());
 		course.setCourseNumber(courseDTO.getCourseNumber());
 		course.setSequencePattern(courseDTO.getSequencePattern());
@@ -248,8 +250,8 @@ public class JpaCourseService implements CourseService {
 		course.setEffectiveTermCode(courseDTO.getEffectiveTermCode());
 		course.setSchedule(courseDTO.getSchedule());
 		course.setTags(tags);
-		course.setUnitsHigh(courseDTO.getUnitsHigh());
 		course.setUnitsLow(courseDTO.getUnitsLow());
+		course.setUnitsHigh(courseDTO.getUnitsHigh());
 
 		courseRepository.save(course);
 

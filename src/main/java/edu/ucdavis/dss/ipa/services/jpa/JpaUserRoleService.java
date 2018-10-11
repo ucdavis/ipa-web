@@ -42,7 +42,7 @@ import edu.ucdavis.dss.ipa.repositories.UserRoleRepository;
 @Service
 public class JpaUserRoleService implements UserRoleService {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
+
 	@Inject UserRoleRepository userRoleRepository;
 	@Inject UserService userService;
 	@Inject WorkgroupService workgroupService;
@@ -67,6 +67,9 @@ public class JpaUserRoleService implements UserRoleService {
 	@Override
 	public List<UserRole> findByLoginIdAndWorkgroup(String loginId, Workgroup workgroup) {
 		User user = userService.getOneByLoginId(loginId);
+
+		if (user == null) { return null; }
+
 		List<UserRole> workgroupUserRoles = new ArrayList<UserRole>();
 		for( UserRole userRole : user.getUserRoles() ) {
 			if ( userRole.getWorkgroup() != null && userRole.getWorkgroup().equals(workgroup) ) {
@@ -89,7 +92,7 @@ public class JpaUserRoleService implements UserRoleService {
 					return userRole;
 				}
 			}
-	
+
 			UserRole userRole = new UserRole();
 			userRole.setWorkgroup(workgroup);
 			userRole.setUser(user);
@@ -102,7 +105,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 			log.info("Creating userRole '" + userRole.getRole().getName() + "' for user '" + user.getLoginId() + "' and workgroup '" + workgroup.getName() + "'");
 			userRoleRepository.save(userRole);
-	
+
 			List<UserRole> userRoles = user.getUserRoles();
 			userRoles.add(userRole);
 			user.setUserRoles(userRoles);
@@ -193,7 +196,7 @@ public class JpaUserRoleService implements UserRoleService {
 		} else {
 			log.warn("userRoles could not be found, null data submitted.");
 			return null;
-		}	
+		}
 	}
 
 	@Override
@@ -403,4 +406,3 @@ public class JpaUserRoleService implements UserRoleService {
 		return new ArrayList<>(supportStaff);
 	}
 }
-

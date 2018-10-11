@@ -394,6 +394,18 @@ public class CourseViewController {
 		return sectionService.save(newSection);
 	}
 
+	/**
+	 * Assumes all courses are of the same subject code.
+	 *
+	 * @param sectionGroupImportList
+	 * @param workgroupId
+	 * @param year
+	 * @param importTimes
+	 * @param importAssignments
+	 * @param showDoNotPrint
+	 * @param httpResponse
+	 * @return
+	 */
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/sectionGroups", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
 	public CourseView createMultipleCoursesFromDW(@RequestBody List<SectionGroupImport> sectionGroupImportList,
@@ -409,6 +421,10 @@ public class CourseViewController {
 		}
 
 		Schedule schedule = this.scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		if (schedule == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
 
 		String subjectCode = sectionGroupImportList.get(0).getSubjectCode();
 
@@ -488,148 +504,122 @@ public class CourseViewController {
 				String sectionGroupImportShortTerm = sectionGroupImport.getTermCode().substring(sectionGroupImport.getTermCode().length() - 2);
 				String dwSectionShortTerm = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
 
-				// Ensure this dwSection matches the sectionGroupImport (course) of interest
-				if (sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
+				if (((sectionGroupImport.getCourseNumber().equals( dwSection.getCourseNumber() )
 				&& sectionGroupImport.getSubjectCode().equals( dwSection.getSubjectCode() )
 				&& sectionGroupImport.getSequencePattern().equals( dwSequencePattern )
-				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm)) {
+				&& sectionGroupImportShortTerm.equals(dwSectionShortTerm))) == false) {
+					continue;
+				}
 
-					// Find or create a course
-					String newTermCode = null;
-					String shortTermCode = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
+				// Find or create a course
+				String newTermCode = null;
+				String shortTermCode = dwSection.getTermCode().substring(dwSection.getTermCode().length() - 2);
 
-					// Identify which year in academic year range to use
-					if (Long.valueOf(shortTermCode) < 4) {
-						long nextYear = year + 1;
-						newTermCode = nextYear + shortTermCode;
+				// Identify which year in academic year range to use
+				if (Long.valueOf(shortTermCode) < 4) {
+					long nextYear = year + 1;
+					newTermCode = nextYear + shortTermCode;
+				} else {
+					newTermCode = year + shortTermCode;
+				}
+
+				if (termHashMap.get(newTermCode) == null) {
+					termHashMap.put(newTermCode, termService.getOneByTermCode(newTermCode));
+				}
+
+				Term term = termHashMap.get(newTermCode);
+
+				Course courseDTO = new Course();
+				courseDTO.setSubjectCode(sectionGroupImport.getSubjectCode());
+				courseDTO.setCourseNumber(sectionGroupImport.getCourseNumber());
+				courseDTO.setSequencePattern(sectionGroupImport.getSequencePattern());
+				courseDTO.setTitle(sectionGroupImport.getTitle());
+				courseDTO.setEffectiveTermCode(sectionGroupImport.getEffectiveTermCode());
+				courseDTO.setSchedule(schedule);
+
+				Float unitsHigh, unitsLow;
+
+				if (sectionGroupImport.getUnitsHigh() != null) {
+					unitsHigh = Float.valueOf(sectionGroupImport.getUnitsHigh());
+					courseDTO.setUnitsHigh(unitsHigh);
+				}
+
+				if (sectionGroupImport.getUnitsLow() != null) {
+					unitsLow = Float.valueOf(sectionGroupImport.getUnitsLow());
+					courseDTO.setUnitsLow(unitsLow);
+				}
+
+				Course course = courseService.findOrCreateByCourse(courseDTO);
+
+				// Find or create a sectionGroup
+				SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
+				sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
+				sectionGroup = sectionGroupService.save(sectionGroup);
+
+				// Find or create a section
+				Section section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, dwSection.getSequenceNumber());
+
+				section.setSeats(dwSection.getMaximumEnrollment());
+				section = sectionService.save(section);
+
+				// Make activities
+				for (DwActivity dwActivity : dwSection.getActivities()) {
+					Activity activity = new Activity();
+
+					activity.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
+
+					if (importTimes) {
+						activity.setStartTime(dwActivity.castBeginTime());
+						activity.setEndTime(dwActivity.castEndTime());
+						activity.setDayIndicator(dwActivity.getDay_indicator());
+					}
+
+					activity.setBeginDate(term.getStartDate());
+					activity.setEndDate(term.getEndDate());
+					activity.setActivityState(ActivityState.DRAFT);
+
+					// Activities in numeric sectionGroups should always be 'shared' activities
+					String startTime = dwActivity.getSsrmeet_begin_time() != null ? dwActivity.getSsrmeet_begin_time() : "";
+					String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
+					String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
+					String sequencePattern = String.valueOf(dwSection.getSequenceNumber().charAt(0));
+					String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activity.getActivityTypeCode() + dayIndicator + startTime + endTime + dwSection.getTermCode();
+
+					if (sharedActivityKeys.indexOf(activityKey) == -1) {
+						activity.setSection(section);
+						activityService.saveActivity(activity);
 					} else {
-						newTermCode = year + shortTermCode;
-					}
-
-					if (termHashMap.get(newTermCode) == null) {
-						termHashMap.put(newTermCode, termService.getOneByTermCode(newTermCode));
-					}
-
-					Term term = termHashMap.get(newTermCode);
-
-					Course courseDTO = new Course();
-					courseDTO.setSubjectCode(sectionGroupImport.getSubjectCode());
-					courseDTO.setCourseNumber(sectionGroupImport.getCourseNumber());
-					courseDTO.setSequencePattern(sectionGroupImport.getSequencePattern());
-					courseDTO.setTitle(sectionGroupImport.getTitle());
-					courseDTO.setEffectiveTermCode(sectionGroupImport.getEffectiveTermCode());
-					courseDTO.setSchedule(schedule);
-
-					Float unitsHigh, unitsLow;
-
-					if (sectionGroupImport.getUnitsHigh() != null) {
-						unitsHigh = Float.valueOf(sectionGroupImport.getUnitsHigh());
-						courseDTO.setUnitsHigh(unitsHigh);
-					}
-
-					if (sectionGroupImport.getUnitsLow() != null) {
-						unitsLow = Float.valueOf(sectionGroupImport.getUnitsLow());
-						courseDTO.setUnitsLow(unitsLow);
-					}
-
-					Course course = courseService.findOrCreateByCourse(courseDTO);
-
-					// Find or create a sectionGroup
-					SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), newTermCode);
-					sectionGroup.setPlannedSeats(sectionGroupImport.getPlannedSeats());
-					sectionGroup = sectionGroupService.save(sectionGroup);
-
-					// Find or create a section
-					Section section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, dwSection.getSequenceNumber());
-
-					section.setSeats(dwSection.getMaximumEnrollment());
-					section = sectionService.save(section);
-
-					// Make activities
-					for (DwActivity dwActivity : dwSection.getActivities()) {
-						Activity activity = new Activity();
-
-						ActivityType activityType = new ActivityType();
-						activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
-
-						activity.setActivityTypeCode(activityType);
-
-						if (importTimes) {
-							String rawStartTime = dwActivity.getSsrmeet_begin_time();
-
-							if (rawStartTime != null) {
-								String hours = rawStartTime.substring(0, 2);
-								String minutes = rawStartTime.substring(2, 4);
-								String formattedStartTime = hours + ":" + minutes + ":00";
-								Time startTime = java.sql.Time.valueOf(formattedStartTime);
-
-								activity.setStartTime(startTime);
-							}
-
-							String rawEndTime = dwActivity.getSsrmeet_end_time();
-
-							if (rawEndTime != null) {
-								String hours = rawEndTime.substring(0, 2);
-								String minutes = rawEndTime.substring(2, 4);
-								String formattedEndTime = hours + ":" + minutes + ":00";
-								Time endTime = java.sql.Time.valueOf(formattedEndTime);
-
-								activity.setEndTime(endTime);
-							}
-
-							String dayIndicator = dwActivity.getDay_indicator();
-							activity.setDayIndicator(dayIndicator);
-						}
-
-						activity.setBeginDate(term.getStartDate());
-						activity.setEndDate(term.getEndDate());
-						activity.setActivityState(ActivityState.DRAFT);
-
-						// Activities in numeric sectionGroups should always be 'shared' activities
-						String startTime = dwActivity.getSsrmeet_begin_time() != null ? dwActivity.getSsrmeet_begin_time() : "";
-						String endTime = dwActivity.getSsrmeet_end_time() != null ? dwActivity.getSsrmeet_end_time() : "";
-						String dayIndicator = dwActivity.getDay_indicator() != null ? dwActivity.getDay_indicator() : "";
-						String sequencePattern = String.valueOf(dwSection.getSequenceNumber().charAt(0));
-						String activityKey = dwSection.getSubjectCode() + dwSection.getCourseNumber() + sequencePattern + activityType.getActivityTypeCode() + dayIndicator + startTime + endTime + dwSection.getTermCode();
-
-						if (sharedActivityKeys.indexOf(activityKey) == -1) {
-							activity.setSection(section);
+						if (createdSharedActivityKeys.indexOf(activityKey) == -1) {
+							activity.setSectionGroup(sectionGroup);
+							createdSharedActivityKeys.add(activityKey);
 							activityService.saveActivity(activity);
-						} else {
-							if (createdSharedActivityKeys.indexOf(activityKey) == -1) {
-								activity.setSectionGroup(sectionGroup);
-								createdSharedActivityKeys.add(activityKey);
-								activityService.saveActivity(activity);
-							}
 						}
 					}
+				}
 
-
-					if (importAssignments) {
-						for (DwInstructor dwInstructor : dwSection.getInstructors()) {
-
-							if (dwInstructor.getEmployeeId().equals("989999999")) {
-								sectionGroup.setShowTheStaff(true);
-								continue;
-							}
-
-							DwPerson dwPerson = dwRepository.getPersonByLoginId(dwInstructor.getLoginId());
-
-							if ((dwPerson == null) || (dwPerson.getUserId() == null && dwPerson.getoFullName() == null)) {
-								log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + dwInstructor.getLoginId());
-								continue;
-							}
-
-							String instructorEmail = dwPerson.getEmail();
-
-							// Find or create an instructor
-							Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId, dwInstructor.getEmployeeId());
-
-							// Find or create a teachingAssignment
-							TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
-							teachingAssignment.setApproved(true);
-							teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
+				if (importAssignments) {
+					for (DwInstructor dwInstructor : dwSection.getInstructors()) {
+						if (dwInstructor.getEmployeeId().equals("989999999")) {
+							sectionGroup.setShowTheStaff(true);
+							continue;
 						}
+
+						DwPerson dwPerson = dwRepository.getPersonByLoginId(dwInstructor.getLoginId());
+
+						if ((dwPerson == null) || (dwPerson.getUserId() == null && dwPerson.getoFullName() == null)) {
+							log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + dwInstructor.getLoginId());
+							continue;
+						}
+
+						String instructorEmail = dwPerson.getEmail();
+
+						// Find or create an instructor
+						Instructor instructor = instructorService.findOrCreate(dwInstructor.getFirstName(), dwInstructor.getLastName(), instructorEmail, dwInstructor.getLoginId(), workgroupId, dwInstructor.getEmployeeId());
+
+						// Find or create a teachingAssignment
+						TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
+						teachingAssignment.setApproved(true);
+						teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 					}
 				}
 			}
