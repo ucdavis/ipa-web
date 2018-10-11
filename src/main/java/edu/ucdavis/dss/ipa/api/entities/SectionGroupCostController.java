@@ -68,7 +68,6 @@ public class SectionGroupCostController {
     Long workGroupId = sectionGroup.getCourse().getSchedule().getWorkgroup().getId();
     authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-
     return sectionGroupCostService.createFromSectionGroup(sectionGroup, budgetScenario);
   }
 
@@ -87,7 +86,6 @@ public class SectionGroupCostController {
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
 
         return sectionGroupCostService.createOrUpdateFrom(sectionGroupCost, budgetScenario);
     }
