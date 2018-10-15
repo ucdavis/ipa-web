@@ -42,7 +42,8 @@ import java.util.*;
 @RestController
 @CrossOrigin
 public class CourseViewController {
-	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.dw.DwClient");
+	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.ipa.api.components.course.CourseViewController");
+
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject	ScheduleService scheduleService;
