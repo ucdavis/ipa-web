@@ -1,1 +1,1 @@
-ALTER TABLE `Activities` ADD COLUMN `Category` int(11) NULL;
+ALTER TABLE `Activities` ADD COLUMN `Category` varchar(2) NULL;
