@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V212__Fix_incorrectly_separated_sharedActivities implements JdbcMigration {
+public class V213__Fix_incorrectly_separated_sharedActivities implements JdbcMigration {
 
     /**
      * Refactors repeated activities within a sectionGroup into a single shared activity
