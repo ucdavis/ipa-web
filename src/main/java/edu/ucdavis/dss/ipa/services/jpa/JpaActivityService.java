@@ -23,7 +23,6 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	public Activity saveActivity(Activity activity) {
-
 		Activity originalActivity = this.findOneById(activity.getId());
 
 		Long originalLocationId = null;
@@ -65,9 +64,10 @@ public class JpaActivityService implements ActivityService {
 		}
 
 		// If activity matches an existing shared activity, do nothing
-		Activity sharedActivity = this.getSharedActivity(activity, activity.getSection().getSectionGroup());
-		if (sharedActivity != null) {
-			return sharedActivity;
+		if(activity.getSection() != null && activity.getSection().getSectionGroup() != null) {
+			if (this.matchesSharedActivity(activity, activity.getSection().getSectionGroup())) {
+				return null;
+			}
 		}
 
 		return this.activityRepository.save(activity);
@@ -164,69 +164,40 @@ public class JpaActivityService implements ActivityService {
 	public Activity createFromDwActivity(DwActivity dwActivity) {
 		Activity activity = new Activity();
 
-		ActivityType activityType = new ActivityType();
-		activityType.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
-
-		activity.setActivityTypeCode(activityType);
-
-		String rawStartTime = dwActivity.getSsrmeet_begin_time();
-
-		if (rawStartTime != null) {
-			String minutes = rawStartTime.substring(2, 4);
-			String hours = rawStartTime.substring(0, 2);
-			String formattedStartTime = hours + ":" + minutes + ":00";
-			Time startTime = java.sql.Time.valueOf(formattedStartTime);
-
-			activity.setStartTime(startTime);
-		}
-
-		String rawEndTime = dwActivity.getSsrmeet_end_time();
-
-		if (rawEndTime != null) {
-			String minutes = rawEndTime.substring(2, 4);
-			String hours = rawEndTime.substring(0, 2);
-			String formattedEndTime = hours + ":" + minutes + ":00";
-			Time endTime = java.sql.Time.valueOf(formattedEndTime);
-
-			activity.setEndTime(endTime);
-		}
-
-		String dayIndicator = dwActivity.getDay_indicator();
-		activity.setDayIndicator(dayIndicator);
-
+		activity.setActivityTypeCode(dwActivity.getSsrmeet_schd_code());
+		activity.setStartTime(dwActivity.castBeginTime());
+		activity.setEndTime(dwActivity.castEndTime());
+		activity.setDayIndicator(dwActivity.getDay_indicator());
 		activity.setActivityState(ActivityState.DRAFT);
 
 		return activity;
 	}
 
-	@Override
-	public Activity getSharedActivity(Activity activity, SectionGroup sectionGroup) {
+	private boolean matchesSharedActivity(Activity activity, SectionGroup sectionGroup) {
 		char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
 		String startTime = activity.getStartTime().toString() != null ? activity.getStartTime().toString() : "";
 		String endTime = activity.getEndTime().toString() != null ? activity.getEndTime().toString() : "";
-		String days = activity.getDayIndicator().toString();
+		String days = activity.getDayIndicator();
 
 		// Activities with null days/times cannot be considered shared
 		if (startTime == "" || endTime == "" || days.indexOf("1") == -1) {
-			return null;
+			return false;
 		}
 
 		String activityKey = typeCode + startTime + endTime + days;
-
-		Activity sharedActivity = null;
 
 		for (Activity slotActivity : sectionGroup.getActivities()) {
 			char slotTypeCode = slotActivity.getActivityTypeCode().getActivityTypeCode();
 			String slotStartTime = slotActivity.getStartTime().toString() != null ? slotActivity.getStartTime().toString() : "";
 			String slotEndTime = slotActivity.getEndTime().toString() != null ? slotActivity.getEndTime().toString() : "";
-			String slotDays = slotActivity.getDayIndicator().toString();
+			String slotDays = slotActivity.getDayIndicator();
 			String slotActivityKey = slotTypeCode + slotStartTime + slotEndTime + slotDays;
 
 			if (slotActivityKey.equals(activityKey)) {
-				sharedActivity = slotActivity;
+				return true;
 			}
 		}
 
-		return sharedActivity;
+		return false;
 	}
 }

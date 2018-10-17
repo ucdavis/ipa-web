@@ -50,6 +50,4 @@ public interface ActivityService {
 	void syncActivityLocations(DwSection dwSection, List<Activity> activities);
 
 	Activity createFromDwActivity(DwActivity dwActivity);
-
-	Activity getSharedActivity(Activity activity, SectionGroup sectionGroup);
 }
