@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class V209__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMigration {
+public class V210__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMigration {
 
 	/**
 	 * Fills in the new fields on sectionGroupCosts to ensure they can continue to display properly,

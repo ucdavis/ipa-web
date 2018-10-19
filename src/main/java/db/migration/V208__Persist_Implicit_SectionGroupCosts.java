@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class V207__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
+public class V208__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 
 	/**
 	 * Currently, budgetScenarios would only persist sectionGroupCosts when a user wants to override a value from the schedule,

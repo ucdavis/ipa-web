@@ -203,8 +203,8 @@ public class JpaActivityService implements ActivityService {
 
 		for (Activity slotActivity : sectionGroup.getActivities()) {
 			char slotTypeCode = slotActivity.getActivityTypeCode().getActivityTypeCode();
-			String slotStartTime = slotActivity.getStartTime().toString() != null ? slotActivity.getStartTime().toString() : "";
-			String slotEndTime = slotActivity.getEndTime().toString() != null ? slotActivity.getEndTime().toString() : "";
+			String slotStartTime = slotActivity.getStartTime() != null ? slotActivity.getStartTime().toString() : "";
+			String slotEndTime = slotActivity.getEndTime() != null ? slotActivity.getEndTime().toString() : "";
 			String slotDays = slotActivity.getDayIndicator();
 			String slotActivityKey = slotTypeCode + slotStartTime + slotEndTime + slotDays;
 
