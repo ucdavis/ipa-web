@@ -282,4 +282,9 @@ public class JpaCourseService implements CourseService {
 			}
 		}
 	}
+
+	@Override
+	public List<Course> findByScheduleId(long scheduleId) {
+		return this.courseRepository.findByScheduleId(scheduleId);
+	}
 }

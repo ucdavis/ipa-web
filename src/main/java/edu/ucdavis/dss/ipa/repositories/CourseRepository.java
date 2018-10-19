@@ -67,4 +67,6 @@ public interface CourseRepository extends CrudRepository<Course, Long> {
     List<Course> findByUnitsLow(Float unitsLow);
 
     List<Course> findByScheduleIn(List<Schedule> scheduleIds);
+
+    List<Course> findByScheduleId(long scheduleId);
 }

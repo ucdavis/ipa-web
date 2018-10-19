@@ -6,8 +6,16 @@ import java.sql.Time;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DwActivity {
-	private String day_indicator, ssrmeet_begin_time, ssrmeet_end_time, ssrmeet_room_code, ssrmeet_bldg_code;
+	private String day_indicator, ssrmeet_begin_time, ssrmeet_end_time, ssrmeet_room_code, ssrmeet_bldg_code, catagory;
 	private char ssrmeet_schd_code;
+
+	public String getCatagory() {
+		return catagory;
+	}
+
+	public void setCatagory(String catagory) {
+		this.catagory = catagory;
+	}
 
 	public String getDay_indicator() {
 		return day_indicator;

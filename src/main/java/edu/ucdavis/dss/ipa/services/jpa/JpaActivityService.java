@@ -113,8 +113,10 @@ public class JpaActivityService implements ActivityService {
 	public void syncActivityLocations(DwSection dwSection, List<Activity> activities) {
 		for (Activity activity : activities) {
 			// Only sync locations when allowed (i.e. not custom space)
+			boolean shouldSyncLocation = true;
+
 			if (activity.isSyncLocation() == false) {
-				continue;
+				shouldSyncLocation = false;
 			}
 
 			String dayIndicator = "";
@@ -125,11 +127,13 @@ public class JpaActivityService implements ActivityService {
 			String startTime = "";
 			if (activity.getStartTime() != null) {
 				startTime = activity.getStartTime().toString();
+				startTime = "" + startTime.charAt(0) + startTime.charAt(1) + startTime.charAt(3) + startTime.charAt(4);
 			}
 
 			String endTime = "";
 			if (activity.getEndTime() != null) {
 				endTime = activity.getEndTime().toString();
+				endTime = "" + endTime.charAt(0) + endTime.charAt(1) + endTime.charAt(3) + endTime.charAt(4);
 			}
 
 			String typeCode = String.valueOf(activity.getActivityTypeCode().getActivityTypeCode());
@@ -140,10 +144,18 @@ public class JpaActivityService implements ActivityService {
 				String dwEndTime = dwActivity.getSsrmeet_end_time();
 				String dwTypeCode = String.valueOf(dwActivity.getSsrmeet_schd_code());
 
+				// Update category data
+				if (typeCode.equals(dwTypeCode) && dwActivity.getCatagory() != null) {
+					activity.setCategory(Long.valueOf(dwActivity.getCatagory()));
+					this.saveActivity(activity);
+				}
+
+				boolean isDwLocationValid = true;
+
 				// Ensure DW location data is valid
 				if (dwActivity.getSsrmeet_bldg_code() == null || dwActivity.getSsrmeet_bldg_code().length() > 0
 				|| dwActivity.getSsrmeet_room_code() == null || dwActivity.getSsrmeet_room_code().length() > 0) {
-					continue;
+					isDwLocationValid = false;
 				}
 
 				// Ensure DW data is referring to the same activity
@@ -152,8 +164,11 @@ public class JpaActivityService implements ActivityService {
 				&& endTime.equals(dwEndTime)
 				&& typeCode.equals(dwTypeCode) ) {
 					// Update location data
-					String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
-					activity.setBannerLocation(bannerLocation);
+					if (shouldSyncLocation && isDwLocationValid) {
+						String bannerLocation = dwActivity.getSsrmeet_bldg_code() + " " + dwActivity.getSsrmeet_room_code();
+						activity.setBannerLocation(bannerLocation);
+					}
+
 					this.saveActivity(activity);
 				}
 			}
