@@ -34,9 +34,8 @@ public class SchedulingViewController {
 	 * @param workgroupId
 	 * @param year
 	 * @param termCode
-	 * @param httpResponse
-     * @return
-     */
+	 * @return
+	 */
 	@RequestMapping(value = "/api/schedulingView/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.GET, produces="application/json")
 	@ResponseBody
 	public SchedulingView showSchedulingView(@PathVariable long workgroupId,
@@ -51,22 +50,25 @@ public class SchedulingViewController {
     @ResponseBody
     public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
     	Activity originalActivity = activityService.findOneById(activityId);
-		if (originalActivity == null) {
-			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-			return null;
-		}
-		SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
-		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
-        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		originalActivity.setLocation(activity.getLocation());
-		originalActivity.setActivityState(activity.getActivityState());
-		originalActivity.setFrequency(activity.getFrequency());
-		originalActivity.setDayIndicator(activity.getDayIndicator());
-		originalActivity.setStartTime(activity.getStartTime());
-		originalActivity.setEndTime(activity.getEndTime());
 
-		return this.activityService.saveActivity(originalActivity);
+			if (originalActivity == null) {
+				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+				return null;
+			}
+
+			SectionGroup sectionGroup = sectionGroupService.getOneById(originalActivity.getSectionGroupIdentification());
+			Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
+			authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+			originalActivity.setLocation(activity.getLocation());
+			originalActivity.setActivityState(activity.getActivityState());
+			originalActivity.setFrequency(activity.getFrequency());
+			originalActivity.setDayIndicator(activity.getDayIndicator());
+			originalActivity.setStartTime(activity.getStartTime());
+			originalActivity.setEndTime(activity.getEndTime());
+
+			return this.activityService.saveActivity(originalActivity);
     }
 
 	@RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")

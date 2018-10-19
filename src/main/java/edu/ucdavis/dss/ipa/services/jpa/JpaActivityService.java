@@ -4,7 +4,6 @@ import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.Activity;
-import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.sql.Time;
 import java.util.List;
 
 @Service
@@ -23,30 +21,6 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	public Activity saveActivity(Activity activity) {
-		Activity originalActivity = this.findOneById(activity.getId());
-
-		Long originalLocationId = null;
-		if (originalActivity != null && originalActivity.getLocation() != null) {
-				originalLocationId = originalActivity.getLocation().getId();
-		}
-
-		Long newlocationId = null;
-		if (activity.getLocation() != null) {
-			newlocationId = activity.getLocation().getId();
-		}
-
-		// Case 1: Activity is saved and location is changed by user
-		if (newlocationId != null && (originalLocationId == null || newlocationId != originalLocationId)) {
-			activity.setBannerLocation(null);
-			activity.setSyncLocation(true);
-		}
-
-		// Case 2: BannerLocation is set via sync or diff view
-		if (activity.getBannerLocation() != null && activity.getBannerLocation().length() > 0) {
-			activity.setSyncLocation(true);
-			activity.setLocation(null);
-		}
-
 		if (activity.getDayIndicator() == null) {
 			// Ensure default dayIndicator pattern is set
 			activity.setDayIndicator("0000000");
@@ -72,7 +46,6 @@ public class JpaActivityService implements ActivityService {
 
 		return this.activityRepository.save(activity);
 	}
-
 
 	@Override
 	public Activity findOneById(Long id) {
