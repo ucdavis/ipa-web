@@ -61,14 +61,10 @@ public class SchedulingViewController {
 			Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 			authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-			originalActivity.setLocation(activity.getLocation());
-			originalActivity.setActivityState(activity.getActivityState());
-			originalActivity.setFrequency(activity.getFrequency());
-			originalActivity.setDayIndicator(activity.getDayIndicator());
-			originalActivity.setStartTime(activity.getStartTime());
-			originalActivity.setEndTime(activity.getEndTime());
+			activity.setSection(originalActivity.getSection());
+			activity.setSectionGroup(originalActivity.getSectionGroup());
 
-			return this.activityService.saveActivity(originalActivity);
+			return this.activityService.saveActivity(activity);
     }
 
 	@RequestMapping(value = "/api/schedulingView/activities/{activityId}", method = RequestMethod.DELETE, produces="application/json")

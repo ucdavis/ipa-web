@@ -21,6 +21,17 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	public Activity saveActivity(Activity activity) {
+		Activity originalActivity = this.findOneById(activity.getId());
+
+		Long originalLocationId = originalActivity.getLocation() != null ? originalActivity.getLocation().getId() : null;
+		Long newLocationId = activity.getLocation() != null ? activity.getLocation().getId() : null;
+
+		// Case 1: Custom location is set or changed by the user
+		if (newLocationId != null && newLocationId != originalLocationId) {
+			activity.setBannerLocation(null);
+			activity.setSyncLocation(false);
+		}
+
 		if (activity.getDayIndicator() == null) {
 			// Ensure default dayIndicator pattern is set
 			activity.setDayIndicator("0000000");
