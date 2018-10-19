@@ -42,6 +42,7 @@ public class TeachingAssignment implements Serializable {
 	private String suggestedSubjectCode;
 	private String suggestedCourseNumber;
 	private String suggestedEffectiveTermCode;
+	private String suggestedTitle;
 	private InstructorType instructorType;
 
 	@Id
@@ -259,6 +260,15 @@ public class TeachingAssignment implements Serializable {
 
 	public void setSuggestedEffectiveTermCode(String suggestedEffectiveTermCode) {
 		this.suggestedEffectiveTermCode = suggestedEffectiveTermCode;
+	}
+
+	@JsonProperty
+	public String getSuggestedTitle() {
+		return suggestedTitle;
+	}
+
+	public void setSuggestedTitle(String suggestedTitle) {
+		this.suggestedTitle = suggestedTitle;
 	}
 
 	@Transient
