@@ -23,7 +23,7 @@ public class JpaActivityService implements ActivityService {
 	public Activity saveActivity(Activity activity) {
 		Activity originalActivity = this.findOneById(activity.getId());
 
-		Long originalLocationId = originalActivity.getLocation() != null ? originalActivity.getLocation().getId() : null;
+		Long originalLocationId = ((originalActivity != null) && (originalActivity.getLocation() != null)) ? originalActivity.getLocation().getId() : null;
 		Long newLocationId = activity.getLocation() != null ? activity.getLocation().getId() : null;
 
 		// Case 1: Custom location is set or changed by the user
