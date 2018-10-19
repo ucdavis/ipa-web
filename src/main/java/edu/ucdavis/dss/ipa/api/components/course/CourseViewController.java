@@ -561,6 +561,7 @@ public class CourseViewController {
 				Section section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, dwSection.getSequenceNumber());
 
 				section.setSeats(dwSection.getMaximumEnrollment());
+				section.setCrn(dwSection.getCrn());
 				section = sectionService.save(section);
 
 				// Make activities
