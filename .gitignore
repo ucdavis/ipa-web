@@ -10,3 +10,5 @@ ipa-web.env
 out/
 *.log
 bin/
+.vscode
+

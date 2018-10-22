@@ -26,7 +26,22 @@ targetCompatibility = 1.8
 
 // Ensure gradle args are passed along
 test {
-    systemProperties System.getProperties()
+    // systemProperties System.getProperties()
+
+    environment IPA_DATASOURCE_URL, System.getenv("IPA_DATASOURCE_URL")
+    environment IPA_DATASOURCE_USERNAME, System.getenv("IPA_DATASOURCE_USERNAME")
+    environment IPA_DATASOURCE_PASSWORD, System.getenv("IPA_DATASOURCE_PASSWORD")
+    environment IPA_SPRING_PROFILE, System.getenv("IPA_SPRING_PROFILE")
+    environment IPA_JWT_SIGNING_KEY, System.getenv("IPA_JWT_SIGNING_KEY")
+    environment IPA_JWT_TIMEOUT, System.getenv("IPA_JWT_TIMEOUT")
+    environment IPA_URL_API, System.getenv("IPA_URL_API")
+    environment DW_URL, System.getenv("DW_URL")
+    environment DW_TOKEN, System.getenv("DW_TOKEN")
+    environment DW_PORT, System.getenv("DW_PORT")
+    environment SMTP_HOST, System.getenv("SMTP_HOST")
+    environment SMTP_EMAIL_FROM, System.getenv("SMTP_EMAIL_FROM")
+    environment IPA_URL_FRONTEND, System.getenv("IPA_URL_FRONTEND")
+    environment CAS_URL, System.getenv("CAS_URL")
 }
 
 dependencies {
