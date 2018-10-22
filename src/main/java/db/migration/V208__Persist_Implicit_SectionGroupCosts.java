@@ -40,13 +40,14 @@ public class V208__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 			int budgetScenarioCount = rsBudgetScenarios.getRow();
 			rsBudgetScenarios.beforeFirst();
 			// Only get other resources if necessary
-			Long teachingAssistantAppointments = null, readerAppointments = null, instructorId = null, instructorTypeId = null, sectionCount = null, enrollment = null;
+			Float teachingAssistantAppointments = null, readerAppointments = null;
+			Long instructorId = null, instructorTypeId = null, sectionCount = null, enrollment = null;
 
 			if (budgetScenarioCount > 0) {
-				teachingAssistantAppointments = rsSectionGroups.getLong("TeachingAssistantAppointments");
+				teachingAssistantAppointments = rsSectionGroups.getFloat("TeachingAssistantAppointments");
 				teachingAssistantAppointments = rsSectionGroups.wasNull() ? null : teachingAssistantAppointments;
 
-				readerAppointments = rsSectionGroups.getLong("ReaderAppointments");
+				readerAppointments = rsSectionGroups.getFloat("ReaderAppointments");
 				readerAppointments = rsSectionGroups.wasNull() ? null : readerAppointments;
 
 				// Find the instructor/instructorType of record
@@ -97,10 +98,10 @@ public class V208__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 					rsSectionGroupCosts.next();
 
 					Long sectionGroupCostId = rsSectionGroupCosts.getLong("Id");
-					Long originalReaderAppointments = rsSectionGroupCosts.getLong("ReaderCount");
+					Float originalReaderAppointments = rsSectionGroupCosts.getFloat("ReaderCount");
 					originalReaderAppointments = rsSectionGroupCosts.wasNull() ? null : originalReaderAppointments;
 
-					Long originalTaAppointments = rsSectionGroupCosts.getLong("TaCount");
+					Float originalTaAppointments = rsSectionGroupCosts.getFloat("TaCount");
 					originalTaAppointments = rsSectionGroupCosts.wasNull() ? null : originalTaAppointments;
 
 					Long originalInstructorId = rsSectionGroupCosts.getLong("InstructorId");
@@ -131,18 +132,18 @@ public class V208__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
 					psUpdateSectionGroupCost.setLong(1, budgetScenarioId);
 					psUpdateSectionGroupCost.setLong(2, sectionGroupId);
 
-					Long calculatedReaders = originalReaderAppointments != null ? originalReaderAppointments : readerAppointments;
+					Float calculatedReaders = originalReaderAppointments != null ? originalReaderAppointments : readerAppointments;
 
 					if (calculatedReaders != null) {
-						psUpdateSectionGroupCost.setLong(3, calculatedReaders);
+						psUpdateSectionGroupCost.setFloat(3, calculatedReaders);
 					} else {
 						psUpdateSectionGroupCost.setNull(3, java.sql.Types.FLOAT);
 					}
 
-					Long calculatedTAs = originalTaAppointments != null ? originalTaAppointments : teachingAssistantAppointments;
+					Float calculatedTAs = originalTaAppointments != null ? originalTaAppointments : teachingAssistantAppointments;
 
 					if (calculatedTAs != null) {
-						psUpdateSectionGroupCost.setLong(4, calculatedTAs);
+						psUpdateSectionGroupCost.setFloat(4, calculatedTAs);
 					} else {
 						psUpdateSectionGroupCost.setNull(4, java.sql.Types.FLOAT);
 					}
