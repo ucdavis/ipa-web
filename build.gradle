@@ -24,9 +24,16 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-// Ensure gradle args are passed along
+// Ensure environment variables are passed along
 test {
-    systemProperties System.getProperties()
+    ['IPA_DATASOURCE_URL', 'IPA_DATASOURCE_USERNAME', 'IPA_DATASOURCE_PASSWORD',
+     'IPA_SPRING_PROFILE', 'IPA_JWT_SIGNING_KEY', 'IPA_JWT_TIMEOUT', 'IPA_URL_API', 'DW_URL',
+     'DW_TOKEN', 'DW_PORT', 'SMTP_HOST', 'SMTP_EMAIL_FROM', 'IPA_URL_FRONTEND', 'CAS_URL'].each {
+        if (System.getenv(it) == null) {
+            throw new InvalidUserDataException("Required environment variable '${it}' missing")
+        }
+        environment "${it}", System.getenv("${it}")
+    }
 }
 
 dependencies {

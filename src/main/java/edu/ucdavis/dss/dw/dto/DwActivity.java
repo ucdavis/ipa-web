@@ -81,6 +81,17 @@ public class DwActivity {
 	public char getSsrmeet_schd_code() { return ssrmeet_schd_code; }
 	public void setSsrmeet_schd_code(char ssrmeet_schd_code) { this.ssrmeet_schd_code = ssrmeet_schd_code; }
 
+	// Generates a unique key per activity. Useful during the import process.
+	public String getActivitySortingKey(String sectionSortingKey) {
+		String startTime = this.getSsrmeet_begin_time() != null ? this.getSsrmeet_begin_time() : "";
+		String endTime = this.getSsrmeet_end_time() != null ? this.getSsrmeet_end_time() : "";
+		String activityType = String.valueOf(this.getSsrmeet_schd_code());
+		String dayIndicator = this.getDay_indicator() != null ? this.getDay_indicator() : "";
+
+		return sectionSortingKey + "-" + activityType + "-" + dayIndicator + "-" + startTime + "-" + endTime;
+	}
+
+
 	@Override
 	public String toString() {
 		return String.format("Day indicator: " + day_indicator + "," +

@@ -18,7 +18,6 @@ public class DwSection {
     public String getCrn() {
         return crn;
     }
-
     public void setCrn(String crn) {
         this.crn = crn;
     }
@@ -26,7 +25,6 @@ public class DwSection {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -34,7 +32,6 @@ public class DwSection {
     public String getSubjectCode() {
         return subjectCode;
     }
-
     public void setSubjectCode(String subjectCode) {
         this.subjectCode = subjectCode;
     }
@@ -42,7 +39,6 @@ public class DwSection {
     public String getCourseNumber() {
         return courseNumber;
     }
-
     public void setCourseNumber(String courseNumber) {
         this.courseNumber = courseNumber;
     }
@@ -50,7 +46,6 @@ public class DwSection {
     public String getSequenceNumber() {
         return sequenceNumber;
     }
-
     public void setSequenceNumber(String sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
@@ -58,15 +53,11 @@ public class DwSection {
     public long getMaximumEnrollment() {
         return maximumEnrollment;
     }
-
-    public void setMaximumEnrollment(long maximumEnrollment) {
-        this.maximumEnrollment = maximumEnrollment;
-    }
+    public void setMaximumEnrollment(long maximumEnrollment) { this.maximumEnrollment = maximumEnrollment; }
 
     public List<DwInstructor> getInstructors() {
         return instructors;
     }
-
     public void setInstructors(List<DwInstructor> instructors) {
         this.instructors = instructors;
     }
@@ -74,7 +65,6 @@ public class DwSection {
     public List<DwActivity> getActivities() {
         return activities;
     }
-
     public void setActivities(List<DwActivity> activities) {
         this.activities = activities;
     }
@@ -82,9 +72,26 @@ public class DwSection {
     public String getTermCode() {
         return termCode;
     }
-
     public void setTermCode(String termCode) {
         this.termCode = termCode;
     }
-}
 
+    /**
+     * Calculates a key that will be unique per-section group but not per section
+     * e.g. sections A01 and A02 will return the same sorting key
+     *
+     * @return a section group "sorting key", e.g. "201810-ECS-010-A"
+     */
+    public String getSectionGroupSortingKey() {
+        String sequence = this.getSequenceNumber();
+
+        // If sequence is letter-based, e.g. A01, A02, A03, set sequence simply equal
+        // to the letter. A01 will become A, A02 will become A, B01 will become B, etc.
+        Character sequenceFirstChar = this.getSequenceNumber().charAt(0);
+        if (Character.isLetter(sequenceFirstChar)) {
+            sequence = String.valueOf(sequenceFirstChar);
+        }
+
+        return this.getTermCode() + "-" + this.getSubjectCode() + "-" + this.getCourseNumber() + "-" + sequence;
+    }
+}

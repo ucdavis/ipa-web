@@ -23,7 +23,7 @@ public class JpaActivityService implements ActivityService {
 	public Activity saveActivity(Activity activity) {
 		Activity originalActivity = this.findOneById(activity.getId());
 
-		Long originalLocationId = originalActivity.getLocation() != null ? originalActivity.getLocation().getId() : null;
+		Long originalLocationId = ((originalActivity != null) && (originalActivity.getLocation() != null)) ? originalActivity.getLocation().getId() : null;
 		Long newLocationId = activity.getLocation() != null ? activity.getLocation().getId() : null;
 
 		// Case 1: Custom location is set or changed by the user
@@ -173,6 +173,9 @@ public class JpaActivityService implements ActivityService {
 	}
 
 	private boolean matchesSharedActivity(Activity activity, SectionGroup sectionGroup) {
+		if(activity == null) { return false; }
+		if(activity.getStartTime() == null || activity.getEndDate() == null || activity.getDayIndicator() == null) { return false; }
+
 		char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
 		String startTime = activity.getStartTime().toString() != null ? activity.getStartTime().toString() : "";
 		String endTime = activity.getEndTime().toString() != null ? activity.getEndTime().toString() : "";
