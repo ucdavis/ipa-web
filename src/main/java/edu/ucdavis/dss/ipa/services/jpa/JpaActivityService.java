@@ -173,6 +173,9 @@ public class JpaActivityService implements ActivityService {
 	}
 
 	private boolean matchesSharedActivity(Activity activity, SectionGroup sectionGroup) {
+		if(activity == null) { return false; }
+		if(activity.getStartTime() == null || activity.getEndDate() == null || activity.getDayIndicator() == null) { return false; }
+
 		char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
 		String startTime = activity.getStartTime() != null ? activity.getStartTime().toString() : "";
 		String endTime = activity.getEndTime() != null ? activity.getEndTime().toString() : "";

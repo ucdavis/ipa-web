@@ -99,6 +99,10 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             teachingAssignment.setSuggestedCourseNumber(node.get("suggestedCourseNumber").textValue());
         }
 
+        if (node.has("suggestedTitle")) {
+            teachingAssignment.setSuggestedTitle(node.get("suggestedTitle").textValue());
+        }
+
 
         return teachingAssignment;
     }
