@@ -31,7 +31,7 @@ public class StudentSupportCallResponse implements Serializable {
     private Schedule schedule;
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
-    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid;
+    private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid, collectLanguageProficiencies;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -258,6 +258,14 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setCollectAvailabilityByGrid(boolean collectAvailabilityByGrid) {
         this.collectAvailabilityByGrid = collectAvailabilityByGrid;
+    }
+
+    public boolean isCollectLanguageProficiencies() {
+        return collectLanguageProficiencies;
+    }
+
+    public void setCollectLanguageProficiencies(boolean collectLanguageProficiencies) {
+        this.collectLanguageProficiencies = collectLanguageProficiencies;
     }
 
     @JsonProperty("supportStaffId")
