@@ -69,7 +69,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		}
 
 		// 2) Create diffDtos for dwSections that don't have a matching section, but do have a matching sectionGroup
-		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
 		List<SectionGroup> sectionGroupsInTerm = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 		List<String> subjectCodesToQuery = new ArrayList<>();
