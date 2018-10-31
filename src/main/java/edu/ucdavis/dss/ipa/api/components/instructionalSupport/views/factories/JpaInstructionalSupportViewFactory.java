@@ -180,6 +180,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     public InstructionalSupportCallInstructorFormView createInstructorFormView(long workgroupId, long year, String shortTermCode, long instructorId) {
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 
+
         // Does the user have an associated instructor entity?
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
 
@@ -198,6 +199,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         }
 
         InstructorSupportCallResponse instructorSupportCallResponse = instructorSupportCallResponseService.findByScheduleIdAndInstructorIdAndTermCode(schedule.getId(), instructorId, termCode);
+        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
 
         // Set sectionGroups and Courses
         List<SectionGroup> sectionGroups = new ArrayList<>();
@@ -217,25 +220,12 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
                     continue;
                 }
 
-                sectionGroups.add(teachingAssignment.getSectionGroup());
-
                 // Only add unique courses
                 Course slotCourse = teachingAssignment.getSectionGroup().getCourse();
 
                 if (courseIds.indexOf(slotCourse.getId()) < 0) {
                     courses.add(slotCourse);
                     courseIds.add(slotCourse.getId());
-                }
-            }
-        }
-
-        // Add student preferences associated to sectionGroups the instructor is teaching
-        List<StudentSupportPreference> studentPreferences = new ArrayList<>();
-
-        for (SectionGroup slotSectionGroup : sectionGroups) {
-            for (StudentSupportPreference slotPreference : slotSectionGroup.getStudentInstructionalSupportCallPreferences()) {
-                if ("teachingAssistant".equals(slotPreference.getType())) {
-                    studentPreferences.add(slotPreference);
                 }
             }
         }
@@ -247,8 +237,14 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
             instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
         }
 
-        List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentPreferences);
+        // Find all support staff and combine them
+        Set<SupportStaff> activeStaffList = new HashSet<> (userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentSupportPreferences));
+        Set<SupportStaff> scheduledStaffList = new HashSet<> (supportStaffService.findByScheduleId(schedule.getId()));
 
-        return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse);
+        Set<SupportStaff> supportStaffList = new HashSet<>();
+        supportStaffList.addAll(activeStaffList);
+        supportStaffList.addAll(scheduledStaffList);
+
+        return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentSupportPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse, studentSupportCallResponses);
     }
 }
