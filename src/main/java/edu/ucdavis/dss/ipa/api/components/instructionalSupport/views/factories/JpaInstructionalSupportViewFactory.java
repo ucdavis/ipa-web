@@ -220,6 +220,8 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
                     continue;
                 }
 
+                sectionGroups.add(teachingAssignment.getSectionGroup());
+
                 // Only add unique courses
                 Course slotCourse = teachingAssignment.getSectionGroup().getCourse();
 
