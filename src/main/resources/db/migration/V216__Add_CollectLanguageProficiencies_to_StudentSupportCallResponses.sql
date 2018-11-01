@@ -1,1 +1,2 @@
 ALTER TABLE `StudentSupportCallResponses` ADD COLUMN `CollectLanguageProficiencies` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `StudentSupportCallResponses` ADD COLUMN `LanguageProficiency` INT(1) NULL;
