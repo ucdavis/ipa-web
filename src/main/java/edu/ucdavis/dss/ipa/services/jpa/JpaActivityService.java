@@ -177,8 +177,8 @@ public class JpaActivityService implements ActivityService {
 		if(activity.getStartTime() == null || activity.getEndDate() == null || activity.getDayIndicator() == null) { return false; }
 
 		char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
-		String startTime = activity.getStartTime().toString() != null ? activity.getStartTime().toString() : "";
-		String endTime = activity.getEndTime().toString() != null ? activity.getEndTime().toString() : "";
+		String startTime = activity.getStartTime() != null ? activity.getStartTime().toString() : "";
+		String endTime = activity.getEndTime() != null ? activity.getEndTime().toString() : "";
 		String days = activity.getDayIndicator();
 
 		// Activities with null days/times cannot be considered shared

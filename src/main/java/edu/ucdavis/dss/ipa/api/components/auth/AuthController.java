@@ -129,6 +129,7 @@ public class AuthController {
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             securityDTO.setRealUserDisplayName(realUser.getFirstName() + " " + realUser.getLastName());
+            securityDTO.setUserTrackingId(String.valueOf(realUser.getId()));
         } else {
             // Looks like we need to redirect to CAS
             securityDTO.setRedirect(casUrl + "/login?service=" + ipaUrlApi + "/post-login");
@@ -240,6 +241,7 @@ public class AuthController {
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             securityDTO.setRealUserDisplayName(realUser.getFirstName() + " " + realUser.getLastName());
+            securityDTO.setUserTrackingId(String.valueOf(realUser.getId()));
         } catch (final SignatureException e) {
             response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         } catch (final MalformedJwtException e) {
@@ -293,6 +295,7 @@ public class AuthController {
             securityDTO.setTermStates(termStates);
             securityDTO.setDisplayName(user.getFirstName() + " " + user.getLastName());
             securityDTO.setRealUserDisplayName(realUser.getFirstName() + " " + realUser.getLastName());
+            securityDTO.setUserTrackingId(String.valueOf(realUser.getId()));
         } catch (final SignatureException e) {
             response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         } catch (final MalformedJwtException e) {

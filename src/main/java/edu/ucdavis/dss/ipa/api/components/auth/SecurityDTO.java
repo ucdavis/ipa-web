@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.auth;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.entities.ScheduleTermState;
 import edu.ucdavis.dss.ipa.entities.UserRole;
@@ -14,9 +13,9 @@ public class SecurityDTO {
     static public String redirect = null;
     public List<UserRoleDTO> userRoles;
     public List<ScheduleTermState> termStates;
+    public String userTrackingId;
 
     public SecurityDTO() { }
-
     public SecurityDTO(String token) {
         this.token = token;
     }
@@ -40,19 +39,17 @@ public class SecurityDTO {
         this.loginId = loginId;
     }
 
-    public void setRealUserLoginId(String realUserLoginId) {
-        this.realUserLoginId = realUserLoginId;
-    }
+    public void setRealUserLoginId(String realUserLoginId) { this.realUserLoginId = realUserLoginId; }
 
     public void setTermStates(List<ScheduleTermState> termStates) {
         this.termStates = termStates;
     }
 
+    // Do not remove: needed for JSON serialization
     public String getRedirect() { return redirect; }
-
     public void setRedirect(String redirect) { this.redirect = redirect; }
 
-    public void setRealUserDisplayName(String realUserDisplayName) {
-        this.realUserDisplayName = realUserDisplayName;
-    }
+    public void setRealUserDisplayName(String realUserDisplayName) { this.realUserDisplayName = realUserDisplayName; }
+
+    public void setUserTrackingId(String userTrackingId) { this.userTrackingId = userTrackingId; }
 }
