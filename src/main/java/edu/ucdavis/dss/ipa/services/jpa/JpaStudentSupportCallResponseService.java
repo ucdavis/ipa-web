@@ -299,7 +299,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
             studentResponse.setCollectAvailabilityByGrid(studentResponseDTO.isCollectAvailabilityByGrid());
             studentResponse.setCollectAvailabilityByCrn(studentResponseDTO.isCollectAvailabilityByCrn());
             studentResponse.setCollectLanguageProficiencies(studentResponseDTO.isCollectLanguageProficiencies());
-
+            studentResponse.setLanguageProficiency(studentResponseDTO.getLanguageProficiency());
             studentResponse.setMinimumNumberOfPreferences(studentResponseDTO.getMinimumNumberOfPreferences());
             studentResponse.setAllowSubmissionAfterDueDate(studentResponseDTO.isAllowSubmissionAfterDueDate());
 

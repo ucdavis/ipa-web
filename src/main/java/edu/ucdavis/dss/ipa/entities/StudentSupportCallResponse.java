@@ -32,6 +32,7 @@ public class StudentSupportCallResponse implements Serializable {
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
     private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid, collectLanguageProficiencies;
+    private Integer languageProficiency;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -266,6 +267,14 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setCollectLanguageProficiencies(boolean collectLanguageProficiencies) {
         this.collectLanguageProficiencies = collectLanguageProficiencies;
+    }
+
+    public Integer getLanguageProficiency() {
+        return languageProficiency;
+    }
+
+    public void setLanguageProficiency(Integer languageProficiency) {
+        this.languageProficiency = languageProficiency;
     }
 
     @JsonProperty("supportStaffId")

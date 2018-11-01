@@ -400,6 +400,7 @@ public class InstructionalSupportCallsController {
         studentResponseDTO.setCollectAvailabilityByCrn(addStudentsDTO.getCollectAvailabilityByCrn());
         studentResponseDTO.setCollectAvailabilityByGrid(addStudentsDTO.getCollectAvailabilityByGrid());
         studentResponseDTO.setCollectLanguageProficiencies(addStudentsDTO.getCollectLanguageProficiencies());
+        studentResponseDTO.setLanguageProficiency(addStudentsDTO.getLanguageProficiency());
 
         if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());
@@ -424,7 +425,7 @@ public class InstructionalSupportCallsController {
                         collectAssociateInstructorPreferences = false, requirePreferenceComments = false,
                         collectAvailabilityByGrid = false, collectAvailabilityByCrn = false,
                         collectLanguageProficiencies = false;
-
+        private Integer languageProficiency;
         private Long minimumNumberOfPreferences;
 
         public Date getDueDate() {
@@ -569,6 +570,14 @@ public class InstructionalSupportCallsController {
 
         public void setCollectLanguageProficiencies(Boolean collectLanguageProficiencies) {
             this.collectLanguageProficiencies = collectLanguageProficiencies;
+        }
+
+        public Integer getLanguageProficiency() {
+            return languageProficiency;
+        }
+
+        public void setLanguageProficiency(Integer LanguageProficiency) {
+            this.languageProficiency = languageProficiency;
         }
     }
 
