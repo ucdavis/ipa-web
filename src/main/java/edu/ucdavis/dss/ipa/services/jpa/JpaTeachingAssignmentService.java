@@ -120,6 +120,11 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
+	public List<TeachingAssignment> findByInstructorIdAndScheduleIdAndTermCode(long instructorId, long id, String termCode) {
+		return null;
+	}
+
+	@Override
 	public List<TeachingAssignment> findByScheduleId(long scheduleId) {
 		return teachingAssignmentRepository.findByScheduleId(scheduleId);
 	}

@@ -35,6 +35,7 @@ import edu.ucdavis.dss.ipa.services.StudentSupportPreferenceService;
 import edu.ucdavis.dss.ipa.services.SupportAppointmentService;
 import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
 import edu.ucdavis.dss.ipa.services.SupportStaffService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
@@ -65,6 +66,7 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
     @Inject Authorization authorization;
     @Inject SupportAppointmentService supportAppointmentService;
     @Inject UserRoleService userRoleService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     @Override
     public InstructionalSupportAssignmentView createAssignmentView(long workgroupId, long year, String shortTermCode) {
@@ -201,43 +203,10 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         InstructorSupportCallResponse instructorSupportCallResponse = instructorSupportCallResponseService.findByScheduleIdAndInstructorIdAndTermCode(schedule.getId(), instructorId, termCode);
         List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
         List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-
-        // Set sectionGroups and Courses
-        List<SectionGroup> sectionGroups = new ArrayList<>();
-        List<Course> courses = new ArrayList<>();
-        List<Long> courseIds = new ArrayList<>();
-
-        for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
-            // Skip termCodes that don't match scope or that haven't been approved
-            if (termCode.equals(teachingAssignment.getTermCode()) && teachingAssignment.isApproved()) {
-                // Skip non-sectionGroup assignments
-                if (teachingAssignment.getSectionGroup() == null) {
-                    continue;
-                }
-
-                // Skip teachingAssignments from a different schedule
-                if (teachingAssignment.getSchedule().getId() != schedule.getId()) {
-                    continue;
-                }
-
-                sectionGroups.add(teachingAssignment.getSectionGroup());
-
-                // Only add unique courses
-                Course slotCourse = teachingAssignment.getSectionGroup().getCourse();
-
-                if (courseIds.indexOf(slotCourse.getId()) < 0) {
-                    courses.add(slotCourse);
-                    courseIds.add(slotCourse.getId());
-                }
-            }
-        }
-
-        // Add instructor preferences associated to sectionGroups the instructor is teaching
-        List<InstructorSupportPreference> instructorPreferences = new ArrayList<>();
-
-        for (SectionGroup slotSectionGroup : sectionGroups) {
-            instructorPreferences.addAll(slotSectionGroup.getInstructorSupportPreferences());
-        }
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<Course> courses = courseService.findByWorkgroupIdAndYear(workgroupId, year);
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByInstructorIdAndScheduleIdAndTermCode(instructorId, schedule.getId(), termCode);
+        List<InstructorSupportPreference> instructorPreferences = instructorSupportPreferenceService.findByInstructorIdAndTermCode(instructorId, termCode);
 
         // Find all support staff and combine them
         Set<SupportStaff> activeStaffList = new HashSet<> (userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentSupportPreferences));
@@ -247,6 +216,6 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
         supportStaffList.addAll(activeStaffList);
         supportStaffList.addAll(scheduledStaffList);
 
-        return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentSupportPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse, studentSupportCallResponses);
+        return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentSupportPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse, studentSupportCallResponses, teachingAssignments);
     }
 }

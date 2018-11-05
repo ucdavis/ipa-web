@@ -14,7 +14,7 @@ public class InstructionalSupportCallInstructorFormView {
 
     Set<SupportStaff> supportStaffList;
     List<StudentSupportCallResponse> studentSupportCallResponses;
-
+    List<TeachingAssignment> teachingAssignments;
     InstructorSupportCallResponse instructorSupportCallResponse;
 
     Long scheduleId;
@@ -28,7 +28,8 @@ public class InstructionalSupportCallInstructorFormView {
                                                       Long scheduleId,
                                                       Long instructorId,
                                                       InstructorSupportCallResponse instructorSupportCallResponse,
-                                                      List<StudentSupportCallResponse> studentSupportCallResponses) {
+                                                      List<StudentSupportCallResponse> studentSupportCallResponses,
+                                                      List<TeachingAssignment> teachingAssignments) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setStudentSupportPreferences(studentSupportPreferences);
@@ -38,6 +39,7 @@ public class InstructionalSupportCallInstructorFormView {
         setInstructorId(instructorId);
         setInstructorSupportCallResponse(instructorSupportCallResponse);
         setStudentSupportCallResponses(studentSupportCallResponses);
+        setTeachingAssignments(teachingAssignments);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -110,5 +112,13 @@ public class InstructionalSupportCallInstructorFormView {
 
     public void setInstructorId(Long instructorId) {
         this.instructorId = instructorId;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
     }
 }
