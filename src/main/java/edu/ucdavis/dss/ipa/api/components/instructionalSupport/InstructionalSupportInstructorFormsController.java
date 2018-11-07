@@ -64,7 +64,7 @@ public class InstructionalSupportInstructorFormsController {
         Long workgroupId = scheduleService.findById(scheduleId).getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer", "instructor", "studentPhd", "studentMasters", "instructionalSupport");
 
-        instructorSupportPreferenceService.updatePriorities(preferenceIdsParams);
+        instructorSupportPreferenceService.updatePriorities(preferenceIdsParams, sectionGroupId);
 
         return preferenceIdsParams;
     }
