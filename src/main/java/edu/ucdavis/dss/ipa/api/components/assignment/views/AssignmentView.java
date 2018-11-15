@@ -11,7 +11,6 @@ public class AssignmentView {
     List<SectionGroup> sectionGroups = new ArrayList<SectionGroup>();
     List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
     List<Instructor> instructors = new ArrayList<Instructor>();
-    List<Instructor> instructorMasterList = new ArrayList<>();
     List<ScheduleInstructorNote> scheduleInstructorNotes = new ArrayList<ScheduleInstructorNote>();
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
@@ -31,7 +30,6 @@ public class AssignmentView {
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
                           List<Instructor> instructors,
-                          List<Instructor> instructorMasterList,
                           List<ScheduleInstructorNote> scheduleInstructorNotes,
                           List<ScheduleTermState> scheduleTermStates,
                           List<TeachingCallReceipt> teachingCallReceipts,
@@ -52,7 +50,6 @@ public class AssignmentView {
         setSectionGroups(sectionGroups);
         setTeachingAssignments(teachingAssignments);
         setInstructors(instructors);
-        setInstructorMasterList(instructorMasterList);
         setScheduleInstructorNotes(scheduleInstructorNotes);
         setScheduleTermStates(scheduleTermStates);
         setTeachingCallReceipts(teachingCallReceipts);
@@ -173,14 +170,6 @@ public class AssignmentView {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
-    }
-
-    public List<Instructor> getInstructorMasterList() {
-        return instructorMasterList;
-    }
-
-    public void setInstructorMasterList(List<Instructor> instructorMasterList) {
-        this.instructorMasterList = instructorMasterList;
     }
 
     public List<SupportAssignment> getSupportAssignments() {

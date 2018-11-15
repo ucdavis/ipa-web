@@ -205,8 +205,16 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public List<Instructor> getInstructorsByWorkgroupId(long workgroupId) {
+	public List<Instructor> getInstructorsByWorkgroupId(long scheduleId, long workgroupId) {
+		List<Long> workgroupInstructorIds = new ArrayList<Long>();
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
+
+		Schedule schedule = scheduleService.findById(scheduleId);
+		List<SectionGroup> sectionGroups = new ArrayList<>();
+
+		for (Course course : schedule.getCourses()) {
+			sectionGroups.addAll(course.getSectionGroups());
+		}
 
 		List<UserRole> instructorRoles = this.findByWorkgroupIdAndRoleToken(workgroupId, "instructor");
 		for (UserRole userRole: instructorRoles) {
@@ -224,8 +232,17 @@ public class JpaUserRoleService implements UserRoleService {
 
 			// Add to list of instructors if not already there.
 			// Prevents getting the AJS dupes error
-			if (!workgroupInstructors.contains(instructor)) {
+			if (!workgroupInstructorIds.contains(instructor.getId())) {
+				workgroupInstructorIds.add(instructor.getId());
 				workgroupInstructors.add(instructor);
+			}
+		}
+
+		List<Instructor> instructorsFromAssignments = instructorService.findBySectionGroups(sectionGroups);
+		for (Instructor slotInstructor : instructorsFromAssignments) {
+			if (!workgroupInstructorIds.contains(slotInstructor.getId())) {
+				workgroupInstructorIds.add(slotInstructor.getId());
+				workgroupInstructors.add(slotInstructor);
 			}
 		}
 
@@ -312,40 +329,6 @@ public class JpaUserRoleService implements UserRoleService {
 
 		return instructor;
 	}
-
-	@Override
-	public List<Instructor> findActiveInstructorsByScheduleId(long scheduleId) {
-		Schedule schedule = scheduleService.findById(scheduleId);
-
-		List<SectionGroup> sectionGroups = new ArrayList<>();
-
-		for (Course course : schedule.getCourses()) {
-			sectionGroups.addAll(course.getSectionGroups());
-		}
-
-		List<Instructor> activeInstructors = this.getInstructorsByWorkgroupId(schedule.getWorkgroup().getId());
-		List<Instructor> instructorsFromAssignments = instructorService.findBySectionGroups(sectionGroups);
-
-		List<Long> uniqueInstructorIds = new ArrayList<>();
-		List<Instructor> uniqueInstructors = new ArrayList<>();
-
-		for (Instructor slotInstructor : instructorsFromAssignments) {
-			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-				uniqueInstructorIds.add(slotInstructor.getId());
-				uniqueInstructors.add(slotInstructor);
-			}
-		}
-
-		for (Instructor slotInstructor : activeInstructors) {
-			if (uniqueInstructorIds.indexOf(slotInstructor.getId()) == -1) {
-				uniqueInstructorIds.add(slotInstructor.getId());
-				uniqueInstructors.add(slotInstructor);
-			}
-		}
-
-		return uniqueInstructors;
-	}
-
 
 	/**
 	 * Returns a list of SupportStaff entities that are tied to userRoles for masters/phd/instructionalSupport roles.

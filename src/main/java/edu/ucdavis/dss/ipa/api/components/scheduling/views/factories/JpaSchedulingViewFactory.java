@@ -14,6 +14,7 @@ import java.util.List;
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
+	@Inject ScheduleService scheduleService;
 	@Inject ActivityService activityService;
 	@Inject CourseService courseService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
@@ -26,10 +27,12 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode) {
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
 		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
 		Term term = termService.getOneByTermCode(termCode);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(schedule.getId(), workgroupId);
 		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
