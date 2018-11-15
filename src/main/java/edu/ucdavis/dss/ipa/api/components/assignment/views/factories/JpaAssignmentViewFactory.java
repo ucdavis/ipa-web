@@ -32,14 +32,13 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
 		long scheduleId = schedule.getId();
 
-		List<Instructor> instructorMasterList = userRoleService.findActiveInstructorsByScheduleId(scheduleId);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
 		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 		List<InstructorNote> instructorNotes = schedule.getInstructorNotes();
 
 		List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(scheduleId, workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
@@ -54,7 +53,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		Set<User> assignedUsers = new HashSet<>(userService.findAllByTeachingAssignments(schedule.getTeachingAssignments()));
 
 		return new AssignmentView(
-				courses, sectionGroups, schedule.getTeachingAssignments(), instructors, instructorMasterList,
+				courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
 				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
@@ -65,7 +64,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Override
 	public View createAssignmentExcelView(long workgroupId, long year) {
 		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(schedule.getId(), workgroupId);
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 
 		return new AssignmentExcelView(schedule, instructors, scheduleTermStates);
