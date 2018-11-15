@@ -210,11 +210,14 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         // Find all support staff and combine them
         Set<SupportStaff> activeStaffList = new HashSet<> (userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentSupportPreferences));
-        Set<SupportStaff> scheduledStaffList = new HashSet<> (supportStaffService.findByScheduleId(schedule.getId()));
+        Set<SupportStaff> referencedSupportStaff = new HashSet<> ();
+        for (InstructorSupportPreference preference : instructorPreferences) {
+            referencedSupportStaff.add(preference.getSupportStaff());
+        }
 
         Set<SupportStaff> supportStaffList = new HashSet<>();
         supportStaffList.addAll(activeStaffList);
-        supportStaffList.addAll(scheduledStaffList);
+        supportStaffList.addAll(referencedSupportStaff);
 
         return new InstructionalSupportCallInstructorFormView(sectionGroups, courses, studentSupportPreferences, instructorPreferences, supportStaffList, schedule.getId(), instructorId, instructorSupportCallResponse, studentSupportCallResponses, teachingAssignments);
     }
