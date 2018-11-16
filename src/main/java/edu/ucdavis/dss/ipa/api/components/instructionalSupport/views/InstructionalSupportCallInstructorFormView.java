@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.instructionalSupport.views;
 import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
+import java.util.Set;
 
 public class InstructionalSupportCallInstructorFormView {
     List<SectionGroup> sectionGroups;
@@ -11,8 +12,9 @@ public class InstructionalSupportCallInstructorFormView {
     List<StudentSupportPreference> studentSupportPreferences;
     List<InstructorSupportPreference> instructorSupportPreferences;
 
-    List<SupportStaff> supportStaffList;
-
+    Set<SupportStaff> supportStaffList;
+    List<StudentSupportCallResponse> studentSupportCallResponses;
+    List<TeachingAssignment> teachingAssignments;
     InstructorSupportCallResponse instructorSupportCallResponse;
 
     Long scheduleId;
@@ -22,10 +24,12 @@ public class InstructionalSupportCallInstructorFormView {
                                                       List<Course> courses,
                                                       List<StudentSupportPreference> studentSupportPreferences,
                                                       List<InstructorSupportPreference> instructorSupportPreferences,
-                                                      List<SupportStaff> supportStaffList,
+                                                      Set<SupportStaff> supportStaffList,
                                                       Long scheduleId,
                                                       Long instructorId,
-                                                      InstructorSupportCallResponse instructorSupportCallResponse) {
+                                                      InstructorSupportCallResponse instructorSupportCallResponse,
+                                                      List<StudentSupportCallResponse> studentSupportCallResponses,
+                                                      List<TeachingAssignment> teachingAssignments) {
         setSectionGroups(sectionGroups);
         setCourses(courses);
         setStudentSupportPreferences(studentSupportPreferences);
@@ -34,6 +38,8 @@ public class InstructionalSupportCallInstructorFormView {
         setScheduleId(scheduleId);
         setInstructorId(instructorId);
         setInstructorSupportCallResponse(instructorSupportCallResponse);
+        setStudentSupportCallResponses(studentSupportCallResponses);
+        setTeachingAssignments(teachingAssignments);
     }
 
     public List<SectionGroup> getSectionGroups() {
@@ -76,11 +82,11 @@ public class InstructionalSupportCallInstructorFormView {
         this.instructorSupportPreferences = instructorSupportPreferences;
     }
 
-    public List<SupportStaff> getSupportStaffList() {
+    public Set<SupportStaff> getSupportStaffList() {
         return supportStaffList;
     }
 
-    public void setSupportStaffList(List<SupportStaff> supportStaffList) {
+    public void setSupportStaffList(Set<SupportStaff> supportStaffList) {
         this.supportStaffList = supportStaffList;
     }
 
@@ -92,11 +98,27 @@ public class InstructionalSupportCallInstructorFormView {
         this.instructorSupportCallResponse = instructorSupportCallResponse;
     }
 
+    public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+        return studentSupportCallResponses;
+    }
+
+    public void setStudentSupportCallResponses(List<StudentSupportCallResponse> studentSupportCallResponses) {
+        this.studentSupportCallResponses = studentSupportCallResponses;
+    }
+
     public Long getInstructorId() {
         return instructorId;
     }
 
     public void setInstructorId(Long instructorId) {
         this.instructorId = instructorId;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
     }
 }

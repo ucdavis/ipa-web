@@ -72,7 +72,8 @@ public class InstructionalSupportStudentFormsController {
         originalSupportCallResponse.setTeachingQualifications(studentSupportCallResponseDTO.getTeachingQualifications());
         originalSupportCallResponse.setSubmitted(studentSupportCallResponseDTO.isSubmitted());
         originalSupportCallResponse.setEligibilityConfirmed(studentSupportCallResponseDTO.isEligibilityConfirmed());
-
+        originalSupportCallResponse.setLanguageProficiency(studentSupportCallResponseDTO.getLanguageProficiency());
+        
         if (originalSupportCallResponse.isCollectAvailabilityByCrn() || originalSupportCallResponse.isCollectAvailabilityByGrid()) {
             originalSupportCallResponse.setAvailabilityBlob(studentSupportCallResponseDTO.getAvailabilityBlob());
         }

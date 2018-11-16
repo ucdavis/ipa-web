@@ -9,9 +9,10 @@ public interface InstructorSupportPreferenceService {
     /**
      * Will set the priority values of all preferences tied to the relevant instructionalSupportStaff and instructionalSupportCall based on the order of the ids.
      * @param instructorInstructionalSupportPreferenceIds
+     * @param sectionGroupId
      * @return
      */
-    List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds);
+    List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds, long sectionGroupId);
 
     InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long sectionGroupId);
 
