@@ -69,9 +69,9 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		}
 
 		// 2) Create diffDtos for dwSections that don't have a matching section, but do have a matching sectionGroup
-		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-		List<SectionGroup> sectionGroupsInTerm = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+		List<SectionGroup> sectionGroupsInTerm = schedule != null ? sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode) : new ArrayList<>();
 		List<String> subjectCodesToQuery = new ArrayList<>();
 		dwSections = new ArrayList<>();
 
@@ -103,7 +103,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				sequencePattern = dwSection.getSequenceNumber();
 			}
 
-			Course matchingCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(dwSection.getSubjectCode(), dwSection.getCourseNumber(), sequencePattern, schedule.getId());
+			Course matchingCourse = schedule != null ? courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(dwSection.getSubjectCode(), dwSection.getCourseNumber(), sequencePattern, schedule.getId()) : null;
 			SectionGroup matchingSectionGroup = null;
 
 			// If no IPA course matches the subj/course/seq, dwSection is not relevant
