@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -97,5 +98,17 @@ public class JpaLineItemService implements LineItemService {
     @Override
     public List<LineItem> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return lineItemRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
+
+    @Override
+    public List<LineItem> duplicateFunds(BudgetScenario budgetScenario, BudgetScenario originalBudgetScenario) {
+        List<LineItem> lineItems = new ArrayList<>();
+
+        for (LineItem originalLineItem : originalBudgetScenario.getLineItems()) {
+            LineItem lineItem = this.createDuplicate(originalLineItem, budgetScenario);
+            lineItems.add(lineItem);
+        }
+
+        return lineItems;
     }
 }
