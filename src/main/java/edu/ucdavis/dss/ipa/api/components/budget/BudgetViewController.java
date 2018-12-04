@@ -115,13 +115,7 @@ public class BudgetViewController {
 
         // If a budget scenario id was supplied, copy data, else create from schedule
         if (scenarioId != null && scenarioId != 0) {
-            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName());
-
-            if (copyFunds) {
-                BudgetScenario originalBudgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
-                List<LineItem> lineItems = lineItemService.duplicateFunds(budgetScenario, originalBudgetScenario);
-                budgetScenario.setLineItems(lineItems);
-            }
+            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName(), copyFunds);
         } else {
             budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioDTO.getName());
         }
