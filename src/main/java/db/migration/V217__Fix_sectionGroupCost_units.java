@@ -49,9 +49,9 @@ public class V217__Fix_sectionGroupCost_units implements JdbcMigration {
                         " WHERE Id = ?;"
                 );
 
-                psUpdateSectionGroupCost.setLong(1, sectionGroupCostId);
-                psUpdateSectionGroupCost.setFloat(2, unitsHigh);
-                psUpdateSectionGroupCost.setFloat(3, unitsLow);
+                psUpdateSectionGroupCost.setFloat(1, unitsHigh);
+                psUpdateSectionGroupCost.setFloat(2, unitsLow);
+                psUpdateSectionGroupCost.setLong(3, sectionGroupCostId);
                 psUpdateSectionGroupCost.execute();
                 psUpdateSectionGroupCost.close();
             }
