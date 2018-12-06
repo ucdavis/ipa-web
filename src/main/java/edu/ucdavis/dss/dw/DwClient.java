@@ -226,29 +226,6 @@ public class DwClient {
 		return dwPerson;
 	}
 
-	/**
-	 * Finds a course in DW with the given subjectCode, courseNumber, and effectiveTermCode
-	 *
-	 * @param subjectCode e.g. ECS, PHY
-	 * @param courseNumber e.g. 101, 10A, 010
-	 * @param effectiveTermCode e.g. 200410
-	 * @return a DwCourse representing the found course or null if no course found
-	 * @throws IOException
-	 */
-	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
-		List<DwCourse> dwCourses = this.searchCourses(subjectCode + " " + courseNumber);
-
-		for (DwCourse dwCourse : dwCourses) {
-			if (dwCourse.getCourseNumber().equals(courseNumber)
-					&& dwCourse.getSubjectCode().equals(subjectCode)
-					&& dwCourse.getEffectiveTermCode().equals(effectiveTermCode)) {
-				return dwCourse;
-			}
-		}
-
-		return null;
-	}
-
 	public List<DwCourse> searchCourses(String query) throws IOException {
 		List<DwCourse> dwCourses = null;
 
@@ -403,5 +380,63 @@ public class DwClient {
 		}
 
 		return dwSections;
+	}
+
+	/**
+	 * Finds a course in DW with the given subjectCode, courseNumber, and effectiveTermCode
+	 *
+	 * @param subjectCode e.g. ECS, PHY
+	 * @param courseNumber e.g. 101, 10A, 010
+	 * @param effectiveTermCode e.g. 200410
+	 * @return a DwCourse representing the found course or null if no course found
+	 * @throws IOException
+	 */
+	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
+		if((subjectCode == null) || (courseNumber == null) || (effectiveTermCode == null)) {
+			log.warn("Cannot get course: subjectCode, courseNumber, and/or effectiveTermCode is null.");
+			return null;
+		}
+
+		if(connect() == false) {
+			log.warn("Could not connect to DW while getting course.");
+			return null;
+		}
+
+		HttpGet httpget = new HttpGet("/courses/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+				"&courseNumber=" + URLEncoder.encode(String.valueOf(courseNumber), "UTF-8") +
+				"&effectiveTermCode=" + URLEncoder.encode(String.valueOf(effectiveTermCode), "UTF-8") +
+				"&token=" + ApiToken);
+
+		CloseableHttpResponse response = httpclient.execute(
+				targetHost, httpget, context);
+
+		StatusLine line = response.getStatusLine();
+		if (line.getStatusCode() != 200) {
+			throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /courses/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
+							"&courseNumber=" + URLEncoder.encode(String.valueOf(courseNumber), "UTF-8") + "&effectiveTermCode=" + URLEncoder.encode(String.valueOf(effectiveTermCode), "UTF-8"));
+		}
+
+		HttpEntity entity = response.getEntity();
+		String entityString = EntityUtils.toString(entity);
+
+		DwCourse course = new DwCourse();
+
+		if (entityString != null) {
+			JsonNode node = new ObjectMapper().readTree(entityString);
+
+			course.setCourseNumber(node.get("courseNumber").textValue());
+			course.setSubjectCode(node.get("subjectCode").textValue());
+			course.setEffectiveTermCode(node.get("effectiveTermCode").textValue());
+			course.setTitle(node.get("title").textValue());
+
+			if(node.get("unitsLow").isNull() == false) {
+				course.setCreditHoursLow(node.get("unitsLow").floatValue());
+			}
+			if(node.get("unitsHigh").isNull() == false) {
+				course.setCreditHoursHigh(node.get("unitsHigh").floatValue());
+			}
+		}
+
+		return course;
 	}
 }
