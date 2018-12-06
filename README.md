@@ -1,3 +1,7 @@
+# Installation
+1. Ensure Java JDK is installed (Java 8). If it's installed, you'll have the commands `java` and `javac`
+2. 
+
 # JSON Web Token / AngularJS / Spring Boot example
 
 [Blog post on this subject](http://niels.nu/blog/2015/json-web-tokens.html)
