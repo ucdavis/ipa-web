@@ -148,7 +148,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         // Clone lineItems if option is selected
         if (copyFunds) {
-            List<LineItem> lineItems = lineItemService.duplicateFunds(budgetScenario, originalBudgetScenario);
+            List<LineItem> lineItems = budgetScenario.getLineItems();
+            lineItems.addAll(lineItemService.duplicateFunds(budgetScenario, originalBudgetScenario));
             budgetScenario.setLineItems(lineItems);
         }
 
