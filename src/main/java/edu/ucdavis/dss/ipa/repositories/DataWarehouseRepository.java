@@ -22,7 +22,7 @@ public interface DataWarehouseRepository {
 
 	DwPerson getPersonByLoginId(String loginId);
 
-	DwCourse findCourse(String suggestedSubjectCode, String suggestedCourseNumber, String suggestedEffectiveTermCode);
+	DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode);
 
 	List<DwCourse> searchCourses(String query);
 
