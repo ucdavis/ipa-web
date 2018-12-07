@@ -128,8 +128,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             return null;
         }
 
-        BudgetScenario budgetScenario = null;
-        budgetScenario = new BudgetScenario();
+        BudgetScenario budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(originalBudgetScenario.getBudget());
         budgetScenario.setName(name);
         budgetScenario.setActiveTermsBlob(originalBudgetScenario.getActiveTermsBlob());

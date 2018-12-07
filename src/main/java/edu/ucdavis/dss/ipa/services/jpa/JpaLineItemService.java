@@ -83,6 +83,8 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setAmount(originalLineItem.getAmount());
         lineItem.setDescription(originalLineItem.getDescription());
         lineItem.setLineItemCategory(originalLineItem.getLineItemCategory());
+        lineItem.setHidden(originalLineItem.getHidden());
+        lineItem.setTeachingAssignment(originalLineItem.getTeachingAssignment());
 
         return this.lineItemRepository.save(lineItem);
     }
