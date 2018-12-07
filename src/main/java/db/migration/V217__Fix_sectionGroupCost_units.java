@@ -1,16 +1,10 @@
 package db.migration;
 
-    import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-    import java.sql.Connection;
-    import java.sql.Date;
-    import java.sql.PreparedStatement;
-    import java.sql.ResultSet;
-    import java.sql.Time;
-    import java.util.ArrayList;
-    import java.util.HashMap;
-    import java.util.List;
-    import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class V217__Fix_sectionGroupCost_units implements JdbcMigration {
 
