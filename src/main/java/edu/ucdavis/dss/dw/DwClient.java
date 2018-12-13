@@ -389,7 +389,7 @@ public class DwClient {
 	 * @param courseNumber e.g. 101, 10A, 010
 	 * @param effectiveTermCode e.g. 200410
 	 * @return a DwCourse representing the found course or null if no course found
-	 * @throws IOException
+	 * @throws IOException - if DW returns anything besides 200 or 404
 	 */
 	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) throws IOException {
 		if((subjectCode == null) || (courseNumber == null) || (effectiveTermCode == null)) {
@@ -411,7 +411,7 @@ public class DwClient {
 				targetHost, httpget, context);
 
 		StatusLine line = response.getStatusLine();
-		if (line.getStatusCode() != 200) {
+		if ((line.getStatusCode() != 200) && (line.getStatusCode() != 404)) {
 			throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /courses/details?subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8") +
 							"&courseNumber=" + URLEncoder.encode(String.valueOf(courseNumber), "UTF-8") + "&effectiveTermCode=" + URLEncoder.encode(String.valueOf(effectiveTermCode), "UTF-8"));
 		}
