@@ -92,7 +92,7 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 
 		private String courseNumber, subjectCode, sequencePattern, termCode, effectiveTermCode, title;
 		private Integer plannedSeats;
-		private float creditHoursHigh, creditHoursLow;
+		private Float creditHoursHigh, creditHoursLow;
 		public long getId() {
 			return id;
 		}
@@ -157,19 +157,19 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 			this.plannedSeats = plannedSeats;
 		}
 
-		public float getCreditHoursHigh() {
+		public Float getCreditHoursHigh() {
 			return creditHoursHigh;
 		}
 
-		public void setCreditHoursHigh(float creditHoursHigh) {
+		public void setCreditHoursHigh(Float creditHoursHigh) {
 			this.creditHoursHigh = creditHoursHigh;
 		}
 
-		public float getCreditHoursLow() {
+		public Float getCreditHoursLow() {
 			return creditHoursLow;
 		}
 
-		public void setCreditHoursLow(float creditHoursLow) {
+		public void setCreditHoursLow(Float creditHoursLow) {
 			this.creditHoursLow = creditHoursLow;
 		}
 	}
