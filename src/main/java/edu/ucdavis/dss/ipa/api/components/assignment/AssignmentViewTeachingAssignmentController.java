@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 @RestController
 @CrossOrigin
@@ -386,7 +387,8 @@ public class AssignmentViewTeachingAssignmentController {
                 teachingAssignment.setSchedule(schedule);
                 teachingAssignment.setInstructor(instructor);
                 teachingAssignment.setFromInstructor(true);
-                Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+                TeachingAssignment maxPriorityTeachingAssignment = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get();
+                Integer priority = maxPriorityTeachingAssignment.getPriority() + 1;
                 teachingAssignment.setPriority(priority);
                 teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(teachingAssignment));
                 return teachingAssignments;
@@ -401,7 +403,8 @@ public class AssignmentViewTeachingAssignmentController {
             teachingAssignment.setInstructor(instructor);
             teachingAssignment.setFromInstructor(true);
 
-            Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+            TeachingAssignment maxPriorityTeachingAssignment = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get();
+            Integer priority = maxPriorityTeachingAssignment.getPriority() + 1;
             teachingAssignment.setPriority(priority);
 
             teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(teachingAssignment));
@@ -424,7 +427,8 @@ public class AssignmentViewTeachingAssignmentController {
                         slotTeachingAssignment.setInstructor(instructor);
                         slotTeachingAssignment.setFromInstructor(true);
 
-                        Integer priority = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).size() + 1;
+                        TeachingAssignment maxPriorityTeachingAssignment = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get();
+                        Integer priority = maxPriorityTeachingAssignment.getPriority() + 1;
                         slotTeachingAssignment.setPriority(priority);
                         teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(slotTeachingAssignment));
                     }
