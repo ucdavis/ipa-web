@@ -159,7 +159,7 @@ public class DwClient {
 	}
 
 	public DwPerson getPersonByLoginId(String loginId) throws UnsupportedEncodingException {
-		DwPerson dwPerson = new DwPerson();
+		DwPerson dwPerson = null;
 
 		if (connect() && loginId != null) {
 			HttpGet httpget = new HttpGet("/people/" + URLEncoder.encode(loginId, "UTF-8") + "?token=" + ApiToken);
@@ -181,7 +181,9 @@ public class DwClient {
 
 				String entityString = EntityUtils.toString(entity);
 
-				if (entityString != null) {
+				if ((entityString != null) && (entityString.length() > 0)) {
+					dwPerson = new DwPerson();
+
 					JsonNode node = new ObjectMapper().readTree(entityString);
 
 					JsonNode contactInfo = node.get("contactInfo");
@@ -211,8 +213,6 @@ public class DwClient {
 					if(prikerbacct != null) {
 						dwPerson.setUserId(prikerbacct.get("userId").textValue());
 					}
-				} else {
-					log.warn("getPersonByLoginId Response from DW returned null, for criterion = " + loginId);
 				}
 
 				response.close();
@@ -287,8 +287,6 @@ public class DwClient {
 						arrNode.toString(),
 						mapper.getTypeFactory().constructCollectionType(
 								List.class, DwSection.class));
-			} else {
-				log.warn("getSectionBySubjectCodeAndCourseNumberAndSequenceNumber Response from DW returned null, for criterion = " + termCode + ", " + sectionUniqueKeys);
 			}
 
 			response.close();
@@ -419,9 +417,11 @@ public class DwClient {
 		HttpEntity entity = response.getEntity();
 		String entityString = EntityUtils.toString(entity);
 
-		DwCourse course = new DwCourse();
+		DwCourse course = null;
 
-		if (entityString != null) {
+		if ((entityString != null) && (entityString.length() > 0)) {
+			course = new DwCourse();
+
 			JsonNode node = new ObjectMapper().readTree(entityString);
 
 			course.setCourseNumber(node.get("courseNumber").textValue());
