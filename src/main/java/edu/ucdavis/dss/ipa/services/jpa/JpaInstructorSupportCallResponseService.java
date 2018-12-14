@@ -81,21 +81,22 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
         }
 
         Calendar now = Calendar.getInstance();
-        int currentYear = now.get(Calendar.YEAR);
-
         java.util.Date utilDate = now.getTime();
         java.sql.Date currentDate = new Date(utilDate.getTime());
 
         for (Schedule schedule : workgroup.getSchedules()) {
             // Check teachingCallReceipts to see if messages need to be sent
             for (InstructorSupportCallResponse instructorSupportCallResponse : schedule.getInstructorSupportCallResponses()) {
+                // Do not process for e-mailing if we are not to e-mail
+                if (instructorSupportCallResponse.isSendEmail() == false) {
+                    continue;
+                }
 
                 // Is an email scheduled to be sent?
                 if (instructorSupportCallResponse.getNextContactAt() != null) {
                     long currentTime = currentDate.getTime();
                     long contactAtTime = instructorSupportCallResponse.getNextContactAt().getTime();
 
-                    // Is it time to send that email?
                     if (currentTime > contactAtTime) {
                         sendSupportCall(instructorSupportCallResponse, currentDate);
                     }
@@ -125,14 +126,11 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
                         } else if (timeSinceLastContact != null && timeSinceLastContact > oneDayInMilliseconds && currentTime < dueDateTime) {
                             sendSupportCallWarning(instructorSupportCallResponse, currentDate);
                         }
-
                     }
                 }
             }
         }
-
     }
-
 
     /**
      * Builds the email and triggers sending of the support Call.
@@ -266,6 +264,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
             instructorResponse.setSchedule(instructorResponseDTO.getSchedule());
             instructorResponse.setInstructor(instructor);
             instructorResponse.setSubmitted(false);
+            instructorResponse.setSendEmail(instructorResponseDTO.isSendEmail());
             instructorResponse.setMessage(instructorResponseDTO.getMessage());
             instructorResponse.setNextContactAt(instructorResponseDTO.getNextContactAt());
             instructorResponse.setTermCode(instructorResponseDTO.getTermCode());

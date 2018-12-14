@@ -80,6 +80,7 @@ public class InstructionalSupportCallsController {
             InstructorSupportCallResponse instructorSupportCallResponse = instructorSupportCallResponseService.findOneById(responseId);
             instructorSupportCallResponse.setNextContactAt(instructorSupportCallContactDTO.getNextContactAt());
             instructorSupportCallResponse.setMessage(instructorSupportCallContactDTO.getMessage());
+            instructorSupportCallResponse.setSendEmail(true);
             instructorSupportCallResponse = instructorSupportCallResponseService.update(instructorSupportCallResponse);
             instructorResponses.add(instructorSupportCallResponse);
         }
@@ -168,6 +169,7 @@ public class InstructionalSupportCallsController {
         for (Long responseId : studentSupportCallContactDTO.responseIds) {
             StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findOneById(responseId);
 
+            studentSupportCallResponse.setSendEmail(true);
             studentSupportCallResponse.setNextContactAt(studentSupportCallContactDTO.getNextContactAt());
             studentSupportCallResponse.setMessage(studentSupportCallContactDTO.getMessage());
             studentSupportCallResponse = studentSupportCallResponseService.update(studentSupportCallResponse);
@@ -258,6 +260,7 @@ public class InstructionalSupportCallsController {
         instructorResponseDTO.setAllowSubmissionAfterDueDate(addInstructorsDTO.getAllowSubmissionAfterDueDate());
 
         if (addInstructorsDTO.getSendEmail() != null && addInstructorsDTO.getSendEmail() == true) {
+            instructorResponseDTO.setSendEmail(true);
             instructorResponseDTO.setMessage(addInstructorsDTO.getMessage());
 
             Date now = Calendar.getInstance().getTime();
@@ -404,6 +407,7 @@ public class InstructionalSupportCallsController {
 
         if (addStudentsDTO.getSendEmail() != null && addStudentsDTO.getSendEmail() == true) {
             studentResponseDTO.setMessage(addStudentsDTO.getMessage());
+            studentResponseDTO.setSendEmail(true);
 
             Date now = Calendar.getInstance().getTime();
             studentResponseDTO.setNextContactAt(now);
