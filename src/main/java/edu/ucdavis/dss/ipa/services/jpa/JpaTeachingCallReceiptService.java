@@ -72,6 +72,11 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		for (Schedule schedule : workgroup.getSchedules()) {
 			// Check teachingCallReceipts to see if messages need to be sent
 			for (TeachingCallReceipt teachingCallReceipt : schedule.getTeachingCallReceipts()) {
+				// Do not process for e-mailing if we are not to e-mail
+				if (teachingCallReceipt.isSendEmail() == false) {
+					continue;
+				}
+
 				// Send scheduled email if the send date has been passed
 				if (teachingCallReceipt.getNextContactAt() != null) {
 					long currentTime = currentDate.getTime();
@@ -127,7 +132,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		String loginId = teachingCallReceipt.getInstructor().getLoginId();
 
 		// loginId is necessary to map to a user and email
-		if ( loginId == null) {
+		if (loginId == null) {
 			log.error("Attempted to send notification to instructor id '" + teachingCallReceipt.getInstructor().getId() + "' but loginId was null.");
 			return;
 		}
@@ -248,6 +253,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			teachingCallReceipt.setIsDone(false);
 			teachingCallReceipt.setMessage(teachingCallReceiptDTO.getMessage());
 			teachingCallReceipt.setNextContactAt(teachingCallReceiptDTO.getNextContactAt());
+			teachingCallReceipt.setSendEmail(teachingCallReceiptDTO.isSendEmail());
 			teachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
 			teachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
 			teachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());

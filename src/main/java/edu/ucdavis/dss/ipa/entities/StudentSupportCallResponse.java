@@ -32,6 +32,7 @@ public class StudentSupportCallResponse implements Serializable {
     private boolean collectGeneralComments, collectTeachingQualifications, collectPreferenceComments;
     private boolean collectEligibilityConfirmation, collectTeachingAssistantPreferences, collectReaderPreferences;
     private boolean collectAssociateInstructorPreferences, requirePreferenceComments, collectAvailabilityByCrn, collectAvailabilityByGrid, collectLanguageProficiencies;
+    private boolean sendEmail;
     private Integer languageProficiency;
 
     @Id
@@ -275,6 +276,15 @@ public class StudentSupportCallResponse implements Serializable {
 
     public void setLanguageProficiency(Integer languageProficiency) {
         this.languageProficiency = languageProficiency;
+    }
+
+    @Column (nullable = false)
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 
     @JsonProperty("supportStaffId")
