@@ -32,6 +32,7 @@ public class TeachingCallReceipt implements Serializable {
 
 	private Instructor instructor;
 	private Boolean isDone = false, showUnavailabilities = true;
+	private boolean sendEmail;
 	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
 	private String comment, termsBlob, message;
@@ -141,6 +142,15 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	@Column (nullable = false)
+	public boolean isSendEmail() {
+		return sendEmail;
+	}
+
+	public void setSendEmail(boolean sendEmail) {
+		this.sendEmail = sendEmail;
 	}
 
 	@JsonProperty("instructorId")

@@ -18,7 +18,9 @@ public class InstructorSupportCallResponse implements Serializable {
     private String message, termCode;
     private Date startDate, dueDate, lastContactedAt, nextContactAt;
     private Instructor instructor;
-    private boolean submitted, allowSubmissionAfterDueDate;
+    private boolean submitted;
+    private boolean allowSubmissionAfterDueDate;
+    private boolean sendEmail;
     private String generalComments;
 
     @Id
@@ -52,6 +54,15 @@ public class InstructorSupportCallResponse implements Serializable {
 
     public void setSubmitted(boolean submitted) {
         this.submitted = submitted;
+    }
+
+    @Column (nullable = false)
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
     }
 
     @Column (nullable = false)

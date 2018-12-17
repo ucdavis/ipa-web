@@ -63,6 +63,7 @@ public class TeachingCallStatusViewController {
             TeachingCallReceipt slotTeachingCallReceipt = teachingCallReceiptService.findOneById(receiptId);
             slotTeachingCallReceipt.setNextContactAt(contactInstructorsDTO.getNextContactAt());
             slotTeachingCallReceipt.setMessage(contactInstructorsDTO.getMessage());
+            slotTeachingCallReceipt.setSendEmail(true);
             slotTeachingCallReceipt = teachingCallReceiptService.save(slotTeachingCallReceipt);
             teachingCallReceipts.add(slotTeachingCallReceipt);
         }
@@ -153,6 +154,7 @@ public class TeachingCallStatusViewController {
 
         if (addInstructorsDTO.getSendEmail() == true) {
             receiptDTO.setMessage(addInstructorsDTO.getMessage());
+            receiptDTO.setSendEmail(true);
 
             Date now = Calendar.getInstance().getTime();
             receiptDTO.setNextContactAt(now);

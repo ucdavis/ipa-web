@@ -121,15 +121,14 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
      */
     @Transactional
     @Override
-    public BudgetScenario createFromExisting(Long scenarioId, String name) {
+    public BudgetScenario createFromExisting(Long scenarioId, String name, boolean copyFunds) {
         BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalBudgetScenario == null) {
             return null;
         }
 
-        BudgetScenario budgetScenario = null;
-        budgetScenario = new BudgetScenario();
+        BudgetScenario budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(originalBudgetScenario.getBudget());
         budgetScenario.setName(name);
         budgetScenario.setActiveTermsBlob(originalBudgetScenario.getActiveTermsBlob());
@@ -146,15 +145,13 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setSectionGroupCosts(sectionGroupCostList);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
-        // Clone lineItems from one scenario to another
-        List<LineItem> lineItems = budgetScenario.getLineItems();
-
-        for(LineItem originalLineItem : originalBudgetScenario.getLineItems()) {
-            LineItem lineItem = lineItemService.createDuplicate(originalLineItem, budgetScenario);
-            lineItems.add(lineItem);
+        // Clone lineItems if option is selected
+        if (copyFunds) {
+            List<LineItem> lineItems = budgetScenario.getLineItems();
+            lineItems.addAll(lineItemService.duplicateFunds(budgetScenario, originalBudgetScenario));
+            budgetScenario.setLineItems(lineItems);
         }
 
-        budgetScenario.setLineItems(lineItems);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
         return budgetScenario;

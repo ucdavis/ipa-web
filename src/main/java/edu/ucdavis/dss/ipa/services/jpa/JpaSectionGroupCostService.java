@@ -61,6 +61,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setReason(originalSectionGroupCost.getReason());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
         sectionGroupCost.setCost(originalSectionGroupCost.getCost());
+        sectionGroupCost.setDisabled(originalSectionGroupCost.isDisabled());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }

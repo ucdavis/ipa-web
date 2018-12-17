@@ -102,6 +102,10 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         for (Schedule schedule : workgroup.getSchedules()) {
             // Check teachingCallReceipts to see if messages need to be sent
             for (StudentSupportCallResponse studentSupportCallResponse : schedule.getStudentSupportCallResponses()) {
+                // Do not process for e-mailing if we are not to e-mail
+                if(studentSupportCallResponse.isSendEmail() == false) {
+                    continue;
+                }
 
                 // Is an email scheduled to be sent?
                 if (studentSupportCallResponse.getNextContactAt() != null) {
@@ -303,6 +307,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
             studentResponse.setMinimumNumberOfPreferences(studentResponseDTO.getMinimumNumberOfPreferences());
             studentResponse.setAllowSubmissionAfterDueDate(studentResponseDTO.isAllowSubmissionAfterDueDate());
 
+            studentResponse.setSendEmail(studentResponseDTO.isSendEmail());
             studentResponse.setMessage(studentResponseDTO.getMessage());
             studentResponse.setNextContactAt(studentResponseDTO.getNextContactAt());
             studentResponse.setTermCode(studentResponseDTO.getTermCode());
