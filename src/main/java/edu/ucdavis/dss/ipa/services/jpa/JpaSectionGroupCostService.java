@@ -61,6 +61,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setReason(originalSectionGroupCost.getReason());
         sectionGroupCost.setSectionCount(originalSectionGroupCost.getSectionCount());
         sectionGroupCost.setCost(originalSectionGroupCost.getCost());
+        sectionGroupCost.setDisabled(originalSectionGroupCost.isDisabled());
 
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
@@ -139,7 +140,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
         originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
-        originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
+
+        if (sectionGroupCostDTO.getInstructorType() != null) {
+            originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
+        }
+
         return this.sectionGroupCostRepository.save(originalSectionGroupCost);
     }
 
