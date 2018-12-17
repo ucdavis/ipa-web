@@ -96,6 +96,7 @@ public class BudgetViewController {
     @ResponseBody
     public BudgetScenarioView createBudgetScenario(@PathVariable long budgetId,
                                                    @RequestParam(value="scenarioId", required = false) Long scenarioId,
+                                                   @RequestParam(value = "copyFunds", required = false) boolean copyFunds,
                                                    @RequestBody BudgetScenario budgetScenarioDTO,
                                                    HttpServletResponse httpResponse) {
         // Ensure valid params
@@ -114,7 +115,7 @@ public class BudgetViewController {
 
         // If a budget scenario id was supplied, copy data, else create from schedule
         if (scenarioId != null && scenarioId != 0) {
-            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName());
+            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName(), copyFunds);
         } else {
             budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioDTO.getName());
         }
