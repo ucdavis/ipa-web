@@ -44,6 +44,5 @@ public class V218__Combine_staff_notes implements JdbcMigration {
 
         // Commit changes
         connection.commit();
-        System.out.println("done!");
     }
 }
