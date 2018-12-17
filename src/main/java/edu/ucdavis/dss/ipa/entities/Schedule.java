@@ -36,7 +36,6 @@ public class Schedule implements Serializable {
 	private String secretToken;
 	private Workgroup workgroup;
 	private List<Course> courses = new ArrayList<Course>();
-	private List<InstructorNote> instructorNotes = new ArrayList<InstructorNote>();
 	private List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
 	private List<StudentSupportCallResponse> studentSupportCallResponses = new ArrayList<StudentSupportCallResponse>();
 	private List<InstructorSupportCallResponse> instructorSupportCallResponses = new ArrayList<InstructorSupportCallResponse>();
@@ -149,16 +148,6 @@ public class Schedule implements Serializable {
 
 	public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
 		this.teachingAssignments = teachingAssignments;
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "schedule")
-	@JsonIgnore
-	public List<InstructorNote> getInstructorNotes() {
-		return instructorNotes;
-	}
-
-	public void setInstructorNotes(List<InstructorNote> instructorNotes) {
-		this.instructorNotes = instructorNotes;
 	}
 
 	/**
