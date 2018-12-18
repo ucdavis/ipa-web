@@ -10,6 +10,7 @@ import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,5 +56,25 @@ public class TeachingAssignmentController {
     } else {
       return teachingAssignmentService.findApprovedByWorkgroupIdAndYear(workgroupId, year);
     }
+  }
+
+  @RequestMapping(value = "/api/teachingAssignments/{teachingAssignmentId}", method = RequestMethod.PUT, produces="application/json")
+  @ResponseBody
+  public TeachingAssignment updateTeachingAssignment(@PathVariable long teachingAssignmentId,
+                                                     @RequestBody TeachingAssignment newTeachingAssignment,
+                                                     HttpServletResponse httpResponse) {
+    // Ensure valid params
+    TeachingAssignment originalTeachingAssignment = teachingAssignmentService.findOneById(teachingAssignmentId);
+
+    if (originalTeachingAssignment == null) {
+      httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+      return null;
+    }
+
+    // Authorization check
+    Long workGroupId = originalTeachingAssignment.getSchedule().getWorkgroup().getId();
+    authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+    return teachingAssignmentService.update(newTeachingAssignment);
   }
 }

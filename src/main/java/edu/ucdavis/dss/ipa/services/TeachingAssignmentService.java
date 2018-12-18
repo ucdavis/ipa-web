@@ -43,4 +43,6 @@ public interface TeachingAssignmentService {
 	List<TeachingAssignment> findApprovedByWorkgroupIdAndYear(long workgroupId, long year);
 
 	List<TeachingAssignment> findByInstructorIdAndScheduleIdAndTermCode(long instructorId, long id, String termCode);
+
+	TeachingAssignment update(TeachingAssignment newTeachingAssignment);
 }
