@@ -213,11 +213,8 @@ public class AssignmentViewTeachingAssignmentController {
                 sectionGroup = sectionGroupService.save(sectionGroup);
             }
 
-            // Associate teachingAssignment to the newly created sectionGroup and remove the suggested course metadata
+            // Associate teachingAssignment to the newly created sectionGroup
             originalTeachingAssignment.setSectionGroup(sectionGroup);
-            originalTeachingAssignment.setSuggestedEffectiveTermCode(null);
-            originalTeachingAssignment.setSuggestedSubjectCode(null);
-            originalTeachingAssignment.setSuggestedCourseNumber(null);
             originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
 
             teachingAssignmentService.saveAndAddInstructorType(originalTeachingAssignment);
