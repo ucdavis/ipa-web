@@ -285,10 +285,6 @@ public class AssignmentViewTeachingAssignmentController {
                         // Looking for teachingAssignments from the relevant instructor
                         if (slotTeachingAssignmentInstructor.getId() == instructorDto.getId()
                         && slotTeachingAssignment.getTermCode().equals(teachingAssignmentDto.getTermCode())) {
-                            if (slotTeachingAssignment.isApproved()) {
-                                continue;
-                            }
-
                             teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
                             teachingAssignmentsToDelete.add(slotTeachingAssignment);
                         }
@@ -296,14 +292,27 @@ public class AssignmentViewTeachingAssignmentController {
                 }
             }
 
-            for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
-                teachingAssignmentService.delete(slotTeachingAssignmentId);
+            if (teachingAssignmentDto.isFromInstructor() && teachingAssignmentDto.isApproved()) {
+                for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
+                    TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(slotTeachingAssignmentId);
+                    teachingAssignment.setFromInstructor(false);
+                    teachingAssignmentService.update(teachingAssignment);
+                }
+            } else {
+                for (Long slotTeachingAssignmentId : teachingAssignmentIdsToDelete) {
+                    teachingAssignmentService.delete(slotTeachingAssignmentId);
+                }
             }
         }
         // Delete a course release / sabbatical / buyout
         else {
-            teachingAssignmentsToDelete.add(teachingAssignmentDto);
-            teachingAssignmentService.delete(teachingAssignmentId);
+            if (teachingAssignmentDto.isFromInstructor() && teachingAssignmentDto.isApproved()) {
+                teachingAssignmentDto.setFromInstructor(false);
+                teachingAssignmentService.update(teachingAssignmentDto);
+            } else {
+                teachingAssignmentsToDelete.add(teachingAssignmentDto);
+                teachingAssignmentService.delete(teachingAssignmentId);
+            }
         }
 
         return teachingAssignmentsToDelete;

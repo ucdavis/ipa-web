@@ -125,6 +125,14 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
+	public TeachingAssignment update(TeachingAssignment newTeachingAssignment) {
+		TeachingAssignment originalTeachingAssignment = this.findOneById(newTeachingAssignment.getId());
+		originalTeachingAssignment.setFromInstructor(newTeachingAssignment.isFromInstructor());
+
+		return this.save(originalTeachingAssignment);
+	}
+
+	@Override
 	public List<TeachingAssignment> findByScheduleId(long scheduleId) {
 		return teachingAssignmentRepository.findByScheduleId(scheduleId);
 	}
