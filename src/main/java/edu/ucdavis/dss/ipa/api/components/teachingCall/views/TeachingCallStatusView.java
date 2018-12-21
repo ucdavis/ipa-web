@@ -7,6 +7,9 @@ import java.util.List;
 public class TeachingCallStatusView {
     List<Instructor> instructors = new ArrayList<Instructor>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
+    List<TeachingCallResponse> teachingCallResponses = new ArrayList<>();
+    List<TeachingAssignment> teachingAssignments = new ArrayList<>();
+
     List<UserRole> userRoles = new ArrayList<>();
     List<InstructorType> instructorTypes = new ArrayList<>();
     List<User> users = new ArrayList<>();
@@ -17,7 +20,9 @@ public class TeachingCallStatusView {
                                   long scheduleId,
                                   List<UserRole> userRoles,
                                   List<InstructorType> instructorTypes,
-                                  List<User> users) {
+                                  List<User> users,
+                                  List<TeachingCallResponse> teachingCallResponses,
+                                  List<TeachingAssignment> teachingAssignments) {
 
         setInstructors(instructors);
         setTeachingCallReceipts(teachingCallReceipts);
@@ -25,6 +30,8 @@ public class TeachingCallStatusView {
         setUserRoles(userRoles);
         setInstructorTypes(instructorTypes);
         setUsers(users);
+        setTeachingCallResponses(teachingCallResponses);
+        setTeachingAssignments(teachingAssignments);
     }
 
     public List<Instructor> getInstructors() {
@@ -73,5 +80,21 @@ public class TeachingCallStatusView {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public List<TeachingCallResponse> getTeachingCallResponses() {
+        return teachingCallResponses;
+    }
+
+    public void setTeachingCallResponses(List<TeachingCallResponse> teachingCallResponses) {
+        this.teachingCallResponses = teachingCallResponses;
+    }
+
+    public List<TeachingAssignment> getTeachingAssignments() {
+        return teachingAssignments;
+    }
+
+    public void setTeachingAssignments(List<TeachingAssignment> teachingAssignments) {
+        this.teachingAssignments = teachingAssignments;
     }
 }
