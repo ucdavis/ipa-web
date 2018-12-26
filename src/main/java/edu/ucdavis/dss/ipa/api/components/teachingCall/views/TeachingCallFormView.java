@@ -11,6 +11,10 @@ public class TeachingCallFormView {
     Instructor instructor;
     TeachingCallReceipt teachingCallReceipt;
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
+    List<TeachingAssignment> pastTeachingAssignments = new ArrayList<>();
+    List<SectionGroup> pastSectionGroups = new ArrayList<>();
+    List<Course> pastCourses = new ArrayList<>();
+
     long instructorId;
     long userId;
     long scheduleId;
@@ -23,7 +27,10 @@ public class TeachingCallFormView {
                                 List<TeachingCallResponse> teachingCallResponses,
                                 long userId,
                                 long instructorId,
-                                long scheduleId) {
+                                long scheduleId,
+                                List<TeachingAssignment> pastTeachingAssignments,
+                                List<SectionGroup> pastSectionGroups,
+                                List<Course> pastCourses) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -34,6 +41,9 @@ public class TeachingCallFormView {
         setInstructorId(instructorId);
         setUserId(userId);
         setScheduleId(scheduleId);
+        setPastTeachingAssignments(pastTeachingAssignments);
+        setPastSectionGroups(pastSectionGroups);
+        setPastCourses(pastCourses);
     }
 
     public List<Course> getCourses() {
@@ -106,5 +116,29 @@ public class TeachingCallFormView {
 
     public void setTeachingCallReceipt(TeachingCallReceipt teachingCallReceipt) {
         this.teachingCallReceipt = teachingCallReceipt;
+    }
+
+    public List<TeachingAssignment> getPastTeachingAssignments() {
+        return pastTeachingAssignments;
+    }
+
+    public void setPastTeachingAssignments(List<TeachingAssignment> pastTeachingAssignments) {
+        this.pastTeachingAssignments = pastTeachingAssignments;
+    }
+
+    public List<SectionGroup> getPastSectionGroups() {
+        return pastSectionGroups;
+    }
+
+    public void setPastSectionGroups(List<SectionGroup> pastSectionGroups) {
+        this.pastSectionGroups = pastSectionGroups;
+    }
+
+    public List<Course> getPastCourses() {
+        return pastCourses;
+    }
+
+    public void setPastCourses(List<Course> pastCourses) {
+        this.pastCourses = pastCourses;
     }
 }

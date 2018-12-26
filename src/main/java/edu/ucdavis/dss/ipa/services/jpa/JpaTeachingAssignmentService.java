@@ -16,6 +16,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -130,6 +131,12 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		originalTeachingAssignment.setFromInstructor(newTeachingAssignment.isFromInstructor());
 
 		return this.save(originalTeachingAssignment);
+	}
+
+	@Override
+	public List<TeachingAssignment> findAssignedByInstructorIdAndYearAndWorkgroupId(Long instructorId, long year, long workgroupId) {
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+		return teachingAssignmentRepository.findByInstructorIdAndScheduleIdAndApproved(instructorId, schedule.getId(), true);
 	}
 
 	@Override
