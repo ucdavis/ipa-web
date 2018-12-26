@@ -37,7 +37,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
 		List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(scheduleId, workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByScheduleIdAndWorkgroupId(scheduleId, workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
@@ -63,7 +63,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Override
 	public View createAssignmentExcelView(long workgroupId, long year) {
 		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(schedule.getId(), workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId);
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 
 		return new AssignmentExcelView(schedule, instructors, scheduleTermStates);

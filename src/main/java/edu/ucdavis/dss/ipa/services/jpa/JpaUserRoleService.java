@@ -205,7 +205,7 @@ public class JpaUserRoleService implements UserRoleService {
 	}
 
 	@Override
-	public List<Instructor> getInstructorsByWorkgroupId(long scheduleId, long workgroupId) {
+	public List<Instructor> getInstructorsByScheduleIdAndWorkgroupId(long scheduleId, long workgroupId) {
 		List<Long> workgroupInstructorIds = new ArrayList<Long>();
 		List<Instructor> workgroupInstructors = new ArrayList<Instructor>();
 
