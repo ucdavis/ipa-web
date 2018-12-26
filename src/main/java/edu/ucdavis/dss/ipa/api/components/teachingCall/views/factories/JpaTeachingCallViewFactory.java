@@ -29,8 +29,10 @@ public class JpaTeachingCallViewFactory implements TeachingCallViewFactory {
         List<UserRole> userRoles = userRoleService.findByWorkgroupIdAndRoleToken(workgroupId, "instructor");
         List<User> users = userService.findAllByWorkgroupAndRoleToken(schedule.getWorkgroup(), "instructor");
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+        List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
+        List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 
-        return new TeachingCallStatusView(instructors, teachingCallReceipts, scheduleId, userRoles, instructorTypes, users);
+        return new TeachingCallStatusView(instructors, teachingCallReceipts, scheduleId, userRoles, instructorTypes, users, teachingCallResponses, teachingAssignments);
     }
 
     @Override
