@@ -34,7 +34,7 @@ public interface UserRoleService {
 
 	boolean deleteByLoginIdAndWorkgroupId(String loginId, long workgroupId);
 
-	List<Instructor> getInstructorsByWorkgroupId(long scheduleId, long workgroupId);
+	List<Instructor> getInstructorsByScheduleIdAndWorkgroupId(long scheduleId, long workgroupId);
 
 	List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgropuId, String roleToken);
 
