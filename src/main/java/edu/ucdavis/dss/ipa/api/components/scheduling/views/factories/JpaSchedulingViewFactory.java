@@ -1,19 +1,18 @@
 package edu.ucdavis.dss.ipa.api.components.scheduling.views.factories;
 
 import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingView;
-import edu.ucdavis.dss.ipa.api.components.scheduling.views.SchedulingViewSectionGroup;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject SectionService sectionService;
+	@Inject ScheduleService scheduleService;
 	@Inject ActivityService activityService;
 	@Inject CourseService courseService;
 	@Inject TeachingCallResponseService teachingCallResponseService;
@@ -26,10 +25,12 @@ public class JpaSchedulingViewFactory implements SchedulingViewFactory {
 
 	@Override
 	public SchedulingView createSchedulingView(long workgroupId, long year, String termCode) {
+		Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
 		List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 		List<Location> locations = locationService.findByWorkgroupId(workgroupId);
 		Term term = termService.getOneByTermCode(termCode);
-		List<Instructor> instructors = userRoleService.getInstructorsByWorkgroupId(workgroupId);
+		List<Instructor> instructors = userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId);
 		List<SectionGroup> sectionGroups = sectionGroupService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 		List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);

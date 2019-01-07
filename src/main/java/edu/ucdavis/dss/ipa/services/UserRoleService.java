@@ -21,7 +21,7 @@ public interface UserRoleService {
 	UserRole save(@NotNull @Valid UserRole userRole);
 
 	UserRole getOneById(Long id);
-	
+
 	List<UserRole> findByLoginIdAndWorkgroup(String loginId, Workgroup workgroup);
 
 	List<UserRole> findByWorkgroup(Workgroup workgroup);
@@ -34,7 +34,7 @@ public interface UserRoleService {
 
 	boolean deleteByLoginIdAndWorkgroupId(String loginId, long workgroupId);
 
-	List<Instructor> getInstructorsByWorkgroupId(long workgroupId);
+	List<Instructor> getInstructorsByScheduleIdAndWorkgroupId(long scheduleId, long workgroupId);
 
 	List<Long> getInstructorsByWorkgroupIdAndRoleToken(long workgropuId, String roleToken);
 
@@ -48,8 +48,6 @@ public interface UserRoleService {
 	UserRole findOrAddInstructorRoleToWorkgroup(Workgroup workgroup, User user);
 
 	Instructor findOrAddActiveInstructor(Workgroup workgroup, User user);
-
-	List<Instructor> findActiveInstructorsByScheduleId(long scheduleId);
 
 	List<SupportStaff> findActiveSupportStaffByWorkgroupId(long workgroupId);
 

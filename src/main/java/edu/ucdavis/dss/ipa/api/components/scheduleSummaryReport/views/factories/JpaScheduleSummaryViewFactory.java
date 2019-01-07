@@ -35,7 +35,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 
         Set<Instructor> instructors = new HashSet<Instructor>();
-        Set<Instructor> activeInstructors = new HashSet<>(userRoleService.getInstructorsByWorkgroupId(workgroupId));
+        Set<Instructor> activeInstructors = new HashSet<>(userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId));
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
         instructors.addAll(activeInstructors);
         instructors.addAll(assignedInstructors);
