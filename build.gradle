@@ -7,10 +7,16 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '1.5.18.RELEASE'
+    id 'checkstyle'
+    id 'idea'
+}
+
+checkstyle {
+    configFile file("checkstyle.xml")
+}
 
 jar {
     baseName = 'ipa-api'
@@ -57,10 +63,6 @@ dependencies {
     testCompile("com.jayway.jsonpath:json-path:2.4.0")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
-}
-
 task resolveDependencies {
     doLast {
         project.rootProject.allprojects.each { subProject ->
@@ -74,20 +76,20 @@ task resolveDependencies {
     }
 }
 
-void resolveConfiguration(configuration) {
-    if (isResolveableConfiguration(configuration)) {
-        configuration.resolve()
-    }
-}
+// void resolveConfiguration(configuration) {
+//     if (isResolveableConfiguration(configuration)) {
+//         configuration.resolve()
+//     }
+// }
 
-boolean isResolveableConfiguration(configuration) {
-    def nonResolveableConfigurations = ['apiElements', 'implementation',
-                                        'runtimeElements', 'runtimeOnly',
-                                        'testImplementation', 'testRuntimeOnly',
-                                        'generatedImplementation', 'generatedRuntimeOnly']
+// boolean isResolveableConfiguration(configuration) {
+//     def nonResolveableConfigurations = ['apiElements', 'implementation',
+//                                         'runtimeElements', 'runtimeOnly',
+//                                         'testImplementation', 'testRuntimeOnly',
+//                                         'generatedImplementation', 'generatedRuntimeOnly']
 
-    if (nonResolveableConfigurations.contains(configuration.getName())) {
-        return false
-    }
-    return true
-}
+//     if (nonResolveableConfigurations.contains(configuration.getName())) {
+//         return false
+//     }
+//     return true
+// }
