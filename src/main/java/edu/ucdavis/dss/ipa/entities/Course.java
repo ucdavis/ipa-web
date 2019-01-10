@@ -69,7 +69,7 @@ public class Course extends BaseEntity {
 			@JoinColumn(name = "CourseId", nullable = false, updatable = false) },
 			inverseJoinColumns = { @JoinColumn(name = "TagId",
 			nullable = false, updatable = false) })
-	@JsonIgnore
+  @JsonIgnore
 	@JsonDeserialize
 	public List<Tag> getTags() {
 		return tags;
