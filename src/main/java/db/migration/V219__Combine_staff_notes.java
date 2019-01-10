@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class V218__Combine_staff_notes implements JdbcMigration {
+public class V219__Combine_staff_notes implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
         PreparedStatement psInstructorNotes = connection.prepareStatement("SELECT * FROM InstructorNotes;");
