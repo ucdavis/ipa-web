@@ -33,7 +33,7 @@ public class Application {
     String casUrl;
 
     /**
-     * Configure JWT
+     * Configure JWT.
      */
     @Bean
     public FilterRegistrationBean jwtFilter() {
@@ -49,7 +49,7 @@ public class Application {
     }
 
     /**
-     * Configure basic security headers
+     * Configure basic security headers.
      */
     @Bean
     public FilterRegistrationBean securityHeaders() {
@@ -61,7 +61,9 @@ public class Application {
         return registrationBean;
     }
 
-    // Configure CAS
+    /**
+     * Configure CAS.
+     */
     @Bean
     @Profile({"production", "staging", "development"})
     public FilterRegistrationBean cas20Registration() {
@@ -76,11 +78,17 @@ public class Application {
         return cas20;
     }
 
+    /**
+     * Expose AutowireHelper for BaseEntity class.
+     */
     @Bean
-    public AutowireHelper autowireHelper(){
+    public AutowireHelper autowireHelper() {
         return AutowireHelper.getInstance();
     }
 
+    /**
+     * Set up CAS wrapper.
+     */
     @Bean
     public FilterRegistrationBean casRequestWrapper() {
         FilterRegistrationBean requestWrapper = new FilterRegistrationBean();
@@ -91,7 +99,9 @@ public class Application {
         return requestWrapper;
     }
 
-    // Configure exception handlers
+    /**
+     * Configure exception handlers.
+     */
     @Bean
     public SimpleMappingExceptionResolver webExceptionResolver() {
         MvcExceptionHandler resolver = new MvcExceptionHandler();
