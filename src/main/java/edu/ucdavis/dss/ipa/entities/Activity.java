@@ -22,39 +22,40 @@ import java.util.Date;
 @JsonDeserialize(using = ActivityDeserializer.class)
 @ValidActivity
 public class Activity extends BaseEntity {
-	private long id;
+    private long id;
 
-	private Section section;
-	private SectionGroup sectionGroup;
+    private Section section;
+    private SectionGroup sectionGroup;
 
-	private Date beginDate, endDate;
-	private Time startTime, endTime;
-	private String dayIndicator, bannerLocation;
-	private ActivityState activityState;
-	private int frequency;
-	private Long category;
-	private boolean virtual;
-	private boolean syncLocation;
-	private Location location;
-	private ActivityType activityTypeCode;
+    private Date beginDate;
+    private Date endDate;
+    private Time startTime, endTime;
+    private String dayIndicator, bannerLocation;
+    private ActivityState activityState;
+    private int frequency;
+    private Long category;
+    private boolean virtual;
+    private boolean syncLocation;
+    private Location location;
+    private ActivityType activityTypeCode;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id", unique = true, nullable = false)
+    @JsonProperty
+    public long getId() {
+    	return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "Id", unique = true, nullable = false)
-	@JsonProperty
-	public long getId() {
-		return this.id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-	
-	@Basic
-	@Column(name = "BeginDate", nullable = true, length = 45)
-	@JsonProperty
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="YYYY-MM-DD", timezone="PST")
-	public Date getBeginDate() {
+    @Basic
+    @Column(name = "BeginDate", nullable = true, length = 45)
+    @JsonProperty
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-DD", timezone = "PST")
+    public Date getBeginDate() {
 		return beginDate;
 	}
 
@@ -65,7 +66,7 @@ public class Activity extends BaseEntity {
 	@Basic
 	@Column(name = "EndDate", nullable = true, length = 45)
 	@JsonProperty
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="YYYY-MM-DD", timezone="PST")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "YYYY-MM-DD", timezone = "PST")
 	public Date getEndDate() {
 		return endDate;
 	}
