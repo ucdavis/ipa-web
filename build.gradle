@@ -30,15 +30,12 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-<<<<<<< HEAD
 // Ensure environment variables are passed along
 test {
     dependsOn cleanTest
     testLogging.showStandardStreams = true
 }
 
-=======
->>>>>>> Remove commented out code
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
