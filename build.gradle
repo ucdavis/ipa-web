@@ -30,12 +30,15 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+<<<<<<< HEAD
 // Ensure environment variables are passed along
 test {
     dependsOn cleanTest
     testLogging.showStandardStreams = true
 }
 
+=======
+>>>>>>> Remove commented out code
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -75,21 +78,3 @@ task resolveDependencies {
         }
     }
 }
-
-// void resolveConfiguration(configuration) {
-//     if (isResolveableConfiguration(configuration)) {
-//         configuration.resolve()
-//     }
-// }
-
-// boolean isResolveableConfiguration(configuration) {
-//     def nonResolveableConfigurations = ['apiElements', 'implementation',
-//                                         'runtimeElements', 'runtimeOnly',
-//                                         'testImplementation', 'testRuntimeOnly',
-//                                         'generatedImplementation', 'generatedRuntimeOnly']
-
-//     if (nonResolveableConfigurations.contains(configuration.getName())) {
-//         return false
-//     }
-//     return true
-// }
