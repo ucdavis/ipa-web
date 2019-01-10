@@ -32,7 +32,9 @@ public class Application {
     @Value("${CAS_URL}")
     String casUrl;
 
-    // Configure JWT
+    /**
+     * Configure JWT
+     */
     @Bean
     public FilterRegistrationBean jwtFilter() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -46,7 +48,9 @@ public class Application {
         return registrationBean;
     }
 
-    // Configure basic security headers
+    /**
+     * Configure basic security headers
+     */
     @Bean
     public FilterRegistrationBean securityHeaders() {
         final FilterRegistrationBean registrationBean = new FilterRegistrationBean();

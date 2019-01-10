@@ -12,11 +12,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
 public class ActivityLog {
     private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
 
-//    private User user;
     private List<ActivityLogTag> activityLogTags = new ArrayList<>();
 
     private long id;
@@ -31,13 +29,6 @@ public class ActivityLog {
     public long getId() { return this.id; }
 
     public void setId(long id) { this.id = id; }
-
-//    @ManyToOne
-//    @JoinColumn(name= "UserId", nullable=false)
-//    @JsonIgnore
-//    public User getUser() { return this.user; }
-//
-//    public void setUser(User user) { this.user = user; }
 
     @Basic
     @Column(name = "Timestamp", unique = false, nullable = false)
@@ -55,15 +46,11 @@ public class ActivityLog {
 
     @OneToMany (fetch = FetchType.EAGER, mappedBy = "activityLog")
     @JsonIgnore
-    public List<ActivityLogTag> getActivityLogTags() { return this.activityLogTags; }
+    public List<ActivityLogTag> getActivityLogTags() {
+        return this.activityLogTags;
+    }
 
     public void setActivityLogTags(List<ActivityLogTag> activityLogTags) { this.activityLogTags = activityLogTags; }
-
-//    @Transient
-//    @JsonProperty
-//    public String getDisplayName() {
-//        return user.getFirstName() + " " + user.getLastName();
-//    }
 
     /**
      * Adds a new tag to the activity log
