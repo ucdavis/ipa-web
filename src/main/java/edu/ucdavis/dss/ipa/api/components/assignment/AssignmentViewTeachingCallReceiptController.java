@@ -11,7 +11,6 @@ import javax.inject.Inject;
  * Created by Lloyd on 8/10/16.
  */
 @RestController
-@CrossOrigin
 public class AssignmentViewTeachingCallReceiptController {
     @Inject TeachingCallReceiptService teachingCallReceiptService;
     @Inject Authorizer authorizer;

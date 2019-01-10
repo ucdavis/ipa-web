@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Comparator;
 
 @RestController
-@CrossOrigin
 public class AssignmentViewTeachingAssignmentController {
     @Inject ScheduleService scheduleService;
     @Inject CourseService courseService;

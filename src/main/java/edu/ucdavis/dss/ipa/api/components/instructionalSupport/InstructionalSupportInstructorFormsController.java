@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class InstructionalSupportInstructorFormsController {
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
     @Inject UserService userService;

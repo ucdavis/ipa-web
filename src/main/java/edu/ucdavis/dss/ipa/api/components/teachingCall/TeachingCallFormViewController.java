@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 
 @RestController
-@CrossOrigin
 public class TeachingCallFormViewController {
     @Inject TeachingCallViewFactory teachingCallViewFactory;
     @Inject UserService userService;

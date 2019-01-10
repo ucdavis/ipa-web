@@ -14,11 +14,9 @@ import edu.ucdavis.dss.ipa.api.components.course.views.CourseView;
 import edu.ucdavis.dss.ipa.api.components.course.views.SectionGroupImport;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFactory;
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
-import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -40,7 +38,6 @@ import java.text.ParseException;
 import java.util.*;
 
 @RestController
-@CrossOrigin
 public class CourseViewController {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.ipa.api.components.course.CourseViewController");
 

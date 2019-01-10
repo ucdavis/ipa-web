@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class TeachingCallStatusViewController {
     @Inject TeachingCallViewFactory teachingCallViewFactory;
     @Inject TeachingCallReceiptService teachingCallReceiptService;

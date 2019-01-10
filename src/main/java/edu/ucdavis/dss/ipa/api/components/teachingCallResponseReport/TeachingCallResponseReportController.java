@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin
 public class TeachingCallResponseReportController {
     @Inject TeachingCallResponseReportViewFactory teachingCallResponseReportViewFactory;
     @Inject Authorizer authorizer;

@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin
 public class AssignmentViewController {
     @Inject AssignmentViewFactory assignmentViewFactory;
     @Inject UserService userService;
