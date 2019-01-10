@@ -48,7 +48,6 @@ public class AuthController {
      * @param request HTTP request which may contain CAS principal (username)
      * @return JSON body with either 'token' or 'redirect' field set.
      */
-    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
         List<UserRole> userRoles = null;
@@ -171,7 +170,6 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin
     @RequestMapping(value = "/impersonate/{loginIdToImpersonate}", method = RequestMethod.POST)
     public SecurityDTO impersonate(@PathVariable String loginIdToImpersonate, @RequestBody SecurityDTO securityDTO,
                                                 HttpServletRequest request,
@@ -258,7 +256,6 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.POST)
     public SecurityDTO unimpersonate(@RequestBody SecurityDTO securityDTO,
                                    HttpServletRequest request,

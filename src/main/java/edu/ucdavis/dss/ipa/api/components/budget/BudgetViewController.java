@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class BudgetViewController {
     @Inject BudgetViewFactory budgetViewFactory;
     @Inject BudgetService budgetService;

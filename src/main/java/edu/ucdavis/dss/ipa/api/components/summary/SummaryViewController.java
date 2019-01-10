@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 
 @RestController
-@CrossOrigin
 public class SummaryViewController {
     @Inject SummaryViewFactory summaryViewFactory;
     @Inject UserService userService;

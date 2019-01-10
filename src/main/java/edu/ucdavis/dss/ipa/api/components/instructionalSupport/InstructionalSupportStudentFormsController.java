@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class InstructionalSupportStudentFormsController {
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
     @Inject UserService userService;

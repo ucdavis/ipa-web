@@ -10,7 +10,6 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
 public class AssignmentViewCourseController {
     @Inject CourseService courseService;
     @Inject Authorizer authorizer;

@@ -11,7 +11,6 @@ import javax.inject.Inject;
  * Created by Lloyd on 8/10/16.
  */
 @RestController
-@CrossOrigin
 public class AssignmentViewScheduleInstructorNoteController {
     @Inject ScheduleService scheduleService;
     @Inject InstructorService instructorService;

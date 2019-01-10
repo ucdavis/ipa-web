@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //@RestController
-//@CrossOrigin
 public class ActivityLogViewController {
     @Inject ActivityLogService activityLogService;
     @Inject ActivityLogTagService activityLogTagService;

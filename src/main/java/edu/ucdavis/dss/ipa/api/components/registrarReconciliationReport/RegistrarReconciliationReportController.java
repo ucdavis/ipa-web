@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class RegistrarReconciliationReportController {
 	@Inject ReportViewFactory reportViewFactory;
 	@Inject TermService termService;
