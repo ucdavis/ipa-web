@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 @EnableScheduling
@@ -93,6 +96,21 @@ public class Application {
         resolver.setDefaultStatusCode(500);
 
         return resolver;
+    }
+
+    /**
+     * Enable CORS requests for all controllers.
+     * Note CORS will only be allowed by the domains specified in
+     * .allowedOrigins().
+     */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:9000", "https://ipa.ucdavis.edu").allowCredentials(true);
+            }
+        };
     }
 
     public static void main(final String[] args) throws Exception {
