@@ -4,11 +4,19 @@
 3. Run the jar file: build/libs/ipa-api-0.1.0.jar
 
 # Building with Docker
-You can build and run ipa-web with Docker. This requires a MySQL installation somewhere (up to you)
-and Docker.
+You can build ipa-web with Docker.
 
-Run the following command:
+Run the following commands:
 
+0. cd into your ipa-web folder
+1. (include the final period) docker build -t build-ipa-web -f Dockerfile-build .
+2. Make a directory in your ipa-web called 'build'
+3. docker run -v $(pwd)/build:/app/build build-ipa-web
+
+The container will run and exit and your build/ directory will contain the ipa-web .jar file
+in build/libs.
+
+# Misc Notes
 docker build -t ipa-web -f Dockerfile-build --build-arg IPA_DATASOURCE_URL="jdbc:mysql://host:3306/schema_name?autoReconnect=true&useSSL=false" --build-arg IPA_DATASOURCE_USERNAME="username" --build-arg IPA_DATASOURCE_PASSWORD="password" .
 
 Note that you'll need to correct the three variables being passed in to be correct. If you wish

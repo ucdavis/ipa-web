@@ -42,4 +42,4 @@ RUN keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.e
 
 ADD ./build/libs/ipa-api-0.1.0.jar app.jar
 
-CMD java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+CMD java -Djava.security.egd=file:/dev/./urandom -jar app.jar
