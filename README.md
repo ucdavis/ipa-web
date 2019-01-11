@@ -12,9 +12,7 @@ Run the following commands:
 1. (include the final period) docker build -t build-ipa-web -f Dockerfile-build .
 2. Make a directory in your ipa-web called 'build'
 3. docker run -v $(pwd)/build:/app/build build-ipa-web
-
-The container will run and exit and your build/ directory will contain the ipa-web .jar file
-in build/libs.
+4. Your build/ directory will contain the ipa-web .jar file in build/libs.
 
 # Misc Notes
 docker build -t ipa-web -f Dockerfile-build --build-arg IPA_DATASOURCE_URL="jdbc:mysql://host:3306/schema_name?autoReconnect=true&useSSL=false" --build-arg IPA_DATASOURCE_USERNAME="username" --build-arg IPA_DATASOURCE_PASSWORD="password" .
