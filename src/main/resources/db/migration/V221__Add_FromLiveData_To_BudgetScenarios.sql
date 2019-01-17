@@ -1,0 +1,1 @@
+ALTER TABLE `BudgetScenarios` ADD COLUMN `FromLiveData` TINYINT(1) NOT NULL DEFAULT 0;
