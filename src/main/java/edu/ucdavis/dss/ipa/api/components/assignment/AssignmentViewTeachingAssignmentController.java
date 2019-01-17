@@ -398,8 +398,12 @@ public class AssignmentViewTeachingAssignmentController {
                 teachingAssignment.setSchedule(schedule);
                 teachingAssignment.setInstructor(instructor);
                 teachingAssignment.setFromInstructor(true);
-                TeachingAssignment maxPriorityTeachingAssignment = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get();
-                Integer priority = maxPriorityTeachingAssignment.getPriority() + 1;
+
+                List<TeachingAssignment> currentAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId());
+
+                Integer currentMaxPriority = currentAssignments.size() > 0 ? currentAssignments.stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get().getPriority() : 0;
+                Integer priority = currentMaxPriority + 1;
+
                 teachingAssignment.setPriority(priority);
                 teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(teachingAssignment));
                 return teachingAssignments;
@@ -440,8 +444,10 @@ public class AssignmentViewTeachingAssignmentController {
                         slotTeachingAssignment.setInstructor(instructor);
                         slotTeachingAssignment.setFromInstructor(true);
 
-                        TeachingAssignment maxPriorityTeachingAssignment = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId()).stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get();
-                        Integer priority = maxPriorityTeachingAssignment.getPriority() + 1;
+                        List<TeachingAssignment> currentAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(schedule.getId(), instructor.getId());
+
+                        Integer currentMaxPriority = currentAssignments.size() > 0 ? currentAssignments.stream().max(Comparator.comparing(TeachingAssignment::getPriority)).get().getPriority() : 0;
+                        Integer priority = currentMaxPriority + 1;
                         slotTeachingAssignment.setPriority(priority);
                         teachingAssignments.add(teachingAssignmentService.saveAndAddInstructorType(slotTeachingAssignment));
                     }
