@@ -11,5 +11,5 @@ out/
 *.log
 bin/
 .vscode
-.envrc
+.envrc*
 
