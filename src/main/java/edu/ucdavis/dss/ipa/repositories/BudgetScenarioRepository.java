@@ -29,5 +29,5 @@ public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario,
         " AND s.workgroup = w" +
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
-    BudgetScenario findbyWorkgroupIdAndYearAndFromLiveData(long workgroupId, long year, boolean fromLiveData);
+    BudgetScenario findbyWorkgroupIdAndYearAndFromLiveData(@Param("workgroupId") long workgroupId, @Param("year") long year, @Param("fromLiveData") boolean fromLiveData);
 }

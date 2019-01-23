@@ -193,13 +193,15 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         BudgetScenario liveDataScenario = new BudgetScenario();
         liveDataScenario.setName("Live Data");
         liveDataScenario.setBudget(budget);
-
+        liveDataScenario.setActiveTermsBlob("0000000000");
+        liveDataScenario.setFromLiveData(true);
         liveDataScenario = this.budgetScenarioRepository.save(liveDataScenario);
 
         return this.updateFromLiveData(liveDataScenario);
     }
 
     private BudgetScenario updateFromLiveData(BudgetScenario liveDataScenario) {
+        System.out.println("taco");
         // TODO: Scan all relevant scheduleData, and update sectionGroupCosts where necessary
         // TODO: Also update the activeTermsBlob as necessary
         return liveDataScenario;
