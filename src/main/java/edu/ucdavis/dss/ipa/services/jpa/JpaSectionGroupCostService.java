@@ -148,4 +148,9 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     public List<SectionGroupCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return this.sectionGroupCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
     }
+
+    @Override
+    public void delete(Long sectionGroupCostId) {
+        this.sectionGroupCostRepository.delete(sectionGroupCostId);
+    }
 }

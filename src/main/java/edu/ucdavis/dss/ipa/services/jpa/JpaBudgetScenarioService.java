@@ -26,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JpaBudgetScenarioService implements BudgetScenarioService {
@@ -201,9 +203,58 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     private BudgetScenario updateFromLiveData(BudgetScenario liveDataScenario) {
-        System.out.println("taco");
-        // TODO: Scan all relevant scheduleData, and update sectionGroupCosts where necessary
-        // TODO: Also update the activeTermsBlob as necessary
+        Schedule schedule = liveDataScenario.getBudget().getSchedule();
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleId(schedule.getId());
+        List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
+
+        Map<String, SectionGroup> sectionGroupKeys = new HashMap<String, SectionGroup>();
+
+        for (SectionGroup sectionGroup : sectionGroups) {
+            String key = sectionGroup.getCourse().getSubjectCode() + sectionGroup.getCourse().getCourseNumber() + sectionGroup.getCourse().getSequencePattern() + sectionGroup.getTermCode() + sectionGroup.getCourse().getEffectiveTermCode();
+            sectionGroupKeys.put(key, sectionGroup);
+        }
+
+        List<SectionGroupCost> sectionGroupCostsToKeep = liveDataScenario.getSectionGroupCosts();
+        List<Long> sectionGroupCostIdsToDelete = new ArrayList<>();
+
+        // Do I need to remove any sectionGroupCosts?
+        for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+            if (sectionGroupKeys.get(key) != null) {
+                sectionGroupCostsToKeep.add(sectionGroupCost);
+            } else {
+                sectionGroupCostIdsToDelete.add(sectionGroupCost.getId());
+            }
+        }
+
+        for (Long sectionGroupCostId : sectionGroupCostIdsToDelete) {
+            sectionGroupCostService.delete(sectionGroupCostId);
+        }
+
+        liveDataScenario.setSectionGroupCosts(sectionGroupCostsToKeep);
+        liveDataScenario = this.update(liveDataScenario);
+
+        // Do I need to add any sectionGroupCosts?
+        Map<String, SectionGroupCost> sectionGroupCostKeys = new HashMap<String, SectionGroupCost>();
+
+        for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+            sectionGroupCostKeys.put(key, sectionGroupCost);
+        }
+
+        //TODO: loop over sectionGroups, and if an entry isn't found, create it and add it to the sectionGroupCosts list (and add it to the keys hash)
+        // save
+
+
+        // Do I need to update any sectionGroupCosts?
+        // TODO: loop through sectionGroups, and compare each data point one by one,
+        // find the sectionGroupCost via the hash
+        // save
+
+
+        // Recalculate activeTermsBlob
+        // TODO: Loop over sectionGroupCosts and update a termBlob each time a term is found
+        // save
         return liveDataScenario;
     }
 
