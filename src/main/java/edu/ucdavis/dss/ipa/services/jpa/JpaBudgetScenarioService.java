@@ -226,7 +226,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             sectionGroupKeys.put(key, sectionGroup);
         }
 
-        List<SectionGroupCost> sectionGroupCostsToKeep = liveDataScenario.getSectionGroupCosts();
+        List<SectionGroupCost> sectionGroupCostsToKeep = new ArrayList<>();
         List<Long> sectionGroupCostIdsToDelete = new ArrayList<>();
 
         // Do I need to remove any sectionGroupCosts?
@@ -245,7 +245,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         }
 
         liveDataScenario.setSectionGroupCosts(sectionGroupCostsToKeep);
-        liveDataScenario = this.update(liveDataScenario);
 
         // Do I need to add any sectionGroupCosts?
         Map<String, SectionGroupCost> sectionGroupCostKeys = new HashMap<String, SectionGroupCost>();
@@ -268,7 +267,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         }
 
         liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
-        liveDataScenario = this.update(liveDataScenario);
 
         // Do I need to update any sectionGroupCosts?
         for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
