@@ -153,4 +153,71 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     public void delete(Long sectionGroupCostId) {
         this.sectionGroupCostRepository.delete(sectionGroupCostId);
     }
+
+    @Override
+    public SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
+        boolean updateRequired = false;
+
+        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(sectionGroup.getCourse().getSubjectCode(), sectionGroup.getCourse().getCourseNumber(), sectionGroup.getCourse().getSequencePattern(), budgetScenario.getId(), sectionGroup.getTermCode());
+
+        if (sectionGroupCost.getTaCount() != sectionGroup.getTeachingAssistantAppointments()) {
+            updateRequired = true;
+            sectionGroupCost.setTaCount(sectionGroup.getTeachingAssistantAppointments());
+        }
+
+        if (sectionGroupCost.getReaderCount() != sectionGroup.getReaderAppointments()) {
+            updateRequired = true;
+            sectionGroupCost.setReaderCount(sectionGroup.getReaderAppointments());
+        }
+
+        Instructor instructor = null;
+        InstructorType instructorType = null;
+
+        for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+            Instructor instructorDTO = teachingAssignment.getInstructor();
+            InstructorType instructorTypeDTO = teachingAssignment.getInstructorType();
+
+            if (instructorDTO != null) {
+                instructor = instructorDTO;
+                instructorType = instructorTypeDTO;
+            }
+        }
+
+        Long sectionGroupCostInstructorId = sectionGroupCost.getInstructor() != null? sectionGroupCost.getInstructor().getId() : null;
+        Long sectionGroupCostInstructorTypeId = sectionGroupCost.getInstructorType() != null ? sectionGroupCost.getInstructorType().getId() : null;
+        Long sectionGroupInstructorId = instructor != null? instructor.getId() : null;
+        Long sectionGroupInstructorTypeId = instructorType != null ? instructorType.getId() : null;
+
+        if (sectionGroupCostInstructorId != sectionGroupInstructorId) {
+            sectionGroupCost.setInstructor(instructor);
+            updateRequired = true;
+        }
+
+        if (sectionGroupCostInstructorTypeId != sectionGroupInstructorTypeId) {
+            sectionGroupCost.setInstructorType(instructorType);
+            updateRequired = true;
+        }
+
+        Integer sectionCount = sectionGroup.getSections().size();
+        sectionGroupCost.setSectionCount(sectionCount);
+
+        Long enrollment = 0L;
+
+        for (Section section : sectionGroup.getSections()) {
+            if (section.getSeats() != null) {
+                enrollment += section.getSeats();
+            }
+        }
+
+        if (sectionGroupCost.getEnrollment() != enrollment) {
+            updateRequired = true;
+            sectionGroupCost.setEnrollment(enrollment);
+        }
+
+        if (updateRequired) {
+            sectionGroupCost = sectionGroupCostRepository.save(sectionGroupCost);
+        }
+
+        return sectionGroupCost;
+    }
 }

@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
@@ -173,7 +174,18 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId, year);
 
         BudgetScenario liveDataScenario = this.createOrUpdateFromLiveData(workgroupId, year);
-        budgetScenarios.add(liveDataScenario);
+        Boolean budgetAlreadyExisted = false;
+
+        for (BudgetScenario budgetScenario : budgetScenarios) {
+            if (liveDataScenario.getId() == budgetScenario.getId()) {
+                budgetScenario = liveDataScenario;
+                budgetAlreadyExisted = true;
+            }
+        }
+
+        if (budgetAlreadyExisted == false) {
+            budgetScenarios.add(liveDataScenario);
+        }
 
         return budgetScenarios;
     }
@@ -220,6 +232,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         // Do I need to remove any sectionGroupCosts?
         for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+
             if (sectionGroupKeys.get(key) != null) {
                 sectionGroupCostsToKeep.add(sectionGroupCost);
             } else {
@@ -242,19 +255,36 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             sectionGroupCostKeys.put(key, sectionGroupCost);
         }
 
-        //TODO: loop over sectionGroups, and if an entry isn't found, create it and add it to the sectionGroupCosts list (and add it to the keys hash)
-        // save
+        for (SectionGroup sectionGroup : sectionGroups) {
+            String key = sectionGroup.getCourse().getSubjectCode() + sectionGroup.getCourse().getCourseNumber() + sectionGroup.getCourse().getSequencePattern() + sectionGroup.getTermCode() + sectionGroup.getCourse().getEffectiveTermCode();
 
+            if (sectionGroupCostKeys.get(key) == null) {
+                SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, liveDataScenario);
+                String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+
+                sectionGroupCosts.add(sectionGroupCost);
+                sectionGroupCostKeys.put(sectionGroupCostKey, sectionGroupCost);
+            }
+        }
+
+        liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
+        liveDataScenario = this.update(liveDataScenario);
 
         // Do I need to update any sectionGroupCosts?
-        // TODO: loop through sectionGroups, and compare each data point one by one,
-        // find the sectionGroupCost via the hash
-        // save
+        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+            SectionGroup sectionGroup = sectionGroupKeys.get(key);
 
+            sectionGroupCost = sectionGroupCostService.updateFromSectionGroup(sectionGroup, liveDataScenario);
+        }
+
+        liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
+        liveDataScenario = this.update(liveDataScenario);
 
         // Recalculate activeTermsBlob
-        // TODO: Loop over sectionGroupCosts and update a termBlob each time a term is found
-        // save
+        liveDataScenario.setActiveTermsBlob(liveDataScenario.recalculateActiveTermsBlob());
+        liveDataScenario = this.update(liveDataScenario);
+
         return liveDataScenario;
     }
 

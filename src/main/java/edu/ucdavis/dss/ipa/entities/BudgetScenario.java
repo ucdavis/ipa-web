@@ -181,4 +181,15 @@ public class BudgetScenario extends BaseEntity {
     public void setFromLiveData(Boolean fromLiveData) {
         this.fromLiveData = fromLiveData;
     }
+
+    @Transient
+    @JsonIgnore
+    public String recalculateActiveTermsBlob() {
+        String activeTermsBlob = "0000000000";
+        for (SectionGroupCost sectionGroupCost : this.sectionGroupCosts) {
+            this.setTermInActiveTermsBlob(sectionGroupCost.getTermCode(), true);
+        }
+
+        return activeTermsBlob;
+    }
 }
