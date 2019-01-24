@@ -174,6 +174,7 @@ public class BudgetScenario extends BaseEntity {
         }
     }
 
+    @JsonProperty
     public Boolean getFromLiveData() {
         return fromLiveData;
     }
