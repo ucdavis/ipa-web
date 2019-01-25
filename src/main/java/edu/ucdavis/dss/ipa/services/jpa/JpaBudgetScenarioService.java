@@ -221,32 +221,29 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         Map<String, SectionGroup> sectionGroupKeys = new HashMap<String, SectionGroup>();
 
+        // Build sectionGroup hash
         for (SectionGroup sectionGroup : sectionGroups) {
             String key = sectionGroup.getCourse().getSubjectCode() + sectionGroup.getCourse().getCourseNumber() + sectionGroup.getCourse().getSequencePattern() + sectionGroup.getTermCode() + sectionGroup.getCourse().getEffectiveTermCode();
             sectionGroupKeys.put(key, sectionGroup);
         }
 
-        List<SectionGroupCost> sectionGroupCostsToKeep = new ArrayList<>();
-        List<Long> sectionGroupCostIdsToDelete = new ArrayList<>();
+        List<SectionGroupCost> sectionGroupCostToRemove = new ArrayList<>();
 
-        // Do I need to remove any sectionGroupCosts?
+        // Need to remove any sectionGroupCosts?
         for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
 
-            if (sectionGroupKeys.get(key) != null) {
-                sectionGroupCostsToKeep.add(sectionGroupCost);
-            } else {
-                sectionGroupCostIdsToDelete.add(sectionGroupCost.getId());
+            if (sectionGroupKeys.get(key) == null) {
+                sectionGroupCostToRemove.add(sectionGroupCost);
             }
         }
 
-        for (Long sectionGroupCostId : sectionGroupCostIdsToDelete) {
-            sectionGroupCostService.delete(sectionGroupCostId);
+        for (SectionGroupCost sectionGroupCost : sectionGroupCostToRemove) {
+            sectionGroupCosts.remove(sectionGroupCost);
+            sectionGroupCostService.delete(sectionGroupCost.getId());
         }
 
-        liveDataScenario.setSectionGroupCosts(sectionGroupCostsToKeep);
-
-        // Do I need to add any sectionGroupCosts?
+        // Need to add any sectionGroupCosts?
         Map<String, SectionGroupCost> sectionGroupCostKeys = new HashMap<String, SectionGroupCost>();
 
         for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
@@ -266,9 +263,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             }
         }
 
-        liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
-
-        // Do I need to update any sectionGroupCosts?
+        // Need to update any sectionGroupCosts?
         for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
             SectionGroup sectionGroup = sectionGroupKeys.get(key);
@@ -280,7 +275,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         liveDataScenario = this.update(liveDataScenario);
 
         // Recalculate activeTermsBlob
-        liveDataScenario.setActiveTermsBlob(liveDataScenario.recalculateActiveTermsBlob());
+        liveDataScenario.recalculateActiveTermsBlob();
         liveDataScenario = this.update(liveDataScenario);
 
         return liveDataScenario;

@@ -186,11 +186,10 @@ public class BudgetScenario extends BaseEntity {
     @Transient
     @JsonIgnore
     public String recalculateActiveTermsBlob() {
-        String activeTermsBlob = "0000000000";
         for (SectionGroupCost sectionGroupCost : this.sectionGroupCosts) {
             this.setTermInActiveTermsBlob(sectionGroupCost.getTermCode(), true);
         }
 
-        return activeTermsBlob;
+        return this.activeTermsBlob;
     }
 }
