@@ -108,7 +108,7 @@ public class Application {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:9000", "https://ipa.ucdavis.edu").allowCredentials(true);
+                registry.addMapping("/**").allowedOrigins("http://localhost:9000", "https://ipa.ucdavis.edu").allowCredentials(true).allowedMethods("*");
             }
         };
     }
