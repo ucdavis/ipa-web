@@ -63,7 +63,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         sectionGroupCost.setCost(originalSectionGroupCost.getCost());
         sectionGroupCost.setDisabled(originalSectionGroupCost.isDisabled());
 
-        return this.sectionGroupCostRepository.save(sectionGroupCost);
+        return this.save(sectionGroupCost);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         sectionGroupCost.setEnrollment(enrollment);
 
-        return sectionGroupCostRepository.save(sectionGroupCost);
+        return this.save(sectionGroupCost);
     }
 
     @Override
@@ -141,7 +141,15 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
         originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
         originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
-        return this.sectionGroupCostRepository.save(originalSectionGroupCost);
+        return this.save(originalSectionGroupCost);
+    }
+
+    private SectionGroupCost save(SectionGroupCost sectionGroupCost) {
+        if (sectionGroupCost.getInstructorType() == null && sectionGroupCost.getInstructor() != null) {
+            System.out.println();
+        }
+
+        return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
 
     @Override
