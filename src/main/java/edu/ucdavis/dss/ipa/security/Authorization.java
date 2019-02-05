@@ -12,9 +12,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import java.util.*;
 
-/**
- * Authorization properties are set by the JWT filter and used by the Authorizer.
- */
 @Component
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Authorization {
@@ -24,10 +21,6 @@ public class Authorization {
     private Long expirationDate;
 
     @Inject UserService userService;
-
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
-    }
 
     public void setLoginId(String loginId) {
         this.loginId = loginId;
