@@ -117,7 +117,6 @@ public class AuthController {
             userService.updateLastAccessed(user);
 
             securityDTO.token = Jwts.builder().setSubject(loginId)
-                    .claim("userRoles", userRoles)
                     .claim("loginId", loginId)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
