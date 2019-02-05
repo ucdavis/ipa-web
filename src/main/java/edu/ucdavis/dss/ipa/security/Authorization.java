@@ -52,19 +52,19 @@ public class Authorization {
         }
 
         User user = this.userService.getOneByLoginId(this.loginId);
-        return user.getUserRoles();
+        this.userRoles = user.getUserRoles();
+
+        return this.userRoles;
     }
 
     public boolean isAdmin() {
-        boolean isAdmin = false;
-
         for (UserRole userRole : this.getUserRoles()) {
             if (userRole.getRoleToken().equals("admin")) {
-                isAdmin = true;
+                return true;
             }
         }
 
-        return isAdmin;
+        return false;
     }
 
     /**
@@ -76,17 +76,15 @@ public class Authorization {
     public boolean hasRole(Long longWorkgroupId, String roleName) {
         if (longWorkgroupId == null || roleName == null) { return false; }
 
-        Boolean hasRole = false;
-
         for (UserRole userRole : this.getUserRoles()) {
             if (userRole.getWorkgroup() == null) { continue; }
 
             if (userRole.getWorkgroup().getId() == longWorkgroupId && userRole.getRoleToken().equals(roleName)) {
-                hasRole = true;
+                return true;
             }
         }
 
-        return hasRole;
+        return false;
     }
 
     /**
