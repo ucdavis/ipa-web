@@ -1,17 +1,17 @@
 package edu.ucdavis.dss.ipa.security;
 
+import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.services.UserService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.inject.Inject;
 import java.util.*;
 
-/**
- * Authorization properties are set by the JWT filter and used by the Authorizer.
- */
 @Component
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Authorization {
@@ -20,9 +20,7 @@ public class Authorization {
     private String realUserLoginId;
     private Long expirationDate;
 
-    public void setUserRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
-    }
+    @Inject UserService userService;
 
     public void setLoginId(String loginId) {
         this.loginId = loginId;
@@ -48,19 +46,21 @@ public class Authorization {
         return this.expirationDate;
     }
 
+    public List<UserRole> getUserRoles() {
+        if (userRoles != null) {
+            return this.userRoles;
+        }
+
+        User user = this.userService.getOneByLoginId(this.loginId);
+        this.userRoles = user.getUserRoles();
+
+        return this.userRoles;
+    }
+
     public boolean isAdmin() {
-        Iterator it = this.userRoles.iterator();
-
-        // Iterate over userRoles to find a match
-        while (it.hasNext()) {
-            LinkedHashMap<String,Map.Entry> pair = (LinkedHashMap<String,Map.Entry>) it.next();
-
-            for (Map.Entry<String, Map.Entry> entry : pair.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (key.equals("role") && value.equals("admin")) {
-                    return true;
-                }
+        for (UserRole userRole : this.getUserRoles()) {
+            if (userRole.getRoleToken().equals("admin")) {
+                return true;
             }
         }
 
@@ -75,29 +75,11 @@ public class Authorization {
      */
     public boolean hasRole(Long longWorkgroupId, String roleName) {
         if (longWorkgroupId == null || roleName == null) { return false; }
-        Integer workgroupId = longWorkgroupId.intValue();
 
-        Iterator it = this.userRoles.iterator();
+        for (UserRole userRole : this.getUserRoles()) {
+            if (userRole.getWorkgroup() == null) { continue; }
 
-        // Iterate over userRoles to find a match
-        while (it.hasNext()) {
-            LinkedHashMap<String,Map.Entry> pair = (LinkedHashMap<String,Map.Entry>) it.next();
-            Integer userRoleWorkgroupId = null;
-            String userRoleRoleName = null;
-
-            for (Map.Entry<String, Map.Entry> entry : pair.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (key.equals("workgroupId")) {
-                    userRoleWorkgroupId = (Integer) value;
-                }
-                if (key.equals("role")) {
-                    userRoleRoleName = (String) value;
-                }
-            }
-
-            // Return true iff both roleName and workgroupId match
-            if (roleName.equals(userRoleRoleName) && workgroupId.equals(userRoleWorkgroupId)) {
+            if (userRole.getWorkgroup().getId() == longWorkgroupId && userRole.getRoleToken().equals(roleName)) {
                 return true;
             }
         }
@@ -111,7 +93,7 @@ public class Authorization {
      */
     public List<Workgroup> getWorkgroups() {
         List<Workgroup> workgroups = new ArrayList<>();
-        for (UserRole userRole: this.userRoles) {
+        for (UserRole userRole: this.getUserRoles()) {
             if (!workgroups.contains(userRole.getWorkgroup())) {
                 workgroups.add(userRole.getWorkgroup());
             }
@@ -124,6 +106,6 @@ public class Authorization {
      * @return
      */
     public int roleCount() {
-        return this.userRoles.size();
+        return this.getUserRoles().size();
     }
 }
