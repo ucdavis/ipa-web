@@ -145,10 +145,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     }
 
     private SectionGroupCost save(SectionGroupCost sectionGroupCost) {
-        if (sectionGroupCost.getInstructorType() == null && sectionGroupCost.getInstructor() != null) {
-            System.out.println();
-        }
-
         return this.sectionGroupCostRepository.save(sectionGroupCost);
     }
 
