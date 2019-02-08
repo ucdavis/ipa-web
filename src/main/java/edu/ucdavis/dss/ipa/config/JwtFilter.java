@@ -48,7 +48,6 @@ public class JwtFilter extends GenericFilterBean {
 
                 authorization.setLoginId((String) claims.get("loginId"));
                 authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
-                authorization.setUserRoles((List<UserRole>) claims.get("userRoles"));
                 authorization.setExpirationDate((Long) claims.get("expirationDate"));
 
                 Date now = new Date();

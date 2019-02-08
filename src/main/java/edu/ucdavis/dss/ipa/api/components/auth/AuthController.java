@@ -101,14 +101,15 @@ public class AuthController {
                 loginId = request.getUserPrincipal().getName();
                 realUserLoginId = loginId;
 
-                userRoles = userRoleService.findByLoginId(loginId);
-                termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
                 user = userService.getOneByLoginId(loginId);
-                realUser = userService.getOneByLoginId(realUserLoginId);
 
                 if (user == null) {
                     throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
                 }
+
+                userRoles = userRoleService.findByLoginId(loginId);
+                termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
+                realUser = userService.getOneByLoginId(realUserLoginId);
             }
         }
 
@@ -117,7 +118,6 @@ public class AuthController {
             userService.updateLastAccessed(user);
 
             securityDTO.token = Jwts.builder().setSubject(loginId)
-                    .claim("userRoles", userRoles)
                     .claim("loginId", loginId)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
