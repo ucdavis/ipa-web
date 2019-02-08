@@ -17,7 +17,8 @@ public class ValidSectionGroupCostValidator implements ConstraintValidator<Valid
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("SectionGroupCost save failed: If Instructor is set, InstructorType must also be set.").addConstraintViolation();
 
-            return false; }
+            return false;
+        }
 
         return true;
     }
