@@ -194,7 +194,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroupId, year, true);
 
         if (liveDataScenario != null) {
-            return this.updateFromLiveData(liveDataScenario);
+            return this.updateFromLiveData(liveDataScenario, false);
         } else {
             return this.createFromLiveData(workgroupId, year);
         }
@@ -211,10 +211,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         liveDataScenario.setFromLiveData(true);
         liveDataScenario = this.budgetScenarioRepository.save(liveDataScenario);
 
-        return this.updateFromLiveData(liveDataScenario);
+        return this.updateFromLiveData(liveDataScenario, true);
     }
 
-    private BudgetScenario updateFromLiveData(BudgetScenario liveDataScenario) {
+    private BudgetScenario updateFromLiveData(BudgetScenario liveDataScenario, Boolean newLiveDataScenario) {
         Schedule schedule = liveDataScenario.getBudget().getSchedule();
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleId(schedule.getId());
         List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
@@ -274,9 +274,11 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
         liveDataScenario = this.update(liveDataScenario);
 
-        // Recalculate activeTermsBlob
-        liveDataScenario.recalculateActiveTermsBlob();
-        liveDataScenario = this.update(liveDataScenario);
+        if (newLiveDataScenario) {
+            // Calculate activeTermsBlob
+            liveDataScenario.recalculateActiveTermsBlob();
+            liveDataScenario = this.update(liveDataScenario);
+        }
 
         return liveDataScenario;
     }
