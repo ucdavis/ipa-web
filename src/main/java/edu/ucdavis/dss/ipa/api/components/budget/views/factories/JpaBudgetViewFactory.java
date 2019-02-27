@@ -22,6 +22,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
@@ -67,13 +68,14 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject InstructorTypeService instructorTypeService;
     @Inject UserRoleService userRoleService;
+    @Inject BudgetScenarioService budgetScenarioService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
-        List<BudgetScenario> budgetScenarios = budget.getBudgetScenarios();
+        List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
