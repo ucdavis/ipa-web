@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.Budget;
@@ -134,5 +135,12 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments);
 
         return budgetScenarioView;
+    }
+
+    @Override
+    public BudgetView createBudgetExcelView(long workgroupId, long year, Budget budget) {
+        BudgetView budgetView = this.createBudgetView(workgroupId, year, budget);
+
+        return new BudgetExcelView(budgetView);
     }
 }

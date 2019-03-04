@@ -10,4 +10,5 @@ public interface BudgetViewFactory {
 
     BudgetScenarioView createBudgetScenarioView(BudgetScenario budgetScenario);
 
+    BudgetView createBudgetExcelView(long workgroupId, long year, Budget budget);
 }

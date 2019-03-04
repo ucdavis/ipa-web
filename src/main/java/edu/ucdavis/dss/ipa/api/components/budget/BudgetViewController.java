@@ -475,4 +475,31 @@ public class BudgetViewController {
 
         return lineItemComment;
     }
+
+    /**
+     * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
+     *
+     * @param workgroupId
+     * @param year
+     * @return
+     */
+    @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @ResponseBody
+    public BudgetView showExcelView(@PathVariable long workgroupId, @PathVariable long year) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        // Ensure budget exists
+        Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+
+        // Ensure at least one scenario exists
+        if (budget.getBudgetScenarios().size() == 0) {
+
+            BudgetScenario budgetScenario = budgetScenarioService.findOrCreate(budget, "Default Scenario");
+            List<BudgetScenario> scenarios = new ArrayList<>();
+            scenarios.add(budgetScenario);
+            budget.setBudgetScenarios(scenarios);
+        }
+
+        return budgetViewFactory.createBudgetExcelView(workgroupId, year, budget);
+    }
 }
