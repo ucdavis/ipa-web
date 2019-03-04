@@ -18,4 +18,8 @@ public interface SectionGroupCostService {
     SectionGroupCost update(SectionGroupCost sectionGroupCostDTO);
 
     List<SectionGroupCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
+
+    void delete(Long sectionGroupCostId);
+
+    SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario liveDataScenario);
 }

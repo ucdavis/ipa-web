@@ -4,10 +4,13 @@ import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
@@ -24,12 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject ScheduleService scheduleService;
     @Inject BudgetScenarioRepository budgetScenarioRepository;
+    @Inject BudgetRepository budgetRepository;
+
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject SectionGroupService sectionGroupService;
     @Inject LineItemService lineItemService;
@@ -164,7 +171,116 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year) {
-        return budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+        List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+
+        BudgetScenario liveDataScenario = this.createOrUpdateFromLiveData(workgroupId, year);
+        Boolean budgetAlreadyExisted = false;
+
+        for (BudgetScenario budgetScenario : budgetScenarios) {
+            if (liveDataScenario.getId() == budgetScenario.getId()) {
+                budgetScenario = liveDataScenario;
+                budgetAlreadyExisted = true;
+            }
+        }
+
+        if (budgetAlreadyExisted == false) {
+            budgetScenarios.add(liveDataScenario);
+        }
+
+        return budgetScenarios;
+    }
+
+    private BudgetScenario createOrUpdateFromLiveData(long workgroupId, long year) {
+        BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroupId, year, true);
+
+        if (liveDataScenario != null) {
+            return this.updateFromLiveData(liveDataScenario, false);
+        } else {
+            return this.createFromLiveData(workgroupId, year);
+        }
+    }
+
+    private BudgetScenario createFromLiveData(Long workgroupId, Long year) {
+        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+        Budget budget = budgetRepository.findByScheduleId(schedule.getId());
+
+        BudgetScenario liveDataScenario = new BudgetScenario();
+        liveDataScenario.setName("Live Data");
+        liveDataScenario.setBudget(budget);
+        liveDataScenario.setActiveTermsBlob("0000000000");
+        liveDataScenario.setFromLiveData(true);
+        liveDataScenario = this.budgetScenarioRepository.save(liveDataScenario);
+
+        return this.updateFromLiveData(liveDataScenario, true);
+    }
+
+    private BudgetScenario updateFromLiveData(BudgetScenario liveDataScenario, Boolean newLiveDataScenario) {
+        Schedule schedule = liveDataScenario.getBudget().getSchedule();
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleId(schedule.getId());
+        List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
+
+        Map<String, SectionGroup> sectionGroupKeys = new HashMap<String, SectionGroup>();
+
+        // Build sectionGroup hash
+        for (SectionGroup sectionGroup : sectionGroups) {
+            String key = sectionGroup.getCourse().getSubjectCode() + sectionGroup.getCourse().getCourseNumber() + sectionGroup.getCourse().getSequencePattern() + sectionGroup.getTermCode() + sectionGroup.getCourse().getEffectiveTermCode();
+            sectionGroupKeys.put(key, sectionGroup);
+        }
+
+        List<SectionGroupCost> sectionGroupCostToRemove = new ArrayList<>();
+
+        // Need to remove any sectionGroupCosts?
+        for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+
+            if (sectionGroupKeys.get(key) == null) {
+                sectionGroupCostToRemove.add(sectionGroupCost);
+            }
+        }
+
+        for (SectionGroupCost sectionGroupCost : sectionGroupCostToRemove) {
+            sectionGroupCosts.remove(sectionGroupCost);
+            sectionGroupCostService.delete(sectionGroupCost.getId());
+        }
+
+        // Need to add any sectionGroupCosts?
+        Map<String, SectionGroupCost> sectionGroupCostKeys = new HashMap<String, SectionGroupCost>();
+
+        for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+            sectionGroupCostKeys.put(key, sectionGroupCost);
+        }
+
+        for (SectionGroup sectionGroup : sectionGroups) {
+            String key = sectionGroup.getCourse().getSubjectCode() + sectionGroup.getCourse().getCourseNumber() + sectionGroup.getCourse().getSequencePattern() + sectionGroup.getTermCode() + sectionGroup.getCourse().getEffectiveTermCode();
+
+            if (sectionGroupCostKeys.get(key) == null) {
+                SectionGroupCost sectionGroupCost = sectionGroupCostService.createFromSectionGroup(sectionGroup, liveDataScenario);
+                String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+
+                sectionGroupCosts.add(sectionGroupCost);
+                sectionGroupCostKeys.put(sectionGroupCostKey, sectionGroupCost);
+            }
+        }
+
+        // Need to update any sectionGroupCosts?
+        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            String key = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+            SectionGroup sectionGroup = sectionGroupKeys.get(key);
+
+            sectionGroupCost = sectionGroupCostService.updateFromSectionGroup(sectionGroup, liveDataScenario);
+        }
+
+        liveDataScenario.setSectionGroupCosts(sectionGroupCosts);
+        liveDataScenario = this.update(liveDataScenario);
+
+        if (newLiveDataScenario) {
+            // Calculate activeTermsBlob
+            liveDataScenario.recalculateActiveTermsBlob();
+            liveDataScenario = this.update(liveDataScenario);
+        }
+
+        return liveDataScenario;
     }
 
     @Override

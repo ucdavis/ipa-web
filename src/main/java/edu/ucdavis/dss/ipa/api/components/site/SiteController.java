@@ -28,11 +28,7 @@ public class SiteController {
 	/**
 	 * Provide /status.json for uptime checks. Designed to return
 	 * HTTP 200 OK and the text "ok".
-	 *
-	 * @param httpResponse
-	 * @return
 	 */
-	@CrossOrigin
 	@RequestMapping(value = "/status.json", method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, String> status(HttpServletResponse httpResponse) {
@@ -53,7 +49,6 @@ public class SiteController {
 	 * @throws MessagingException
 	 */
 	@RequestMapping(value = "/api/reportJsException", method = RequestMethod.POST)
-	@CrossOrigin
 	public void reportJsException(@RequestBody HashMap<String,String> exception, HttpServletResponse httpResponse)
 			throws MessagingException {
 		httpResponse.setStatus(HttpStatus.OK.value());
@@ -117,7 +112,6 @@ public class SiteController {
 	 * @throws MessagingException
 	 */
 	@RequestMapping(value = "/contactFormSubmission", method = RequestMethod.POST)
-	@CrossOrigin
 	public void contactFormSubmission(@ModelAttribute(value="name") String name,
 									  @ModelAttribute(value="email") String email,
 									  @ModelAttribute(value="message") String message,

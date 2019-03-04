@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 
 @RestController
-@CrossOrigin
 public class WorkgroupViewTagController {
     @Inject TagService tagService;
     @Inject WorkgroupService workgroupService;

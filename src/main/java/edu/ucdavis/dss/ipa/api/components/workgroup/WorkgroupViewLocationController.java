@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 
 @RestController
-@CrossOrigin
 public class WorkgroupViewLocationController {
     @Inject LocationService locationService;
     @Inject WorkgroupService workgroupService;

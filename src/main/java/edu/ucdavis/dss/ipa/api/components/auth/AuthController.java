@@ -48,7 +48,6 @@ public class AuthController {
      * @param request HTTP request which may contain CAS principal (username)
      * @return JSON body with either 'token' or 'redirect' field set.
      */
-    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SecurityDTO validate(@RequestBody SecurityDTO securityDTO, HttpServletRequest request, HttpServletResponse response) {
         List<UserRole> userRoles = null;
@@ -101,14 +100,15 @@ public class AuthController {
                 loginId = request.getUserPrincipal().getName();
                 realUserLoginId = loginId;
 
-                userRoles = userRoleService.findByLoginId(loginId);
-                termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
                 user = userService.getOneByLoginId(loginId);
-                realUser = userService.getOneByLoginId(realUserLoginId);
 
                 if (user == null) {
                     throw new AccessDeniedException("User not authorized to access IPA, loginId = " + loginId);
                 }
+
+                userRoles = userRoleService.findByLoginId(loginId);
+                termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginId);
+                realUser = userService.getOneByLoginId(realUserLoginId);
             }
         }
 
@@ -117,7 +117,6 @@ public class AuthController {
             userService.updateLastAccessed(user);
 
             securityDTO.token = Jwts.builder().setSubject(loginId)
-                    .claim("userRoles", userRoles)
                     .claim("loginId", loginId)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
@@ -171,7 +170,6 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin
     @RequestMapping(value = "/impersonate/{loginIdToImpersonate}", method = RequestMethod.POST)
     public SecurityDTO impersonate(@PathVariable String loginIdToImpersonate, @RequestBody SecurityDTO securityDTO,
                                                 HttpServletRequest request,
@@ -258,7 +256,6 @@ public class AuthController {
      * @param response
      * @return
      */
-    @CrossOrigin
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.POST)
     public SecurityDTO unimpersonate(@RequestBody SecurityDTO securityDTO,
                                    HttpServletRequest request,

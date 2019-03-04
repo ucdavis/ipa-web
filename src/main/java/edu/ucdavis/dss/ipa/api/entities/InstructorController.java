@@ -6,7 +6,6 @@ import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RestController
-@CrossOrigin
 public class InstructorController {
   @Inject ScheduleService scheduleService;
   @Inject InstructorService instructorService;

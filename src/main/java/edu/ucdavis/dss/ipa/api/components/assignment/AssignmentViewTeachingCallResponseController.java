@@ -1,19 +1,18 @@
 package edu.ucdavis.dss.ipa.api.components.assignment;
 
-        import edu.ucdavis.dss.ipa.entities.*;
-        import edu.ucdavis.dss.ipa.security.Authorizer;
-        import edu.ucdavis.dss.ipa.services.*;
-        import org.springframework.http.HttpStatus;
-        import org.springframework.web.bind.annotation.*;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.security.Authorizer;
+import edu.ucdavis.dss.ipa.services.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
-        import javax.inject.Inject;
-        import javax.servlet.http.HttpServletResponse;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by Lloyd on 8/10/16.
  */
 @RestController
-@CrossOrigin
 public class AssignmentViewTeachingCallResponseController {
     @Inject ScheduleService scheduleService;
     @Inject InstructorService instructorService;

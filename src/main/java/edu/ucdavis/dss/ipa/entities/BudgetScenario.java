@@ -27,6 +27,7 @@ public class BudgetScenario extends BaseEntity {
     private String name, activeTermsBlob;
     private List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
     private List<LineItem> lineItems = new ArrayList<>();
+    private Boolean fromLiveData;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -171,5 +172,24 @@ public class BudgetScenario extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty
+    public Boolean getFromLiveData() {
+        return fromLiveData;
+    }
+
+    public void setFromLiveData(Boolean fromLiveData) {
+        this.fromLiveData = fromLiveData;
+    }
+
+    @Transient
+    @JsonIgnore
+    public String recalculateActiveTermsBlob() {
+        for (SectionGroupCost sectionGroupCost : this.sectionGroupCosts) {
+            this.setTermInActiveTermsBlob(sectionGroupCost.getTermCode(), true);
+        }
+
+        return this.activeTermsBlob;
     }
 }

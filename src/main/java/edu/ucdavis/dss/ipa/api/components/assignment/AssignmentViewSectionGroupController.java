@@ -13,7 +13,6 @@ import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentV
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 
 @RestController
-@CrossOrigin
 public class AssignmentViewSectionGroupController {
 	@Inject CurrentUser currentUser;
 	@Inject InstructorService instructorService;

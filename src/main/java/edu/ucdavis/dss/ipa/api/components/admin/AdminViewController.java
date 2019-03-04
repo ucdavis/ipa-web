@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 
 @RestController
-@CrossOrigin
 public class AdminViewController {
 	@Inject AdminViewFactory adminViewFactory;
 	@Inject WorkgroupService workgroupService;

@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@CrossOrigin
 public class WorkgroupViewController {
 	@Inject WorkgroupViewFactory workgroupViewFactory;
 	@Inject Authorizer authorizer;

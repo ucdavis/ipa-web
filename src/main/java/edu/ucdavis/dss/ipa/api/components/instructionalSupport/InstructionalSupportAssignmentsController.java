@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class InstructionalSupportAssignmentsController {
     @Inject InstructionalSupportViewFactory instructionalSupportViewFactory;
     @Inject SectionGroupService sectionGroupService;
