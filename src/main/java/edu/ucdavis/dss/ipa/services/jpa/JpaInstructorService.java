@@ -15,7 +15,9 @@ import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class JpaInstructorService implements InstructorService {
@@ -112,6 +114,20 @@ public class JpaInstructorService implements InstructorService {
 		}
 
 		return uniqueInstructors;
+	}
+
+	@Override
+	public Set<Instructor> findBySectionGroupCosts(List<SectionGroupCost> sectionGroupCosts) {
+		Set<Instructor> instructors = new HashSet<>();
+
+		for(SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+			Instructor instructor = sectionGroupCost.getInstructor();
+			if (instructor != null) {
+				instructors.add(instructor);
+			}
+		}
+
+		return instructors;
 	}
 
 	/**
