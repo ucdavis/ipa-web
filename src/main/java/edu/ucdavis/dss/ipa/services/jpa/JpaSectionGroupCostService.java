@@ -184,9 +184,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             if (instructorDTO != null) {
                 instructor = instructorDTO;
                 instructorType = instructorTypeDTO;
-            }
-
-            if (instructorTypeDTO != null) {
+            } else if (instructorTypeDTO != null) {
                 instructorType = instructorTypeDTO;
             }
         }
