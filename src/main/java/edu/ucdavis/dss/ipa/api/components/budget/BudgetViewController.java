@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
@@ -485,7 +486,7 @@ public class BudgetViewController {
      */
     @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
-    public BudgetView showExcelView(@PathVariable long workgroupId, @PathVariable long year) {
+    public BudgetExcelView showExcelView(@PathVariable long workgroupId, @PathVariable long year) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         // Ensure budget exists

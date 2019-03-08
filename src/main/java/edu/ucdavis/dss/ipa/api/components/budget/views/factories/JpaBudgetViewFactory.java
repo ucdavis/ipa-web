@@ -138,7 +138,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     }
 
     @Override
-    public BudgetView createBudgetExcelView(long workgroupId, long year, Budget budget) {
+    public BudgetExcelView createBudgetExcelView(long workgroupId, long year, Budget budget) {
         BudgetView budgetView = this.createBudgetView(workgroupId, year, budget);
 
         return new BudgetExcelView(budgetView);
