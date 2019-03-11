@@ -30,21 +30,20 @@ public class BudgetExcelView extends AbstractXlsView {
         response.setHeader("Content-Disposition", header);
 
         // Create sheets
-        Sheet byCourseSheet = workbook.createSheet("By Course");
-        Sheet byInstructorSheet = workbook.createSheet("By Instructor");
+        Sheet scheduleCostsSheet = workbook.createSheet("Schedule Costs");
+        Sheet fundsSheet = workbook.createSheet("Funds");
+        Sheet instructorCostsSheet = workbook.createSheet("Instructor Costs");
 
-        setExcelHeader(byCourseSheet);
-        setExcelHeader(byInstructorSheet);
+        setExcelHeader(scheduleCostsSheet);
+        setExcelHeader(fundsSheet);
+        setExcelHeader(instructorCostsSheet);
 
         String workgroupId= budgetViewDTO.budgetScenarios.get(0).getName();
 
-
         int row = 1;
-        Row excelHeader = byCourseSheet.createRow(row);
+        Row excelHeader = scheduleCostsSheet.createRow(row);
         excelHeader.createCell(0).setCellValue("TEST");
         excelHeader.createCell(1).setCellValue(workgroupId);
-
-
 
     }
 

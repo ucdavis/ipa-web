@@ -72,7 +72,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject BudgetScenarioService budgetScenarioService;
 
     @Override
-    public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
+    public BudgetView createBudgetView(Budget budget) {
+        long workgroupId = budget.getSchedule().getWorkgroup().getId();
+        long year = budget.getSchedule().getYear();
+
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
@@ -138,8 +141,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     }
 
     @Override
-    public BudgetExcelView createBudgetExcelView(long workgroupId, long year, Budget budget) {
-        BudgetView budgetView = this.createBudgetView(workgroupId, year, budget);
+    public BudgetExcelView createBudgetExcelView(Budget budget) {
+        BudgetView budgetView = this.createBudgetView(budget);
 
         return new BudgetExcelView(budgetView);
     }

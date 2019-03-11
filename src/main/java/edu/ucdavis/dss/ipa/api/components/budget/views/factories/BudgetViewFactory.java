@@ -7,9 +7,9 @@ import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 
 public interface BudgetViewFactory {
-    BudgetView createBudgetView(long workgroupId, long year, Budget budget);
+    BudgetView createBudgetView(Budget budget);
 
     BudgetScenarioView createBudgetScenarioView(BudgetScenario budgetScenario);
 
-    BudgetExcelView createBudgetExcelView(long workgroupId, long year, Budget budget);
+    BudgetExcelView createBudgetExcelView(Budget budget);
 }

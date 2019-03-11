@@ -83,7 +83,7 @@ public class BudgetViewController {
             budget.setBudgetScenarios(scenarios);
         }
 
-        return budgetViewFactory.createBudgetView(workgroupId, year, budget);
+        return budgetViewFactory.createBudgetView(budget);
     }
 
     /**
@@ -484,13 +484,13 @@ public class BudgetViewController {
      * @param year
      * @return
      */
-    @RequestMapping(value = "/api/budgetView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/budgets/{budgetId}/downloadExcel", method = RequestMethod.GET)
     @ResponseBody
-    public BudgetExcelView showExcelView(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
-
+    public BudgetExcelView showExcelView(@PathVariable long budgetId) {
         // Ensure budget exists
-        Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+        Budget budget = budgetService.findById(budgetId);
+
+        authorizer.hasWorkgroupRoles(budget.getSchedule().getWorkgroup().getId(), "academicPlanner", "reviewer");
 
         // Ensure at least one scenario exists
         if (budget.getBudgetScenarios().size() == 0) {
@@ -501,6 +501,6 @@ public class BudgetViewController {
             budget.setBudgetScenarios(scenarios);
         }
 
-        return budgetViewFactory.createBudgetExcelView(workgroupId, year, budget);
+        return budgetViewFactory.createBudgetExcelView(budget);
     }
 }
