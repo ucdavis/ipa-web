@@ -60,6 +60,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario.setBudget(budget);
         budgetScenario.setName(budgetScenarioName);
         budgetScenario.setActiveTermsBlob("0000000000");
+        budgetScenario.setFromLiveData(false);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear());
