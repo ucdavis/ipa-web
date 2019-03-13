@@ -8,9 +8,9 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
         environment:
-          DW_DATASOURCE_TEST_URL: jdbc:mysql://localhost/ipa_test
-          DW_DATASOURCE_TEST_USERNAME: root
-          DW_DATASOURCE_TEST_PASSWORD: testme
+          IPA_DATASOURCE_URL: jdbc:mysql://localhost/ipa_test
+          IPA_DATASOURCE_URL_USERNAME: root
+          IPA_DATASOURCE_URL_PASSWORD: testme
       - image: circleci/mysql:5.6.42
         environment:
           MYSQL_ROOT_PASSWORD: testme
