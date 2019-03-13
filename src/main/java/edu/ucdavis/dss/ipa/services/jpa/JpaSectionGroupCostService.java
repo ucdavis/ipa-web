@@ -178,6 +178,8 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         InstructorType instructorType = null;
 
         for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+            if (teachingAssignment.isApproved() == false) { continue; }
+
             Instructor instructorDTO = teachingAssignment.getInstructor();
             InstructorType instructorTypeDTO = teachingAssignment.getInstructorType();
 
