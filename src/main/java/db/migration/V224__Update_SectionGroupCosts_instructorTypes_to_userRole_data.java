@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class V223__Update_SectionGroupCosts_instructorTypes_to_userRole_data implements JdbcMigration {
+public class V224__Update_SectionGroupCosts_instructorTypes_to_userRole_data implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
         PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts WHERE InstructorId IS NOT NULL;");
