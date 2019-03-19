@@ -18,6 +18,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
@@ -37,6 +38,7 @@ import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
+import edu.ucdavis.dss.ipa.services.TagService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -69,6 +71,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject InstructorTypeService instructorTypeService;
     @Inject UserRoleService userRoleService;
     @Inject BudgetScenarioService budgetScenarioService;
+    @Inject TagService tagService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -94,6 +97,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
+        List<Tag> tags = tagService.findByWorkgroupId(workgroupId);
 
         List<UserRole> userRoles = userRoleService.findByWorkgroup(workgroup);
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
@@ -122,7 +126,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 users,
                 instructorTypeCosts,
                 instructorTypes,
-                userRoles);
+                userRoles,
+                tags);
 
         return budgetView;
     }
