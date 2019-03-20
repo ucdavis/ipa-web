@@ -35,21 +35,58 @@ public class V225__Update_SectionGroupCosts_instructorTypes_to_userRole_data imp
             psInstructorTypes.setLong(1, sectionGroupCostId);
             ResultSet rsInstructorTypes = psInstructorTypes.executeQuery();
 
+            // Found relevant userRoles to sync to
             if (rsInstructorTypes.first()) {
                 Long userRoleInstructorTypeId = rsInstructorTypes.getLong("userRoleInstructorType");
 
-                if (sectionGroupCostInstructorTypeId == userRoleInstructorTypeId) { continue; }
+                // Sync sectionGroupCost instructorTypeId if necessary
+                if (sectionGroupCostInstructorTypeId != userRoleInstructorTypeId) {
+                    PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
+                        " UPDATE SectionGroupCosts" +
+                            " SET InstructorTypeId = ?" +
+                            " WHERE Id = ?;"
+                    );
 
-                PreparedStatement psUpdateSectionGroupCost = connection.prepareStatement(
-                    " UPDATE SectionGroupCosts" +
-                        " SET InstructorTypeId = ?" +
-                        " WHERE Id = ?;"
+                    psUpdateSectionGroupCost.setLong(1, userRoleInstructorTypeId);
+                    psUpdateSectionGroupCost.setLong(2, sectionGroupCostId);
+                    psUpdateSectionGroupCost.execute();
+                    psUpdateSectionGroupCost.close();
+                }
+
+                // Sync teachingAssignment instructorTypeId if necessary
+                PreparedStatement psTeachingAssignments = connection.prepareStatement(
+                    "SELECT * FROM TeachingAssignments teachingAssignment, SectionGroups sectionGroup, Courses course, SectionGroupCosts sectionGroupCost " +
+                        " WHERE teachingAssignment.InstructorId = 2515 " +
+                        " AND teachingAssignment.SectionGroupId = sectionGroup.Id " +
+                        " AND teachingAssignment.Approved = 1 " +
+                        " AND teachingAssignment.InstructorTypeId IS NOT NULL " +
+                        " AND sectionGroup.Termcode = sectionGroupCost.TermCode " +
+                        " AND sectionGroup.CourseId = course.Id " +
+                        " AND course.SubjectCode = sectionGroupCost " +
+                        " AND course.CourseNumber = sectionGroupCost.CourseNumber " +
+                        " AND course.EffectiveTermCode = sectionGroupCost.EffectiveTermCode " +
+                        " AND course.SequencePattern = sectionGroupCost.SequencePattern;"
                 );
 
-                psUpdateSectionGroupCost.setLong(1, userRoleInstructorTypeId);
-                psUpdateSectionGroupCost.setLong(2, sectionGroupCostId);
-                psUpdateSectionGroupCost.execute();
-                psUpdateSectionGroupCost.close();
+                ResultSet rsTeachingAssignments = psTeachingAssignments.executeQuery();
+                while(rsTeachingAssignments.next()) {
+                    Long teachingAssignmentId = rsTeachingAssignments.getLong("Id");
+                    Long teachingAssignmentInstructorTypeId = rsTeachingAssignments.getLong("InstructorTypeId");
+
+                    if (teachingAssignmentInstructorTypeId != userRoleInstructorTypeId) {
+                        PreparedStatement psUpdateTeachingAssignment = connection.prepareStatement(
+                            " UPDATE TeachingAssignments" +
+                                " SET InstructorTypeId = ?" +
+                                " WHERE Id = ?;"
+                        );
+
+                        psUpdateTeachingAssignment.setLong(1, userRoleInstructorTypeId);
+                        psUpdateTeachingAssignment.setLong(2, teachingAssignmentId);
+                        psUpdateTeachingAssignment.execute();
+                        psUpdateTeachingAssignment.close();
+                    }
+                }
+
             }
         }
 
