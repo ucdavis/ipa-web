@@ -62,7 +62,7 @@ public class V225__Update_SectionGroupCosts_instructorTypes_to_userRole_data imp
                         " AND teachingAssignment.InstructorTypeId IS NOT NULL " +
                         " AND sectionGroup.Termcode = sectionGroupCost.TermCode " +
                         " AND sectionGroup.CourseId = course.Id " +
-                        " AND course.SubjectCode = sectionGroupCost " +
+                        " AND course.SubjectCode = sectionGroupCost.SubjectCode " +
                         " AND course.CourseNumber = sectionGroupCost.CourseNumber " +
                         " AND course.EffectiveTermCode = sectionGroupCost.EffectiveTermCode " +
                         " AND course.SequencePattern = sectionGroupCost.SequencePattern;"
