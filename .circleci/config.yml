@@ -8,9 +8,14 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
         environment:
-          DW_DATASOURCE_TEST_URL: jdbc:mysql://localhost/ipa_test
-          DW_DATASOURCE_TEST_USERNAME: root
-          DW_DATASOURCE_TEST_PASSWORD: testme
+          IPA_DATASOURCE_URL: jdbc:mysql://localhost/ipa_test
+          IPA_DATASOURCE_USERNAME: root
+          IPA_DATASOURCE_PASSWORD: testme
+          IPA_URL_API: http://localhost:8080
+          IPA_URL_FRONTEND: http://localhost:9000
+          IPA_JWT_SIGNING_KEY: changeme
+          IPA_JWT_TIMEOUT: 60
+          CAS_URL: http://ssodev.ucdavis.edu/cas/
       - image: circleci/mysql:5.6.42
         environment:
           MYSQL_ROOT_PASSWORD: testme
@@ -33,7 +38,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: gradle dependencies
+      - run: ./gradlew dependencies
 
       - save_cache:
           paths:
@@ -41,7 +46,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
         
       # run tests!
-      - run: gradle test
+      - run: ./gradlew test
 
       - store_test_results:
           path: ~/repo/build/reports
