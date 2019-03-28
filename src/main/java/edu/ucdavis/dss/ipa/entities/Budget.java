@@ -68,7 +68,7 @@ public class Budget extends BaseEntity {
         this.readerCost = readerCost;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budget", cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "budget", cascade = {CascadeType.ALL})
     @JsonIgnore
     public List<BudgetScenario> getBudgetScenarios() {
         return budgetScenarios;
