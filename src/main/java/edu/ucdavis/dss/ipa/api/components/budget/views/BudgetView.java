@@ -15,6 +15,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
+import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
@@ -43,6 +44,7 @@ public class BudgetView {
     List<InstructorTypeCost> instructorTypeCosts;
     List<InstructorType> instructorTypes;
     List<UserRole> userRoles;
+    List<Tag> tags;
 
     public BudgetView(
             List<BudgetScenario> budgetScenarios,
@@ -63,7 +65,8 @@ public class BudgetView {
             Set<User> users,
             List<InstructorTypeCost> instructorTypeCosts,
             List<InstructorType> instructorTypes,
-            List<UserRole> userRoles
+            List<UserRole> userRoles,
+            List<Tag> tags
     ) {
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -84,6 +87,7 @@ public class BudgetView {
         setActiveInstructors(activeInstructors);
         setAssignedInstructors(assignedInstructors);
         setUserRoles(userRoles);
+        setTags(tags);
     }
 
     public String getWorkgroupId() {
@@ -244,5 +248,13 @@ public class BudgetView {
 
     public void setUserRoles(List<UserRole> userRoles) {
         this.userRoles = userRoles;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }
