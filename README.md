@@ -14,6 +14,10 @@ Run the following commands:
 3. docker run -v $(pwd)/build:/app/build build-ipa-web
 4. Your build/ directory will contain the ipa-web .jar file in build/libs.
 
+# Running with docker
+1. docker build -t ipa-web .
+2. docker run --env-file=ipa-web.env -p 8080:8080 -t ipa-web
+
 # Misc Notes
 docker build -t ipa-web -f Dockerfile-build --build-arg IPA_DATASOURCE_URL="jdbc:mysql://host:3306/schema_name?autoReconnect=true&useSSL=false" --build-arg IPA_DATASOURCE_USERNAME="username" --build-arg IPA_DATASOURCE_PASSWORD="password" .
 
