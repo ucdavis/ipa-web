@@ -37,9 +37,19 @@ ENV CAS_URL $CAS_URL
 
 ADD ./rds-combined-ca-bundle.der rds-combined-ca-bundle.der
 RUN keytool -import -noprompt -trustcacerts -alias aws_rds_combined -file rds-combined-ca-bundle.der -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+
 ADD ./dw.dss.ucdavis.edu.cer dw.dss.ucdavis.edu.cer
 RUN keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.edu.cer -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
 
-ADD ./build/libs/ipa-api-0.1.0.jar app.jar
+COPY ./gradle gradle
+COPY ./gradlew gradlew
+COPY ./build.gradle build.gradle
+COPY ./checkstyle.xml checkstyle.xml
 
-CMD java -Djava.security.egd=file:/dev/./urandom -jar app.jar
+# RUN ./gradlew resolveDependencies
+
+COPY ./src src
+
+RUN ./gradlew build -x test
+
+CMD java -Djava.security.egd=file:/dev/./urandom -jar build/libs/ipa-api-0.1.0.jar
