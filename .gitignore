@@ -13,3 +13,4 @@ bin/
 .vscode
 .envrc*
 .DS_STORE
+rds-combined-ca-bundle.der
