@@ -32,7 +32,7 @@ COPY ./gradle gradle
 COPY ./gradlew gradlew
 COPY ./build.gradle build.gradle
 
-RUN ./gradlew resolveDependencies
+# RUN ./gradlew resolveDependencies
 
 COPY ./src src
 
