@@ -54,6 +54,7 @@ dependencies {
     compile("org.apache.commons:commons-lang3:3.7")
     compile("javax.mail:mail:1.4.7")
     compile("org.flywaydb:flyway-core:3.2.1")
+    compile("com.amazonaws:aws-java-sdk-dynamodb:1.11.34")
     compile("org.apache.httpcomponents:httpclient:4.5.6")
     compile("org.javers:javers-core:2.4.1")
     runtime("mysql:mysql-connector-java:5.1.47")
