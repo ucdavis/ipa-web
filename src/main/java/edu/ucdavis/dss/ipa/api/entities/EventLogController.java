@@ -3,10 +3,7 @@ package edu.ucdavis.dss.ipa.api.entities;
 import edu.ucdavis.dss.ipa.entities.EventLog;
 import edu.ucdavis.dss.ipa.services.EventLogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +28,13 @@ public class EventLogController {
         return eventLogService.getAllEventLogs();
     }
 
+    @RequestMapping(value = "/events", method = RequestMethod.POST)
+    public void addEvent(@RequestBody EventLog eventLog) {
+        eventLogService.addEventLog(eventLog);
+    }
+
     @RequestMapping(value = "/eventLogs/{logEntityId}", method = RequestMethod.GET)
-    public List<EventLog> getEventLogsByLogEntityId(@PathVariable String logentityId) {
-        return eventLogService.getEventLogsByLogEntityId(logentityId);
+    public List<EventLog> getEventLogsByLogEntityId(@PathVariable String logEntityId) {
+        return eventLogService.getEventLogsByLogEntityId(logEntityId);
     }
 }

@@ -1,5 +1,8 @@
 package edu.ucdavis.dss.ipa.services;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import edu.ucdavis.dss.ipa.entities.EventLog;
 import edu.ucdavis.dss.ipa.repositories.EventLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-
 @Service
 public class EventLogService {
     @Autowired
@@ -23,11 +22,11 @@ public class EventLogService {
     private EventLogRepository eventLogRepository;
 
     public List<EventLog> getAllEventLogs() {
-        List<EventLog> events = new ArrayList<>();
+        List<EventLog> eventLogs = new ArrayList<>();
 
-        eventLogRepository.findAll().forEach(events::add);
+        eventLogRepository.findAll().forEach(eventLogs::add);
 
-        return events;
+        return eventLogs;
     }
 
     public List<EventLog> getEventLogsByLogEntityId(String logEntityId) {
@@ -37,12 +36,12 @@ public class EventLogService {
         DynamoDBQueryExpression<EventLog> queryExpression = new DynamoDBQueryExpression<EventLog>()
                 .withKeyConditionExpression("logEntityId = :val1").withExpressionAttributeValues(eav);
 
-        List<EventLog> events = mapper.query(EventLog.class, queryExpression);
+        List<EventLog> eventLogs = mapper.query(EventLog.class, queryExpression);
 
-        return events;
+        return eventLogs;
     }
 
-    public void addEventLog(EventLog event) {
-        eventLogRepository.save(event);
+    public void addEventLog(EventLog eventLog) {
+        eventLogRepository.save(eventLog);
     }
 }
