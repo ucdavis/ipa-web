@@ -28,7 +28,7 @@ public class EventLogController {
         return eventLogService.getAllEventLogs();
     }
 
-    @RequestMapping(value = "/events", method = RequestMethod.POST)
+    @RequestMapping(value = "/eventLogs", method = RequestMethod.POST)
     public void addEvent(@RequestBody EventLog eventLog) {
         eventLogService.addEventLog(eventLog);
     }
