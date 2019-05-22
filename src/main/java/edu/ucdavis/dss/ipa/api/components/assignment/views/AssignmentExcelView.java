@@ -100,15 +100,23 @@ public class AssignmentExcelView extends AbstractXlsView {
             col++;
 
             for(ScheduleTermState state : scheduleTermStates) {
-                excelHeader.createCell(col).setCellValue(
-                        StringUtils.join(
-                                instructor.getTeachingAssignments().stream()
-                                        .filter(ta -> ta.isApproved() && ta.getSectionGroup() != null && state.getTermCode().equals(ta.getTermCode()))
-                                        .map(ta -> ta.getSectionGroup().getCourse().getShortDescription())
-                                        .collect(Collectors.toList())
-                                , ", "
-                        )
-                );
+                List<String> assignmentDescriptions = new ArrayList<>();
+
+                for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
+                    if (teachingAssignment.isApproved() == false) { continue; }
+                    if (teachingAssignment.getSchedule().getId() != this.schedule.getId()) { continue; }
+                    if (state.getTermCode().equals(teachingAssignment.getTermCode()) == false) { continue; }
+
+                    if (teachingAssignment.getInstructor().getId() == 16) {
+                        System.out.println("taco");
+                    }
+
+                    assignmentDescriptions.add(teachingAssignment.getDescription());
+                }
+
+                String formattedAssignmentDescriptions = StringUtils.join(assignmentDescriptions, ", ");
+
+                excelHeader.createCell(col).setCellValue(formattedAssignmentDescriptions);
 
                 col++;
             }

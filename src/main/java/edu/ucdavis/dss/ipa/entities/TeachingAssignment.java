@@ -275,4 +275,18 @@ public class TeachingAssignment implements Serializable {
 	public String getInstructorDisplayName() {
 		return this.getInstructor() != null ? this.getInstructor().getLastName() + " " + this.getInstructor().getFirstName().charAt(0) : this.getInstructorType().getDescription();
 	}
+
+	@Transient
+	public String getDescription() {
+		if (this.getSectionGroup() != null) { return this.getSectionGroup().getCourse().getShortDescription(); }
+		if(this.isBuyout()) return "Buyout";
+		if(this.isCourseRelease()) return "Course Release";
+		if(this.isSabbatical()) return "Sabbatical";
+		if(this.isInResidence()) return "In Residence";
+		if(this.isWorkLifeBalance()) return "Work-life Balance";
+		if(this.isLeaveOfAbsence()) return "Leave of Absence";
+		if(this.isSabbaticalInResidence()) return "Sabbatical In Residence";
+
+		return null;
+	}
 }
