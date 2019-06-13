@@ -381,6 +381,12 @@ public class CourseViewController {
 			return null;
 		}
 
+		List<Section> sections = sectionGroup.getSections();
+		if (sections.stream().filter(sect -> sect.getSequenceNumber().equals(section.getSequenceNumber())).findFirst().isPresent()) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		};
+
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
