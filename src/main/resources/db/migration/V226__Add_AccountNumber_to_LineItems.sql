@@ -1,0 +1,1 @@
+ALTER TABLE `LineItems` ADD COLUMN `AccountNumber` VARCHAR(50) NULL;
