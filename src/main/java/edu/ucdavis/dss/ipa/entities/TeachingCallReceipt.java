@@ -83,16 +83,6 @@ public class TeachingCallReceipt implements Serializable {
 		this.isDone = isDone;
 	}
 
-	@Column(name = "Comment", nullable = true)
-	@JsonProperty
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
 	public Boolean getShowUnavailabilities() {
 		return showUnavailabilities;
 	}
