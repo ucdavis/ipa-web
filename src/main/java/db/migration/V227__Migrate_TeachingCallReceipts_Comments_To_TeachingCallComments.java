@@ -11,10 +11,10 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
     public void migrate(Connection connection) throws Exception {
         // Create TeachingCallComments table
         String createTeachingCallComments = "CREATE TABLE IF NOT EXISTS `TeachingCallComments` ("
-                + "`Id` INT(11) AUTO_INCREMENT PRIMARY KEY,"
+                + "`Id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 + "`Comment` TEXT,"
-                + "`TeachingCallReceiptsId` INT(11),"
-                + "FOREIGN KEY (`TeachingCallReceiptsId`)"
+                + "`TeachingCallReceiptId` INT(11),"
+                + "FOREIGN KEY (`TeachingCallReceiptId`)"
                 + " REFERENCES `TeachingCallReceipts`(`id`));";
 
         PreparedStatement createTableStatement = connection.prepareStatement(createTeachingCallComments);
@@ -22,7 +22,7 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
         // Get TeachingCallReceipts comments
         PreparedStatement commentsQuery = connection.prepareStatement(
             "SELECT"
-                    + " TeachingCallReceipts.`Id` AS TeachingCallReceiptsId, "
+                    + " TeachingCallReceipts.`Id` AS TeachingCallReceiptId, "
                     + " CONCAT(`firstName`, ' ', `lastName`) AS Author, "
                     + " `Comment` "
                     + " FROM `TeachingCallReceipts` "
@@ -37,16 +37,16 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
 
             // Loop over combined comments and insert them into Receipts
             while(rsComments.next()) {
-                long teachingCallReceiptsId = rsComments.getLong("teachingCallReceiptsId");
+                long teachingCallReceiptId = rsComments.getLong("teachingCallReceiptId");
                 String comment = rsComments.getString("comment");
 
                 // Save combine comments in TeachingCallReceipts
                 String insertTeachingCallCommentsQuery = "INSERT INTO `TeachingCallComments`"
-                        + " (Comment, TeachingCallReceiptsId) "
+                        + " (Comment, TeachingCallReceiptId) "
                         + " VALUES (?, ?)";
                 PreparedStatement insertTeachingCallCommentsStatement = connection.prepareStatement(insertTeachingCallCommentsQuery);
                 insertTeachingCallCommentsStatement.setString(1, comment);
-                insertTeachingCallCommentsStatement.setLong(2, teachingCallReceiptsId);
+                insertTeachingCallCommentsStatement.setLong(2, teachingCallReceiptId);
 
                 insertTeachingCallCommentsStatement.execute();
                 insertTeachingCallCommentsStatement.close();
