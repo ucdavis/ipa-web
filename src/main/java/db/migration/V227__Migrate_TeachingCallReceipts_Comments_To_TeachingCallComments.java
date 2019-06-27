@@ -14,6 +14,9 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
                 + "`Id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
                 + "`Comment` TEXT,"
                 + "`TeachingCallReceiptId` INT(11),"
+                + "`UpdatedAt` TIMESTAMP NULL,"
+                + "`CreatedAt` TIMESTAMP NULL,"
+                + "`ModifiedBy` VARCHAR(16) NULL,"
                 + "FOREIGN KEY (`TeachingCallReceiptId`)"
                 + " REFERENCES `TeachingCallReceipts`(`id`));";
 
