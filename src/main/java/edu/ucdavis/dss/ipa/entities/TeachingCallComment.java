@@ -28,7 +28,7 @@ public class TeachingCallComment extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TeachingCallReceiptId", nullable = true)
+    @JoinColumn(name = "TeachingCallReceiptId")
     @NotNull
     @JsonIgnore
     public TeachingCallReceipt getTeachingCallReceipt() {
@@ -45,5 +45,15 @@ public class TeachingCallComment extends BaseEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    @JsonProperty("teachingCallReceiptId")
+    @Transient
+    public long getTeachingCallReceiptId() {
+        if(teachingCallReceipt != null) {
+            return teachingCallReceipt.getId();
+        } else {
+            return 0;
+        }
     }
 }
