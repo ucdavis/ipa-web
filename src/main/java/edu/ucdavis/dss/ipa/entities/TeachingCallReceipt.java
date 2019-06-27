@@ -65,8 +65,8 @@ public class TeachingCallReceipt implements Serializable {
 		this.schedule = schedule;
 	}
 
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "teachingCallReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonProperty("comments")
 	public List<TeachingCallComment> getTeachingCallComments() { return teachingCallComments; }
 
 	public void setTeachingCallComments(List<TeachingCallComment> teachingCallComments) {
