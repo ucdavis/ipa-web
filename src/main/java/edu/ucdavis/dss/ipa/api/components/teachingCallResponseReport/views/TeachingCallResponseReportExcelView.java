@@ -164,7 +164,7 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
                 currentCell = termCodeColumnMapping.get("comments");
 
                 row = findOrCreateRow(sheet, currentRow);
-                row.createCell(currentCell).setCellValue(receipt.getComment());
+                // row.createCell(currentCell).setCellValue(receipt.getComment());
             }
         }
 

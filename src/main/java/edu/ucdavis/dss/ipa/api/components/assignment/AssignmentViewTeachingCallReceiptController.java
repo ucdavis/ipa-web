@@ -22,7 +22,7 @@ public class AssignmentViewTeachingCallReceiptController {
         Workgroup workgroup = originalTeachingCallReceipt.getSchedule().getWorkgroup();
         authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "instructor");
 
-        originalTeachingCallReceipt.setComment(teachingCallReceipt.getComment());
+        // originalTeachingCallReceipt.setTeachingCallComments(teachingCallReceipt.getTeachingCallComments());
         originalTeachingCallReceipt.setIsDone(teachingCallReceipt.getIsDone());
 
         return teachingCallReceiptService.save(originalTeachingCallReceipt);
