@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Entity
 @Table(name = "TeachingCallComments")
@@ -55,5 +56,11 @@ public class TeachingCallComment extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }
