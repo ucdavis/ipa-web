@@ -12,7 +12,7 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
         // Create TeachingCallComments table
         String createTeachingCallComments = "CREATE TABLE IF NOT EXISTS `TeachingCallComments` ("
                 + "`Id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-                + "`Comment` TEXT,"
+                + "`Comment` TEXT NOT NULL,"
                 + "`TeachingCallReceiptId` INT(11),"
                 + "`UpdatedAt` TIMESTAMP NULL,"
                 + "`CreatedAt` TIMESTAMP NULL,"
