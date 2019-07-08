@@ -26,7 +26,6 @@ public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments
         PreparedStatement commentsQuery = connection.prepareStatement(
             "SELECT"
                     + " TeachingCallReceipts.`Id` AS TeachingCallReceiptId, "
-                    + " CONCAT(`firstName`, ' ', `lastName`) AS Author, "
                     + " `Comment` "
                     + " FROM `TeachingCallReceipts` "
                     + " JOIN `Instructors` "
