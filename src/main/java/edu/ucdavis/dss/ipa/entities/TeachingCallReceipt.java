@@ -5,16 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +26,8 @@ public class TeachingCallReceipt implements Serializable {
 	private boolean sendEmail;
 	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
-	private String comment, termsBlob, message;
+	private String termsBlob, message;
+	private List<TeachingCallComment> teachingCallComments = new ArrayList<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +65,14 @@ public class TeachingCallReceipt implements Serializable {
 		this.schedule = schedule;
 	}
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "teachingCallReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonProperty("comments")
+	public List<TeachingCallComment> getTeachingCallComments() { return teachingCallComments; }
+
+	public void setTeachingCallComments(List<TeachingCallComment> teachingCallComments) {
+		this.teachingCallComments = teachingCallComments;
+	}
+
 	@Column(name = "isDone", nullable = false)
 	@JsonProperty
 	public Boolean getIsDone() {
@@ -81,16 +81,6 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setIsDone(Boolean isDone) {
 		this.isDone = isDone;
-	}
-
-	@Column(name = "Comment", nullable = true)
-	@JsonProperty
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
 	}
 
 	public Boolean getShowUnavailabilities() {

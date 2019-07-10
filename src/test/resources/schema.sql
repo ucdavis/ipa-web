@@ -34,6 +34,7 @@ drop table if exists SupportStaff;
 drop table if exists SyncActions;
 drop table if exists Tags;
 drop table if exists TeachingAssignments;
+drop table if exists TeachingCallComments;
 drop table if exists TeachingCallReceipts;
 drop table if exists TeachingCallResponses;
 drop table if exists Terms;
