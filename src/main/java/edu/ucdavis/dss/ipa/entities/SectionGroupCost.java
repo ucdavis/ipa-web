@@ -23,7 +23,7 @@ import java.util.List;
 public class SectionGroupCost extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
-    private Integer sectionCount;
+    private Integer sectionCount, taAppointmentPercentage, readerAppointmentPercentage;
     private Long enrollment;
     private Instructor instructor;
     private Instructor originalInstructor;
@@ -64,6 +64,10 @@ public class SectionGroupCost extends BaseEntity {
         this.taCount = taCount;
     }
 
+    public Integer getTaAppointmentPercentage() { return taAppointmentPercentage; }
+
+    public void setTaAppointmentPercentage(Integer taAppointmentPercentage) { this.taAppointmentPercentage = taAppointmentPercentage; }
+
     public Integer getSectionCount() {
         return sectionCount;
     }
@@ -79,6 +83,10 @@ public class SectionGroupCost extends BaseEntity {
     public void setReaderCount(Float readerCount) {
         this.readerCount = readerCount;
     }
+
+    public Integer getReaderAppointmentPercentage() { return readerAppointmentPercentage; }
+
+    public void setReaderAppointmentPercentage(Integer readerAppointmentPercentage) { this.readerAppointmentPercentage = readerAppointmentPercentage; }
 
     public BigDecimal getCost() {
         return cost;
