@@ -169,9 +169,19 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             sectionGroupCost.setTaCount(sectionGroup.getTeachingAssistantAppointments());
         }
 
+        if (sectionGroupCost.getTaAppointmentPercentage() != sectionGroup.getTaAppointmentPercentage()) {
+            updateRequired = true;
+            sectionGroupCost.setTaAppointmentPercentage(sectionGroup.getReaderAppointmentPercentage());
+        }
+
         if (sectionGroupCost.getReaderCount() != sectionGroup.getReaderAppointments()) {
             updateRequired = true;
             sectionGroupCost.setReaderCount(sectionGroup.getReaderAppointments());
+        }
+
+        if (sectionGroupCost.getReaderAppointmentPercentage() != sectionGroup.getReaderAppointmentPercentage()) {
+            updateRequired = true;
+            sectionGroupCost.setReaderAppointmentPercentage(sectionGroup.getReaderAppointmentPercentage());
         }
 
         Instructor instructor = null;
