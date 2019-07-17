@@ -29,7 +29,7 @@ public class SectionGroupCost extends BaseEntity {
     private Instructor originalInstructor;
     private String reason, title, subjectCode, courseNumber, effectiveTermCode, sequencePattern, termCode;
     private BigDecimal cost;
-    private Float taCount, readerCount, unitsHigh, unitsLow, variableUnits;
+    private Float taCount, readerCount, unitsHigh, unitsLow;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
     private InstructorType instructorType;
 	private boolean disabled;
@@ -223,11 +223,6 @@ public class SectionGroupCost extends BaseEntity {
     public void setUnitsHigh(Float unitsHigh) {
         this.unitsHigh = unitsHigh;
     }
-
-    @JsonProperty
-    public Float getVariableUnits() { return variableUnits; }
-
-    public void setVariableUnits(Float variableUnits) { this.variableUnits = variableUnits; }
 
     @JsonProperty
     public String getSubjectCode() {

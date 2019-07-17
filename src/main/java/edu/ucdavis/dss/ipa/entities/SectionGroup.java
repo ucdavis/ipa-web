@@ -34,7 +34,7 @@ public class SectionGroup extends BaseEntity {
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
 	private Integer plannedSeats;
-	private Float teachingAssistantAppointments, readerAppointments, variableUnits;
+	private Float teachingAssistantAppointments, readerAppointments;
 	private Boolean showTheStaff = false;
 
 	@Id
@@ -191,9 +191,4 @@ public class SectionGroup extends BaseEntity {
 	public void setReaderAppointments(Float readerAppointments) {
 		this.readerAppointments = readerAppointments;
 	}
-
-	@JsonProperty
-	public Float getVariableUnits() { return variableUnits; }
-
-	public void setVariableUnits(Float variableUnits) { this.variableUnits = variableUnits; }
 }
