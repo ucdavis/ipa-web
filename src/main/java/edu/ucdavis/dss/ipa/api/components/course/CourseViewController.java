@@ -129,6 +129,8 @@ public class CourseViewController {
 		originalSectionGroup.setTeachingAssistantAppointments(sectionGroup.getTeachingAssistantAppointments());
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
+		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
+
 		return sectionGroupService.save(originalSectionGroup);
 	}
 
