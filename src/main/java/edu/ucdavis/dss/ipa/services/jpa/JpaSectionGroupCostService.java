@@ -174,6 +174,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             sectionGroupCost.setReaderCount(sectionGroup.getReaderAppointments());
         }
 
+        if (sectionGroupCost.getUnitsVariable() != sectionGroup.getUnitsVariable()) {
+            updateRequired = true;
+            sectionGroupCost.setUnitsVariable(sectionGroup.getUnitsVariable());
+        }
+
         Instructor instructor = null;
         InstructorType instructorType = null;
 
