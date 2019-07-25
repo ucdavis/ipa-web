@@ -52,7 +52,7 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 			sg.setShowTheStaff(node.get("showTheStaff").booleanValue());
 		}
 
-		if (node.has("unitsVariable")) {
+		if (node.has("unitsVariable") && node.hasNonNull("unitsVariable")) {
 			sg.setUnitsVariable(node.get("unitsVariable").floatValue());
 		}
 
