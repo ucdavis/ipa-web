@@ -107,7 +107,10 @@ public class CourseViewController {
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		return sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
+		SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
+		newSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
+
+		return sectionGroupService.save(newSectionGroup);
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces="application/json")
