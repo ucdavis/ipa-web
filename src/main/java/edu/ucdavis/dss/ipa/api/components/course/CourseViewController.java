@@ -112,9 +112,8 @@ public class CourseViewController {
 
 		// Force create first section on sectionGroup creation
 		String sequenceNumber = null;
-		Character firstChar = null;
+		Character firstChar = course.getSequencePattern().charAt(0);
 
-		firstChar = course.getSequencePattern().charAt(0);
 		if (Character.isLetter(firstChar)) {
 			sequenceNumber = firstChar + "01";
 		} else {
