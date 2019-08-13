@@ -197,4 +197,20 @@ public class SectionGroup extends BaseEntity {
 
 	public void setUnitsVariable(Float unitsVariable) { this.unitsVariable = unitsVariable; }
 
+	@Transient
+	@JsonProperty
+	public String getDisplayUnits() {
+		if (this.getUnitsVariable() != null) {
+			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
+			return String.format(format, this.getUnitsVariable());
+		} else if(course.getUnitsHigh() != null) {
+			String unitsHighFormat = course.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";
+			String unitsLowFormat = course.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
+
+			return String.format(unitsLowFormat, course.getUnitsLow()) + " - " + String.format(unitsHighFormat, course.getUnitsHigh());
+		} else {
+			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
+			return String.format(format, course.getUnitsLow());
+		}
+	}
 }
