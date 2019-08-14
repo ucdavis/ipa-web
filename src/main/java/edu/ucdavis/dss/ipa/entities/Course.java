@@ -134,7 +134,7 @@ public class Course extends BaseEntity {
 	}
 
 	@Transient
-	@JsonProperty
+	@JsonProperty("displayUnits")
 	public String getDisplayUnits() {
 		if (this.getUnitsHigh() != null) {
 			String unitsHighFormat = this.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";

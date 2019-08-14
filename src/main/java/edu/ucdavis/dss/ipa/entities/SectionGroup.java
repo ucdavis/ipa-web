@@ -198,7 +198,7 @@ public class SectionGroup extends BaseEntity {
 	public void setUnitsVariable(Float unitsVariable) { this.unitsVariable = unitsVariable; }
 
 	@Transient
-	@JsonProperty
+	@JsonProperty("displayUnits")
 	public String getDisplayUnits() {
 		if (this.getUnitsVariable() != null) {
 			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
