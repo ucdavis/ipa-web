@@ -1,0 +1,1 @@
+ALTER TABLE `Courses` ADD COLUMN `AppointmentPercentage` FLOAT NOT NULL DEFAULT 100;
