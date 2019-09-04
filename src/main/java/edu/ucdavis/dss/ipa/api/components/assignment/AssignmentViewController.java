@@ -2,22 +2,12 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.factories.AssignmentViewFactory;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SupportStaff;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SupportStaffService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,9 +23,12 @@ import java.util.Map;
 
 @RestController
 public class AssignmentViewController {
+    static Long ASSOCIATE_INSTRUCTOR = 3L;
+
     @Inject AssignmentViewFactory assignmentViewFactory;
     @Inject UserService userService;
     @Inject InstructorService instructorService;
+    @Inject InstructorTypeService instructorTypeService;
     @Inject Authorization authorization;
     @Inject Authorizer authorizer;
     @Inject SectionGroupService sectionGroupService;
@@ -82,7 +75,10 @@ public class AssignmentViewController {
         Instructor instructor = instructorService.findOrCreate(supportStaff.getFirstName(), supportStaff.getLastName(), supportStaff.getEmail(), supportStaff.getLoginId(), workgroup.getId());
 
         // Ensure lecturer role is given
-        userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "instructor");
+        UserRole userRole = userRoleService.findOrCreateByLoginIdAndWorkgroupIdAndRoleToken(supportStaff.getLoginId(), workgroup.getId(), "instructor");
+
+        // Override generic "instructor" type to AI when assigning an AI
+        userRole.setInstructorType(instructorTypeService.findById(ASSOCIATE_INSTRUCTOR));
 
         // Assign supportStaff to AI
         TeachingAssignment teachingAssignment = teachingAssignmentService.findOrCreateOneBySectionGroupAndInstructor(sectionGroup, instructor);
