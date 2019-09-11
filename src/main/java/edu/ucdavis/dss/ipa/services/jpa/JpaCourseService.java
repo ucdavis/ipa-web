@@ -27,7 +27,13 @@ public class JpaCourseService implements CourseService {
 	}
 
 	private Course save(Course course) {
-		return this.courseRepository.save(course);
+		Course existingCourse = this.courseRepository.findOneBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(course.getSubjectCode(), course.getCourseNumber(), course.getSequencePattern(), course.getSchedule().getId());
+
+		if (existingCourse == null) {
+			return this.courseRepository.save(course);
+		} else {
+			return null;
+		}
 	}
 
 	/**
