@@ -133,6 +133,22 @@ public class Course extends BaseEntity {
 		this.unitsHigh = unitsHigh;
 	}
 
+	@Transient
+	@JsonProperty("displayUnits")
+	public String getDisplayUnits() {
+		if (this.getUnitsHigh() != null) {
+			String unitsHighFormat = this.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";
+			String unitsLowFormat = this.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
+
+			return String.format(unitsLowFormat, this.getUnitsLow()) + " - " + String.format(unitsHighFormat, this.getUnitsHigh());
+		} else if (this.getUnitsLow() != null) {
+			String format = this.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
+			return String.format(format, this.getUnitsLow());
+		} else {
+			return null;
+		}
+	}
+
 	@JsonProperty
 	public String getSubjectCode() {
 		return subjectCode;

@@ -34,7 +34,7 @@ public class SectionGroup extends BaseEntity {
 	private List<Activity> activities = new ArrayList<Activity>();
 	private String termCode;
 	private Integer plannedSeats;
-	private Float teachingAssistantAppointments, readerAppointments;
+	private Float teachingAssistantAppointments, readerAppointments, unitsVariable;
 	private Boolean showTheStaff = false;
 
 	@Id
@@ -190,5 +190,29 @@ public class SectionGroup extends BaseEntity {
 
 	public void setReaderAppointments(Float readerAppointments) {
 		this.readerAppointments = readerAppointments;
+	}
+
+	@JsonProperty
+	public Float getUnitsVariable() { return unitsVariable; }
+
+	public void setUnitsVariable(Float unitsVariable) { this.unitsVariable = unitsVariable; }
+
+	@Transient
+	@JsonProperty("displayUnits")
+	public String getDisplayUnits() {
+		if (this.getUnitsVariable() != null) {
+			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
+			return String.format(format, this.getUnitsVariable());
+		} else if (course.getUnitsHigh() != null) {
+			String unitsHighFormat = course.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";
+			String unitsLowFormat = course.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
+
+			return String.format(unitsLowFormat, course.getUnitsLow()) + " - " + String.format(unitsHighFormat, course.getUnitsHigh());
+		} else if (course.getUnitsLow() != null) {
+			String format = course.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
+			return String.format(format, course.getUnitsLow());
+		} else {
+			return null;
+		}
 	}
 }
