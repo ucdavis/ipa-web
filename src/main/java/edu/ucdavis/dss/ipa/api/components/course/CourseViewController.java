@@ -107,7 +107,22 @@ public class CourseViewController {
 		Workgroup workgroup = course.getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		return sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
+		SectionGroup newSectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(course.getId(), sectionGroup.getTermCode());
+		newSectionGroup.setPlannedSeats(sectionGroup.getPlannedSeats());
+
+		// Force create first section on sectionGroup creation
+		String sequenceNumber = null;
+		Character firstChar = course.getSequencePattern().charAt(0);
+
+		if (Character.isLetter(firstChar)) {
+			sequenceNumber = firstChar + "01";
+		} else {
+			sequenceNumber = course.getSequencePattern();
+		}
+
+		sectionService.findOrCreateBySectionGroupAndSequenceNumber(newSectionGroup, sequenceNumber);
+
+		return sectionGroupService.save(newSectionGroup);
 	}
 
 	@RequestMapping(value = "/api/courseView/sectionGroups/{sectionGroupId}", method = RequestMethod.PUT, produces="application/json")
