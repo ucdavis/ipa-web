@@ -48,6 +48,14 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 			sg.setReaderAppointments(node.get("readerAppointments").floatValue());
 		}
 
+		if (node.has("taAppointmentPercentage") && node.hasNonNull("taAppointmentPercentage")) {
+			sg.setTaAppointmentPercentage(node.get("taAppointmentPercentage").intValue());
+		}
+
+		if (node.has("readerAppointmentPercentage") && node.hasNonNull("readerAppointmentPercentage")) {
+			sg.setReaderAppointmentPercentage(node.get("readerAppointmentPercentage").intValue());
+		}
+
 		if (node.has("showTheStaff")) {
 			sg.setShowTheStaff(node.get("showTheStaff").booleanValue());
 		}

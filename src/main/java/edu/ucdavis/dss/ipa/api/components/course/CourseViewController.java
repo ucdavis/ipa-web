@@ -129,6 +129,9 @@ public class CourseViewController {
 		originalSectionGroup.setTeachingAssistantAppointments(sectionGroup.getTeachingAssistantAppointments());
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
+		originalSectionGroup.setTaAppointmentPercentage(sectionGroup.getTaAppointmentPercentage());
+		originalSectionGroup.setReaderAppointmentPercentage(sectionGroup.getReaderAppointmentPercentage());
+
 		return sectionGroupService.save(originalSectionGroup);
 	}
 
