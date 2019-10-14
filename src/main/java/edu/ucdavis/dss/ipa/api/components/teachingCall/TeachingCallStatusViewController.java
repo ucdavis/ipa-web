@@ -150,8 +150,8 @@ public class TeachingCallStatusViewController {
         receiptDTO.setTermsBlob(addInstructorsDTO.getTermsBlob());
         receiptDTO.setSchedule(schedule);
         receiptDTO.setShowUnavailabilities(addInstructorsDTO.getShowUnavailabilities());
+        receiptDTO.setShowSeats(addInstructorsDTO.getShowSeats());
         receiptDTO.setHideNonCourseOptions(addInstructorsDTO.getHideNonCourseOptions());
-        receiptDTO.setHideSeat(addInstructorsDTO.getHideSeats());
 
         if (addInstructorsDTO.getSendEmail() == true) {
             receiptDTO.setMessage(addInstructorsDTO.getMessage());
@@ -172,7 +172,7 @@ public class TeachingCallStatusViewController {
         private List<Long> instructorIds;
         private Date dueDate;
         private String message, termsBlob;
-        private Boolean sendEmail, showUnavailabilities, hideNonCourseOptions, hideSeats;
+        private Boolean sendEmail, showUnavailabilities, showSeats, hideNonCourseOptions;
 
         public List<Long> getInstructorIds() {
             return instructorIds;
@@ -214,16 +214,16 @@ public class TeachingCallStatusViewController {
             this.showUnavailabilities = showUnavailabilities;
         }
 
+        public Boolean getShowSeats() { return showSeats; }
+
+        public void setShowSeats(Boolean showSeats) {
+            this.showSeats = showSeats;
+        }
+
         public Boolean getHideNonCourseOptions() { return hideNonCourseOptions; }
 
         public void setHideNonCourseOptions(Boolean hideNonCourseOptions) {
             this.hideNonCourseOptions = hideNonCourseOptions;
-        }
-
-        public Boolean getHideSeats() { return hideSeats; }
-
-        public void setHideSeats(Boolean hideSeats) {
-            this.hideSeats = hideSeats;
         }
 
         public String getTermsBlob() {
@@ -269,12 +269,12 @@ public class TeachingCallStatusViewController {
                 addInstructorsDTO.setShowUnavailabilities(node.get("showUnavailabilities").booleanValue());
             }
 
-            if (node.has("hideNonCourseOptions")) {
-                addInstructorsDTO.setHideNonCourseOptions(node.get("hideNonCourseOptions").booleanValue());
+            if (node.has("showSeats")) {
+                addInstructorsDTO.setShowSeats(node.get("showSeats").booleanValue());
             }
 
-            if (node.has("hideSeats")) {
-                addInstructorsDTO.setHideSeats(node.get("hideSeats").booleanValue());
+            if (node.has("hideNonCourseOptions")) {
+                addInstructorsDTO.setHideNonCourseOptions(node.get("hideNonCourseOptions").booleanValue());
             }
 
             if (node.has("sendEmail")) {

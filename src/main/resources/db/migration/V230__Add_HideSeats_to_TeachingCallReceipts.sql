@@ -1,1 +1,0 @@
-ALTER TABLE `TeachingCallReceipts` ADD COLUMN `HideSeats` TINYINT(1) NOT NULL DEFAULT '0';

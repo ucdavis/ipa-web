@@ -22,7 +22,7 @@ public class TeachingCallReceipt implements Serializable {
 	private long id;
 
 	private Instructor instructor;
-	private Boolean isDone = false, showUnavailabilities = true, hideNonCourseOptions = false, hideSeat = false;
+	private Boolean isDone = false, showUnavailabilities = true, showSeats = true, hideNonCourseOptions = false;
 	private boolean sendEmail;
 	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
@@ -97,9 +97,9 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setHideNonCourseOptions(Boolean hideNonCourseOptions) {this.hideNonCourseOptions = hideNonCourseOptions;}
 
-	public Boolean getHideSeat() { return hideSeat; }
+	public Boolean getShowSeats() { return showSeats; }
 
-	public void setHideSeat(Boolean hideSeat) { this.hideSeat = hideSeat; }
+	public void setShowSeats(Boolean showSeats) { this.showSeats = showSeats; }
 
 	public Date getLastContactedAt() {
 		return lastContactedAt;
