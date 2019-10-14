@@ -256,6 +256,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			teachingCallReceipt.setSendEmail(teachingCallReceiptDTO.isSendEmail());
 			teachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
 			teachingCallReceipt.setHideNonCourseOptions((teachingCallReceiptDTO.getHideNonCourseOptions()));
+			teachingCallReceipt.setHideSeat(teachingCallReceiptDTO.getHideSeat());
 			teachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
 			teachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
 
