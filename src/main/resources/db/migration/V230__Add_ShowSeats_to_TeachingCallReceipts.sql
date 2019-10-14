@@ -1,1 +1,1 @@
-ALTER TABLE `TeachingCallReceipts` ADD COLUMN `ShowSeats` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `ShowSeats` TINYINT(1) NOT NULL DEFAULT '1';
