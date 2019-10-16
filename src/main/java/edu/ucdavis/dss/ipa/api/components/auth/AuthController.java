@@ -182,6 +182,11 @@ public class AuthController {
             return null;
         }
 
+        if ( user.isAdmin() ) {
+            response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+            return null;
+        }
+
         Calendar calendarNow = Calendar.getInstance();
         calendarNow.add(Calendar.MINUTE, Integer.parseInt(jwtTimeout));
 
