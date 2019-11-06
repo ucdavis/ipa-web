@@ -23,7 +23,7 @@ public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
     private BigDecimal amount = new BigDecimal(0);
-    private String description, notes, documentNumber;
+    private String description, notes, documentNumber, accountNumber;
     private LineItemCategory lineItemCategory;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
     private Boolean hidden = false;
@@ -66,6 +66,10 @@ public class LineItem extends BaseEntity {
     public String getDocumentNumber() { return documentNumber; }
 
     public void setDocumentNumber(String documentNumber) { this.documentNumber = documentNumber; }
+
+    public String getAccountNumber() { return accountNumber; }
+
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
 
     public String getDescription() {
         return description;

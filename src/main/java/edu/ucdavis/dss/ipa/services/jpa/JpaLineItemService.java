@@ -49,6 +49,7 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setLineItemCategory(lineItemDTO.getLineItemCategory());
         lineItem.setAmount(lineItemDTO.getAmount());
         lineItem.setDocumentNumber((lineItemDTO.getDocumentNumber()));
+        lineItem.setAccountNumber((lineItemDTO.getAccountNumber()));
         lineItem.setNotes(lineItemDTO.getNotes());
         lineItem.setDescription(lineItemDTO.getDescription());
         lineItem.setTeachingAssignment(lineItemDTO.getTeachingAssignment());
@@ -68,6 +69,7 @@ public class JpaLineItemService implements LineItemService {
         originalLineItem.setDescription(lineItem.getDescription());
         originalLineItem.setAmount(lineItem.getAmount());
         originalLineItem.setDocumentNumber(lineItem.getDocumentNumber());
+        originalLineItem.setAccountNumber(lineItem.getAccountNumber());
         originalLineItem.setNotes(lineItem.getNotes());
         originalLineItem.setLineItemCategory(lineItem.getLineItemCategory());
         originalLineItem.setHidden(lineItem.getHidden());
@@ -84,6 +86,7 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setNotes(originalLineItem.getNotes());
         lineItem.setAmount(originalLineItem.getAmount());
         lineItem.setDocumentNumber(originalLineItem.getDocumentNumber());
+        lineItem.setAccountNumber(originalLineItem.getAccountNumber());
         lineItem.setDescription(originalLineItem.getDescription());
         lineItem.setLineItemCategory(originalLineItem.getLineItemCategory());
         lineItem.setHidden(originalLineItem.getHidden());

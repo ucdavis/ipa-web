@@ -61,8 +61,12 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setAmount(amount);
         }
 
-        if (node.has("documentNumber")) {
+        if (node.has("documentNumber") && node.get("documentNumber").textValue().isEmpty() == false) {
             lineItem.setDocumentNumber(node.get("documentNumber").textValue());
+        }
+
+        if (node.has("accountNumber") && node.get("accountNumber").textValue().isEmpty() == false) {
+            lineItem.setAccountNumber(node.get("accountNumber").textValue());
         }
 
         return lineItem;

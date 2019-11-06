@@ -207,30 +207,33 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 		// Non-shared activities
 		for (Activity activity : section.getActivities()) {
-			String subjectCode = activity.getSection().getSectionGroup().getCourse().getSubjectCode();
-			String courseNumber = activity.getSection().getSectionGroup().getCourse().getCourseNumber();
-			String sequenceNumber = activity.getSection().getSequenceNumber();
-			char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
+			if (activity.getSection() != null) {
+				String subjectCode = activity.getSection().getSectionGroup().getCourse().getSubjectCode();
+				String courseNumber = activity.getSection().getSectionGroup().getCourse().getCourseNumber();
+				String sequenceNumber = activity.getSection().getSequenceNumber();
+				char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
 
-			String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
+				String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
 
-			Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
-			keyCount += 1L;
-			instancesOfKey.put(key, 1L);
+				Long keyCount = instancesOfKey.get(key) != null ? instancesOfKey.get(key) : 0L;
+				keyCount += 1L;
+				instancesOfKey.put(key, 1L);
 
-			String uniqueKey = key + "-" + keyCount;
+				String uniqueKey = key + "-" + keyCount;
 
-			ActivityDiffDto activityDiffDto = new ActivityDiffDto(
-				activity.getId(),
-				activity.getActivityTypeCode().getActivityTypeCode(),
-				activity.getLocationDescription(),
-				activity.getDayIndicator(),
-				activity.getStartTime() != null ? new SimpleDateFormat("HHmm").format(activity.getStartTime()) : null,
-				activity.getEndTime() != null ? new SimpleDateFormat("HHmm").format(activity.getEndTime()) : null,
-				uniqueKey
-			);
+				ActivityDiffDto activityDiffDto = new ActivityDiffDto(
+					activity.getId(),
+					activity.getActivityTypeCode().getActivityTypeCode(),
+					activity.getLocationDescription(),
+					activity.getDayIndicator(),
+					activity.getStartTime() != null ? new SimpleDateFormat("HHmm").format(activity.getStartTime()) : null,
+					activity.getEndTime() != null ? new SimpleDateFormat("HHmm").format(activity.getEndTime()) : null,
+					uniqueKey
+				);
 
-			ipaActivities.add(activityDiffDto);
+				ipaActivities.add(activityDiffDto);
+			}
+
 		}
 
 		instancesOfKey = new HashMap<String, Long>();
