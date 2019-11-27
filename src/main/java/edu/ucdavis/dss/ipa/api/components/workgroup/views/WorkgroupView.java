@@ -13,18 +13,21 @@ public class WorkgroupView {
 	private List<Location> locations = new ArrayList<Location>();
 	private String workgroupName;
 	private List<InstructorType> instructorTypes = new ArrayList<>();
+	private List<WorkgroupCourse> workgroupCourses = new ArrayList<>();
 
 	public WorkgroupView(Workgroup workgroup,
 						 List<UserRole> userRoles,
 						 List<Role> roles,
 						 List<User> users,
-						 List<InstructorType> instructorTypes) {
+             List<InstructorType> instructorTypes,
+             List<WorkgroupCourse> workgroupCourses) {
 		setTags(workgroup.getTags());
 		setRoles(roles);
 		setUsers(users);
 		setLocations(workgroup.getLocations());
 		setWorkgroupName(workgroup.getName());
 		setInstructorTypes(instructorTypes);
+		setWorkgroupCourses(workgroupCourses);
 	}
 
 	public List<Tag> getTags() {
@@ -65,6 +68,14 @@ public class WorkgroupView {
 
 	public void setWorkgroupName(String workgroupName) {
 		this.workgroupName = workgroupName;
+	}
+
+	public List<WorkgroupCourse> getWorkgroupCourses() {
+		return workgroupCourses;
+	}
+
+	public void setWorkgroupCourses(List<WorkgroupCourse> workgroupCourses) {
+		this.workgroupCourses = workgroupCourses;
 	}
 
 	public List<InstructorType> getInstructorTypes() {
