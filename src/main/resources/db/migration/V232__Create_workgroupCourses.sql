@@ -4,5 +4,8 @@ CREATE TABLE `WorkgroupCourses` (
   `Title` VARCHAR(100) NOT NULL,
   `SubjectCode` VARCHAR(4) NOT NULL,
   `CourseNumber` VARCHAR(7) NOT NULL,
-  `EffectiveTermCode` VARCHAR(6) NOT NULL
+  `EffectiveTermCode` VARCHAR(6) NOT NULL,
+  `UpdatedAt` TIMESTAMP NULL,
+  `CreatedAt` TIMESTAMP NULL,
+  `ModifiedBy` VARCHAR(16) NULL
 );
