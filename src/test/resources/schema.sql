@@ -41,6 +41,8 @@ drop table if exists Terms;
 drop table if exists UserRoles;
 drop table if exists Users;
 drop table if exists Workgroups;
+drop table if exists WorkgroupCourses;
 drop table if exists schema_version;
+
 
 SET FOREIGN_KEY_CHECKS = 1;
