@@ -134,6 +134,6 @@ public class SiteController {
 
 		String messageBody = String.join("\n\n", body);
 
-		emailService.send("dssit-devs@ucdavis.edu", messageBody, "IPA Public Contact Form Submission");
+		emailService.send("ipahelp@ucdavis.edu", messageBody, "IPA Public Contact Form Submission");
 	}
 }
