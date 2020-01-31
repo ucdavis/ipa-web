@@ -232,6 +232,10 @@ public class AssignmentViewTeachingAssignmentController {
 
         originalTeachingAssignment.setApproved(teachingAssignment.isApproved());
 
+        if (originalTeachingAssignment.getInstructorType() != teachingAssignment.getInstructorType()) {
+            originalTeachingAssignment.setInstructorType(teachingAssignment.getInstructorType());
+        }
+
         if (originalTeachingAssignment.isApproved() && originalTeachingAssignment.getSectionGroup() != null) {
             SectionGroup sectionGroup = originalTeachingAssignment.getSectionGroup();
             sectionGroup.setShowTheStaff(false);
