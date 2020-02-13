@@ -21,11 +21,11 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) {
-        String filename = teachingCallResponseReportViewDTO.getSchedule().getWorkgroup().getName() + " - " + teachingCallResponseReportViewDTO.getSchedule().getYear() + " - TeachingCallResponseReport.xls";
+        String filename = "attachment; filename=\"" + teachingCallResponseReportViewDTO.getSchedule().getWorkgroup().getName() + " - " + teachingCallResponseReportViewDTO.getSchedule().getYear() + " - TeachingCallResponseReport.xls\"";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+        response.setHeader("Content-Disposition", filename);
 
         List<String> relevantTermCodes = determineRelevantTermCodes(teachingCallResponseReportViewDTO.getTeachingCallReceipts());
 
