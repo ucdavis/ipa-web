@@ -28,7 +28,7 @@ public class CourseExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=ScheduleData.xls");
+        response.setHeader("Content-Disposition", "attachment; filename=\"ScheduleData.xls\"");
 
         // Create sheet
         Sheet sheet = workbook.createSheet("Schedule");

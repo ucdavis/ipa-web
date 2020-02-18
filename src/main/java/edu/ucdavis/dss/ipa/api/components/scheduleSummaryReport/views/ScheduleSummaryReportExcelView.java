@@ -46,7 +46,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         }
 
         String dateOfDownload = new Date().toString();
-        String fileName = "attachment; filename=" + workgroupName + "-" + termCode + "-schedule_summary-" + dateOfDownload + ".xls";
+        String fileName = "attachment; filename=\"" + workgroupName + "-" + termCode + "-schedule_summary-" + dateOfDownload + ".xls\"";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
