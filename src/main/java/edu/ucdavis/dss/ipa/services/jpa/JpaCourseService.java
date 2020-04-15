@@ -121,7 +121,7 @@ public class JpaCourseService implements CourseService {
 		try {
 			course.setTags(new ArrayList<Tag>());
 			this.save(course);
-			this.courseRepository.delete(id);
+			this.courseRepository.deleteById(id);
 
 			return true;
 		} catch (EmptyResultDataAccessException e) {

@@ -43,7 +43,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 
 	@Override
 	public void delete(Long id) {
-		this.sectionGroupRepository.delete(id);
+		this.sectionGroupRepository.deleteById(id);
 	}
 
 	@Override

@@ -293,6 +293,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public void deleteById(long budgetScenarioId) {
-        budgetScenarioRepository.delete(budgetScenarioId);
+        budgetScenarioRepository.deleteById(budgetScenarioId);
     }
 }

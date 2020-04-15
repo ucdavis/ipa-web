@@ -275,7 +275,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		this.teachingCallReceiptRepository.delete(id);
+		this.teachingCallReceiptRepository.deleteById(id);
 		return true;
 	}
 }

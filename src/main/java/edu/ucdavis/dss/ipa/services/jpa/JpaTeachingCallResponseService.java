@@ -39,7 +39,7 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 
 	@Override
 	public void delete(Long id) {
-		this.teachingCallResponseRepository.delete(id);
+		this.teachingCallResponseRepository.deleteById(id);
 	}
 
 	@Override

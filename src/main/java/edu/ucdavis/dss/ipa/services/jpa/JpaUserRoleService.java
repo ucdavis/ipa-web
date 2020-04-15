@@ -156,7 +156,7 @@ public class JpaUserRoleService implements UserRoleService {
 				workgroup.setUserRoles(workgroupUserRoles);
 				workgroupService.save(workgroup);
 
-				userRoleRepository.delete(userRole);
+				userRoleRepository.deleteById(userRole);
 				return;
 			}
 		}
