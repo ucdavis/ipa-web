@@ -15,8 +15,6 @@ import java.util.List;
 
 public interface TeachingAssignmentRepository extends CrudRepository<TeachingAssignment, Long> {
 
-	TeachingAssignment findById(Long id);
-
 	TeachingAssignment findOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
 	TeachingAssignment findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsenceAndSabbaticalInResidence(

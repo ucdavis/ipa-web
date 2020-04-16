@@ -46,7 +46,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public TeachingCallReceipt findOneById(Long id) {
-		return this.teachingCallReceiptRepository.findOne(id);
+		return this.teachingCallReceiptRepository.findById(id).orElse(null);
 	}
 
 	/**

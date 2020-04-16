@@ -43,12 +43,12 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         }
 
         if (originalSectionGroupCost.getInstructorType() != null) {
-            InstructorType instructorType = instructorTypeRepository.findById(originalSectionGroupCost.getInstructorType().getId());
+            InstructorType instructorType = instructorTypeRepository.findById(originalSectionGroupCost.getInstructorType().getId()).orElse(null);
             originalSectionGroupCost.setInstructorType(instructorType);
         }
 
         if (originalSectionGroupCost.getInstructor() != null) {
-            Instructor instructor = instructorRepository.findById(originalSectionGroupCost.getInstructor().getId());
+            Instructor instructor = instructorRepository.findById(originalSectionGroupCost.getInstructor().getId()).orElse(null);
             sectionGroupCost.setInstructor(instructor);
         }
 
@@ -138,9 +138,9 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
         originalSectionGroupCost.setDisabled(sectionGroupCostDTO.isDisabled());
 
-        originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
-        originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
-        originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
+        originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()).orElse(null));
+        originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()).orElse(null));
+        originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()).orElse(null));
         return this.save(originalSectionGroupCost);
     }
 

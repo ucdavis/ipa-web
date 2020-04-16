@@ -34,7 +34,7 @@ public class JpaInstructorService implements InstructorService {
 
 	@Override
 	public Instructor getOneById(Long id) {
-		return this.instructorRepository.findById(id);
+		return this.instructorRepository.findById(id).orElse(null);
 	}
 
 	@Override

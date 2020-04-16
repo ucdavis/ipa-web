@@ -13,5 +13,4 @@ public interface SupportAssignmentRepository extends CrudRepository<SupportAssig
     @Query(value="delete from SupportAssignment isa WHERE isa.id = ?1")
     void deleteById(long supportAssignmentId);
 
-    SupportAssignment findById(Long id);
 }

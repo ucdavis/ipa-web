@@ -22,7 +22,7 @@ public class JpaSyncActionService implements SyncActionService {
 
 	@Override
 	public SyncAction getOneById(Long id) {
-		return syncActionRepository.findOne(id);
+		return syncActionRepository.findById(id).orElse(null);
 	}
 
 	@Override

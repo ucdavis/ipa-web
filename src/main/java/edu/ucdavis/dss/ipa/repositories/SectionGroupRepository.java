@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SectionGroupRepository extends CrudRepository<SectionGroup, Long> {
-	SectionGroup findById(Long id);
 
 	List<SectionGroup> findByCourseScheduleWorkgroupIdAndCourseScheduleYear(long workgroupId, long year);
 

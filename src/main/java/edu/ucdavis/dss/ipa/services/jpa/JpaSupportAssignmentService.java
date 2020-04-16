@@ -92,7 +92,7 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
 
     @Override
     public SupportAssignment findOneById(Long instructionalSupportAssignmentId) {
-        return this.supportAssignmentRepository.findById(instructionalSupportAssignmentId);
+        return this.supportAssignmentRepository.findById(instructionalSupportAssignmentId).orElse(null);
     }
 
     @Override

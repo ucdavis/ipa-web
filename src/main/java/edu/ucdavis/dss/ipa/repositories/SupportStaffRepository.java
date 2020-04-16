@@ -5,7 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface SupportStaffRepository extends CrudRepository<SupportStaff, Long> {
 
-    SupportStaff findById(Long id);
-
     SupportStaff findByLoginIdIgnoreCase(String loginId);
 }

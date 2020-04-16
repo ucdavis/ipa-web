@@ -28,13 +28,13 @@ public class JpaLocationService implements LocationService {
 
     @Override
     public Location findOneById(Long id) {
-        return this.locationRepository.findOne(id);
+        return this.locationRepository.findById(id).orElse(null);
     }
 
     @Transactional
     @Override
     public Location archiveById(Long id) {
-        Location location = this.locationRepository.findOne(id);
+        Location location = this.locationRepository.findById(id).orElse(null);
 
         if(location == null) { return null; }
 

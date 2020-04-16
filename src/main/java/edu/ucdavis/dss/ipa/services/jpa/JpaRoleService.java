@@ -29,7 +29,7 @@ public class JpaRoleService implements RoleService {
 
 	@Override
 	public Role findOneById(Long id) {
-		return this.roleRepository.findOne(id);
+		return this.roleRepository.findById(id).orElse(null);
 	}
 
 	@Override

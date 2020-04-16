@@ -29,7 +29,7 @@ public class JpaSectionService implements SectionService {
 
 	@Override
 	public Section getOneById(Long id) {
-		return this.sectionRepository.findById(id);
+		return this.sectionRepository.findById(id).orElse(null);
 	}
 
 	/**

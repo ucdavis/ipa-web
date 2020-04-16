@@ -131,7 +131,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Transactional
     @Override
     public BudgetScenario createFromExisting(Long scenarioId, String name, boolean copyFunds) {
-        BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
+        BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId).orElse(null);
 
         if (originalBudgetScenario == null) {
             return null;
@@ -288,7 +288,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public BudgetScenario findById(long budgetScenarioId) {
-        return budgetScenarioRepository.findById(budgetScenarioId);
+        return budgetScenarioRepository.findById(budgetScenarioId).orElse(null);
     }
 
     @Override

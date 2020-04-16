@@ -23,7 +23,7 @@ public class JpaCourseService implements CourseService {
 
 	@Override
 	public Course getOneById(Long id) {
-		return this.courseRepository.findOne(id);
+		return this.courseRepository.findById(id).orElse(null);
 	}
 
 	private Course save(Course course) {
