@@ -44,9 +44,7 @@ import java.util.Date;
 @TestPropertySource(locations="classpath:application-test.properties")
 @Sql("classpath:seed-data.sql")
 public class AuthControllerTest {
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+    private static final MediaType contentType = MediaType.APPLICATION_JSON;
 
     private MockMvc mockMvc;
 
