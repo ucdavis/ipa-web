@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.services;
 
-import edu.ucdavis.dss.ipa.TestConfiguration;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.repositories.SupportStaffRepository;
@@ -13,12 +12,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @Sql("classpath:seed-data.sql")
 public class UserRoleServiceTest {
     @Autowired

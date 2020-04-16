@@ -25,6 +25,7 @@ public class MockDataWarehouseRepository implements DataWarehouseRepository {
 
     /**
      * Retrieves JSON of terms from DW
+     *
      * @return a list of DwTerms
      */
     @Override

@@ -8,52 +8,41 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.core.AnyOf.anyOf;
-import static org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.any;
-
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Date;
+
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.AnyOf.anyOf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * Created by Lloyd on 8/23/17.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @Sql("classpath:seed-data.sql")
 public class AuthControllerTest {
     private static final MediaType contentType = MediaType.APPLICATION_JSON;
-
-    private MockMvc mockMvc;
-
     @Value("${IPA_JWT_SIGNING_KEY}")
     String jwtSigningKey;
-
     @Value("${IPA_JWT_TIMEOUT}")
     String jwtTimeout;
-
+    private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
