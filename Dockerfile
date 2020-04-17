@@ -35,8 +35,10 @@ ENV IPA_URL_FRONTEND $IPA_URL_FRONTEND
 ARG CAS_URL
 ENV CAS_URL $CAS_URL
 
-ADD ./rds-combined-ca-bundle.der rds-combined-ca-bundle.der
-RUN keytool -import -noprompt -trustcacerts -alias aws_rds_combined -file rds-combined-ca-bundle.der -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+COPY ./rds-ca-2019-root.pem rds-ca-2019-root.pem
+COPY ./rds-ca-2019-us-west-2.pem rds-ca-2019-us-west-2.pem
+RUN keytool -import -noprompt -trustcacerts -alias aws_rds_ca_2019_root -file rds-ca-2019-root.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+RUN keytool -import -noprompt -trustcacerts -alias aws_rds_ca_us_west_2 -file rds-ca-2019-us-west-2.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
 
 ADD ./dw.dss.ucdavis.edu.cer dw.dss.ucdavis.edu.cer
 RUN keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.edu.cer -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
