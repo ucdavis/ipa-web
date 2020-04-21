@@ -56,7 +56,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         Sheet sheet = workbook.createSheet("Schedule");
 
         setExcelHeader(sheet);
-
+        sheet.setColumnWidth(0, 9000);
         int row = 1;
 
         List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
@@ -90,7 +90,8 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 }
 
                 Row excelHeader = sheet.createRow(row);
-                excelHeader.createCell(col).setCellValue(course.getShortDescription());
+
+                excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle());
 
                 // Set Instructors column
                 col = 1;

@@ -3,13 +3,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.18.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.22.RELEASE")
     }
 }
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '1.5.18.RELEASE'
+    id 'org.springframework.boot' version '1.5.22.RELEASE'
     id 'checkstyle'
     id 'idea'
 }
