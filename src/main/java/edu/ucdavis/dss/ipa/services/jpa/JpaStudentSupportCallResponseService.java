@@ -195,9 +195,6 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
         // Many email clients (outlook, gmail, etc) are unpredictable with how they process html/css, so the template is very ugly
         messageSubject = "IPA: Support Call has started";
         messageBody += "<table><tbody><tr><td style='width: 20px;'></td><td>";
-        messageBody += "It is time to start thinking about teaching plans for <b>" + " " + year + "-" + (year+1) + "</b>.";
-        messageBody += "<br />";
-        messageBody += "<br />";
         messageBody += studentSupportCallResponse.getMessage();
         messageBody += "<br />";
         messageBody += "<br />";
