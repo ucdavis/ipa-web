@@ -149,7 +149,23 @@ public class CourseViewController {
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
 
-		originalSectionGroup.setTermCode(sectionGroup.getTermCode());
+		// if updating termCode, need to update sectionGroupCost, teachingAssignments
+		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
+			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
+
+			// Using find in BudgetScenarioService runs updateFromLiveData() before returning and deletes the sectionGroupCost before we can update
+			BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroup.getId(), originalSectionGroup.getCourse().getYear(), true);
+			List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
+
+			String originalSectionGroupKey = originalSectionGroup.getCourse().getSubjectCode() + originalSectionGroup.getCourse().getCourseNumber() + originalSectionGroup.getCourse().getSequencePattern() + originalSectionGroup.getCourse().getEffectiveTermCode();
+			for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+				String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getEffectiveTermCode();
+
+				if (sectionGroupCostKey.equals(originalSectionGroupKey)) {
+					sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+				}
+			}
+		}
 
 		return sectionGroupService.save(originalSectionGroup);
 	}
