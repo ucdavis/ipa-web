@@ -16,6 +16,7 @@ import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFacto
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
@@ -46,6 +47,8 @@ public class CourseViewController {
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
+	@Inject SectionGroupCostService sectionGroupCostService;
+	@Inject	BudgetScenarioRepository budgetScenarioRepository;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
@@ -145,6 +148,8 @@ public class CourseViewController {
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
+
+		originalSectionGroup.setTermCode(sectionGroup.getTermCode());
 
 		return sectionGroupService.save(originalSectionGroup);
 	}
