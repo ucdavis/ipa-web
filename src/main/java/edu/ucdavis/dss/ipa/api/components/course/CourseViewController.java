@@ -18,6 +18,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -49,6 +50,7 @@ public class CourseViewController {
 	@Inject SectionService sectionService;
 	@Inject SectionGroupCostService sectionGroupCostService;
 	@Inject	BudgetScenarioRepository budgetScenarioRepository;
+	@Inject TeachingAssignmentRepository teachingAssignmentRepository;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
@@ -152,6 +154,13 @@ public class CourseViewController {
 		// if updating termCode, need to update sectionGroupCost, teachingAssignments
 		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
 			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
+
+			// TeachingAssignments
+			List<TeachingAssignment> teachingAssignments = originalSectionGroup.getTeachingAssignments();
+			for (TeachingAssignment teachingAssignment : teachingAssignments) {
+				teachingAssignment.setTermCode(sectionGroup.getTermCode());
+				teachingAssignmentRepository.save(teachingAssignment);
+			}
 
 			// Using find in BudgetScenarioService runs updateFromLiveData() before returning and deletes the sectionGroupCost before we can update
 			BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroup.getId(), originalSectionGroup.getCourse().getYear(), true);
