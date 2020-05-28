@@ -18,7 +18,6 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.repositories.TeachingAssignmentRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
@@ -48,9 +47,7 @@ public class CourseViewController {
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
-	@Inject SectionGroupCostService sectionGroupCostService;
 	@Inject	BudgetScenarioRepository budgetScenarioRepository;
-	@Inject TeachingAssignmentRepository teachingAssignmentRepository;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
@@ -151,29 +148,22 @@ public class CourseViewController {
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
 
-		// if updating termCode, need to update sectionGroupCost, teachingAssignments
+		// If updating termCode, need to update sectionGroupCost to prevent deletion on Budget load.
 		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
-			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
-
-			// TeachingAssignments
-			List<TeachingAssignment> teachingAssignments = originalSectionGroup.getTeachingAssignments();
-			for (TeachingAssignment teachingAssignment : teachingAssignments) {
-				teachingAssignment.setTermCode(sectionGroup.getTermCode());
-				teachingAssignmentRepository.save(teachingAssignment);
-			}
-
-			// Using find in BudgetScenarioService runs updateFromLiveData() before returning and deletes the sectionGroupCost before we can update
+			// Using find in BudgetScenarioService runs updateFromLiveData() and deletes the sectionGroupCost because the termCode doesn't match.
 			BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroup.getId(), originalSectionGroup.getCourse().getYear(), true);
 			List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
 
-			String originalSectionGroupKey = originalSectionGroup.getCourse().getSubjectCode() + originalSectionGroup.getCourse().getCourseNumber() + originalSectionGroup.getCourse().getSequencePattern() + originalSectionGroup.getCourse().getEffectiveTermCode();
+			String originalSectionGroupKey = originalSectionGroup.getCourse().getSubjectCode() + originalSectionGroup.getCourse().getCourseNumber() + originalSectionGroup.getCourse().getSequencePattern() + originalSectionGroup.getTermCode() + originalSectionGroup.getCourse().getEffectiveTermCode();
 			for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
-				String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getEffectiveTermCode();
+				String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
 
 				if (sectionGroupCostKey.equals(originalSectionGroupKey)) {
 					sectionGroupCost.setTermCode(sectionGroup.getTermCode());
 				}
 			}
+
+			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
 		}
 
 		return sectionGroupService.save(originalSectionGroup);
