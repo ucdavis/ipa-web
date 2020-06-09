@@ -57,136 +57,141 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", fileName);
         for(String termCode : shortTermCodes){
-            // Create sheet
-            Sheet sheet = workbook.createSheet(Term.getRegistrarName(termCode));
-            setExcelHeader(sheet);
-            sheet.setColumnWidth(0, 9000);
-            int row = 1;
-            // Sort courses by subjectCode, course number, and sequence pattern
-            Collections.sort(courses, new Comparator<Course>() {
-                @Override
-                public int compare(Course course1, Course course2) {
-                    if (course1.getSubjectCode().equals(course2.getSubjectCode())) {
-                        if (course1.getCourseNumber().equals(course2.getCourseNumber())) {
-                            // Compare by sequence pattern
-                            return course1.getSequencePattern().compareTo(course2.getSequencePattern());
-                        }
-                        // Compare by course number
-                        return course1.getCourseNumber().compareTo(course2.getCourseNumber());
+            printTerm(workbook, courses, termCode);
+        }
+    }
+
+    private void printTerm(Workbook workbook, List<Course> courses, String termCode){
+        // Create sheet
+        Sheet sheet = workbook.createSheet(Term.getRegistrarName(termCode));
+        setExcelHeader(sheet);
+        sheet.setColumnWidth(0, 9000);
+        int row = 1;
+        // Sort courses by subjectCode, course number, and sequence pattern
+        Collections.sort(courses, new Comparator<Course>() {
+            @Override
+            public int compare(Course course1, Course course2) {
+                if (course1.getSubjectCode().equals(course2.getSubjectCode())) {
+                    if (course1.getCourseNumber().equals(course2.getCourseNumber())) {
+                        // Compare by sequence pattern
+                        return course1.getSequencePattern().compareTo(course2.getSequencePattern());
                     }
-                    return course1.getSubjectCode().compareTo(course2.getSubjectCode());
+                    // Compare by course number
+                    return course1.getCourseNumber().compareTo(course2.getCourseNumber());
                 }
-            });
-            for(Course course : courses) {
-                // Set course column
-                int col = 0;
-                for (SectionGroup sectionGroup : course.getSectionGroups()) {
-                    // Course will include sectionGroups from all terms in the year, but the view is scoped to a term
-                    if (termCode.equals(sectionGroup.getTermCode()) == false) {
-                        continue;
+                return course1.getSubjectCode().compareTo(course2.getSubjectCode());
+            }
+        });
+        for(Course course : courses) {
+            // Set course column
+            int col = 0;
+            for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                // Course will include sectionGroups from all terms in the year, but the view is scoped to a term
+                if (termCode.equals(sectionGroup.getTermCode()) == false) {
+                    continue;
+                }
+                Row excelHeader = sheet.createRow(row);
+                excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle());
+                // Set Instructors column
+                col = 1;
+                for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+                    if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
+                        excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructor().getFullName());
+                        break;
                     }
-                    Row excelHeader = sheet.createRow(row);
-                    excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle());
-                    // Set Instructors column
-                    col = 1;
-                    for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
-                        if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
-                            excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructor().getFullName());
-                            break;
-                        }
+                }
+                // Set TAs column
+                col = 2;
+                String taNames = "";
+                for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
+                    if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
+                    String displayName = supportAssignment.getSupportStaff().getFullName();
+                    taNames += displayName;
+                }
+                String formattedTAs = String.join(", ", taNames);
+                excelHeader.createCell(col).setCellValue(formattedTAs);
+                // Set course values
+                for (Section section : sectionGroup.getSections()) {
+                    // Set Sequence Pattern
+                    col = 3;
+                    excelHeader.createCell(col).setCellValue(section.getSequenceNumber());
+                    // Set CRN
+                    col = 4;
+                    excelHeader.createCell(col).setCellValue(section.getCrn());
+                    // Set Seats
+                    col = 5;
+                    if (section.getSeats() != null) {
+                        excelHeader.createCell(col).setCellValue(section.getSeats());
                     }
-                    // Set TAs column
-                    col = 2;
-                    String taNames = "";
-                    for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
+                    // Set section TAs
+                    col = 6;
+                    String sectionTAs = "";
+                    for (SupportAssignment supportAssignment : section.getSupportAssignments()) {
                         if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
-                        String displayName = supportAssignment.getSupportStaff().getFullName();
-                        taNames += displayName;
+                        String displayName = supportAssignment.getSupportStaff().getFirstName() + " " + supportAssignment.getSupportStaff().getLastName();
+                        if (sectionTAs.length() > 0) {
+                            sectionTAs += ", ";
+                        }
+                        sectionTAs += displayName;
                     }
-                    String formattedTAs = String.join(", ", taNames);
-                    excelHeader.createCell(col).setCellValue(formattedTAs);
-                    // Set course values
-                    for (Section section : sectionGroup.getSections()) {
-                        // Set Sequence Pattern
-                        col = 3;
-                        excelHeader.createCell(col).setCellValue(section.getSequenceNumber());
-                        // Set CRN
-                        col = 4;
-                        excelHeader.createCell(col).setCellValue(section.getCrn());
-                        // Set Seats
-                        col = 5;
-                        if (section.getSeats() != null) {
-                            excelHeader.createCell(col).setCellValue(section.getSeats());
+                    excelHeader.createCell(col).setCellValue(sectionTAs);
+                    for (Activity activity : sectionGroup.getActivities()) {
+                        // Set Activity Type Code Description
+                        col = 7;
+                        excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
+                        // Set Days
+                        col = 8;
+                        excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
+                        // Set Start
+                        if (activity.getStartTime() != null) {
+                            col = 9;
+                            excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
-                        // Set section TAs
-                        col = 6;
-                        String sectionTAs = "";
-                        for (SupportAssignment supportAssignment : section.getSupportAssignments()) {
-                            if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
-                            String displayName = supportAssignment.getSupportStaff().getFirstName() + " " + supportAssignment.getSupportStaff().getLastName();
-                            if (sectionTAs.length() > 0) {
-                                sectionTAs += ", ";
-                            }
-                            sectionTAs += displayName;
+                        // Set Start
+                        if (activity.getEndTime() != null) {
+                            col = 10;
+                            excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
-                        excelHeader.createCell(col).setCellValue(sectionTAs);
-                        for (Activity activity : sectionGroup.getActivities()) {
-                            // Set Activity Type Code Description
-                            col = 7;
-                            excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
-                            // Set Days
-                            col = 8;
-                            excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
-                            // Set Start
-                            if (activity.getStartTime() != null) {
-                                col = 9;
-                                excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
-                            }
-                            // Set Start
-                            if (activity.getEndTime() != null) {
-                                col = 10;
-                                excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
-                            }
-                            if (activity.getLocationDescription() != null) {
-                                col = 11;
-                                excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
-                            }
-                            row++;
-                            excelHeader = sheet.createRow(row);
+                        if (activity.getLocationDescription() != null) {
+                            col = 11;
+                            excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
                         }
-                        for (Activity activity : section.getActivities()) {
-                            // Set Activity Type Code Description
-                            col = 7;
-                            excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
-                            // Set Days
-                            col = 8;
-                            excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
-                            // Set Start
-                            if (activity.getStartTime() != null) {
-                                col = 9;
-                                excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
-                            }
-                            // Set Start
-                            if (activity.getEndTime() != null) {
-                                col = 10;
-                                excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
-                            }
-                            if (activity.getLocationDescription() != null) {
-                                col = 11;
-                                excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
-                            }
-                            row++;
-                            excelHeader = sheet.createRow(row);
+                        row++;
+                        excelHeader = sheet.createRow(row);
+                    }
+                    for (Activity activity : section.getActivities()) {
+                        // Set Activity Type Code Description
+                        col = 7;
+                        excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
+                        // Set Days
+                        col = 8;
+                        excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
+                        // Set Start
+                        if (activity.getStartTime() != null) {
+                            col = 9;
+                            excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
-                        if (section.getActivities().size() == 0) {
-                            row++;
-                            excelHeader = sheet.createRow(row);
+                        // Set Start
+                        if (activity.getEndTime() != null) {
+                            col = 10;
+                            excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
+                        if (activity.getLocationDescription() != null) {
+                            col = 11;
+                            excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
+                        }
+                        row++;
+                        excelHeader = sheet.createRow(row);
+                    }
+                    if (section.getActivities().size() == 0) {
+                        row++;
+                        excelHeader = sheet.createRow(row);
                     }
                 }
             }
         }
     }
+
     private void setExcelHeader(Sheet excelSheet) {
         Row excelHeader = excelSheet.createRow(0);
         excelHeader.createCell(0).setCellValue("Course");
