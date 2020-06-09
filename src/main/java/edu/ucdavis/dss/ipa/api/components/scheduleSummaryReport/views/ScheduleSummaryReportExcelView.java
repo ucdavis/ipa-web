@@ -99,6 +99,10 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                         excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructor().getFullName());
                         break;
                     }
+                    else if(teachingAssignment.isApproved() && teachingAssignment.getInstructorType() != null){
+                        excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructorType().getDescription());
+                        break;
+                    }
                 }
                 // Set TAs column
                 col = 2;
