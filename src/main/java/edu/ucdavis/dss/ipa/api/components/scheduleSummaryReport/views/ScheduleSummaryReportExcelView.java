@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     private ScheduleSummaryReportView scheduleSummaryReportViewDTO = null;
     public ScheduleSummaryReportExcelView(ScheduleSummaryReportView scheduleSummaryReportViewDTO) {
@@ -94,26 +95,26 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle());
                 // Set Instructors column
                 col = 1;
+                List<String> instructorNames = new java.util.ArrayList<>();
                 for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
                     if (teachingAssignment.isApproved() && teachingAssignment.getInstructor() != null) {
-                        excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructor().getFullName());
-                        break;
+                        instructorNames.add(teachingAssignment.getInstructor().getFullName());
                     }
                     else if(teachingAssignment.isApproved() && teachingAssignment.getInstructorType() != null){
-                        excelHeader.createCell(col).setCellValue(teachingAssignment.getInstructorType().getDescription());
-                        break;
+                        instructorNames.add(teachingAssignment.getInstructorType().getDescription());
                     }
                 }
+                excelHeader.createCell(col).setCellValue(String.join(", ", instructorNames));
+
                 // Set TAs column
                 col = 2;
-                String taNames = "";
+                List<String> taNames = new java.util.ArrayList<>();
                 for (SupportAssignment supportAssignment : sectionGroup.getSupportAssignments()) {
                     if (supportAssignment.getAppointmentType().equals("teachingAssistant") == false || supportAssignment.getSupportStaff() == null) { continue; }
                     String displayName = supportAssignment.getSupportStaff().getFullName();
-                    taNames += displayName;
+                    taNames.add(displayName);
                 }
-                String formattedTAs = String.join(", ", taNames);
-                excelHeader.createCell(col).setCellValue(formattedTAs);
+                excelHeader.createCell(col).setCellValue(String.join(", ", taNames));
                 // Set course values
                 for (Section section : sectionGroup.getSections()) {
                     // Set Sequence Pattern
