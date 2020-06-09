@@ -27,12 +27,26 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
         Set<String> shortTermCodes = new java.util.HashSet<String>();
-        for(Course course : courses) {
-            for (SectionGroup sectionGroup : course.getSectionGroups()) {
-                shortTermCodes.add(sectionGroup.getTermCode());
+        Long year = scheduleSummaryReportViewDTO.getYear();
+
+        String shortTermCode = scheduleSummaryReportViewDTO.getTermCode();
+        if(shortTermCode != null){
+            String fullTermCode = "";
+            if (Long.valueOf(shortTermCode) > 4) {
+                fullTermCode = year + shortTermCode;
+            } else {
+                year = Long.valueOf(year) + 1;
+                fullTermCode = year + shortTermCode;
+            }
+            shortTermCodes.add(fullTermCode);
+        } else{
+            for(Course course : courses) {
+                for (SectionGroup sectionGroup : course.getSectionGroups()) {
+                    shortTermCodes.add(sectionGroup.getTermCode());
+                }
             }
         }
-        Long year = scheduleSummaryReportViewDTO.getYear();
+
         String workgroupName = "";
         if (scheduleSummaryReportViewDTO.getCourses().size() > 0) {
             workgroupName = scheduleSummaryReportViewDTO.getCourses().get(0).getSchedule().getWorkgroup().getName();
@@ -67,7 +81,6 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 // Set course column
                 int col = 0;
                 for (SectionGroup sectionGroup : course.getSectionGroups()) {
-                    System.err.println("Term code is: " + sectionGroup.getTermCode());
                     // Course will include sectionGroups from all terms in the year, but the view is scoped to a term
                     if (termCode.equals(sectionGroup.getTermCode()) == false) {
                         continue;
