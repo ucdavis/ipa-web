@@ -31,6 +31,12 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         Long year = scheduleSummaryReportViewDTO.getYear();
 
         String shortTermCode = scheduleSummaryReportViewDTO.getTermCode();
+        String workgroupName = "";
+        if (scheduleSummaryReportViewDTO.getCourses().size() > 0) {
+            workgroupName = scheduleSummaryReportViewDTO.getCourses().get(0).getSchedule().getWorkgroup().getName();
+        }
+        String dateOfDownload = new Date().toString();
+        String fileName = "";
         if(shortTermCode != null){
             String fullTermCode = "";
             if (Long.valueOf(shortTermCode) > 4) {
@@ -40,20 +46,15 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                 fullTermCode = year + shortTermCode;
             }
             shortTermCodes.add(fullTermCode);
+            fileName = "attachment; filename=\"" + workgroupName + "-" + fullTermCode + "-schedule_summary-" + dateOfDownload + ".xls\"";
         } else{
             for(Course course : courses) {
                 for (SectionGroup sectionGroup : course.getSectionGroups()) {
                     shortTermCodes.add(sectionGroup.getTermCode());
                 }
             }
+            fileName = "attachment; filename=\"" + workgroupName + "-" + year + "-" + (year+1) + "-schedule_summary-" + dateOfDownload + ".xls\"";
         }
-
-        String workgroupName = "";
-        if (scheduleSummaryReportViewDTO.getCourses().size() > 0) {
-            workgroupName = scheduleSummaryReportViewDTO.getCourses().get(0).getSchedule().getWorkgroup().getName();
-        }
-        String dateOfDownload = new Date().toString();
-        String fileName = "attachment; filename=\"" + workgroupName + "-" + year + "-schedule_summary-" + dateOfDownload + ".xls\"";
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", fileName);
