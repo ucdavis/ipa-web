@@ -167,13 +167,13 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         StudentSupportCallResponse studentSupportCallResponse = studentSupportCallResponseService.findByScheduleIdAndSupportStaffIdAndTermCode(schedule.getId(), supportStaffId, termCode);
 
-        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleId(schedule.getId());
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
         List<Activity> activities = activityService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
-        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCodeAndSupportStaffId(schedule.getId(), termCode, supportStaffId);
+        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findBySupportStaffIdAndTermCode(supportStaffId, termCode);
 
         return new InstructionalSupportCallStudentFormView(sectionGroups, courses, supportAssignments, studentSupportPreferences, schedule.getId(), supportStaffId, studentSupportCallResponse, sections, activities);
     }
