@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
@@ -17,6 +18,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorizer;
+import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
@@ -31,13 +33,20 @@ import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class BudgetViewController {
@@ -57,6 +66,9 @@ public class BudgetViewController {
     @Inject InstructorService instructorService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject InstructorTypeService instructorTypeService;
+
+    @Value("${IPA_URL_API}")
+    String ipaUrlApi;
 
     /**
      * Delivers the JSON payload for the Courses View (nee Annual View), used on page load.
@@ -474,5 +486,18 @@ public class BudgetViewController {
         }
 
         return lineItemComment;
+    }
+
+    @RequestMapping(value = "/api/budgetView/helloworld", method = RequestMethod.POST)
+    public Map generateAllDeparmentsExcel(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, String> map = new HashMap<>();
+        String url = ipaUrlApi + "";
+        map.put("redirect", url);
+        return map;
+    }
+
+    @RequestMapping(value = "/api/budgetView/helloworld2", method = RequestMethod.POST)
+    public View downloadAllDeparmentsExcel(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        return new BudgetExcelView();
     }
 }
