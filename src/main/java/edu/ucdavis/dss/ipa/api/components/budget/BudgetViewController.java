@@ -497,7 +497,8 @@ public class BudgetViewController {
     }
 
     @RequestMapping(value = "/api/budgetView/helloworld2", method = RequestMethod.POST)
-    public View downloadAllDeparmentsExcel(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+    public View downloadAllDeparmentsExcel(@RequestBody BudgetScenario budgetScenarioDTO, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        System.err.println(budgetScenarioDTO.getId());
         return new BudgetExcelView();
     }
 }
