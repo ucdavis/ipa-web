@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.budget;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
+import edu.ucdavis.dss.ipa.api.components.budget.views.WorkgroupIdBudgetScenarioId;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
@@ -497,8 +498,12 @@ public class BudgetViewController {
     }
 
     @RequestMapping(value = "/api/budgetView/helloworld2", method = RequestMethod.POST)
-    public View downloadAllDeparmentsExcel(@RequestBody BudgetScenario budgetScenarioDTO, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
-        System.err.println(budgetScenarioDTO.getId());
+    public View downloadAllDeparmentsExcel(@RequestBody List<WorkgroupIdBudgetScenarioId> WorkgroupIdBudgetScenarioIdList, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        for (WorkgroupIdBudgetScenarioId workgroupIdBudgetScenarioId : WorkgroupIdBudgetScenarioIdList) {
+            System.err.println(workgroupIdBudgetScenarioId.getWorkgroupId());
+            System.err.println(workgroupIdBudgetScenarioId.getBudgetScenarioId());
+        }
+
         return new BudgetExcelView();
     }
 }
