@@ -127,7 +127,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 instructorTypeCosts,
                 instructorTypes,
                 userRoles,
-                tags);
+                tags,
+                workgroup);
 
         return budgetView;
     }

@@ -508,6 +508,7 @@ public class BudgetViewController {
             System.err.println(scenario.getLineItems().size());
             Budget budget = scenario.getBudget();
             System.err.println(budget.getId());
+            System.err.println("Workgroup id " + budget.getSchedule().getWorkgroup().getId());
             BudgetView budgetView = budgetViewFactory.createBudgetView(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear(), budget);
             budgetViews.add(budgetView);
             System.err.println("instructor count is " + budgetView.getActiveInstructors().size());

@@ -1,30 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.SupportAssignment;
-import edu.ucdavis.dss.ipa.entities.Tag;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
 import java.util.Set;
 
 public class BudgetView {
-    String workgroupId;
+    Workgroup workgroup;
     List<BudgetScenario> budgetScenarios;
     List<SectionGroupCost> sectionGroupCosts;
     List<LineItem> lineItems;
@@ -66,7 +48,8 @@ public class BudgetView {
             List<InstructorTypeCost> instructorTypeCosts,
             List<InstructorType> instructorTypes,
             List<UserRole> userRoles,
-            List<Tag> tags
+            List<Tag> tags,
+            Workgroup workgroup
     ) {
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -88,14 +71,15 @@ public class BudgetView {
         setAssignedInstructors(assignedInstructors);
         setUserRoles(userRoles);
         setTags(tags);
+        setWorkgroup(workgroup);
     }
 
-    public String getWorkgroupId() {
-        return workgroupId;
+    public Workgroup getWorkgroup() {
+        return workgroup;
     }
 
-    public void setWorkgroupId(String workgroupId) {
-        this.workgroupId = workgroupId;
+    public void setWorkgroup(Workgroup workgroup ) {
+        this.workgroup = workgroup;
     }
 
     public List<BudgetScenario> getBudgetScenarios() {
