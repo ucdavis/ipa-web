@@ -6,8 +6,11 @@ import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 
+import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -23,6 +26,7 @@ public class BudgetExcelView extends AbstractXlsView {
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject UserRoleService userRoleService;
+
     private List<BudgetView> budgetViews = null;
     public BudgetExcelView ( List<BudgetView> budgetViews ) {
         this.budgetViews = budgetViews;
@@ -36,89 +40,94 @@ public class BudgetExcelView extends AbstractXlsView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"utf-8\"");
         response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xls\"");
 
-        Sheet sheet = workbook.createSheet("Budget Summary");
-        setExcelHeader(sheet, Arrays.asList("1", "2"));
+        Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
+        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("", "Department","Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
 
-        Sheet funds = workbook.createSheet("Funds");
-        setExcelHeader(sheet, Arrays.asList("Department", "Type", "Description", "Amount"));
-
+        Sheet fundsSheet = workbook.createSheet("Funds");
+        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Type", "Description", "Amount"));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
-        setExcelHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
+        instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
 
-        int salarySheetRow = 0;
-        int fundsRow = 0;
+        Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
+        instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Type", "Cost"));
+
         for (BudgetView budgetView : budgetViews) {
-            // Funds
+            // Create Funds sheet
             for(LineItem li : budgetView.getLineItems()){
-                fundsRow += 1;
-                Row lineItemRow = funds.createRow(fundsRow);
-                lineItemRow.createCell(0).setCellValue(budgetView.getWorkgroup().getName());
-                lineItemRow.createCell(1).setCellValue(li.getLineItemCategory().getDescription());
-                lineItemRow.createCell(2).setCellValue(li.getDescription());
-                lineItemRow.createCell(3).setCellValue(Objects.toString(li.getAmount(), ""));
+                List<String> cellValues = Arrays.asList(
+                        budgetView.getWorkgroup().getName(),
+                        li.getLineItemCategory().getDescription(),
+                        li.getDescription(),
+                        Objects.toString(li.getAmount(), ""));
+                fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
             }
 
+            HashMap<String, BigDecimal> instructorCostMap = new HashMap<>();
+            List<InstructorType> instructorTypes = budgetView.getInstructorTypes();
+            for(InstructorType instructorType : instructorTypes){
+                System.err.println(instructorType.getDescription());
+                instructorCostMap.put(instructorType.getDescription(), BigDecimal.ZERO);
+            }
 
-            System.err.println("Instructor count in excel is " + budgetView.getActiveInstructors().size());
-
-            for (int i = 0; i < budgetView.getActiveInstructors().size(); i++) {
-                salarySheetRow += 1;
-                Row instructorSalaryRow = instructorSalariesSheet.createRow(salarySheetRow);
-                instructorSalaryRow.createCell(0).setCellValue(budgetView.getWorkgroup().getName());
-
-                Instructor instructor = budgetView.getActiveInstructors().get(i);
+            // Creating Instructor Salaries sheet and calculating Instructor Category Cost
+            for(Instructor instructor : budgetView.getActiveInstructors()){
+                // Get data into correct shape
                 InstructorCost instructorCost = budgetView.getInstructorCosts().stream().filter(ic -> ic.getInstructor().getId() == instructor.getId()).findFirst().orElse(null);
 
                 String instructorName = instructor.getLastName() + " " + instructor.getFirstName();
-                instructorSalaryRow.createCell(1).setCellValue(instructorName);
 
+                // Calculate instructor type.  Make sure to compare with frontend if you need to change.
                 Set<User> users = budgetView.users;
                 User user = budgetView.users.stream().filter(u -> u.getLoginId().equals(instructor.getLoginId())).findFirst().orElse(null);
-                System.err.println(instructor.getId());
-                System.err.println(user.getId());
-                System.err.println("Workgroup in excel " + budgetView.getWorkgroup().getId() + " " + user.getDisplayName());
                 UserRole userRole = user.getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
-
+                String instructorTypeDescription = "";
                 if(userRole != null && userRole.getInstructorType() != null) {
-                    instructorSalaryRow.createCell(2).setCellValue(userRole.getInstructorType().getDescription());
+                    instructorTypeDescription = userRole.getInstructorType().getDescription();
                 }else{
                     List<TeachingAssignment> tas = budgetView.getTeachingAssignments();
                     Long instructorId = instructor.getId();
                     Long scheduleId = budgetView.getBudget().getSchedule().getId();
                     TeachingAssignment ta = budgetView.getTeachingAssignments().stream().filter(t -> t.getInstructor() != null).filter(t -> (t.getInstructor().getId() == instructor.getId() && t.getSchedule().getId() == budgetView.getBudget().getSchedule().getId())).findFirst().orElse(null);
                     if(ta != null){
-                        instructorSalaryRow.createCell(2).setCellValue(ta.getInstructorType().getDescription());
+                        instructorTypeDescription = ta.getInstructorType().getDescription();
                     }
                 }
 
+                String instructorCostValue = "";
                 if (instructorCost != null) {
-                    instructorSalaryRow.createCell(3).setCellValue(Objects.toString(instructorCost.getCost(), ""));
+                    instructorCostValue = Objects.toString(instructorCost.getCost(), "");
+                    if(instructorTypeDescription != ""){
+                        System.err.println("Instructor type is " + instructorTypeDescription + " cost " + instructorCost.getCost());
+                        instructorCostMap.put(
+                                instructorTypeDescription,
+                                instructorCostMap.get(instructorTypeDescription).add(null != instructorCost.getCost() ? instructorCost.getCost() : BigDecimal.ZERO, new MathContext(2))
+                        );
+                    }
                 }
+
+                List<String> cellValues = Arrays.asList(
+                        budgetView.getWorkgroup().getName(),
+                        instructorName,
+                        instructorTypeDescription,
+                        instructorCostValue);
+                instructorSalariesSheet = ExcelHelper.writeRowToSheet(instructorSalariesSheet, cellValues);
+            }
+
+            // Creating Instructor Category Cost Sheet (values calculated above)
+            for(Map.Entry<String, BigDecimal> entry : instructorCostMap.entrySet()){
+                instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
+                        instructorCategoryCostSheet,
+                        Arrays.asList(
+                                entry.getKey(),
+                                Objects.toString(entry.getValue())
+                        )
+                );
             }
         }
 
-        /*instructorSalariesSheet.autoSizeColumn(0);
-        instructorSalariesSheet.autoSizeColumn(1);
-        instructorSalariesSheet.autoSizeColumn(2);*/
-        for(int i = 0; i < workbook.getNumberOfSheets(); i++){
-            Sheet s = workbook.getSheetAt(i);
-            if (s.getPhysicalNumberOfRows() > 0) {
-                Row row = s.getRow(s.getFirstRowNum());
-                Iterator<Cell> cellIterator = row.cellIterator();
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    int columnIndex = cell.getColumnIndex();
-                    s.autoSizeColumn(columnIndex);
-                }
-            }
-        }
+        // Expand columns to length of largest value
+        workbook = ExcelHelper.expandHeaders(workbook);
     }
 
-    private void setExcelHeader(Sheet sheet, List<String> headers) {
-        Row excelHeader = sheet.createRow(0);
-        for(int i = 0; i < headers.size(); i++){
-            excelHeader.createCell(i).setCellValue(headers.get(i));
-        }
-    }
 }
