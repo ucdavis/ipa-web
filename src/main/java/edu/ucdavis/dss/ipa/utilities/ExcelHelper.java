@@ -49,4 +49,9 @@ public class ExcelHelper{
         String amount = String.format("%.02f", f);
         return amount;
     }
+
+    public static String floatToString(Float f){
+        String num = (f == null ? new Float(0.0F) : f).toString();
+        return num;
+    }
 }

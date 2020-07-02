@@ -500,21 +500,21 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/helloworld2", method = RequestMethod.POST)
     public View downloadAllDeparmentsExcel(@RequestBody List<BudgetScenario> budgetScenarioIds, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
 
-        List<BudgetView> budgetViews = new ArrayList<BudgetView>();
+        Map<Long, BudgetView> budgetViewsMap = new HashMap<Long, BudgetView>();
         for (BudgetScenario budgetScenarioId : budgetScenarioIds) {
             BudgetScenario scenario = budgetScenarioService.findById(budgetScenarioId.getId());
-            System.err.println(scenario.getId());
+            System.err.println("Budget Scenario ID " + scenario.getId());
             System.err.println(scenario.getName());
             System.err.println(scenario.getLineItems().size());
             Budget budget = scenario.getBudget();
             System.err.println(budget.getId());
             System.err.println("Workgroup id " + budget.getSchedule().getWorkgroup().getId());
             BudgetView budgetView = budgetViewFactory.createBudgetView(budget.getSchedule().getWorkgroup().getId(), budget.getSchedule().getYear(), budget);
-            budgetViews.add(budgetView);
+            budgetViewsMap.put(budgetScenarioId.getId(), budgetView);
             System.err.println("instructor count is " + budgetView.getActiveInstructors().size());
         }
 
 
-        return new BudgetExcelView(budgetViews);
+        return new BudgetExcelView(budgetViewsMap);
     }
 }
