@@ -63,14 +63,7 @@ public class BudgetExcelView extends AbstractXlsView {
                 fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
             }
 
-            HashMap<String, BigDecimal> instructorCostMap = new HashMap<>();
-            List<InstructorType> instructorTypes = budgetView.getInstructorTypes();
-            for(InstructorType instructorType : instructorTypes){
-                System.err.println(instructorType.getDescription());
-                instructorCostMap.put(instructorType.getDescription(), BigDecimal.ZERO);
-            }
-
-            // Creating Instructor Salaries sheet and calculating Instructor Category Cost
+            // Creating Instructor Salaries sheet
             for(Instructor instructor : budgetView.getActiveInstructors()){
                 // Get data into correct shape
                 InstructorCost instructorCost = budgetView.getInstructorCosts().stream().filter(ic -> ic.getInstructor().getId() == instructor.getId()).findFirst().orElse(null);
@@ -97,13 +90,6 @@ public class BudgetExcelView extends AbstractXlsView {
                 String instructorCostValue = "";
                 if (instructorCost != null) {
                     instructorCostValue = Objects.toString(instructorCost.getCost(), "");
-                    if(instructorTypeDescription != ""){
-                        System.err.println("Instructor type is " + instructorTypeDescription + " cost " + instructorCost.getCost());
-                        instructorCostMap.put(
-                                instructorTypeDescription,
-                                instructorCostMap.get(instructorTypeDescription).add(null != instructorCost.getCost() ? instructorCost.getCost() : BigDecimal.ZERO, new MathContext(2))
-                        );
-                    }
                 }
 
                 List<String> cellValues = Arrays.asList(
@@ -114,16 +100,44 @@ public class BudgetExcelView extends AbstractXlsView {
                 instructorSalariesSheet = ExcelHelper.writeRowToSheet(instructorSalariesSheet, cellValues);
             }
 
-            // Creating Instructor Category Cost Sheet (values calculated above)
-            for(Map.Entry<String, BigDecimal> entry : instructorCostMap.entrySet()){
+            // Create Instructor Category Costs sheet
+            instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
+                    instructorCategoryCostSheet,
+                    Arrays.asList(
+                            "TA",
+                            ExcelHelper.printFloatToMoney(budgetView.getBudget().getTaCost())
+                    )
+            );
+            instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
+                    instructorCategoryCostSheet,
+                    Arrays.asList(
+                            "Reader",
+                            ExcelHelper.printFloatToMoney(budgetView.getBudget().getReaderCost())
+                    )
+            );
+            HashMap<String, Float> instructorTypeCostMap = new HashMap<String, Float>();
+            for(InstructorType instructorType : budgetView.getInstructorTypes()){
+                instructorTypeCostMap.put(
+                        instructorType.getDescription(),
+                        0.0F
+                );
+            }
+            for(InstructorTypeCost instructorTypeCost : budgetView.getInstructorTypeCosts()){
+                instructorTypeCostMap.put(
+                        instructorTypeCost.getInstructorType().getDescription(),
+                        instructorTypeCostMap.get(instructorTypeCost.getInstructorType().getDescription()) + instructorTypeCost.getCost()
+                );
+            }
+            for(Map.Entry<String, Float> entry : instructorTypeCostMap.entrySet()){
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                         instructorCategoryCostSheet,
                         Arrays.asList(
                                 entry.getKey(),
-                                Objects.toString(entry.getValue())
+                                ExcelHelper.printFloatToMoney(entry.getValue())
                         )
                 );
             }
+
         }
 
         // Expand columns to length of largest value
