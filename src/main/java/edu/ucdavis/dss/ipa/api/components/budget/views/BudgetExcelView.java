@@ -50,7 +50,7 @@ public class BudgetExcelView extends AbstractXlsView {
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
 
         Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
-        instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Type", "Cost"));
+        instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
 
         for (BudgetView budgetView : budgetViews) {
             // Create Funds sheet
@@ -104,6 +104,7 @@ public class BudgetExcelView extends AbstractXlsView {
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
+                            budgetView.getWorkgroup().getName(),
                             "TA",
                             ExcelHelper.printFloatToMoney(budgetView.getBudget().getTaCost())
                     )
@@ -111,6 +112,7 @@ public class BudgetExcelView extends AbstractXlsView {
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
+                            budgetView.getWorkgroup().getName(),
                             "Reader",
                             ExcelHelper.printFloatToMoney(budgetView.getBudget().getReaderCost())
                     )
@@ -132,6 +134,7 @@ public class BudgetExcelView extends AbstractXlsView {
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                         instructorCategoryCostSheet,
                         Arrays.asList(
+                                budgetView.getWorkgroup().getName(),
                                 entry.getKey(),
                                 ExcelHelper.printFloatToMoney(entry.getValue())
                         )
