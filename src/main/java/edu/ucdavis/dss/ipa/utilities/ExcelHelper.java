@@ -1,6 +1,9 @@
 package edu.ucdavis.dss.ipa.utilities;
 
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
+import java.util.Currency;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -29,10 +32,27 @@ public class ExcelHelper{
         return workbook;
     }
 
-    public static Sheet writeRowToSheet(Sheet sheet, List<String> cellValues){
+    public static Sheet writeRowToSheet(Sheet sheet, List<Object> cellValues){
         Row row = sheet.createRow(sheet.getLastRowNum()+1);
-        for(int i =0; i < cellValues.size(); i++){
-            row.createCell(i).setCellValue(cellValues.get(i));
+        for(int i = 0; i < cellValues.size(); i++){
+
+            if (cellValues.get(i) == null) {
+                row.createCell(i).setCellValue("");
+            } else if (cellValues.get(i) instanceof String) {
+                Cell cell = row.createCell(i);
+                cell.setCellValue(cellValues.get(i).toString());
+                cell.setCellType(CellType.STRING);
+            }
+            else {
+                try {
+                    Double cellValue = Double.parseDouble(cellValues.get(i).toString());
+                    Cell cell = row.createCell(i);
+                    cell.setCellValue(cellValue);
+                    cell.setCellType(CellType.NUMERIC);
+                } catch (NumberFormatException nfe) {
+                    row.createCell(i).setCellValue(cellValues.get(i).toString());
+                }
+            }
         }
         return sheet;
     }
