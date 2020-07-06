@@ -82,7 +82,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             Long scenarioId = entry.getKey();
             BudgetView budgetView = entry.getValue();
             // Create Schedule Cost sheet
-            for(SectionGroupCost sectionGroupCost : budgetView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode)).collect(Collectors.toList()) ){
+            for(SectionGroupCost sectionGroupCost : budgetView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetView.getBudget().getTaCost();
                 Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * budgetView.getBudget().getReaderCost();
                 Float supportCost = taCost + readerCost;
@@ -98,9 +98,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getUnitsHigh(),
                                 sectionGroupCost.getUnitsLow(),
                                 sectionGroupCost.getSequencePattern(),
-                                sectionGroupCost.getEnrollment().toString(),
+                                sectionGroupCost.getEnrollment(),
                                 "",
-                                sectionGroupCost.getSectionCount().toString(),
+                                sectionGroupCost.getSectionCount(),
                                 (sectionGroupCost.getInstructor() == null ? "" : sectionGroupCost.getInstructor().getFullName()),
                                 (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
                                 sectionGroupCost.getReason(),
@@ -116,12 +116,12 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
 
             // Create Funds sheet
-            for(LineItem li : budgetView.getLineItems()){
+            for(LineItem lineItem : budgetView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
                 List<Object> cellValues = Arrays.asList(
                         budgetView.getWorkgroup().getName(),
-                        li.getLineItemCategory().getDescription(),
-                        li.getDescription(),
-                        Objects.toString(li.getAmount(), ""));
+                        lineItem.getLineItemCategory().getDescription(),
+                        lineItem.getDescription(),
+                        lineItem.getAmount());
                 fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
             }
 
@@ -149,10 +149,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     }
                 }
 
-                String instructorCostValue = "";
-                if (instructorCost != null) {
-                    instructorCostValue = Objects.toString(instructorCost.getCost(), "");
-                }
+                BigDecimal instructorCostValue = instructorCost == null ? null : instructorCost.getCost();
 
                 List<Object> cellValues = Arrays.asList(
                         budgetView.getWorkgroup().getName(),
@@ -168,7 +165,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     Arrays.asList(
                             budgetView.getWorkgroup().getName(),
                             "TA",
-                            ExcelHelper.printFloatToMoney(budgetView.getBudget().getTaCost())
+                            budgetView.getBudget().getTaCost()
                     )
             );
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
@@ -176,29 +173,35 @@ public class BudgetExcelView extends AbstractXlsxView {
                     Arrays.asList(
                             budgetView.getWorkgroup().getName(),
                             "Reader",
-                            ExcelHelper.printFloatToMoney(budgetView.getBudget().getReaderCost())
+                            budgetView.getBudget().getReaderCost()
                     )
             );
             HashMap<String, Float> instructorTypeCostMap = new HashMap<String, Float>();
             for(InstructorType instructorType : budgetView.getInstructorTypes()){
                 instructorTypeCostMap.put(
                         instructorType.getDescription(),
-                        0.0F
+                        null
                 );
             }
             for(InstructorTypeCost instructorTypeCost : budgetView.getInstructorTypeCosts()){
+                Float currentCost = instructorTypeCostMap.get(instructorTypeCost.getInstructorType().getDescription());
+                if(currentCost == null){
+                    currentCost = 0.0F;
+                }
                 instructorTypeCostMap.put(
                         instructorTypeCost.getInstructorType().getDescription(),
-                        instructorTypeCostMap.get(instructorTypeCost.getInstructorType().getDescription()) + instructorTypeCost.getCost()
+                        currentCost + instructorTypeCost.getCost()
                 );
             }
-            for(Map.Entry<String, Float> categoryCost : instructorTypeCostMap.entrySet()){
+            List<String> instructorCategoryTypes = new ArrayList<String>(instructorTypeCostMap.keySet());
+            Collections.sort(instructorCategoryTypes);
+            for(String instructorCategory : instructorCategoryTypes){
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                         instructorCategoryCostSheet,
                         Arrays.asList(
                                 budgetView.getWorkgroup().getName(),
-                                categoryCost.getKey(),
-                                ExcelHelper.printFloatToMoney(categoryCost.getValue())
+                                instructorCategory,
+                                instructorTypeCostMap.get(instructorCategory)
                         )
                 );
             }
