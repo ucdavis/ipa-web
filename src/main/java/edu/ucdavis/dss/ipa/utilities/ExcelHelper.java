@@ -2,11 +2,10 @@ package edu.ucdavis.dss.ipa.utilities;
 
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import java.util.Currency;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +15,17 @@ import java.util.List;
 
 @Service
 public class ExcelHelper{
+    public static Workbook ignoreErrors(Workbook workbook, List<IgnoredErrorType> errors){
+        for(int i = 0; i < workbook.getNumberOfSheets(); i++){
+            XSSFSheet xs = (XSSFSheet) workbook.getSheetAt(i);
+            for(IgnoredErrorType error : errors){
+                xs.addIgnoredErrors(new CellRangeAddress(0, xs.getLastRowNum(), 0, xs.getRow(xs.getLastRowNum()).getLastCellNum()), error);
+            }
+
+        }
+        return workbook;
+    }
+
     public static Workbook expandHeaders(Workbook workbook){
         for(int i = 0; i < workbook.getNumberOfSheets(); i++){
             Sheet s = workbook.getSheetAt(i);

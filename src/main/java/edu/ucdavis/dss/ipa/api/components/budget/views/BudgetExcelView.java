@@ -13,17 +13,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
+import org.apache.poi.ss.usermodel.*;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class BudgetExcelView extends AbstractXlsView {
+public class BudgetExcelView extends AbstractXlsxView {
     @Inject BudgetViewFactory budgetViewFactory;
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioService budgetScenarioService;
@@ -40,7 +37,7 @@ public class BudgetExcelView extends AbstractXlsView {
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"utf-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xls\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xlsx\"");
 
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
         budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("", "Department","Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
@@ -70,6 +67,7 @@ public class BudgetExcelView extends AbstractXlsView {
            "Instructor Cost",
            "Total Cost"
         ));
+
 
         Sheet fundsSheet = workbook.createSheet("Funds");
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Type", "Description", "Amount"));
@@ -209,6 +207,7 @@ public class BudgetExcelView extends AbstractXlsView {
 
         // Expand columns to length of largest value
         workbook = ExcelHelper.expandHeaders(workbook);
+        workbook = ExcelHelper.ignoreErrors(workbook, Arrays.asList(IgnoredErrorType.NUMBER_STORED_AS_TEXT));
     }
 
 }
