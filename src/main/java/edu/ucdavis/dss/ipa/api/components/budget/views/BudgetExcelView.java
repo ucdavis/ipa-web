@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFacto
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
+import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 
 import java.lang.reflect.Array;
@@ -12,8 +13,10 @@ import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import edu.ucdavis.dss.ipa.services.jpa.JpaInstructorCostService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import javax.inject.Inject;
@@ -25,10 +28,179 @@ public class BudgetExcelView extends AbstractXlsxView {
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject UserRoleService userRoleService;
+    InstructorCostService instructorCostService =  new JpaInstructorCostService();
 
     private Map<Long, BudgetView> budgetViewsMap = null;
     public BudgetExcelView ( Map<Long, BudgetView> budgetViewsMap ) {
         this.budgetViewsMap = budgetViewsMap;
+    }
+
+    public class BudgetSummaryTerms {
+
+        public class BudgetSummaryTerm{
+            private double taCount;
+            private double readerCount;
+            private double associateInstructorCost;
+            private double lowerDivUnits;
+            private double upperDivUnits;
+
+            public double calculateInstructorCost(BudgetView budgetView, SectionGroupCost sectionGroupCost){
+                if(sectionGroupCost.getCost() == null){
+                    Long budgetId = sectionGroupCost.getBudgetScenario().getId();
+                    if(sectionGroupCost.getInstructor() != null){
+                        Long instructorId = sectionGroupCost.getInstructor().getId();
+                        InstructorCost instructorCost = budgetView.getInstructorCosts().stream().filter(ic -> ic.getInstructorTypeIdentification() == 3 && ic.getInstructor().getId() == sectionGroupCost.getInstructor().getId()).findFirst().orElse(null);
+                        if(instructorCost == null){
+                            return 0.0;
+                        } else{
+                            double cost = instructorCost.getCost().doubleValue();
+                            System.err.println("Found cost, cost was " + cost + " Id is " + instructorCost.getId() + " Section group cost ID was " + sectionGroupCost.getId());
+                            return cost;
+                        }
+                    } else{
+                        return 0.0;
+                    }
+                } else{
+                    return sectionGroupCost.getCost().doubleValue();
+                }
+            }
+
+            public BudgetSummaryTerm(BudgetView budgetView, SectionGroupCost sectionGroupCost){
+                this.taCount = (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
+                this.readerCount = (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
+                this.lowerDivUnits = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
+                this.upperDivUnits = (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
+                this.associateInstructorCost = calculateInstructorCost(budgetView, sectionGroupCost);
+                //this.replacementCost = (double) (sectionGroupCost.getCost() == null ? sectionGroupCost.getInstructor() : sectionGroupCost.getCost());
+            }
+
+            public void add(BudgetView budgetView, SectionGroupCost sectionGroupCost){
+                this.taCount += (int) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
+                this.readerCount += (int) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
+                this.lowerDivUnits += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
+                this.upperDivUnits += (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
+                this.associateInstructorCost += calculateInstructorCost(budgetView, sectionGroupCost);
+            }
+        }
+
+        private HashMap<String, BudgetSummaryTerm> terms = new HashMap<String, BudgetSummaryTerm>();
+        private double taCost;
+        private double readerCost;
+        private String department;
+        private BudgetView budgetView;
+
+        public BudgetSummaryTerms(BudgetView budgetView, String department, float taCost, float readerCost){
+            this.department = department;
+            this.taCost = (double) taCost;
+            this.readerCost = (double) readerCost;
+            this.budgetView = budgetView;
+        }
+        public void addSection(SectionGroupCost sectionGroupCost){
+            if(this.terms.get(sectionGroupCost.getTermCode()) == null){
+                terms.put(sectionGroupCost.getTermCode(), new BudgetSummaryTerm(budgetView, sectionGroupCost));
+            } else{
+                terms.get(sectionGroupCost.getTermCode()).add(budgetView, sectionGroupCost);
+            }
+        }
+
+        private double getTaCount(String termCode){
+            if(terms.get(termCode) != null){
+                return terms.get(termCode).taCount;
+            } else{
+                return 0;
+            }
+        }
+
+        private double getTaCost(String termCode){
+            return getTaCount(termCode) * taCost;
+        }
+
+        private double getReaderCount(String termCode){
+            if(terms.get(termCode) != null){
+                return terms.get(termCode).readerCount;
+            } else{
+                return 0;
+            }
+        }
+
+        private double getReaderCost(String termCode){
+            return getReaderCount(termCode) * readerCost;
+        }
+
+        private double getSupportCost(String termCode){
+            return getTaCost(termCode) + getReaderCost(termCode);
+        }
+
+        private double getAssociateInstructorCost(String termCode){
+            if(terms.get(termCode) != null){
+                return terms.get(termCode).associateInstructorCost;
+            } else{
+                return 0.0;
+            }
+        }
+
+        private List<Object> rowData(String field){
+            List<Object> data = new ArrayList<Object>();
+            //Set<String> termCodes = Term.getTermCodesByYear(2020);
+            //System.err.println(termCodes);
+            List<String> termCodes = Arrays.asList(
+               "202005",
+               "202007",
+               "202010",
+               "202101",
+               "202103"
+            );
+            if(field != ""){
+                data.add(department);
+                data.add(field);
+            }
+
+            if(field == "TA Count"){
+                for(String termCode : termCodes){
+                    data.add(getTaCount(termCode));
+                }
+            } else if(field == "TA Cost"){
+                for(String termCode : termCodes){
+                    data.add(getTaCost(termCode));
+                }
+            } else if(field == "Reader Count"){
+                for(String termCode : termCodes) {
+                    data.add(getReaderCount(termCode));
+                }
+            } else if (field == "Reader Cost"){
+                for(String termCode : termCodes) {
+                    data.add(getReaderCost(termCode));
+                }
+            } else if (field == "Support Cost"){
+                for(String termCode : termCodes) {
+                    data.add(getSupportCost(termCode));
+                }
+            } else if (field == "Associate Instructor"){
+                for(String termCode: termCodes){
+                    data.add(getAssociateInstructorCost(termCode));
+                }
+            }
+            return data;
+        }
+
+        public Sheet writeTerms(Sheet sheet){
+            List<String> rows = Arrays.asList(
+                    "TA Count",
+                    "TA Cost",
+                    "Reader Count",
+                    "Reader Cost",
+                    "Support Cost",
+                    "",
+                    "Associate Instructor"
+            );
+            for(String row : rows){
+                sheet = ExcelHelper.writeRowToSheet(
+                        sheet,
+                        rowData(row)
+                );
+            }
+            return sheet;
+        }
     }
 
     /*
@@ -40,7 +212,7 @@ public class BudgetExcelView extends AbstractXlsxView {
         response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xlsx\"");
 
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
-        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("", "Department","Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
+        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Department", "","Summer Session 1","Summer Session 2","Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
 
         Sheet scheduleCostSheet = workbook.createSheet("Schedule Cost");
 
@@ -81,6 +253,13 @@ public class BudgetExcelView extends AbstractXlsxView {
         for (Map.Entry<Long, BudgetView> entry : budgetViewsMap.entrySet()) {
             Long scenarioId = entry.getKey();
             BudgetView budgetView = entry.getValue();
+
+            BudgetSummaryTerms budgetTerms = new BudgetSummaryTerms(
+                    budgetView,
+                    budgetView.getWorkgroup().getName(),
+                    budgetView.getBudget().getTaCost(),
+                    budgetView.getBudget().getReaderCost());
+
             // Create Schedule Cost sheet
             for(SectionGroupCost sectionGroupCost : budgetView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetView.getBudget().getTaCost();
@@ -113,7 +292,10 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 supportCost + sectionCost
                         )
                 );
+                budgetTerms.addSection(sectionGroupCost);
             }
+
+            budgetSummarySheet = budgetTerms.writeTerms(budgetSummarySheet);
 
             // Create Funds sheet
             for(LineItem lineItem : budgetView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
