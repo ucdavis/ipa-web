@@ -1,38 +1,43 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.BudgetService;
+import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
+import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import edu.ucdavis.dss.ipa.services.jpa.JpaInstructorCostService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
-import org.apache.poi.ss.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.view.document.AbstractXlsxView;
-
-import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.IgnoredErrorType;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class BudgetExcelView extends AbstractXlsxView {
-    @Inject BudgetViewFactory budgetViewFactory;
-    @Inject BudgetService budgetService;
-    @Inject BudgetScenarioService budgetScenarioService;
-    @Inject UserRoleService userRoleService;
-    InstructorCostService instructorCostService =  new JpaInstructorCostService();
+    private InstructorCostService getInstructorCostService() {
+        return SpringContext.getBean(InstructorCostService.class);
+    }
 
-    private Map<Long, BudgetView> budgetViewsMap = null;
-    public BudgetExcelView ( Map<Long, BudgetView> budgetViewsMap ) {
-        this.budgetViewsMap = budgetViewsMap;
+    private List<BudgetScenarioExcelView> budgetScenarioExcelViews = null;
+    public BudgetExcelView ( List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
+        this.budgetScenarioExcelViews = budgetScenarioExcelViews;
     }
 
     public class BudgetSummaryTerms {
@@ -40,46 +45,47 @@ public class BudgetExcelView extends AbstractXlsxView {
         public class BudgetSummaryTerm{
             private double taCount;
             private double readerCount;
-            private double associateInstructorCost;
+            private double associateInstructorCost = 0;
             private double lowerDivUnits;
             private double upperDivUnits;
 
-            public double calculateInstructorCost(BudgetView budgetView, SectionGroupCost sectionGroupCost){
-                if(sectionGroupCost.getCost() == null){
-                    Long budgetId = sectionGroupCost.getBudgetScenario().getId();
-                    if(sectionGroupCost.getInstructor() != null){
-                        Long instructorId = sectionGroupCost.getInstructor().getId();
-                        InstructorCost instructorCost = budgetView.getInstructorCosts().stream().filter(ic -> ic.getInstructorTypeIdentification() == 3 && ic.getInstructor().getId() == sectionGroupCost.getInstructor().getId()).findFirst().orElse(null);
-                        if(instructorCost == null){
-                            return 0.0;
-                        } else{
-                            double cost = instructorCost.getCost().doubleValue();
-                            System.err.println("Found cost, cost was " + cost + " Id is " + instructorCost.getId() + " Section group cost ID was " + sectionGroupCost.getId());
-                            return cost;
-                        }
-                    } else{
-                        return 0.0;
-                    }
-                } else{
-                    return sectionGroupCost.getCost().doubleValue();
-                }
-            }
+//            public double calculateInstructorCost(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
+//                if(sectionGroupCost.getCost() == null){
+//                    Long budgetId = sectionGroupCost.getBudgetScenario().getId();
+//                    if(sectionGroupCost.getInstructor() != null){
+//                        Long instructorId = sectionGroupCost.getInstructor().getId();
+////                        InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(instructorId, budgetId);
+//                        InstructorCost instructorCost = budgetScenarioExcelView.getInstructorCosts().stream().filter(ic -> ic.getInstructorTypeIdentification() == 3 && ic.getInstructor().getId() == sectionGroupCost.getInstructor().getId()).findFirst().orElse(null);
+//                        if(instructorCost == null){
+//                            return 0.0;
+//                        } else{
+//                            double cost = instructorCost.getCost().doubleValue();
+//                            System.err.println("Found cost, cost was " + cost + " Id is " + instructorCost.getId() + " Section group cost ID was " + sectionGroupCost.getId());
+//                            return cost;
+//                        }
+//                    } else{
+//                        return 0.0;
+//                    }
+//                } else{
+//                    return sectionGroupCost.getCost().doubleValue();
+//                }
+//            }
 
-            public BudgetSummaryTerm(BudgetView budgetView, SectionGroupCost sectionGroupCost){
+            public BudgetSummaryTerm(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
                 this.taCount = (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
                 this.readerCount = (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
                 this.lowerDivUnits = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 this.upperDivUnits = (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
-                this.associateInstructorCost = calculateInstructorCost(budgetView, sectionGroupCost);
+                this.associateInstructorCost = sectionGroupCost.getCost() == null ? 0.0F : sectionGroupCost.getCost().doubleValue();
                 //this.replacementCost = (double) (sectionGroupCost.getCost() == null ? sectionGroupCost.getInstructor() : sectionGroupCost.getCost());
             }
 
-            public void add(BudgetView budgetView, SectionGroupCost sectionGroupCost){
+            public void add(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
                 this.taCount += (int) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
                 this.readerCount += (int) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
                 this.lowerDivUnits += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 this.upperDivUnits += (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
-                this.associateInstructorCost += calculateInstructorCost(budgetView, sectionGroupCost);
+                this.associateInstructorCost += sectionGroupCost.getCost() == null ? 0.0F : sectionGroupCost.getCost().doubleValue();
             }
         }
 
@@ -87,19 +93,19 @@ public class BudgetExcelView extends AbstractXlsxView {
         private double taCost;
         private double readerCost;
         private String department;
-        private BudgetView budgetView;
+        private BudgetScenarioExcelView budgetScenarioExcelView;
 
-        public BudgetSummaryTerms(BudgetView budgetView, String department, float taCost, float readerCost){
+        public BudgetSummaryTerms(BudgetScenarioExcelView budgetScenarioExcelView, String department, float taCost, float readerCost){
             this.department = department;
             this.taCost = (double) taCost;
             this.readerCost = (double) readerCost;
-            this.budgetView = budgetView;
+            this.budgetScenarioExcelView = budgetScenarioExcelView;
         }
         public void addSection(SectionGroupCost sectionGroupCost){
             if(this.terms.get(sectionGroupCost.getTermCode()) == null){
-                terms.put(sectionGroupCost.getTermCode(), new BudgetSummaryTerm(budgetView, sectionGroupCost));
+                terms.put(sectionGroupCost.getTermCode(), new BudgetSummaryTerm(budgetScenarioExcelView, sectionGroupCost));
             } else{
-                terms.get(sectionGroupCost.getTermCode()).add(budgetView, sectionGroupCost);
+                terms.get(sectionGroupCost.getTermCode()).add(budgetScenarioExcelView, sectionGroupCost);
             }
         }
 
@@ -250,26 +256,25 @@ public class BudgetExcelView extends AbstractXlsxView {
         Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
         instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
 
-        for (Map.Entry<Long, BudgetView> entry : budgetViewsMap.entrySet()) {
-            Long scenarioId = entry.getKey();
-            BudgetView budgetView = entry.getValue();
+        for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
+            Long scenarioId = budgetScenarioExcelView.getBudgetScenario().getId();
 
             BudgetSummaryTerms budgetTerms = new BudgetSummaryTerms(
-                    budgetView,
-                    budgetView.getWorkgroup().getName(),
-                    budgetView.getBudget().getTaCost(),
-                    budgetView.getBudget().getReaderCost());
+                    budgetScenarioExcelView,
+                    budgetScenarioExcelView.getWorkgroup().getName(),
+                    budgetScenarioExcelView.getBudget().getTaCost(),
+                    budgetScenarioExcelView.getBudget().getReaderCost());
 
             // Create Schedule Cost sheet
-            for(SectionGroupCost sectionGroupCost : budgetView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
-                Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetView.getBudget().getTaCost();
-                Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * budgetView.getBudget().getReaderCost();
+            for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
+                Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetScenarioExcelView.getBudget().getTaCost();
+                Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * budgetScenarioExcelView.getBudget().getReaderCost();
                 Float supportCost = taCost + readerCost;
                 Float sectionCost = sectionGroupCost.getCost() == null ? 0.0F : sectionGroupCost.getCost().floatValue();
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
                         Arrays.asList(
-                                budgetView.getWorkgroup().getName(),
+                                budgetScenarioExcelView.getWorkgroup().getName(),
                                 Term.getRegistrarName(sectionGroupCost.getTermCode()),
                                 sectionGroupCost.getSubjectCode(),
                                 sectionGroupCost.getCourseNumber(),
@@ -298,9 +303,9 @@ public class BudgetExcelView extends AbstractXlsxView {
             budgetSummarySheet = budgetTerms.writeTerms(budgetSummarySheet);
 
             // Create Funds sheet
-            for(LineItem lineItem : budgetView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
+            for(LineItem lineItem : budgetScenarioExcelView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
                 List<Object> cellValues = Arrays.asList(
-                        budgetView.getWorkgroup().getName(),
+                        budgetScenarioExcelView.getWorkgroup().getName(),
                         lineItem.getLineItemCategory().getDescription(),
                         lineItem.getDescription(),
                         lineItem.getAmount());
@@ -308,24 +313,24 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
 
             // Creating Instructor Salaries sheet
-            for(Instructor instructor : budgetView.getActiveInstructors()){
+            for(Instructor instructor : budgetScenarioExcelView.getActiveInstructors()){
                 // Get data into correct shape
-                InstructorCost instructorCost = budgetView.getInstructorCosts().stream().filter(ic -> ic.getInstructor().getId() == instructor.getId()).findFirst().orElse(null);
+                InstructorCost instructorCost = budgetScenarioExcelView.getInstructorCosts().stream().filter(ic -> ic.getInstructor().getId() == instructor.getId()).findFirst().orElse(null);
 
                 String instructorName = instructor.getLastName() + " " + instructor.getFirstName();
 
                 // Calculate instructor type.  Make sure to compare with frontend if you need to change.
-                Set<User> users = budgetView.users;
-                User user = budgetView.users.stream().filter(u -> u.getLoginId().equals(instructor.getLoginId())).findFirst().orElse(null);
-                UserRole userRole = user.getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+                Set<User> users = budgetScenarioExcelView.users;
+                User user = budgetScenarioExcelView.users.stream().filter(u -> u.getLoginId().equals(instructor.getLoginId())).findFirst().orElse(null);
+                UserRole userRole = user.getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
                 String instructorTypeDescription = "";
                 if(userRole != null && userRole.getInstructorType() != null) {
                     instructorTypeDescription = userRole.getInstructorType().getDescription();
                 }else{
-                    List<TeachingAssignment> tas = budgetView.getTeachingAssignments();
+                    List<TeachingAssignment> tas = budgetScenarioExcelView.getTeachingAssignments();
                     Long instructorId = instructor.getId();
-                    Long scheduleId = budgetView.getBudget().getSchedule().getId();
-                    TeachingAssignment ta = budgetView.getTeachingAssignments().stream().filter(t -> t.getInstructor() != null).filter(t -> (t.getInstructor().getId() == instructor.getId() && t.getSchedule().getId() == budgetView.getBudget().getSchedule().getId())).findFirst().orElse(null);
+                    Long scheduleId = budgetScenarioExcelView.getBudget().getSchedule().getId();
+                    TeachingAssignment ta = budgetScenarioExcelView.getTeachingAssignments().stream().filter(t -> t.getInstructor() != null).filter(t -> (t.getInstructor().getId() == instructor.getId() && t.getSchedule().getId() == budgetScenarioExcelView.getBudget().getSchedule().getId())).findFirst().orElse(null);
                     if(ta != null){
                         instructorTypeDescription = ta.getInstructorType().getDescription();
                     }
@@ -334,7 +339,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 BigDecimal instructorCostValue = instructorCost == null ? null : instructorCost.getCost();
 
                 List<Object> cellValues = Arrays.asList(
-                        budgetView.getWorkgroup().getName(),
+                        budgetScenarioExcelView.getWorkgroup().getName(),
                         instructorName,
                         instructorTypeDescription,
                         instructorCostValue);
@@ -345,27 +350,27 @@ public class BudgetExcelView extends AbstractXlsxView {
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
-                            budgetView.getWorkgroup().getName(),
+                            budgetScenarioExcelView.getWorkgroup().getName(),
                             "TA",
-                            budgetView.getBudget().getTaCost()
+                            budgetScenarioExcelView.getBudget().getTaCost()
                     )
             );
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
-                            budgetView.getWorkgroup().getName(),
+                            budgetScenarioExcelView.getWorkgroup().getName(),
                             "Reader",
-                            budgetView.getBudget().getReaderCost()
+                            budgetScenarioExcelView.getBudget().getReaderCost()
                     )
             );
             HashMap<String, Float> instructorTypeCostMap = new HashMap<String, Float>();
-            for(InstructorType instructorType : budgetView.getInstructorTypes()){
+            for(InstructorType instructorType : budgetScenarioExcelView.getInstructorTypes()){
                 instructorTypeCostMap.put(
                         instructorType.getDescription(),
                         null
                 );
             }
-            for(InstructorTypeCost instructorTypeCost : budgetView.getInstructorTypeCosts()){
+            for(InstructorTypeCost instructorTypeCost : budgetScenarioExcelView.getInstructorTypeCosts()){
                 Float currentCost = instructorTypeCostMap.get(instructorTypeCost.getInstructorType().getDescription());
                 if(currentCost == null){
                     currentCost = 0.0F;
@@ -381,7 +386,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                         instructorCategoryCostSheet,
                         Arrays.asList(
-                                budgetView.getWorkgroup().getName(),
+                                budgetScenarioExcelView.getWorkgroup().getName(),
                                 instructorCategory,
                                 instructorTypeCostMap.get(instructorCategory)
                         )

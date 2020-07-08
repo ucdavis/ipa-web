@@ -22,6 +22,11 @@ public class JpaInstructorCostService implements InstructorCostService {
     }
 
     @Override
+    public InstructorCost findByInstructorIdAndBudgetId(Long instructorId, Long budgetId) {
+        return instructorCostRepository.findByInstructorIdAndBudgetId(instructorId, budgetId);
+    }
+
+    @Override
     public InstructorCost findById(Long lineItemId) {
         return instructorCostRepository.findById(lineItemId);
     }
