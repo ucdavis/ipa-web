@@ -56,8 +56,14 @@ public class BudgetExcelView extends AbstractXlsxView {
         public class BudgetSummaryTerm{
             private double taCount;
             private double readerCount;
+            private double emeritiCost = 0;
+            private double visitingProfessorCost = 0;
             private double associateInstructorCost = 0;
+            private double unit18LecturerCost = 0;
             private double continuingLecturerCost = 0;
+            private double ladderFacultyCost = 0;
+            private double instructorCost = 0;
+            private double lecturerSOECost = 0;
             private double lowerDivUnits;
             private double upperDivUnits;
 
@@ -116,10 +122,22 @@ public class BudgetExcelView extends AbstractXlsxView {
                         }
                     }
                 }
-                if(instructorTypeId == 3){
+                if(instructorTypeId == 1){
+                    this.emeritiCost = instructorCostAmount;
+                } else if (instructorTypeId == 2){
+                    this.visitingProfessorCost = instructorCostAmount;
+                } else if (instructorTypeId == 3){
                     this.associateInstructorCost = instructorCostAmount;
+                } else if (instructorTypeId == 4){
+                    this.unit18LecturerCost = instructorCostAmount;
                 } else if (instructorTypeId == 5){
                     this.continuingLecturerCost = instructorCostAmount;
+                } else if (instructorTypeId == 6){
+                    this.ladderFacultyCost = instructorCostAmount;
+                } else if (instructorTypeId == 7){
+                    this.instructorCost = instructorCostAmount;
+                } else if (instructorTypeId == 8){
+                    this.lecturerSOECost = instructorCostAmount;
                 }
 
             }
@@ -159,10 +177,22 @@ public class BudgetExcelView extends AbstractXlsxView {
                         }
                     }
                 }
-                if(instructorTypeId == 3){
+                if(instructorTypeId == 1){
+                    this.emeritiCost += instructorCostAmount;
+                } else if (instructorTypeId == 2){
+                    this.visitingProfessorCost += instructorCostAmount;
+                } else if (instructorTypeId == 3){
                     this.associateInstructorCost += instructorCostAmount;
+                } else if (instructorTypeId == 4){
+                    this.unit18LecturerCost += instructorCostAmount;
                 } else if (instructorTypeId == 5){
                     this.continuingLecturerCost += instructorCostAmount;
+                } else if (instructorTypeId == 6){
+                    this.ladderFacultyCost += instructorCostAmount;
+                } else if (instructorTypeId == 7){
+                    this.instructorCost += instructorCostAmount;
+                } else if (instructorTypeId == 8){
+                    this.lecturerSOECost += instructorCostAmount;
                 }
             }
         }
@@ -233,8 +263,64 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
         }
 
+        private double getEmeritiCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).emeritiCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getVisitingProfessorCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).visitingProfessorCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getUnit18LecturerCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).unit18LecturerCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getLadderFacultyCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).ladderFacultyCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getInstructorCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).instructorCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getLecturerSOECost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).lecturerSOECost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
         private double getReplacementCost(String termCode){
-            return getAssociateInstructorCost(termCode) + getContinuingLecturerCost(termCode);
+            return getEmeritiCost(termCode) + getVisitingProfessorCost(termCode) + getAssociateInstructorCost(termCode) +
+                    getUnit18LecturerCost(termCode) + getContinuingLecturerCost(termCode) + getLadderFacultyCost(termCode) +
+                    getInstructorCost(termCode) + getLecturerSOECost(termCode);
         }
 
         private List<Object> rowData(String field){
@@ -281,6 +367,30 @@ public class BudgetExcelView extends AbstractXlsxView {
                 for(String termCode: termCodes){
                     data.add(getContinuingLecturerCost(termCode));
                 }
+            } else if (field == "Emeriti - Recalled"){
+                for(String termCode: termCodes){
+                    data.add(getEmeritiCost(termCode));
+                }
+            } else if (field == "Instructor"){
+                for(String termCode: termCodes){
+                    data.add(getInstructorCost(termCode));
+                }
+            } else if (field == "Ladder Faculty"){
+                for(String termCode: termCodes){
+                    data.add(getLadderFacultyCost(termCode));
+                }
+            } else if (field == "Lecturer SOE"){
+                for(String termCode: termCodes){
+                    data.add(getLecturerSOECost(termCode));
+                }
+            } else if (field == "Unit 18 Pre-Six Lecturer"){
+                for(String termCode: termCodes){
+                    data.add(getUnit18LecturerCost(termCode));
+                }
+            } else if (field == "Visiting Professor"){
+                for(String termCode: termCodes){
+                    data.add(getVisitingProfessorCost(termCode));
+                }
             } else if (field == "Replacement Cost"){
                 for(String termCode: termCodes){
                     data.add(getReplacementCost(termCode));
@@ -299,7 +409,14 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "",
                     "Associate Instructor",
                     "Continuing Lecturer",
+                    "Emeriti - Recalled",
+                    "Instructor",
+                    "Ladder Faculty",
+                    "Lecturer SOE",
+                    "Unit 18 Pre-Six Lecturer",
+                    "Visiting Professor",
                     "Replacement Cost"
+
             );
             for(String row : rows){
                 sheet = ExcelHelper.writeRowToSheet(
