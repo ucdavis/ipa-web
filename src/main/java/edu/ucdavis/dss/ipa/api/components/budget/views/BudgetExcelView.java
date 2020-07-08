@@ -65,8 +65,12 @@ public class BudgetExcelView extends AbstractXlsxView {
             private double instructorCost = 0;
             private double lecturerSOECost = 0;
             private double unassignedCost = 0;
-            private double lowerDivUnits;
-            private double upperDivUnits;
+            private double enrollment = 0;
+            private double lowerDivUnits = 0;
+            private double upperDivUnits = 0;
+            private double lowerDivOfferings = 0;
+            private double upperDivOfferings = 0;
+            private double graduateOfferings = 0;
 
 //            public double calculateInstructorCost(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
 //                if(sectionGroupCost.getCost() == null){
@@ -95,6 +99,13 @@ public class BudgetExcelView extends AbstractXlsxView {
                 this.readerCount = (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
                 this.lowerDivUnits = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 this.upperDivUnits = (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
+                if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 199){
+                    this.graduateOfferings = 1;
+                } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
+                    this.upperDivOfferings = 1;
+                } else{
+                    lowerDivOfferings = 1;
+                }
                 long instructorTypeId = 0;
                 double instructorCostAmount = 0.0;
                 if(sectionGroupCost.getInstructor() != null){
@@ -151,8 +162,13 @@ public class BudgetExcelView extends AbstractXlsxView {
                 this.readerCount += (int) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
                 this.lowerDivUnits += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 this.upperDivUnits += (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
-                this.associateInstructorCost += 0.0;
-                this.continuingLecturerCost += 0.0;
+                if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 199){
+                    this.graduateOfferings += 1;
+                } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
+                    this.upperDivOfferings += 1;
+                } else{
+                    lowerDivOfferings += 1;
+                }
                 long instructorTypeId = 0;
                 double instructorCostAmount = 0.0;
                 if(sectionGroupCost.getInstructor() != null){
@@ -366,6 +382,38 @@ public class BudgetExcelView extends AbstractXlsxView {
             return value;
         }
 
+
+        private double getLowerDivOfferings(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).lowerDivOfferings).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getUpperDivOfferings(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).upperDivOfferings).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getGraduateOfferings(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).graduateOfferings).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getTotalOfferings(String termCode){
+            return getLowerDivOfferings(termCode) + getUpperDivOfferings(termCode) + getGraduateOfferings(termCode);
+        }
+
         private List<Object> rowData(String field){
             List<Object> data = new ArrayList<Object>();
 
@@ -470,6 +518,26 @@ public class BudgetExcelView extends AbstractXlsxView {
                         totalValue += value;
                         data.add(value);
                         break;
+                    case "Lower Div Offerings":
+                        value = getLowerDivOfferings(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Upper Div Offerings":
+                        value = getUpperDivOfferings(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Graduate Offerings":
+                        value = getGraduateOfferings(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Total Offerings":
+                        value = getTotalOfferings(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
                 }
 
             }
@@ -499,7 +567,11 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "Total Teaching Costs",
                     "Funds Cost",
                     "Balance",
-                    ""
+                    "",
+                    "Lower Div Offerings",
+                    "Upper Div Offerings",
+                    "Graduate Offerings",
+                    "Total Offerings"
             );
             for(String row : rows){
                 sheet = ExcelHelper.writeRowToSheet(
