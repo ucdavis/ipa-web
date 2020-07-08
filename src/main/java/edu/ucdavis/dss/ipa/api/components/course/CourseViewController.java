@@ -44,6 +44,7 @@ public class CourseViewController {
 
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
+	@Inject SectionGroupCostService sectionGroupCostService;
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
@@ -148,19 +149,20 @@ public class CourseViewController {
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
 
-		// If updating termCode, need to update sectionGroupCost to prevent deletion on Budget load.
 		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
-			// Using find in BudgetScenarioService runs updateFromLiveData() and deletes the sectionGroupCost because the termCode doesn't match.
-			BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroup.getId(), originalSectionGroup.getCourse().getYear(), true);
-			List<SectionGroupCost> sectionGroupCosts = liveDataScenario.getSectionGroupCosts();
+			// need to update live data sgc termCode here or it'll get deleted on budgetView load
+			// update all sectionGroupCosts for existing scenarios
+			List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroup.getId(), originalSectionGroup.getCourse().getYear());
 
-			String originalSectionGroupKey = originalSectionGroup.getCourse().getSubjectCode() + originalSectionGroup.getCourse().getCourseNumber() + originalSectionGroup.getCourse().getSequencePattern() + originalSectionGroup.getTermCode() + originalSectionGroup.getCourse().getEffectiveTermCode();
-			for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
-				String sectionGroupCostKey = sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber() + sectionGroupCost.getSequencePattern() + sectionGroupCost.getTermCode() + sectionGroupCost.getEffectiveTermCode();
+			for (BudgetScenario budgetScenario : budgetScenarios) {
+				SectionGroupCost sectionGroupCost = sectionGroupCostService
+					.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+						originalSectionGroup.getCourse().getSubjectCode(),
+						originalSectionGroup.getCourse().getCourseNumber(),
+						originalSectionGroup.getCourse().getSequencePattern(),
+						budgetScenario.getId(), originalSectionGroup.getTermCode());
 
-				if (sectionGroupCostKey.equals(originalSectionGroupKey)) {
-					sectionGroupCost.setTermCode(sectionGroup.getTermCode());
-				}
+				sectionGroupCost.setTermCode(sectionGroup.getTermCode());
 			}
 
 			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
