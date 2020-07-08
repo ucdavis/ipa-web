@@ -64,6 +64,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             private double ladderFacultyCost = 0;
             private double instructorCost = 0;
             private double lecturerSOECost = 0;
+            private double unassignedCost = 0;
             private double lowerDivUnits;
             private double upperDivUnits;
 
@@ -138,6 +139,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                     this.instructorCost = instructorCostAmount;
                 } else if (instructorTypeId == 8){
                     this.lecturerSOECost = instructorCostAmount;
+                } else{
+                    System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
+                    this.unassignedCost = instructorCostAmount;
                 }
 
             }
@@ -193,6 +197,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                     this.instructorCost += instructorCostAmount;
                 } else if (instructorTypeId == 8){
                     this.lecturerSOECost += instructorCostAmount;
+                } else {
+                    System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
+                    this.unassignedCost += instructorCostAmount;
                 }
             }
         }
@@ -202,6 +209,13 @@ public class BudgetExcelView extends AbstractXlsxView {
         private double readerCost;
         private String department;
         private BudgetScenarioExcelView budgetScenarioExcelView;
+        private List<String> termCodes = Arrays.asList(
+                "202005",
+                "202007",
+                "202010",
+                "202101",
+                "202103"
+        );
 
         public BudgetSummaryTerms(BudgetScenarioExcelView budgetScenarioExcelView, String department, float taCost, float readerCost){
             this.department = department;
@@ -317,85 +331,149 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
         }
 
+        private double getUnassignedCost(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).unassignedCost).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
         private double getReplacementCost(String termCode){
             return getEmeritiCost(termCode) + getVisitingProfessorCost(termCode) + getAssociateInstructorCost(termCode) +
                     getUnit18LecturerCost(termCode) + getContinuingLecturerCost(termCode) + getLadderFacultyCost(termCode) +
-                    getInstructorCost(termCode) + getLecturerSOECost(termCode);
+                    getInstructorCost(termCode) + getLecturerSOECost(termCode) + getUnassignedCost(termCode);
+        }
+
+        private double getTotalTeachingCost(String termCode){
+            return getSupportCost(termCode) + getReplacementCost(termCode);
+        }
+
+        private double getTotalFunds(){
+            BigDecimal totalFunds = new BigDecimal(0).setScale(2);
+            for(LineItem lineItem : budgetScenarioExcelView.getLineItems()){
+                totalFunds = totalFunds.add(lineItem.getAmount());
+            }
+            return totalFunds.doubleValue();
+        }
+
+        private double getBalance(){
+            double value = getTotalFunds();
+            for(String termCode : termCodes){
+                value -= getTotalTeachingCost(termCode);
+            }
+            return value;
         }
 
         private List<Object> rowData(String field){
             List<Object> data = new ArrayList<Object>();
-            //Set<String> termCodes = Term.getTermCodesByYear(2020);
-            //System.err.println(termCodes);
-            List<String> termCodes = Arrays.asList(
-               "202005",
-               "202007",
-               "202010",
-               "202101",
-               "202103"
-            );
-            if(field != ""){
-                data.add(department);
-                data.add(field);
+
+            if(field == ""){
+                return data;
             }
 
-            if(field == "TA Count"){
-                for(String termCode : termCodes){
-                    data.add(getTaCount(termCode));
-                }
-            } else if(field == "TA Cost"){
-                for(String termCode : termCodes){
-                    data.add(getTaCost(termCode));
-                }
-            } else if(field == "Reader Count"){
-                for(String termCode : termCodes) {
-                    data.add(getReaderCount(termCode));
-                }
-            } else if (field == "Reader Cost"){
-                for(String termCode : termCodes) {
-                    data.add(getReaderCost(termCode));
-                }
-            } else if (field == "Support Cost"){
-                for(String termCode : termCodes) {
-                    data.add(getSupportCost(termCode));
-                }
-            } else if (field == "Associate Instructor"){
-                for(String termCode: termCodes){
-                    data.add(getAssociateInstructorCost(termCode));
-                }
-            } else if (field == "Continuing Lecturer"){
-                for(String termCode: termCodes){
-                    data.add(getContinuingLecturerCost(termCode));
-                }
-            } else if (field == "Emeriti - Recalled"){
-                for(String termCode: termCodes){
-                    data.add(getEmeritiCost(termCode));
-                }
-            } else if (field == "Instructor"){
-                for(String termCode: termCodes){
-                    data.add(getInstructorCost(termCode));
-                }
-            } else if (field == "Ladder Faculty"){
-                for(String termCode: termCodes){
-                    data.add(getLadderFacultyCost(termCode));
-                }
-            } else if (field == "Lecturer SOE"){
-                for(String termCode: termCodes){
-                    data.add(getLecturerSOECost(termCode));
-                }
-            } else if (field == "Unit 18 Pre-Six Lecturer"){
-                for(String termCode: termCodes){
-                    data.add(getUnit18LecturerCost(termCode));
-                }
-            } else if (field == "Visiting Professor"){
-                for(String termCode: termCodes){
-                    data.add(getVisitingProfessorCost(termCode));
-                }
-            } else if (field == "Replacement Cost"){
-                for(String termCode: termCodes){
-                    data.add(getReplacementCost(termCode));
-                }
+            data.add(department);
+            data.add(field);
+
+            if (field == "Funds Cost"){
+                double totalFunds = getTotalFunds();
+                data.addAll(Arrays.asList("","","","","", totalFunds));
+                return data;
+            } else if (field == "Balance"){
+                double totalBalance = getBalance();
+                data.addAll(Arrays.asList("","","","","", totalBalance));
+                return data;
             }
+
+            double totalValue = 0;
+            double value = 0;
+            for(String termCode: termCodes){
+                switch(field){
+                    case "TA Count":
+                        value = getTaCount(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "TA Cost":
+                        value = getTaCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Reader Count":
+                        value = getReaderCount(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Reader Cost":
+                        value = getReaderCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Support Cost":
+                        value = getSupportCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Associate Instructor":
+                        value = getAssociateInstructorCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Continuing Lecturer":
+                        value = getContinuingLecturerCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Emeriti - Recalled":
+                        value = getEmeritiCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Instructor":
+                        value = getInstructorCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Ladder Faculty":
+                        value = getLadderFacultyCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Lecturer SOE":
+                        value = getLecturerSOECost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Unit 18 Pre-Six Lecturer":
+                        value = getUnit18LecturerCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Visiting Professor":
+                        value = getVisitingProfessorCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Unassigned":
+                        value = getUnassignedCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Replacement Cost":
+                        value = getReplacementCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Total Teaching Costs":
+                        value = getTotalTeachingCost(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                }
+
+            }
+            data.add(totalValue);
             return data;
         }
 
@@ -415,8 +493,13 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "Lecturer SOE",
                     "Unit 18 Pre-Six Lecturer",
                     "Visiting Professor",
-                    "Replacement Cost"
-
+                    "Unassigned",
+                    "Replacement Cost",
+                    "",
+                    "Total Teaching Costs",
+                    "Funds Cost",
+                    "Balance",
+                    ""
             );
             for(String row : rows){
                 sheet = ExcelHelper.writeRowToSheet(
