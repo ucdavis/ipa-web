@@ -181,6 +181,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         // calculate sectionGroupCost
         for (SectionGroupCost slotCost : sectionGroupCosts) {
+            if(slotCost.getId() == 61029){
+                System.err.println("Found the problem child " + slotCost.getCost());
+            }
             if (slotCost.getCost() == null) {
                 // check if instructor has salary else check if category cost
                 if (slotCost.getInstructor() != null) {
@@ -190,18 +193,24 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
                     if (instructorCost == null) {
                         // check for category cost
+                        List<InstructorTypeCost> potentialCosts = instructorTypeCostService.findByBudgetId(slotCost.getBudgetScenario().getBudget().getId());
                         slotCost.setCost(BigDecimal.ZERO);
+                        for(InstructorTypeCost potentialCost : potentialCosts){
+                            if(potentialCost.getInstructorType().getId() == slotCost.getInstructorType().getId()){
+                                slotCost.setCost(BigDecimal.valueOf(potentialCost.getCost()));
+                            }
+                        }
                     } else {
-                        System.err.println(
+                        /*System.err.println(
                             "Found cost, cost was " + instructorCost.getCost() + " Id is " +
                                 instructorCost.getId() + " Section group cost ID was " +
-                                slotCost.getId());
+                                slotCost.getId());*/
                         slotCost.setCost(instructorCost.getCost());
                     }
                 }
             }
 
-            System.err.println("Cost" + slotCost.getCost() + slotCost.getId());
+            //System.err.println("Cost" + slotCost.getCost() + slotCost.getId());
         }
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users);
