@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
+
 import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
@@ -49,6 +51,7 @@ import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -183,8 +186,53 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         users.addAll(lineItemUsers);
         users.addAll(teachingAssignmentUsers);
 
-        List<DwCensus> census = dwRepository.getCensusBySubjectCodeAndTermCode("ECS", "201910").stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(
+        List<String> budgetScenarioSubjectCodes = sectionGroupCosts.stream().map(SectionGroupCost::getSubjectCode).distinct().collect(Collectors.toList());
+        List<String> budgetScenarioTermCodes = Arrays.asList("201905", "202007", "202010", "202001", "202003");
+
+        List<DwCensus> censusList = new ArrayList<>();
+        for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
+            List<DwCensus> subjectCodeCensus = dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, "201910").stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(
             Collectors.toList());
+
+            censusList.addAll(subjectCodeCensus);
+
+        }
+
+        Map<String, Map<String, Map<String, Long>>> censusMap = new HashMap<>(new HashMap<>());
+        for (DwCensus census : censusList) {
+            String termCode = census.getTermCode();
+            String sequencePattern;
+
+            if (isNumeric(census.getSequenceNumber())) {
+                sequencePattern = census.getSequenceNumber();
+            } else {
+                sequencePattern = String.valueOf(census.getSequenceNumber().charAt(0));
+            }
+
+            String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
+//            {
+//                termCode: {
+//                  subj+crse: {
+//                        sequence: long
+//                  }
+//                }
+//            }
+
+            if (censusMap.get(termCode) == null) {
+                censusMap.put(termCode, new HashMap<>());
+            }
+
+            if (censusMap.get(termCode).get(courseIdentifier) == null) {
+                censusMap.get(termCode).put(courseIdentifier, new HashMap<>());
+            }
+
+            if (censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
+                censusMap.get(termCode).get(courseIdentifier)
+                    .put(sequencePattern, census.getCurrentEnrolledCount());
+            } else {
+                censusMap.get(termCode).get(courseIdentifier).put(sequencePattern, censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) + census.getCurrentEnrolledCount());
+            }
+        }
 
         // calculate sectionGroupCost
         for (SectionGroupCost slotCost : sectionGroupCosts) {
