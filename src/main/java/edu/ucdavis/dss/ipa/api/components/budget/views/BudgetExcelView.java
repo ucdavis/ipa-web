@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
+import edu.ucdavis.dss.dw.dto.DwCourse;
+import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
@@ -11,6 +13,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -46,6 +49,10 @@ public class BudgetExcelView extends AbstractXlsxView {
         return SpringContext.getBean(InstructorTypeCostService.class);
     }
 
+    private DataWarehouseRepository getDataWarehouseRepository() {
+        return SpringContext.getBean(DataWarehouseRepository.class);
+    }
+
     private List<BudgetScenarioExcelView> budgetScenarioExcelViews = null;
     public BudgetExcelView ( List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
         this.budgetScenarioExcelViews = budgetScenarioExcelViews;
@@ -72,6 +79,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             private double lowerDivOfferings = 0;
             private double upperDivOfferings = 0;
             private double graduateOfferings = 0;
+            private double studentCreditHours = 0;
 
 //            public double calculateInstructorCost(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
 //                if(sectionGroupCost.getCost() == null){
@@ -160,7 +168,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
                     this.unassignedCost = instructorCostAmount;
                 }
-
+                enrollment = sectionGroupCost.getEnrollment();
             }
 
             public void add(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
@@ -230,6 +238,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
                     this.unassignedCost += instructorCostAmount;
                 }
+                enrollment += sectionGroupCost.getEnrollment();
             }
         }
 
@@ -404,6 +413,15 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
         }
 
+        private double getEnrollment(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).enrollment).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
 
         private double getLowerDivOfferings(String termCode){
             if(terms.get(termCode) != null){
@@ -545,6 +563,11 @@ public class BudgetExcelView extends AbstractXlsxView {
                         totalValue += value;
                         data.add(value);
                         break;
+                    case "Enrollment":
+                        value = getEnrollment(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
                     case "Lower Div Offerings":
                         value = getLowerDivOfferings(termCode);
                         totalValue += value;
@@ -596,6 +619,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "Balance",
                     "",
                     "Units Offered",
+                    "Enrollment",
                     "",
                     "Lower Div Offerings",
                     "Upper Div Offerings",
