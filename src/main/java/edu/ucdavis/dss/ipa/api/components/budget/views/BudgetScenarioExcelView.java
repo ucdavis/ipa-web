@@ -12,6 +12,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BudgetScenarioExcelView {
@@ -26,6 +27,7 @@ public class BudgetScenarioExcelView {
     List<InstructorTypeCost> instructorTypeCosts;
     List<Instructor> activeInstructors;
     Set<User> users;
+    Map<String, Map<String, Map<String, Long>>> censusMap;
 
     public BudgetScenarioExcelView(Budget budget,
                                    BudgetScenario budgetScenario,
@@ -37,7 +39,8 @@ public class BudgetScenarioExcelView {
                                    List<InstructorType> instructorTypes,
                                    List<InstructorTypeCost> instructorTypeCosts,
                                    List<Instructor> activeInstructors,
-                                   Set<User> users) {
+                                   Set<User> users,
+                                   Map<String, Map<String, Map<String, Long>>> censusMap) {
         this.budget = budget;
         this.budgetScenario = budgetScenario;
         this.workgroup = workgroup;
@@ -49,6 +52,7 @@ public class BudgetScenarioExcelView {
         this.instructorTypeCosts = instructorTypeCosts;
         this.activeInstructors = activeInstructors;
         this.users = users;
+        this.censusMap = censusMap;
     }
 
     public Budget getBudget() {
@@ -143,5 +147,13 @@ public class BudgetScenarioExcelView {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Map<String, Map<String, Map<String, Long>>> getCensusMap() {
+        return censusMap;
+    }
+
+    public void setCensusMap(Map<String, Map<String, Map<String, Long>>> censusMap) {
+        this.censusMap = censusMap;
     }
 }

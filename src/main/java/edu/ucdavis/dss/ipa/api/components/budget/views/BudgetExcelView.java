@@ -36,6 +36,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
+
 public class BudgetExcelView extends AbstractXlsxView {
     private InstructorCostService getInstructorCostService() {
         return SpringContext.getBean(InstructorCostService.class);
@@ -209,7 +211,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                 }else{
                     if(sectionGroupCost.getInstructor() != null){
                         InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budgetScenarioExcelView.getBudget().getId());
-                        instructorCostAmount = (instructorCost == null ? 0.0F : instructorCost.getCost().doubleValue());
+                        if(instructorCost != null){
+                            instructorCostAmount = (instructorCost.getCost() == null ? 0.0F : instructorCost.getCost().doubleValue());
+                        }
                     } else if (instructorTypeId > 0){
                         final long instructorTypeIdFinal = instructorTypeId;
                         InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
@@ -698,6 +702,19 @@ public class BudgetExcelView extends AbstractXlsxView {
                 Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * budgetScenarioExcelView.getBudget().getReaderCost();
                 Float supportCost = taCost + readerCost;
                 Float sectionCost = sectionGroupCost.getCost() == null ? 0.0F : sectionGroupCost.getCost().floatValue();
+                Long currentEnrollment = null;
+                if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()) != null){
+                    if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()) != null){
+                        String sequencePattern;
+                        if (isNumeric(sectionGroupCost.getSequencePattern())) {
+                            sequencePattern = sectionGroupCost.getSequencePattern();
+                        } else {
+                            sequencePattern = String.valueOf(sectionGroupCost.getSequencePattern().charAt(0));
+                        }
+                        currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sequencePattern);
+                    }
+                }
+
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
                         Arrays.asList(
@@ -710,7 +727,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getUnitsLow(),
                                 sectionGroupCost.getSequencePattern(),
                                 sectionGroupCost.getEnrollment(),
-                                "",
+                                currentEnrollment,
                                 sectionGroupCost.getSectionCount(),
                                 (sectionGroupCost.getInstructor() == null ? "" : sectionGroupCost.getInstructor().getFullName()),
                                 (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
@@ -748,9 +765,12 @@ public class BudgetExcelView extends AbstractXlsxView {
 
                 // Calculate instructor type.  Make sure to compare with frontend if you need to change.
                 Set<User> users = budgetScenarioExcelView.users;
+                
+                User user = budgetScenarioExcelView.users.stream().filter(u -> u.getLoginId().equalsIgnoreCase(instructor.getLoginId())).findFirst().orElse(null);
 
-                User user = budgetScenarioExcelView.users.stream().filter(u -> u.getLoginId().equals(instructor.getLoginId())).findFirst().orElse(null);
-                UserRole userRole = user.getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+                UserRole userRole = user.getUserRoles().stream().filter(ur -> (
+                        ur.getRole().getId() == 15 &&
+                        budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
                 String instructorTypeDescription = "";
                 if(userRole != null && userRole.getInstructorType() != null) {
                     instructorTypeDescription = userRole.getInstructorType().getDescription();

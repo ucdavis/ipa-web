@@ -174,7 +174,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         Budget budget = budgetScenario.getBudget();
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
-        List<LineItem> lineItems = budgetScenario.getLineItems();
+        List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
         List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
@@ -268,7 +268,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
             //System.err.println("Cost" + slotCost.getCost() + slotCost.getId());
         }
 
-        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users);
+        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap);
 
         return budgetScenarioExcelView;
     }
