@@ -81,29 +81,9 @@ public class BudgetExcelView extends AbstractXlsxView {
             private double lowerDivOfferings = 0;
             private double upperDivOfferings = 0;
             private double graduateOfferings = 0;
-            private double studentCreditHours = 0;
+            private double studentCreditHoursUndergrad = 0;
+            private double studentCreditHoursGrad = 0;
 
-//            public double calculateInstructorCost(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
-//                if(sectionGroupCost.getCost() == null){
-//                    Long budgetId = sectionGroupCost.getBudgetScenario().getId();
-//                    if(sectionGroupCost.getInstructor() != null){
-//                        Long instructorId = sectionGroupCost.getInstructor().getId();
-////                        InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(instructorId, budgetId);
-//                        InstructorCost instructorCost = budgetScenarioExcelView.getInstructorCosts().stream().filter(ic -> ic.getInstructorTypeIdentification() == 3 && ic.getInstructor().getId() == sectionGroupCost.getInstructor().getId()).findFirst().orElse(null);
-//                        if(instructorCost == null){
-//                            return 0.0;
-//                        } else{
-//                            double cost = instructorCost.getCost().doubleValue();
-//                            System.err.println("Found cost, cost was " + cost + " Id is " + instructorCost.getId() + " Section group cost ID was " + sectionGroupCost.getId());
-//                            return cost;
-//                        }
-//                    } else{
-//                        return 0.0;
-//                    }
-//                } else{
-//                    return sectionGroupCost.getCost().doubleValue();
-//                }
-//            }
 
             public BudgetSummaryTerm(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
                 this.taCount = (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
@@ -115,23 +95,42 @@ public class BudgetExcelView extends AbstractXlsxView {
                 } else{
                     unitsOffered = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 }
-                if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 199){
+                boolean isGrad = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200;
+                if(isGrad){
                     this.graduateOfferings = 1;
                 } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
                     this.upperDivOfferings = 1;
                 } else{
                     lowerDivOfferings = 1;
                 }
+
+                double creditHours = 0.0;
+                if((sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable()) > 0.0F){
+                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsVariable());
+                } else if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
+                    creditHours = 0;
+                } else{
+                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsLow());
+                }
+                if(isGrad){
+                    this.studentCreditHoursGrad = creditHours;
+                } else{
+                    this.studentCreditHoursUndergrad = creditHours;
+                }
+
                 long instructorTypeId = 0;
                 double instructorCostAmount = 0.0;
+
                 if(sectionGroupCost.getInstructor() != null){
-                    UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
-                    if(instructorRole != null){
-                        System.err.println("We found their role! " + instructorRole.getInstructorType().getId() + " " + instructorRole.getInstructorType().getDescription());
-                        instructorTypeId = instructorRole.getInstructorType().getId();
+                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
+                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
+                    } else{
+                        UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+                        if(instructorRole != null){
+                            instructorTypeId = instructorRole.getInstructorType().getId();
+                        }
                     }
                 }else{
-                    //System.err.println("We did not find their role :/");
                     if(sectionGroupCost.getInstructorTypeIdentification() != null){
                         instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
                     }
@@ -141,7 +140,16 @@ public class BudgetExcelView extends AbstractXlsxView {
                 }else{
                     if(sectionGroupCost.getInstructor() != null){
                         InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budgetScenarioExcelView.getBudget().getId());
-                        instructorCostAmount = (instructorCost == null ? 0.0F : instructorCost.getCost().doubleValue());
+
+                        if(instructorCost != null && instructorCost.getCost() != null){
+                            instructorCostAmount = (instructorCost.getCost() == null ? 0.0F : instructorCost.getCost().doubleValue());
+                        }else{
+                            final long instructorTypeIdFinal = instructorTypeId;
+                            InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
+                            if(instructorTypeCost != null){
+                                instructorCostAmount = instructorTypeCost.getCost();
+                            }
+                        }
                     } else if (instructorTypeId > 0){
                         final long instructorTypeIdFinal = instructorTypeId;
                         InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
@@ -167,41 +175,57 @@ public class BudgetExcelView extends AbstractXlsxView {
                 } else if (instructorTypeId == 8){
                     this.lecturerSOECost = instructorCostAmount;
                 } else{
-                    System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
                     this.unassignedCost = instructorCostAmount;
                 }
                 enrollment = sectionGroupCost.getEnrollment();
             }
 
             public void add(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
-                this.taCount += (int) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
-                this.readerCount += (int) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
+                this.taCount += (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
+                this.readerCount += (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
                 this.unitsLow += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 this.unitsHigh += (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
+
                 if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
-                    System.err.println("Adding " + (double) (sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable()));
                     unitsOffered += (double) (sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable());
                 } else{
-                    System.err.println("Adding " + (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow()));
                     unitsOffered += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
                 }
-                if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 199){
+                boolean isGrad = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200;
+                if(isGrad){
                     this.graduateOfferings += 1;
                 } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
                     this.upperDivOfferings += 1;
                 } else{
                     lowerDivOfferings += 1;
                 }
+
+                double creditHours = 0.0;
+                if((sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable()) > 0.0F){
+                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsVariable());
+                } else if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
+                    creditHours = 0;
+                } else{
+                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsLow());
+                }
+                if(isGrad){
+                    this.studentCreditHoursGrad += creditHours;
+                } else{
+                    this.studentCreditHoursUndergrad += creditHours;
+                }
+
                 long instructorTypeId = 0;
                 double instructorCostAmount = 0.0;
                 if(sectionGroupCost.getInstructor() != null){
-                    UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
-                    if(instructorRole != null){
-                        System.err.println("We found their role! " + instructorRole.getInstructorType().getId() + " " + instructorRole.getInstructorType().getDescription());
-                        instructorTypeId = instructorRole.getInstructorType().getId();
+                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
+                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
+                    } else{
+                        UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+                        if(instructorRole != null){
+                            instructorTypeId = instructorRole.getInstructorType().getId();
+                        }
                     }
                 }else{
-                    //System.err.println("We did not find their role :/");
                     if(sectionGroupCost.getInstructorTypeIdentification() != null){
                         instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
                     }
@@ -211,8 +235,15 @@ public class BudgetExcelView extends AbstractXlsxView {
                 }else{
                     if(sectionGroupCost.getInstructor() != null){
                         InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budgetScenarioExcelView.getBudget().getId());
-                        if(instructorCost != null){
+
+                        if(instructorCost != null && instructorCost.getCost() != null){
                             instructorCostAmount = (instructorCost.getCost() == null ? 0.0F : instructorCost.getCost().doubleValue());
+                        }else{
+                            final long instructorTypeIdFinal = instructorTypeId;
+                            InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
+                            if(instructorTypeCost != null){
+                                instructorCostAmount = instructorTypeCost.getCost();
+                            }
                         }
                     } else if (instructorTypeId > 0){
                         final long instructorTypeIdFinal = instructorTypeId;
@@ -239,7 +270,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                 } else if (instructorTypeId == 8){
                     this.lecturerSOECost += instructorCostAmount;
                 } else {
-                    System.err.println("Section Group Cost ID is " + sectionGroupCost.getId() + " Cost is " + instructorCostAmount);
                     this.unassignedCost += instructorCostAmount;
                 }
                 enrollment += sectionGroupCost.getEnrollment();
@@ -251,13 +281,7 @@ public class BudgetExcelView extends AbstractXlsxView {
         private double readerCost;
         private String department;
         private BudgetScenarioExcelView budgetScenarioExcelView;
-        private List<String> termCodes = Arrays.asList(
-                "202005",
-                "202007",
-                "202010",
-                "202101",
-                "202103"
-        );
+        private List<String> termCodes = Arrays.asList("201905", "201907", "201910", "202001", "202003");
 
         public BudgetSummaryTerms(BudgetScenarioExcelView budgetScenarioExcelView, String department, float taCost, float readerCost){
             this.department = department;
@@ -426,6 +450,28 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
         }
 
+        private double getStudentCreditHoursUndergrad(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).studentCreditHoursUndergrad).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getStudentCreditHoursGrad(String termCode){
+            if(terms.get(termCode) != null){
+                BigDecimal bd = new BigDecimal(terms.get(termCode).studentCreditHoursGrad).setScale(2, RoundingMode.HALF_UP);
+                return bd.doubleValue();
+            } else{
+                return 0.0;
+            }
+        }
+
+        private double getStudentCreditHours(String termCode){
+            return getStudentCreditHoursGrad(termCode) + getStudentCreditHoursUndergrad(termCode);
+        }
+
 
         private double getLowerDivOfferings(String termCode){
             if(terms.get(termCode) != null){
@@ -572,6 +618,21 @@ public class BudgetExcelView extends AbstractXlsxView {
                         totalValue += value;
                         data.add(value);
                         break;
+                    case "Student Credit Hours (Undergrad)":
+                        value = getStudentCreditHoursUndergrad(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Student Credit Hours (Graduate)":
+                        value = getStudentCreditHoursGrad(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
+                    case "Student Credit Hours":
+                        value = getStudentCreditHours(termCode);
+                        totalValue += value;
+                        data.add(value);
+                        break;
                     case "Lower Div Offerings":
                         value = getLowerDivOfferings(termCode);
                         totalValue += value;
@@ -624,6 +685,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "",
                     "Units Offered",
                     "Enrollment",
+                    "Student Credit Hours (Undergrad)",
+                    "Student Credit Hours (Graduate)",
+                    "Student Credit Hours",
                     "",
                     "Lower Div Offerings",
                     "Upper Div Offerings",
@@ -765,7 +829,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
                 // Calculate instructor type.  Make sure to compare with frontend if you need to change.
                 Set<User> users = budgetScenarioExcelView.users;
-                
+
                 User user = budgetScenarioExcelView.users.stream().filter(u -> u.getLoginId().equalsIgnoreCase(instructor.getLoginId())).findFirst().orElse(null);
 
                 UserRole userRole = user.getUserRoles().stream().filter(ur -> (

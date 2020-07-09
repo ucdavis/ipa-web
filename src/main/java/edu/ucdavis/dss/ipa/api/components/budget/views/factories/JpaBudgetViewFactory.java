@@ -173,7 +173,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
-        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> sgc.isDisabled() == false).collect(Collectors.toList());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
         List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
@@ -235,10 +235,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         }
 
         // calculate sectionGroupCost
-        for (SectionGroupCost slotCost : sectionGroupCosts) {
-            if(slotCost.getId() == 61029){
-                System.err.println("Found the problem child " + slotCost.getCost());
-            }
+        /*for (SectionGroupCost slotCost : sectionGroupCosts) {
+
             if (slotCost.getCost() == null) {
                 // check if instructor has salary else check if category cost
                 if (slotCost.getInstructor() != null) {
@@ -256,17 +254,17 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                             }
                         }
                     } else {
-                        /*System.err.println(
+                        System.err.println(
                             "Found cost, cost was " + instructorCost.getCost() + " Id is " +
                                 instructorCost.getId() + " Section group cost ID was " +
-                                slotCost.getId());*/
+                                slotCost.getId());
                         slotCost.setCost(instructorCost.getCost());
                     }
                 }
             }
 
             //System.err.println("Cost" + slotCost.getCost() + slotCost.getId());
-        }
+        }*/
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap);
 
