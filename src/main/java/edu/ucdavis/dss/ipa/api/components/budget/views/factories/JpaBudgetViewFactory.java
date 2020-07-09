@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
@@ -25,6 +26,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
@@ -49,6 +51,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +82,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject UserRoleService userRoleService;
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject TagService tagService;
+    @Inject DataWarehouseRepository dwRepository;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -178,6 +182,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByTeachingAssignments(teachingAssignments));
         users.addAll(lineItemUsers);
         users.addAll(teachingAssignmentUsers);
+
+        List<DwCensus> census = dwRepository.getCensusBySubjectCodeAndTermCode("ECS", "201910").stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(
+            Collectors.toList());
 
         // calculate sectionGroupCost
         for (SectionGroupCost slotCost : sectionGroupCosts) {
