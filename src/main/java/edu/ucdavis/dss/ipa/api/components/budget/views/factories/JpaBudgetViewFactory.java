@@ -173,14 +173,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         for (DwCensus census : censusList) {
             String termCode = census.getTermCode();
-            String sequencePattern;
-
-            if (isNumeric(census.getSequenceNumber())) {
-                sequencePattern = census.getSequenceNumber();
-            } else {
-                sequencePattern = String.valueOf(census.getSequenceNumber().charAt(0));
-            }
-
+            String sequencePattern = census.getSequencePattern();
             String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
 
             if (censusMap.get(termCode) == null) {

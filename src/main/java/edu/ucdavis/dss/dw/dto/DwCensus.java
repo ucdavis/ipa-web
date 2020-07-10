@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.dw.dto;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
+
 public class DwCensus {
     String courseNumber, subjectCode, snapshotCode, sequenceNumber, crn, termCode;
     long currentEnrolledCount, maxEnrollmentCount, waitCount, currentAvailableSeatCount, availableWaitCount, studentCount;
@@ -98,5 +100,16 @@ public class DwCensus {
 
     public void setStudentCount(long studentCount) {
         this.studentCount = studentCount;
+    }
+
+    /**
+     * @return First letter for lettered sections or string of numbers for numeric sections.
+     */
+    public String getSequencePattern() {
+        if (isNumeric(this.getSequenceNumber())) {
+            return this.getSequenceNumber();
+        } else {
+            return String.valueOf(this.getSequenceNumber().charAt(0));
+        }
     }
 }
