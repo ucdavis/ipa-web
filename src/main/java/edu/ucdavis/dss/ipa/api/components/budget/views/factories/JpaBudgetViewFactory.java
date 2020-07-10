@@ -157,14 +157,20 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         List<DwCensus> censusList = new ArrayList<>();
         for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
-            List<DwCensus> subjectCodeCensus = dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, "201910").stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(
-            Collectors.toList());
-
-            censusList.addAll(subjectCodeCensus);
-
+            for (String budgetScenarioTermCode : budgetScenarioTermCodes) {
+                censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, budgetScenarioTermCode).stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(Collectors.toList()));
+            }
         }
 
         Map<String, Map<String, Map<String, Long>>> censusMap = new HashMap<>(new HashMap<>());
+        /* {
+            termCode: {
+              subj+crse: {
+                    sequence: long
+              }
+            }
+        } */
+
         for (DwCensus census : censusList) {
             String termCode = census.getTermCode();
             String sequencePattern;
@@ -176,13 +182,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
             }
 
             String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
-//            {
-//                termCode: {
-//                  subj+crse: {
-//                        sequence: long
-//                  }
-//                }
-//            }
 
             if (censusMap.get(termCode) == null) {
                 censusMap.put(termCode, new HashMap<>());
