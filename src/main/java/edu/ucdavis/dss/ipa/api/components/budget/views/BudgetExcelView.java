@@ -281,13 +281,14 @@ public class BudgetExcelView extends AbstractXlsxView {
         private double readerCost;
         private String department;
         private BudgetScenarioExcelView budgetScenarioExcelView;
-        private List<String> termCodes = Arrays.asList("201905", "201907", "201910", "202001", "202003");
+        private List<String> termCodes;
 
         public BudgetSummaryTerms(BudgetScenarioExcelView budgetScenarioExcelView, String department, float taCost, float readerCost){
             this.department = department;
             this.taCost = (double) taCost;
             this.readerCost = (double) readerCost;
             this.budgetScenarioExcelView = budgetScenarioExcelView;
+            this.termCodes = budgetScenarioExcelView.getTermCodes();
         }
         public void addSection(SectionGroupCost sectionGroupCost){
             if(this.terms.get(sectionGroupCost.getTermCode()) == null){
@@ -507,20 +508,23 @@ public class BudgetExcelView extends AbstractXlsxView {
         private List<Object> rowData(String field){
             List<Object> data = new ArrayList<Object>();
 
-            if(field == ""){
-                return data;
-            }
-
             data.add(department);
+            data.add(budgetScenarioExcelView.budgetScenario.getName());
             data.add(field);
 
             if (field == "Funds Cost"){
+                for(String termCode: termCodes){
+                    data.add("");
+                }
                 double totalFunds = getTotalFunds();
-                data.addAll(Arrays.asList("","","","","", totalFunds));
+                data.add(totalFunds);
                 return data;
             } else if (field == "Balance"){
+                for(String termCode: termCodes){
+                    data.add("");
+                }
                 double totalBalance = getBalance();
-                data.addAll(Arrays.asList("","","","","", totalBalance));
+                data.add(totalBalance);
                 return data;
             }
 
@@ -692,13 +696,25 @@ public class BudgetExcelView extends AbstractXlsxView {
                     "Lower Div Offerings",
                     "Upper Div Offerings",
                     "Graduate Offerings",
-                    "Total Offerings"
+                    "Total Offerings",
+                    ""
             );
             for(String row : rows){
-                sheet = ExcelHelper.writeRowToSheet(
-                        sheet,
-                        rowData(row)
-                );
+                if(row == ""){
+                    List<Object> emptyCells = new ArrayList<>();
+                    for(int i =0; i <= sheet.getRow(0).getLastCellNum(); i++){
+                        emptyCells.add("");
+                    }
+                    sheet = ExcelHelper.writeRowToSheet(
+                            sheet,
+                            emptyCells
+                    );
+                } else{
+                    sheet = ExcelHelper.writeRowToSheet(
+                            sheet,
+                            rowData(row)
+                    );
+                }
             }
             return sheet;
         }
@@ -713,12 +729,13 @@ public class BudgetExcelView extends AbstractXlsxView {
         response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xlsx\"");
 
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
-        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Department", "","Summer Session 1","Summer Session 2","Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
+        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Department", "Scenario Name", "", "Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
 
         Sheet scheduleCostSheet = workbook.createSheet("Schedule Cost");
 
         scheduleCostSheet = ExcelHelper.setSheetHeader(scheduleCostSheet, Arrays.asList(
            "Department",
+           "Scenario Name",
            "Term",
            "Subject Code",
            "Course Number",
@@ -743,7 +760,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
 
         Sheet fundsSheet = workbook.createSheet("Funds");
-        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Type", "Description", "Amount"));
+        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Amount"));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
@@ -761,7 +778,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     budgetScenarioExcelView.getBudget().getReaderCost());
 
             // Create Schedule Cost sheet
-            for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().filter(sgc -> sgc.getBudgetScenario().getId() == scenarioId).sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
+            for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetScenarioExcelView.getBudget().getTaCost();
                 Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * budgetScenarioExcelView.getBudget().getReaderCost();
                 Float supportCost = taCost + readerCost;
@@ -783,6 +800,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                         scheduleCostSheet,
                         Arrays.asList(
                                 budgetScenarioExcelView.getWorkgroup().getName(),
+                                budgetScenarioExcelView.getBudgetScenario().getName(),
                                 Term.getRegistrarName(sectionGroupCost.getTermCode()),
                                 sectionGroupCost.getSubjectCode(),
                                 sectionGroupCost.getCourseNumber(),
@@ -814,6 +832,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             for(LineItem lineItem : budgetScenarioExcelView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
                 List<Object> cellValues = Arrays.asList(
                         budgetScenarioExcelView.getWorkgroup().getName(),
+                        budgetScenarioExcelView.getBudgetScenario().getName(),
                         lineItem.getLineItemCategory().getDescription(),
                         lineItem.getDescription(),
                         lineItem.getAmount());

@@ -28,6 +28,7 @@ public class BudgetScenarioExcelView {
     List<Instructor> activeInstructors;
     Set<User> users;
     Map<String, Map<String, Map<String, Long>>> censusMap;
+    List<String> termCodes;
 
     public BudgetScenarioExcelView(Budget budget,
                                    BudgetScenario budgetScenario,
@@ -40,7 +41,8 @@ public class BudgetScenarioExcelView {
                                    List<InstructorTypeCost> instructorTypeCosts,
                                    List<Instructor> activeInstructors,
                                    Set<User> users,
-                                   Map<String, Map<String, Map<String, Long>>> censusMap) {
+                                   Map<String, Map<String, Map<String, Long>>> censusMap,
+                                   List<String> termCodes) {
         this.budget = budget;
         this.budgetScenario = budgetScenario;
         this.workgroup = workgroup;
@@ -53,6 +55,7 @@ public class BudgetScenarioExcelView {
         this.activeInstructors = activeInstructors;
         this.users = users;
         this.censusMap = censusMap;
+        this.termCodes = termCodes;
     }
 
     public Budget getBudget() {
@@ -155,5 +158,13 @@ public class BudgetScenarioExcelView {
 
     public void setCensusMap(Map<String, Map<String, Map<String, Long>>> censusMap) {
         this.censusMap = censusMap;
+    }
+
+    public List<String> getTermCodes() {
+        return termCodes;
+    }
+
+    public void setTermCodes(List<String> termCodes) {
+        this.termCodes = termCodes;
     }
 }

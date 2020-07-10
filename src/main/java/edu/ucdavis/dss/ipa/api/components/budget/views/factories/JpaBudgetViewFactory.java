@@ -7,48 +7,10 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.SupportAssignment;
-import edu.ucdavis.dss.ipa.entities.Tag;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemCommentService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
-import edu.ucdavis.dss.ipa.services.TagService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.services.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +48,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject TagService tagService;
     @Inject DataWarehouseRepository dwRepository;
+    @Inject TermService termService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -172,8 +135,13 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO) {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
+        List<String> budgetScenarioTermCodes = new ArrayList<>();
+        for(String termCodeShort : Arrays.asList("10", "01", "03")){
+            String termCode = termService.getTermCodeFromYearAndTerm(budgetScenario.getBudget().getSchedule().getYear(), termCodeShort);
+            budgetScenarioTermCodes.add(termCode);
+        }
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
-        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> sgc.isDisabled() == false).collect(Collectors.toList());
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
         List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
@@ -187,7 +155,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         users.addAll(teachingAssignmentUsers);
 
         List<String> budgetScenarioSubjectCodes = sectionGroupCosts.stream().map(SectionGroupCost::getSubjectCode).distinct().collect(Collectors.toList());
-        List<String> budgetScenarioTermCodes = Arrays.asList("201905", "202007", "202010", "202001", "202003");
+
 
         List<DwCensus> censusList = new ArrayList<>();
         for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
@@ -234,39 +202,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
             }
         }
 
-        // calculate sectionGroupCost
-        /*for (SectionGroupCost slotCost : sectionGroupCosts) {
-
-            if (slotCost.getCost() == null) {
-                // check if instructor has salary else check if category cost
-                if (slotCost.getInstructor() != null) {
-                    InstructorCost instructorCost = instructorCostService
-                        .findByInstructorIdAndBudgetId(slotCost.getInstructor().getId(),
-                            budget.getId());
-
-                    if (instructorCost == null) {
-                        // check for category cost
-                        List<InstructorTypeCost> potentialCosts = instructorTypeCostService.findByBudgetId(slotCost.getBudgetScenario().getBudget().getId());
-                        slotCost.setCost(BigDecimal.ZERO);
-                        for(InstructorTypeCost potentialCost : potentialCosts){
-                            if(potentialCost.getInstructorType().getId() == slotCost.getInstructorType().getId()){
-                                slotCost.setCost(BigDecimal.valueOf(potentialCost.getCost()));
-                            }
-                        }
-                    } else {
-                        System.err.println(
-                            "Found cost, cost was " + instructorCost.getCost() + " Id is " +
-                                instructorCost.getId() + " Section group cost ID was " +
-                                slotCost.getId());
-                        slotCost.setCost(instructorCost.getCost());
-                    }
-                }
-            }
-
-            //System.err.println("Cost" + slotCost.getCost() + slotCost.getId());
-        }*/
-
-        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap);
+        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes);
 
         return budgetScenarioExcelView;
     }
