@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.dw.dto.DwCourse;
-import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
@@ -13,7 +11,6 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.UserService;
@@ -36,8 +33,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
-import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
-
 public class BudgetExcelView extends AbstractXlsxView {
     private InstructorCostService getInstructorCostService() {
         return SpringContext.getBean(InstructorCostService.class);
@@ -51,11 +46,7 @@ public class BudgetExcelView extends AbstractXlsxView {
         return SpringContext.getBean(InstructorTypeCostService.class);
     }
 
-    private DataWarehouseRepository getDataWarehouseRepository() {
-        return SpringContext.getBean(DataWarehouseRepository.class);
-    }
-
-    private List<BudgetScenarioExcelView> budgetScenarioExcelViews = null;
+    private List<BudgetScenarioExcelView> budgetScenarioExcelViews;
     public BudgetExcelView ( List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
         this.budgetScenarioExcelViews = budgetScenarioExcelViews;
     }
@@ -758,7 +749,6 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Total Cost"
         ));
 
-
         Sheet fundsSheet = workbook.createSheet("Funds");
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Amount"));
 
@@ -786,13 +776,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 Long currentEnrollment = null;
                 if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()) != null){
                     if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()) != null){
-                        String sequencePattern;
-                        if (isNumeric(sectionGroupCost.getSequencePattern())) {
-                            sequencePattern = sectionGroupCost.getSequencePattern();
-                        } else {
-                            sequencePattern = String.valueOf(sectionGroupCost.getSequencePattern().charAt(0));
-                        }
-                        currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sequencePattern);
+                        currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sectionGroupCost.getSequencePattern());
                     }
                 }
 

@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
-import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
 import static edu.ucdavis.dss.ipa.entities.enums.TermDescription.*;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
