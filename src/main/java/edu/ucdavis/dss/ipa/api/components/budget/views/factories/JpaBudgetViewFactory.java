@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
 import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
+import static edu.ucdavis.dss.ipa.entities.enums.TermDescription.*;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
@@ -11,13 +12,11 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -136,7 +135,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
         List<String> budgetScenarioTermCodes = new ArrayList<>();
-        for(String termCodeShort : Arrays.asList("10", "01", "03")){
+        for(String termCodeShort : Arrays.asList(FALL.getShortTermCode(), WINTER.getShortTermCode(), SPRING.getShortTermCode())){
             String termCode = termService.getTermCodeFromYearAndTerm(budgetScenario.getBudget().getSchedule().getYear(), termCodeShort);
             budgetScenarioTermCodes.add(termCode);
         }
@@ -155,7 +154,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         users.addAll(teachingAssignmentUsers);
 
         List<String> budgetScenarioSubjectCodes = sectionGroupCosts.stream().map(SectionGroupCost::getSubjectCode).distinct().collect(Collectors.toList());
-
 
         List<DwCensus> censusList = new ArrayList<>();
         for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
