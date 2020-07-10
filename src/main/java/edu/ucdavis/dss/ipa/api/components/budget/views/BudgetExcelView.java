@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
+import static edu.ucdavis.dss.ipa.entities.enums.InstructorDescription.*;
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
@@ -149,21 +150,21 @@ public class BudgetExcelView extends AbstractXlsxView {
                         }
                     }
                 }
-                if(instructorTypeId == 1){
+                if(instructorTypeId == EMERITI.typeId()){
                     this.emeritiCost = instructorCostAmount;
-                } else if (instructorTypeId == 2){
+                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
                     this.visitingProfessorCost = instructorCostAmount;
-                } else if (instructorTypeId == 3){
+                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
                     this.associateInstructorCost = instructorCostAmount;
-                } else if (instructorTypeId == 4){
+                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
                     this.unit18LecturerCost = instructorCostAmount;
-                } else if (instructorTypeId == 5){
+                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
                     this.continuingLecturerCost = instructorCostAmount;
-                } else if (instructorTypeId == 6){
+                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
                     this.ladderFacultyCost = instructorCostAmount;
-                } else if (instructorTypeId == 7){
+                } else if (instructorTypeId == INSTRUCTOR.typeId()){
                     this.instructorCost = instructorCostAmount;
-                } else if (instructorTypeId == 8){
+                } else if (instructorTypeId == LECTURER_SOE.typeId()){
                     this.lecturerSOECost = instructorCostAmount;
                 } else{
                     this.unassignedCost = instructorCostAmount;
@@ -244,21 +245,21 @@ public class BudgetExcelView extends AbstractXlsxView {
                         }
                     }
                 }
-                if(instructorTypeId == 1){
+                if(instructorTypeId == EMERITI.typeId()){
                     this.emeritiCost += instructorCostAmount;
-                } else if (instructorTypeId == 2){
+                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
                     this.visitingProfessorCost += instructorCostAmount;
-                } else if (instructorTypeId == 3){
+                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
                     this.associateInstructorCost += instructorCostAmount;
-                } else if (instructorTypeId == 4){
+                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
                     this.unit18LecturerCost += instructorCostAmount;
-                } else if (instructorTypeId == 5){
+                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
                     this.continuingLecturerCost += instructorCostAmount;
-                } else if (instructorTypeId == 6){
+                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
                     this.ladderFacultyCost += instructorCostAmount;
-                } else if (instructorTypeId == 7){
+                } else if (instructorTypeId == INSTRUCTOR.typeId()){
                     this.instructorCost += instructorCostAmount;
-                } else if (instructorTypeId == 8){
+                } else if (instructorTypeId == LECTURER_SOE.typeId()){
                     this.lecturerSOECost += instructorCostAmount;
                 } else {
                     this.unassignedCost += instructorCostAmount;
