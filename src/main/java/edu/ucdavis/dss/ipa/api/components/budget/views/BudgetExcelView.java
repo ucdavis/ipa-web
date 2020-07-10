@@ -813,7 +813,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             budgetSummarySheet = budgetTerms.writeTerms(budgetSummarySheet);
 
             // Create Funds sheet
-            for(LineItem lineItem : budgetScenarioExcelView.getLineItems().stream().filter(li -> li.getBudgetScenarioId() == scenarioId).collect(Collectors.toList())){
+            for(LineItem lineItem : budgetScenarioExcelView.getLineItems()){
                 List<Object> cellValues = Arrays.asList(
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         budgetScenarioExcelView.getBudgetScenario().getName(),
