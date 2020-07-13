@@ -3,12 +3,7 @@ package edu.ucdavis.dss.ipa.services;
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 import static edu.ucdavis.dss.ipa.entities.enums.InstructorDescription.*;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
@@ -35,7 +30,7 @@ public class BudgetCalculationService {
      *     }
      * }
      */
-    public Map<String, Map<BudgetSummary, BigDecimal>> calculateTermTotals(Budget budget, List<SectionGroupCost> sectionGroupCosts, List<String> termCodes, Workgroup workgroup) {
+    public Map<String, Map<BudgetSummary, BigDecimal>> calculateTermTotals(Budget budget, List<SectionGroupCost> sectionGroupCosts, List<String> termCodes, Workgroup workgroup, List<LineItem> lineItems) {
         Map<String, Map<BudgetSummary, BigDecimal>> termTotals = new HashMap<>();
 
         for (String termCode : termCodes) {
@@ -111,6 +106,14 @@ public class BudgetCalculationService {
 
             termTotals.get(sectionGroupCost.getTermCode()).put(REPLACEMENT_COST, termTotals.get(sectionGroupCost.getTermCode()).get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             termTotals.get("combined").put(REPLACEMENT_COST, termTotals.get("combined").get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+            termTotals.get(sectionGroupCost.getTermCode()).put(TOTAL_TEACHING_COST, termTotals.get(sectionGroupCost.getTermCode()).get(TOTAL_TEACHING_COST)
+                    .add(calculateInstructorCost(budget, sectionGroupCost, workgroup))
+                    .add(baseTaCost.multiply(taCount))
+                    .add(baseReaderCost.multiply(readerCount)));
+            termTotals.get("combined").put(TOTAL_TEACHING_COST, termTotals.get("combined").get(TOTAL_TEACHING_COST)
+                    .add(calculateInstructorCost(budget, sectionGroupCost, workgroup))
+                    .add(baseTaCost.multiply(taCount))
+                    .add(baseReaderCost.multiply(readerCount)));
 
             if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200) {
                 termTotals.get(sectionGroupCost.getTermCode()).put(GRAD_OFFERINGS, termTotals.get(sectionGroupCost.getTermCode()).get(GRAD_OFFERINGS).add(BigDecimal.ONE));
@@ -131,7 +134,21 @@ public class BudgetCalculationService {
                 termTotals.get("combined").put(LOWER_DIV_OFFERINGS, termTotals.get("combined").get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
                 termTotals.get("combined").put(LOWER_DIV_SEATS, termTotals.get("combined").get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
             }
+            termTotals
+                    .get(sectionGroupCost.getTermCode())
+                    .put(
+                            TOTAL_SEATS,
+                            termTotals.get(sectionGroupCost.getTermCode()).get(TOTAL_SEATS)
+                                    .add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+            termTotals.get("combined").put(TOTAL_SEATS, termTotals.get("combined").get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
         }
+
+        BigDecimal funds = BigDecimal.ZERO;
+        for(LineItem lineItem: lineItems){
+            funds = funds.add(lineItem.getAmount());
+        }
+        termTotals.get("combined").put(TOTAL_FUNDS, funds);
+        termTotals.get("combined").put(TOTAL_BALANCE, funds.subtract(termTotals.get("combined").get(TOTAL_TEACHING_COST)));
 
         return termTotals;
     }
@@ -206,6 +223,7 @@ public class BudgetCalculationService {
         return BigDecimal.ZERO;
     }
 
+
     private static Map<BudgetSummary, BigDecimal> generateBudgetCountMap() {
         Map<BudgetSummary, BigDecimal> budgetCountMap = Stream.of(
             new SimpleEntry<>(TA_COUNT, BigDecimal.ZERO),
@@ -222,12 +240,16 @@ public class BudgetCalculationService {
             new SimpleEntry<>(LECTURER_SOE_COST, BigDecimal.ZERO),
             new SimpleEntry<>(UNASSIGNED_COST, BigDecimal.ZERO),
             new SimpleEntry<>(REPLACEMENT_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(TOTAL_TEACHING_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(TOTAL_BALANCE, BigDecimal.ZERO),
+            new SimpleEntry<>(TOTAL_FUNDS, BigDecimal.ZERO),
             new SimpleEntry<>(LOWER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(LOWER_DIV_SEATS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_SEATS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_SEATS, BigDecimal.ZERO),
+            new SimpleEntry<>(TOTAL_SEATS, BigDecimal.ZERO),
             new SimpleEntry<>(UNITS_OFFERED, BigDecimal.ZERO),
             new SimpleEntry<>(SCH_UNDERGRAD, BigDecimal.ZERO),
             new SimpleEntry<>(SCH_GRAD, BigDecimal.ZERO)

@@ -195,7 +195,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         }
 
         // Calculate totals
-        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes, workgroup);
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 
