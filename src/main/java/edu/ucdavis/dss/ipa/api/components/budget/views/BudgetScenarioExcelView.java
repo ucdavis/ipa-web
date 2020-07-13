@@ -11,7 +11,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.entities.enums.BudgetCount;
+import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class BudgetScenarioExcelView {
     Set<User> users;
     Map<String, Map<String, Map<String, Long>>> censusMap;
     List<String> termCodes;
-    Map<String, Map<BudgetCount, BigDecimal>> termTotals;
+    Map<String, Map<BudgetSummary, BigDecimal>> termTotals;
 
     public BudgetScenarioExcelView(Budget budget,
                                    BudgetScenario budgetScenario,
@@ -46,7 +46,7 @@ public class BudgetScenarioExcelView {
                                    Set<User> users,
                                    Map<String, Map<String, Map<String, Long>>> censusMap,
                                    List<String> termCodes,
-                                   Map<String, Map<BudgetCount, BigDecimal>> termTotals) {
+                                   Map<String, Map<BudgetSummary, BigDecimal>> termTotals) {
         this.budget = budget;
         this.budgetScenario = budgetScenario;
         this.workgroup = workgroup;
@@ -173,12 +173,12 @@ public class BudgetScenarioExcelView {
         this.termCodes = termCodes;
     }
 
-    public Map<String, Map<BudgetCount, BigDecimal>> getTermTotals() {
+    public Map<String, Map<BudgetSummary, BigDecimal>> getTermTotals() {
         return termTotals;
     }
 
     public void setTermTotals(
-        Map<String, Map<BudgetCount, BigDecimal>> termTotals) {
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals) {
         this.termTotals = termTotals;
     }
 }
