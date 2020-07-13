@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 import static edu.ucdavis.dss.ipa.entities.enums.InstructorDescription.*;
+
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
@@ -637,6 +639,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     case "Upper Div Offerings":
                         value = getUpperDivOfferings(termCode);
                         totalValue += value;
+                        BigDecimal test = budgetScenarioExcelView.termTotals.get(termCode).get(UPPER_DIV_OFFERINGS);
                         data.add(value);
                         break;
                     case "Graduate Offerings":

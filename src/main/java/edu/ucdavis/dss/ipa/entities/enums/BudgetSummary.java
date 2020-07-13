@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.entities.enums;
 
-public enum BudgetCount {
+public enum BudgetSummary {
     TA_COUNT,
     TA_COST,
     READER_COUNT,
@@ -10,5 +10,8 @@ public enum BudgetCount {
     GRAD_OFFERINGS,
     LOWER_DIV_SEATS,
     UPPER_DIV_SEATS,
-    GRAD_SEATS;
+    GRAD_SEATS,
+    UNITS_OFFERED,
+    SCH_UNDERGRAD,
+    SCH_GRAD;
 }

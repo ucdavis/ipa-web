@@ -8,7 +8,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.enums.BudgetCount;
+import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 
@@ -195,9 +195,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         }
 
         // Calculate totals
-        Map<String, Map<BudgetCount, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes);
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes);
 
-        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes);
+        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 
         return budgetScenarioExcelView;
     }
