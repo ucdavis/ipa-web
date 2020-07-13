@@ -500,7 +500,7 @@ public class BudgetExcelView extends AbstractXlsxView {
         }
 
         private List<Object> rowData(String field){
-            List<Object> data = new ArrayList<Object>();
+            List<Object> data = new ArrayList<>();
 
             data.add(department);
             data.add(budgetScenarioExcelView.budgetScenario.getName());
@@ -527,78 +527,79 @@ public class BudgetExcelView extends AbstractXlsxView {
             for(String termCode: termCodes){
                 switch(field){
                     case "TA Count":
-                        value = getTaCount(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getTaCount(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COUNT));
                         break;
                     case "TA Cost":
-                        value = getTaCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getTaCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST));
                         break;
                     case "Reader Count":
-                        value = getReaderCount(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getReaderCount(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COUNT));
                         break;
                     case "Reader Cost":
-                        value = getReaderCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getReaderCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST));
                         break;
                     case "Support Cost":
-                        value = getSupportCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getSupportCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST).add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST)));
                         break;
                     case "Associate Instructor":
-                        value = getAssociateInstructorCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getAssociateInstructorCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(ASSOCIATE_INSTRUCTOR_COST));
                         break;
                     case "Continuing Lecturer":
-                        value = getContinuingLecturerCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getContinuingLecturerCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(CONTINUING_LECTURER_COST));
                         break;
                     case "Emeriti - Recalled":
-                        value = getEmeritiCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getEmeritiCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(EMERITI_COST));
                         break;
                     case "Instructor":
-                        value = getInstructorCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getInstructorCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(INSTRUCTOR_COST));
                         break;
                     case "Ladder Faculty":
-                        value = getLadderFacultyCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getLadderFacultyCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LADDER_FACULTY_COST));
                         break;
                     case "Lecturer SOE":
-                        value = getLecturerSOECost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getLecturerSOECost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LECTURER_SOE_COST));
                         break;
                     case "Unit 18 Pre-Six Lecturer":
-                        value = getUnit18LecturerCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getUnit18LecturerCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNIT18_LECTURER_COST));
                         break;
                     case "Visiting Professor":
-                        value = getVisitingProfessorCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getVisitingProfessorCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(VISITING_PROFESSOR_COST));
                         break;
                     case "Unassigned":
-                        value = getUnassignedCost(termCode);
-                        totalValue += value;
-                        data.add(value);
+//                        value = getUnassignedCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNASSIGNED_COST));
                         break;
                     case "Replacement Cost":
-                        value = getReplacementCost(termCode);
-                        totalValue += value;
+//                        value = getReplacementCost(termCode);
+//                        totalValue += value;
+                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(REPLACEMENT_COST));
                         data.add(value);
                         break;
                     case "Total Teaching Costs":

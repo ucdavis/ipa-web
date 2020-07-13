@@ -109,6 +109,9 @@ public class BudgetCalculationService {
                 termTotals.get("combined").put(UNASSIGNED_COST, termTotals.get("combined").get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             }
 
+            termTotals.get(sectionGroupCost.getTermCode()).put(REPLACEMENT_COST, termTotals.get(sectionGroupCost.getTermCode()).get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+            termTotals.get("combined").put(REPLACEMENT_COST, termTotals.get("combined").get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+
             if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200) {
                 termTotals.get(sectionGroupCost.getTermCode()).put(GRAD_OFFERINGS, termTotals.get(sectionGroupCost.getTermCode()).get(GRAD_OFFERINGS).add(BigDecimal.ONE));
                 termTotals.get(sectionGroupCost.getTermCode()).put(GRAD_SEATS, termTotals.get(sectionGroupCost.getTermCode()).get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
@@ -218,6 +221,7 @@ public class BudgetCalculationService {
             new SimpleEntry<>(INSTRUCTOR_COST, BigDecimal.ZERO),
             new SimpleEntry<>(LECTURER_SOE_COST, BigDecimal.ZERO),
             new SimpleEntry<>(UNASSIGNED_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(REPLACEMENT_COST, BigDecimal.ZERO),
             new SimpleEntry<>(LOWER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_OFFERINGS, BigDecimal.ZERO),
