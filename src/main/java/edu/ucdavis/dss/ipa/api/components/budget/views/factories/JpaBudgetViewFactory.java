@@ -8,9 +8,11 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.BudgetCount;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +49,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject TagService tagService;
     @Inject DataWarehouseRepository dwRepository;
     @Inject TermService termService;
+    @Inject BudgetCalculationService budgetCalculationService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -190,6 +193,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 censusMap.get(termCode).get(courseIdentifier).put(sequencePattern, censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) + census.getCurrentEnrolledCount());
             }
         }
+
+        // Calculate totals
+        Map<String, Map<BudgetCount, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes);
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes);
 
