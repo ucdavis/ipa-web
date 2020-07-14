@@ -28,7 +28,7 @@ public class BudgetView {
     List<InstructorType> instructorTypes;
     List<UserRole> userRoles;
     List<Tag> tags;
-    Map<Long, List<BudgetScenario>> userWorkgroupsScenarios;
+    Map<String, List<BudgetScenario>> userWorkgroupsScenarios;
 
     public BudgetView(
         List<BudgetScenario> budgetScenarios,
@@ -52,7 +52,7 @@ public class BudgetView {
         List<UserRole> userRoles,
         List<Tag> tags,
         Workgroup workgroup,
-        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios) {
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -245,12 +245,12 @@ public class BudgetView {
         this.tags = tags;
     }
 
-    public Map<Long, List<BudgetScenario>> getUserWorkgroupsScenarios() {
+    public Map<String, List<BudgetScenario>> getUserWorkgroupsScenarios() {
         return userWorkgroupsScenarios;
     }
 
     public void setUserWorkgroupsScenarios(
-        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios) {
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         this.userWorkgroupsScenarios = userWorkgroupsScenarios;
     }
 }

@@ -60,12 +60,12 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
-        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios = new HashMap<>();
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios = new HashMap<>();
 
         for (Workgroup userWorkgroup : userWorkgroups) {
-            List<BudgetScenario> workgroupScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
+            List<BudgetScenario> workgroupScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year);
 
-            userWorkgroupsScenarios.put(userWorkgroup.getId(), workgroupScenarios);
+            userWorkgroupsScenarios.put(userWorkgroup.getName(), workgroupScenarios);
         }
 
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
