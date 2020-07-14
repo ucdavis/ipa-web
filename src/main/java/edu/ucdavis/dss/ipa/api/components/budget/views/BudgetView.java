@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.budget.views;
 import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BudgetView {
@@ -27,30 +28,31 @@ public class BudgetView {
     List<InstructorType> instructorTypes;
     List<UserRole> userRoles;
     List<Tag> tags;
+    Map<Long, List<BudgetScenario>> userWorkgroupsScenarios;
 
     public BudgetView(
-            List<BudgetScenario> budgetScenarios,
-            List<SectionGroupCost> sectionGroupCosts,
-            List<SectionGroupCostComment> sectionGroupCostComments,
-            List<LineItem> lineItems,
-            List<LineItemComment> lineItemComments,
-            Budget budget,
-            List<LineItemCategory> lineItemCategories,
-            List<SectionGroup> sectionGroups,
-            List<Section> sections,
-            List<InstructorCost> instructorCosts,
-            List<Instructor> activeInstructors,
-            Set<Instructor> assignedInstructors,
-            List<Course> courses,
-            List<TeachingAssignment> teachingAssignments,
-            List<SupportAssignment> supportAssignments,
-            Set<User> users,
-            List<InstructorTypeCost> instructorTypeCosts,
-            List<InstructorType> instructorTypes,
-            List<UserRole> userRoles,
-            List<Tag> tags,
-            Workgroup workgroup
-    ) {
+        List<BudgetScenario> budgetScenarios,
+        List<SectionGroupCost> sectionGroupCosts,
+        List<SectionGroupCostComment> sectionGroupCostComments,
+        List<LineItem> lineItems,
+        List<LineItemComment> lineItemComments,
+        Budget budget,
+        List<LineItemCategory> lineItemCategories,
+        List<SectionGroup> sectionGroups,
+        List<Section> sections,
+        List<InstructorCost> instructorCosts,
+        List<Instructor> activeInstructors,
+        Set<Instructor> assignedInstructors,
+        List<Course> courses,
+        List<TeachingAssignment> teachingAssignments,
+        List<SupportAssignment> supportAssignments,
+        Set<User> users,
+        List<InstructorTypeCost> instructorTypeCosts,
+        List<InstructorType> instructorTypes,
+        List<UserRole> userRoles,
+        List<Tag> tags,
+        Workgroup workgroup,
+        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -72,6 +74,7 @@ public class BudgetView {
         setUserRoles(userRoles);
         setTags(tags);
         setWorkgroup(workgroup);
+        setUserWorkgroupsScenarios(userWorkgroupsScenarios);
     }
 
     public Workgroup getWorkgroup() {
@@ -240,5 +243,14 @@ public class BudgetView {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Map<Long, List<BudgetScenario>> getUserWorkgroupsScenarios() {
+        return userWorkgroupsScenarios;
+    }
+
+    public void setUserWorkgroupsScenarios(
+        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios) {
+        this.userWorkgroupsScenarios = userWorkgroupsScenarios;
     }
 }

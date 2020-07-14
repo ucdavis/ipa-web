@@ -10,6 +10,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
 
 import java.math.BigDecimal;
@@ -50,11 +51,22 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject DataWarehouseRepository dwRepository;
     @Inject TermService termService;
     @Inject BudgetCalculationService budgetCalculationService;
+    @Inject Authorization authorization;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
+        List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
+        Map<Long, List<BudgetScenario>> userWorkgroupsScenarios = new HashMap<>();
+
+        for (Workgroup userWorkgroup : userWorkgroups) {
+            List<BudgetScenario> workgroupScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
+
+            userWorkgroupsScenarios.put(userWorkgroup.getId(), workgroupScenarios);
+        }
 
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
@@ -106,7 +118,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 instructorTypes,
                 userRoles,
                 tags,
-                workgroup);
+                workgroup,
+                userWorkgroupsScenarios);
 
         return budgetView;
     }
