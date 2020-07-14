@@ -27,6 +27,12 @@ public class BudgetCalculationService {
      *         TA_COUNT: BigDecimal,
      *         TA_COST: BigDecimal,
      *         ...
+     *     },
+     *     termCode: {
+     *         ...
+     *     }
+     *     "combined": {
+     *         ...
      *     }
      * }
      */
@@ -34,121 +40,120 @@ public class BudgetCalculationService {
         Map<String, Map<BudgetSummary, BigDecimal>> termTotals = new HashMap<>();
 
         for (String termCode : termCodes) {
-            Map<BudgetSummary, BigDecimal> budgetCountMap = generateBudgetCountMap();
-            termTotals.put(termCode, budgetCountMap);
+            Map<BudgetSummary, BigDecimal> budgetSummaryMap = generateBudgetSummaryMap();
+            termTotals.put(termCode, budgetSummaryMap);
         }
 
         // add another map for yearly total
-        Map<BudgetSummary, BigDecimal> budgetCountMap = generateBudgetCountMap();
-        termTotals.put("combined", budgetCountMap);
+        Map<BudgetSummary, BigDecimal> budgetSummaryMap = generateBudgetSummaryMap();
+        termTotals.put("combined", budgetSummaryMap);
 
         // new BigDecimal(String) preferred over BigDecimal.valueOf(double)?
         // new BigDecimal(String.valueOf()) = 7303.83
         // new BigDecimal(float) = 7303.830078125
         // BigDecimal.valueOf(float) = 7303.830078125
-        BigDecimal baseTaCost = new BigDecimal(String.valueOf((budget.getTaCost())));
-        BigDecimal baseReaderCost = new BigDecimal(String.valueOf((budget.getReaderCost())));
+        BigDecimal baseTaCost = new BigDecimal(String.valueOf(budget.getTaCost()));
+        BigDecimal baseReaderCost = new BigDecimal(String.valueOf(budget.getReaderCost()));
+
+        Map<BudgetSummary, BigDecimal> combinedTermSummary = termTotals.get("combined");
 
         for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             BigDecimal taCount = sectionGroupCost.getTaCount() == null ? BigDecimal.ZERO : new BigDecimal(String.valueOf(sectionGroupCost.getTaCount()));
             BigDecimal readerCount = sectionGroupCost.getReaderCount() == null ? BigDecimal.ZERO : new BigDecimal(String.valueOf(sectionGroupCost.getReaderCount()));
 
-            termTotals.get(sectionGroupCost.getTermCode()).put(TA_COUNT, termTotals.get(sectionGroupCost.getTermCode()).get(TA_COUNT).add(taCount));
-            termTotals.get(sectionGroupCost.getTermCode()).put(TA_COST, termTotals.get(sectionGroupCost.getTermCode()).get(TA_COST).add(baseTaCost.multiply(taCount)));
-            termTotals.get(sectionGroupCost.getTermCode()).put(READER_COUNT, termTotals.get(sectionGroupCost.getTermCode()).get(READER_COUNT).add(readerCount));
-            termTotals.get(sectionGroupCost.getTermCode()).put(READER_COST, termTotals.get(sectionGroupCost.getTermCode()).get(READER_COST).add(baseReaderCost.multiply(readerCount)));
-            termTotals.get(sectionGroupCost.getTermCode()).put(UNITS_OFFERED, termTotals.get(sectionGroupCost.getTermCode()).get(UNITS_OFFERED).add(calculateUnits(sectionGroupCost)));
+            Map<BudgetSummary, BigDecimal> currentTermSummary = termTotals.get(sectionGroupCost.getTermCode());
+
+            currentTermSummary.put(TA_COUNT, currentTermSummary.get(TA_COUNT).add(taCount));
+            currentTermSummary.put(TA_COST, currentTermSummary.get(TA_COST).add(baseTaCost.multiply(taCount)));
+            currentTermSummary.put(READER_COUNT, currentTermSummary.get(READER_COUNT).add(readerCount));
+            currentTermSummary.put(READER_COST, currentTermSummary.get(READER_COST).add(baseReaderCost.multiply(readerCount)));
+            currentTermSummary.put(UNITS_OFFERED, currentTermSummary.get(UNITS_OFFERED).add(calculateUnits(sectionGroupCost)));
 
             if (isGrad(sectionGroupCost)) {
-                termTotals.get(sectionGroupCost.getTermCode()).put(SCH_GRAD, termTotals.get(sectionGroupCost.getTermCode()).get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
-                termTotals.get("combined").put(SCH_GRAD, termTotals.get("combined").get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
+                currentTermSummary.put(SCH_GRAD, currentTermSummary.get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
+                combinedTermSummary.put(SCH_GRAD, combinedTermSummary.get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
             } else {
-                termTotals.get(sectionGroupCost.getTermCode()).put(SCH_UNDERGRAD, termTotals.get(sectionGroupCost.getTermCode()).get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
-                termTotals.get("combined").put(SCH_UNDERGRAD, termTotals.get("combined").get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
+                currentTermSummary.put(SCH_UNDERGRAD, currentTermSummary.get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
+                combinedTermSummary.put(SCH_UNDERGRAD, combinedTermSummary.get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
             }
 
-            termTotals.get("combined").put(TA_COUNT, termTotals.get("combined").get(TA_COUNT).add(taCount));
-            termTotals.get("combined").put(TA_COST, termTotals.get("combined").get(TA_COST).add(baseTaCost.multiply(taCount)));
-            termTotals.get("combined").put(READER_COUNT, termTotals.get("combined").get(READER_COUNT).add(readerCount));
-            termTotals.get("combined").put(READER_COST, termTotals.get("combined").get(READER_COST).add(baseReaderCost.multiply(readerCount)));
-            termTotals.get("combined").put(UNITS_OFFERED, termTotals.get("combined").get(UNITS_OFFERED).add(calculateUnits(sectionGroupCost)));
+            combinedTermSummary.put(TA_COUNT, combinedTermSummary.get(TA_COUNT).add(taCount));
+            combinedTermSummary.put(TA_COST, combinedTermSummary.get(TA_COST).add(baseTaCost.multiply(taCount)));
+            combinedTermSummary.put(READER_COUNT, combinedTermSummary.get(READER_COUNT).add(readerCount));
+            combinedTermSummary.put(READER_COST, combinedTermSummary.get(READER_COST).add(baseReaderCost.multiply(readerCount)));
+            combinedTermSummary.put(UNITS_OFFERED, combinedTermSummary.get(UNITS_OFFERED).add(calculateUnits(sectionGroupCost)));
 
             long instructorTypeId = calculateInstructorTypeId(sectionGroupCost, workgroup);
 
             if(instructorTypeId == EMERITI.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(EMERITI_COST, termTotals.get(sectionGroupCost.getTermCode()).get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(EMERITI_COST, termTotals.get("combined").get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(EMERITI_COST, currentTermSummary.get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(EMERITI_COST, combinedTermSummary.get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(VISITING_PROFESSOR_COST, termTotals.get(sectionGroupCost.getTermCode()).get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(VISITING_PROFESSOR_COST, termTotals.get("combined").get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(VISITING_PROFESSOR_COST, currentTermSummary.get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(VISITING_PROFESSOR_COST, combinedTermSummary.get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
-               termTotals.get(sectionGroupCost.getTermCode()).put(ASSOCIATE_INSTRUCTOR_COST, termTotals.get(sectionGroupCost.getTermCode()).get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(ASSOCIATE_INSTRUCTOR_COST, termTotals.get("combined").get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+               currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(UNIT18_LECTURER_COST, termTotals.get(sectionGroupCost.getTermCode()).get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(UNIT18_LECTURER_COST, termTotals.get("combined").get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(UNIT18_LECTURER_COST, currentTermSummary.get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(UNIT18_LECTURER_COST, combinedTermSummary.get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(CONTINUING_LECTURER_COST, termTotals.get(sectionGroupCost.getTermCode()).get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(CONTINUING_LECTURER_COST, termTotals.get("combined").get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == LADDER_FACULTY.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(LADDER_FACULTY_COST, termTotals.get(sectionGroupCost.getTermCode()).get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(LADDER_FACULTY_COST, termTotals.get("combined").get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(LADDER_FACULTY_COST, currentTermSummary.get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(LADDER_FACULTY_COST, combinedTermSummary.get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == INSTRUCTOR.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(INSTRUCTOR_COST, termTotals.get(sectionGroupCost.getTermCode()).get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(INSTRUCTOR_COST, termTotals.get("combined").get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(INSTRUCTOR_COST, currentTermSummary.get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(INSTRUCTOR_COST, combinedTermSummary.get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == LECTURER_SOE.typeId()){
-                termTotals.get(sectionGroupCost.getTermCode()).put(LECTURER_SOE_COST, termTotals.get(sectionGroupCost.getTermCode()).get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(LECTURER_SOE_COST, termTotals.get("combined").get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(LECTURER_SOE_COST, currentTermSummary.get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(LECTURER_SOE_COST, combinedTermSummary.get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else {
-                termTotals.get(sectionGroupCost.getTermCode()).put(UNASSIGNED_COST, termTotals.get(sectionGroupCost.getTermCode()).get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-                termTotals.get("combined").put(UNASSIGNED_COST, termTotals.get("combined").get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(UNASSIGNED_COST, currentTermSummary.get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                combinedTermSummary.put(UNASSIGNED_COST, combinedTermSummary.get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             }
 
-            termTotals.get(sectionGroupCost.getTermCode()).put(REPLACEMENT_COST, termTotals.get(sectionGroupCost.getTermCode()).get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-            termTotals.get("combined").put(REPLACEMENT_COST, termTotals.get("combined").get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
-            termTotals.get(sectionGroupCost.getTermCode()).put(TOTAL_TEACHING_COST, termTotals.get(sectionGroupCost.getTermCode()).get(TOTAL_TEACHING_COST)
+            currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+            combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+            currentTermSummary.put(TOTAL_TEACHING_COST, currentTermSummary.get(TOTAL_TEACHING_COST)
                     .add(calculateInstructorCost(budget, sectionGroupCost, workgroup))
                     .add(baseTaCost.multiply(taCount))
                     .add(baseReaderCost.multiply(readerCount)));
-            termTotals.get("combined").put(TOTAL_TEACHING_COST, termTotals.get("combined").get(TOTAL_TEACHING_COST)
+            combinedTermSummary.put(TOTAL_TEACHING_COST, combinedTermSummary.get(TOTAL_TEACHING_COST)
                     .add(calculateInstructorCost(budget, sectionGroupCost, workgroup))
                     .add(baseTaCost.multiply(taCount))
                     .add(baseReaderCost.multiply(readerCount)));
 
             if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200) {
-                termTotals.get(sectionGroupCost.getTermCode()).put(GRAD_OFFERINGS, termTotals.get(sectionGroupCost.getTermCode()).get(GRAD_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get(sectionGroupCost.getTermCode()).put(GRAD_SEATS, termTotals.get(sectionGroupCost.getTermCode()).get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(GRAD_OFFERINGS, currentTermSummary.get(GRAD_OFFERINGS).add(BigDecimal.ONE));
+                currentTermSummary.put(GRAD_SEATS, currentTermSummary.get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
 
-                termTotals.get("combined").put(GRAD_OFFERINGS, termTotals.get("combined").get(GRAD_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get("combined").put(GRAD_SEATS, termTotals.get("combined").get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(GRAD_OFFERINGS, combinedTermSummary.get(GRAD_OFFERINGS).add(BigDecimal.ONE));
+                combinedTermSummary.put(GRAD_SEATS, combinedTermSummary.get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
             } else if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99) {
-                termTotals.get(sectionGroupCost.getTermCode()).put(UPPER_DIV_OFFERINGS, termTotals.get(sectionGroupCost.getTermCode()).get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get(sectionGroupCost.getTermCode()).put(UPPER_DIV_SEATS, termTotals.get(sectionGroupCost.getTermCode()).get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(UPPER_DIV_OFFERINGS, currentTermSummary.get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
+                currentTermSummary.put(UPPER_DIV_SEATS, currentTermSummary.get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
 
-                termTotals.get("combined").put(UPPER_DIV_OFFERINGS, termTotals.get("combined").get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get("combined").put(UPPER_DIV_SEATS, termTotals.get("combined").get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(UPPER_DIV_OFFERINGS, combinedTermSummary.get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
+                combinedTermSummary.put(UPPER_DIV_SEATS, combinedTermSummary.get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
             } else {
-                termTotals.get(sectionGroupCost.getTermCode()).put(LOWER_DIV_OFFERINGS, termTotals.get(sectionGroupCost.getTermCode()).get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get(sectionGroupCost.getTermCode()).put(LOWER_DIV_SEATS, termTotals.get(sectionGroupCost.getTermCode()).get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(LOWER_DIV_OFFERINGS, currentTermSummary.get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
+                currentTermSummary.put(LOWER_DIV_SEATS, currentTermSummary.get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
 
-                termTotals.get("combined").put(LOWER_DIV_OFFERINGS, termTotals.get("combined").get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                termTotals.get("combined").put(LOWER_DIV_SEATS, termTotals.get("combined").get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(LOWER_DIV_OFFERINGS, combinedTermSummary.get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
+                combinedTermSummary.put(LOWER_DIV_SEATS, combinedTermSummary.get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
             }
-            termTotals
-                    .get(sectionGroupCost.getTermCode())
-                    .put(
-                            TOTAL_SEATS,
-                            termTotals.get(sectionGroupCost.getTermCode()).get(TOTAL_SEATS)
-                                    .add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
-            termTotals.get("combined").put(TOTAL_SEATS, termTotals.get("combined").get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+            currentTermSummary.put(TOTAL_SEATS, currentTermSummary.get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+            combinedTermSummary.put(TOTAL_SEATS, combinedTermSummary.get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
         }
 
         BigDecimal funds = BigDecimal.ZERO;
         for(LineItem lineItem: lineItems){
             funds = funds.add(lineItem.getAmount());
         }
-        termTotals.get("combined").put(TOTAL_FUNDS, funds);
-        termTotals.get("combined").put(TOTAL_BALANCE, funds.subtract(termTotals.get("combined").get(TOTAL_TEACHING_COST)));
+        combinedTermSummary.put(TOTAL_FUNDS, funds);
+        combinedTermSummary.put(TOTAL_BALANCE, funds.subtract(combinedTermSummary.get(TOTAL_TEACHING_COST)));
 
         return termTotals;
     }
@@ -224,8 +229,8 @@ public class BudgetCalculationService {
     }
 
 
-    private static Map<BudgetSummary, BigDecimal> generateBudgetCountMap() {
-        Map<BudgetSummary, BigDecimal> budgetCountMap = Stream.of(
+    private static Map<BudgetSummary, BigDecimal> generateBudgetSummaryMap() {
+        Map<BudgetSummary, BigDecimal> budgetSummaryMap = Stream.of(
             new SimpleEntry<>(TA_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(TA_COST, BigDecimal.ZERO),
             new SimpleEntry<>(READER_COUNT, BigDecimal.ZERO),
@@ -256,6 +261,6 @@ public class BudgetCalculationService {
             )
             .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
 
-        return budgetCountMap;
+        return budgetSummaryMap;
     }
 }
