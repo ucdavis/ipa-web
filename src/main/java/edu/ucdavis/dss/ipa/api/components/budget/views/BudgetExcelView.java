@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
-import static edu.ucdavis.dss.ipa.entities.enums.InstructorDescription.*;
 
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -19,7 +18,6 @@ import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,730 +35,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class BudgetExcelView extends AbstractXlsxView {
-    private InstructorCostService getInstructorCostService() {
-        return SpringContext.getBean(InstructorCostService.class);
-    }
-
-    private UserService getUserService() {
-        return SpringContext.getBean(UserService.class);
-    }
-
-    private InstructorTypeCostService getInstructorTypeCostService() {
-        return SpringContext.getBean(InstructorTypeCostService.class);
-    }
-
     private List<BudgetScenarioExcelView> budgetScenarioExcelViews;
-    public BudgetExcelView ( List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
+    public BudgetExcelView (List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
         this.budgetScenarioExcelViews = budgetScenarioExcelViews;
-    }
-
-    public class BudgetSummaryTerms {
-
-        public class BudgetSummaryTerm{
-            private double taCount;
-            private double readerCount;
-            private double emeritiCost = 0;
-            private double visitingProfessorCost = 0;
-            private double associateInstructorCost = 0;
-            private double unit18LecturerCost = 0;
-            private double continuingLecturerCost = 0;
-            private double ladderFacultyCost = 0;
-            private double instructorCost = 0;
-            private double lecturerSOECost = 0;
-            private double unassignedCost = 0;
-            private double enrollment = 0;
-            private double unitsLow = 0;
-            private double unitsHigh = 0;
-            private double unitsOffered = 0;
-            private double lowerDivOfferings = 0;
-            private double upperDivOfferings = 0;
-            private double graduateOfferings = 0;
-            private double studentCreditHoursUndergrad = 0;
-            private double studentCreditHoursGrad = 0;
-
-
-            public BudgetSummaryTerm(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
-                this.taCount = (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
-                this.readerCount = (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
-                this.unitsLow = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
-                this.unitsHigh = (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
-                if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
-                    unitsOffered = (double) (sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable());
-                } else{
-                    unitsOffered = (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
-                }
-                boolean isGrad = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200;
-                if(isGrad){
-                    this.graduateOfferings = 1;
-                } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
-                    this.upperDivOfferings = 1;
-                } else{
-                    lowerDivOfferings = 1;
-                }
-
-                double creditHours = 0.0;
-                if((sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable()) > 0.0F){
-                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsVariable());
-                } else if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
-                    creditHours = 0;
-                } else{
-                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsLow());
-                }
-                if(isGrad){
-                    this.studentCreditHoursGrad = creditHours;
-                } else{
-                    this.studentCreditHoursUndergrad = creditHours;
-                }
-
-                long instructorTypeId = 0;
-                double instructorCostAmount = 0.0;
-
-                if(sectionGroupCost.getInstructor() != null){
-                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
-                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
-                    } else{
-                        UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
-                        if(instructorRole != null){
-                            instructorTypeId = instructorRole.getInstructorType().getId();
-                        }
-                    }
-                }else{
-                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
-                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
-                    }
-                }
-                if(sectionGroupCost.getCost() != null){
-                    instructorCostAmount = sectionGroupCost.getCost().doubleValue();
-                }else{
-                    if(sectionGroupCost.getInstructor() != null){
-                        InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budgetScenarioExcelView.getBudget().getId());
-
-                        if(instructorCost != null && instructorCost.getCost() != null){
-                            instructorCostAmount = (instructorCost.getCost() == null ? 0.0F : instructorCost.getCost().doubleValue());
-                        }else{
-                            final long instructorTypeIdFinal = instructorTypeId;
-                            InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
-                            if(instructorTypeCost != null){
-                                instructorCostAmount = instructorTypeCost.getCost();
-                            }
-                        }
-                    } else if (instructorTypeId > 0){
-                        final long instructorTypeIdFinal = instructorTypeId;
-                        InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
-                        if(instructorTypeCost != null){
-                            instructorCostAmount = instructorTypeCost.getCost();
-                        }
-                    }
-                }
-                if(instructorTypeId == EMERITI.typeId()){
-                    this.emeritiCost = instructorCostAmount;
-                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
-                    this.visitingProfessorCost = instructorCostAmount;
-                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
-                    this.associateInstructorCost = instructorCostAmount;
-                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
-                    this.unit18LecturerCost = instructorCostAmount;
-                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
-                    this.continuingLecturerCost = instructorCostAmount;
-                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
-                    this.ladderFacultyCost = instructorCostAmount;
-                } else if (instructorTypeId == INSTRUCTOR.typeId()){
-                    this.instructorCost = instructorCostAmount;
-                } else if (instructorTypeId == LECTURER_SOE.typeId()){
-                    this.lecturerSOECost = instructorCostAmount;
-                } else{
-                    this.unassignedCost = instructorCostAmount;
-                }
-                enrollment = sectionGroupCost.getEnrollment();
-            }
-
-            public void add(BudgetScenarioExcelView budgetScenarioExcelView, SectionGroupCost sectionGroupCost){
-                this.taCount += (double) (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount());
-                this.readerCount += (double) (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() );
-                this.unitsLow += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
-                this.unitsHigh += (double) (sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh());
-
-                if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
-                    unitsOffered += (double) (sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable());
-                } else{
-                    unitsOffered += (double) (sectionGroupCost.getUnitsLow() == null ? 0.0F : sectionGroupCost.getUnitsLow());
-                }
-                boolean isGrad = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200;
-                if(isGrad){
-                    this.graduateOfferings += 1;
-                } else if(Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99){
-                    this.upperDivOfferings += 1;
-                } else{
-                    lowerDivOfferings += 1;
-                }
-
-                double creditHours = 0.0;
-                if((sectionGroupCost.getUnitsVariable() == null ? 0.0F : sectionGroupCost.getUnitsVariable()) > 0.0F){
-                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsVariable());
-                } else if((sectionGroupCost.getUnitsHigh() == null ? 0.0F : sectionGroupCost.getUnitsHigh()) > 0.0F){
-                    creditHours = 0;
-                } else{
-                    creditHours = (sectionGroupCost.getEnrollment() == null ? 0.0F : sectionGroupCost.getEnrollment() * sectionGroupCost.getUnitsLow());
-                }
-                if(isGrad){
-                    this.studentCreditHoursGrad += creditHours;
-                } else{
-                    this.studentCreditHoursUndergrad += creditHours;
-                }
-
-                long instructorTypeId = 0;
-                double instructorCostAmount = 0.0;
-                if(sectionGroupCost.getInstructor() != null){
-                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
-                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
-                    } else{
-                        UserRole instructorRole = getUserService().getOneByLoginId(sectionGroupCost.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && budgetScenarioExcelView.getWorkgroup().getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
-                        if(instructorRole != null){
-                            instructorTypeId = instructorRole.getInstructorType().getId();
-                        }
-                    }
-                }else{
-                    if(sectionGroupCost.getInstructorTypeIdentification() != null){
-                        instructorTypeId = sectionGroupCost.getInstructorTypeIdentification();
-                    }
-                }
-                if(sectionGroupCost.getCost() != null){
-                   instructorCostAmount = sectionGroupCost.getCost().doubleValue();
-                }else{
-                    if(sectionGroupCost.getInstructor() != null){
-                        InstructorCost instructorCost = getInstructorCostService().findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budgetScenarioExcelView.getBudget().getId());
-
-                        if(instructorCost != null && instructorCost.getCost() != null){
-                            instructorCostAmount = (instructorCost.getCost() == null ? 0.0F : instructorCost.getCost().doubleValue());
-                        }else{
-                            final long instructorTypeIdFinal = instructorTypeId;
-                            InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
-                            if(instructorTypeCost != null){
-                                instructorCostAmount = instructorTypeCost.getCost();
-                            }
-                        }
-                    } else if (instructorTypeId > 0){
-                        final long instructorTypeIdFinal = instructorTypeId;
-                        InstructorTypeCost instructorTypeCost = getInstructorTypeCostService().findByBudgetId(budgetScenarioExcelView.getBudget().getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
-                        if(instructorTypeCost != null){
-                            instructorCostAmount = instructorTypeCost.getCost();
-                        }
-                    }
-                }
-                if(instructorTypeId == EMERITI.typeId()){
-                    this.emeritiCost += instructorCostAmount;
-                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
-                    this.visitingProfessorCost += instructorCostAmount;
-                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
-                    this.associateInstructorCost += instructorCostAmount;
-                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
-                    this.unit18LecturerCost += instructorCostAmount;
-                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
-                    this.continuingLecturerCost += instructorCostAmount;
-                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
-                    this.ladderFacultyCost += instructorCostAmount;
-                } else if (instructorTypeId == INSTRUCTOR.typeId()){
-                    this.instructorCost += instructorCostAmount;
-                } else if (instructorTypeId == LECTURER_SOE.typeId()){
-                    this.lecturerSOECost += instructorCostAmount;
-                } else {
-                    this.unassignedCost += instructorCostAmount;
-                }
-                enrollment += sectionGroupCost.getEnrollment();
-            }
-        }
-
-        private HashMap<String, BudgetSummaryTerm> terms = new HashMap<String, BudgetSummaryTerm>();
-        private double taCost;
-        private double readerCost;
-        private String department;
-        private BudgetScenarioExcelView budgetScenarioExcelView;
-        private List<String> termCodes;
-
-        public BudgetSummaryTerms(BudgetScenarioExcelView budgetScenarioExcelView, String department, float taCost, float readerCost){
-            this.department = department;
-            this.taCost = (double) taCost;
-            this.readerCost = (double) readerCost;
-            this.budgetScenarioExcelView = budgetScenarioExcelView;
-            this.termCodes = budgetScenarioExcelView.getTermCodes();
-        }
-        public void addSection(SectionGroupCost sectionGroupCost){
-            if(this.terms.get(sectionGroupCost.getTermCode()) == null){
-                terms.put(sectionGroupCost.getTermCode(), new BudgetSummaryTerm(budgetScenarioExcelView, sectionGroupCost));
-            } else{
-                terms.get(sectionGroupCost.getTermCode()).add(budgetScenarioExcelView, sectionGroupCost);
-            }
-        }
-
-        private double getTaCount(String termCode){
-            if(terms.get(termCode) != null){
-                return terms.get(termCode).taCount;
-            } else{
-                return 0;
-            }
-        }
-
-        private double getTaCost(String termCode){
-            return getTaCount(termCode) * taCost;
-        }
-
-        private double getReaderCount(String termCode){
-            if(terms.get(termCode) != null){
-                return terms.get(termCode).readerCount;
-            } else{
-                return 0;
-            }
-        }
-
-        private double getReaderCost(String termCode){
-            return getReaderCount(termCode) * readerCost;
-        }
-
-        private double getSupportCost(String termCode){
-            return getTaCost(termCode) + getReaderCost(termCode);
-        }
-
-        private double getAssociateInstructorCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).associateInstructorCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getContinuingLecturerCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).continuingLecturerCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getEmeritiCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).emeritiCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getVisitingProfessorCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).visitingProfessorCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getUnit18LecturerCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).unit18LecturerCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getLadderFacultyCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).ladderFacultyCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getInstructorCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).instructorCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getLecturerSOECost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).lecturerSOECost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getUnassignedCost(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).unassignedCost).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getReplacementCost(String termCode){
-            return getEmeritiCost(termCode) + getVisitingProfessorCost(termCode) + getAssociateInstructorCost(termCode) +
-                    getUnit18LecturerCost(termCode) + getContinuingLecturerCost(termCode) + getLadderFacultyCost(termCode) +
-                    getInstructorCost(termCode) + getLecturerSOECost(termCode) + getUnassignedCost(termCode);
-        }
-
-        private double getTotalTeachingCost(String termCode){
-            return getSupportCost(termCode) + getReplacementCost(termCode);
-        }
-
-        private double getTotalFunds(){
-            BigDecimal totalFunds = new BigDecimal(0).setScale(2);
-            for(LineItem lineItem : budgetScenarioExcelView.getLineItems()){
-                totalFunds = totalFunds.add(lineItem.getAmount());
-            }
-            return totalFunds.doubleValue();
-        }
-
-        private double getBalance(){
-            double value = getTotalFunds();
-            for(String termCode : termCodes){
-                value -= getTotalTeachingCost(termCode);
-            }
-            return value;
-        }
-
-        private double getUnits(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).unitsOffered).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getEnrollment(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).enrollment).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getStudentCreditHoursUndergrad(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).studentCreditHoursUndergrad).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getStudentCreditHoursGrad(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).studentCreditHoursGrad).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getStudentCreditHours(String termCode){
-            return getStudentCreditHoursGrad(termCode) + getStudentCreditHoursUndergrad(termCode);
-        }
-
-
-        private double getLowerDivOfferings(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).lowerDivOfferings).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getUpperDivOfferings(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).upperDivOfferings).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getGraduateOfferings(String termCode){
-            if(terms.get(termCode) != null){
-                BigDecimal bd = new BigDecimal(terms.get(termCode).graduateOfferings).setScale(2, RoundingMode.HALF_UP);
-                return bd.doubleValue();
-            } else{
-                return 0.0;
-            }
-        }
-
-        private double getTotalOfferings(String termCode){
-            return getLowerDivOfferings(termCode) + getUpperDivOfferings(termCode) + getGraduateOfferings(termCode);
-        }
-
-        private List<Object> rowData(String field){
-            List<Object> data = new ArrayList<>();
-
-            data.add(department);
-            data.add(budgetScenarioExcelView.budgetScenario.getName());
-            data.add(field);
-
-            if (field == "Funds Cost"){
-                for(String termCode: termCodes){
-                    data.add("");
-                }
-                data.add(budgetScenarioExcelView.termTotals.get("combined").get(TOTAL_FUNDS));
-                return data;
-            } else if (field == "Balance"){
-                for(String termCode: termCodes){
-                    data.add("");
-                }
-                data.add(budgetScenarioExcelView.termTotals.get("combined").get(TOTAL_BALANCE));
-                return data;
-            }
-
-            for(String termCode: termCodes){
-                switch(field){
-                    case "TA Count":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COUNT));
-                        break;
-                    case "TA Cost":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST));
-                        break;
-                    case "Reader Count":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COUNT));
-                        break;
-                    case "Reader Cost":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST));
-                        break;
-                    case "Support Cost":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST).add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST)));
-                        break;
-                    case "Associate Instructor":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(ASSOCIATE_INSTRUCTOR_COST));
-                        break;
-                    case "Continuing Lecturer":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(CONTINUING_LECTURER_COST));
-                        break;
-                    case "Emeriti - Recalled":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(EMERITI_COST));
-                        break;
-                    case "Instructor":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(INSTRUCTOR_COST));
-                        break;
-                    case "Ladder Faculty":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LADDER_FACULTY_COST));
-                        break;
-                    case "Lecturer SOE":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LECTURER_SOE_COST));
-                        break;
-                    case "Unit 18 Pre-Six Lecturer":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNIT18_LECTURER_COST));
-                        break;
-                    case "Visiting Professor":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(VISITING_PROFESSOR_COST));
-                        break;
-                    case "Unassigned":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNASSIGNED_COST));
-                        break;
-                    case "Replacement Cost":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(REPLACEMENT_COST));
-                        break;
-                    case "Total Teaching Costs":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_TEACHING_COST));
-                        break;
-                    case "Units Offered":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNITS_OFFERED));
-                        break;
-                    case "Enrollment":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_SEATS));
-                        break;
-                    case "Student Credit Hours (Undergrad)":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_UNDERGRAD));
-                        break;
-                    case "Student Credit Hours (Graduate)":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_GRAD));
-                        break;
-                    case "Student Credit Hours":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_UNDERGRAD).add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_GRAD)));
-                        break;
-                    case "Lower Div Offerings":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LOWER_DIV_OFFERINGS));
-                        break;
-                    case "Upper Div Offerings":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UPPER_DIV_OFFERINGS));
-                        break;
-                    case "Graduate Offerings":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(GRAD_OFFERINGS));
-                        break;
-                    case "Total Offerings":
-                        data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LOWER_DIV_OFFERINGS).add(budgetScenarioExcelView.termTotals.get(termCode).get(UPPER_DIV_OFFERINGS)).add(budgetScenarioExcelView.termTotals.get(termCode).get(GRAD_OFFERINGS)));
-                        break;
-                }
-            }
-            switch(field){
-                case "TA Count":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(TA_COUNT));
-                    break;
-                case "TA Cost":
-//                        value = getTaCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(TA_COST));
-                    break;
-                case "Reader Count":
-//                        value = getReaderCount(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(READER_COUNT));
-                    break;
-                case "Reader Cost":
-//                        value = getReaderCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(READER_COST));
-                    break;
-                case "Support Cost":
-//                        value = getSupportCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(TA_COST).add(budgetScenarioExcelView.termTotals.get("combined").get(READER_COST)));
-                    break;
-                case "Associate Instructor":
-//                        value = getAssociateInstructorCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(ASSOCIATE_INSTRUCTOR_COST));
-                    break;
-                case "Continuing Lecturer":
-//                        value = getContinuingLecturerCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(CONTINUING_LECTURER_COST));
-                    break;
-                case "Emeriti - Recalled":
-//                        value = getEmeritiCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(EMERITI_COST));
-                    break;
-                case "Instructor":
-//                        value = getInstructorCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(INSTRUCTOR_COST));
-                    break;
-                case "Ladder Faculty":
-//                        value = getLadderFacultyCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(LADDER_FACULTY_COST));
-                    break;
-                case "Lecturer SOE":
-//                        value = getLecturerSOECost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(LECTURER_SOE_COST));
-                    break;
-                case "Unit 18 Pre-Six Lecturer":
-//                        value = getUnit18LecturerCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(UNIT18_LECTURER_COST));
-                    break;
-                case "Visiting Professor":
-//                        value = getVisitingProfessorCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(VISITING_PROFESSOR_COST));
-                    break;
-                case "Unassigned":
-//                        value = getUnassignedCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(UNASSIGNED_COST));
-                    break;
-                case "Replacement Cost":
-//                        value = getReplacementCost(termCode);
-//                        totalValue += value;
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(REPLACEMENT_COST));
-                    break;
-                case "Total Teaching Costs":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(TOTAL_TEACHING_COST));
-                    break;
-                case "Units Offered":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(UNITS_OFFERED));
-                    break;
-                case "Enrollment":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(TOTAL_SEATS));
-                    break;
-                case "Student Credit Hours (Undergrad)":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(SCH_UNDERGRAD));
-                    break;
-                case "Student Credit Hours (Graduate)":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(SCH_GRAD));
-                    break;
-                case "Student Credit Hours":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(SCH_UNDERGRAD).add(budgetScenarioExcelView.termTotals.get("combined").get(SCH_GRAD)));
-                    break;
-                case "Lower Div Offerings":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(LOWER_DIV_OFFERINGS));
-                    break;
-                case "Upper Div Offerings":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(UPPER_DIV_OFFERINGS));
-                    break;
-                case "Graduate Offerings":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(GRAD_OFFERINGS));
-                    break;
-                case "Total Offerings":
-                    data.add(budgetScenarioExcelView.termTotals.get("combined").get(LOWER_DIV_OFFERINGS).add(budgetScenarioExcelView.termTotals.get("combined").get(UPPER_DIV_OFFERINGS)).add(budgetScenarioExcelView.termTotals.get("combined").get(GRAD_OFFERINGS)));
-                    break;
-            }
-            return data;
-        }
-
-        public Sheet writeTerms(Sheet sheet){
-            List<String> rows = Arrays.asList(
-                    "TA Count",
-                    "TA Cost",
-                    "Reader Count",
-                    "Reader Cost",
-                    "Support Cost",
-                    "",
-                    "Associate Instructor",
-                    "Continuing Lecturer",
-                    "Emeriti - Recalled",
-                    "Instructor",
-                    "Ladder Faculty",
-                    "Lecturer SOE",
-                    "Unit 18 Pre-Six Lecturer",
-                    "Visiting Professor",
-                    "Unassigned",
-                    "Replacement Cost",
-                    "",
-                    "Total Teaching Costs",
-                    "Funds Cost",
-                    "Balance",
-                    "",
-                    "Units Offered",
-                    "Enrollment",
-                    "Student Credit Hours (Undergrad)",
-                    "Student Credit Hours (Graduate)",
-                    "Student Credit Hours",
-                    "",
-                    "Lower Div Offerings",
-                    "Upper Div Offerings",
-                    "Graduate Offerings",
-                    "Total Offerings",
-                    ""
-            );
-            for(String row : rows){
-                if(row == ""){
-                    List<Object> emptyCells = new ArrayList<>();
-                    for(int i =0; i <= sheet.getRow(0).getLastCellNum(); i++){
-                        emptyCells.add("");
-                    }
-                    sheet = ExcelHelper.writeRowToSheet(
-                            sheet,
-                            emptyCells
-                    );
-                } else{
-                    sheet = ExcelHelper.writeRowToSheet(
-                            sheet,
-                            rowData(row)
-                    );
-                }
-            }
-            return sheet;
-        }
     }
 
     /*
@@ -813,12 +90,6 @@ public class BudgetExcelView extends AbstractXlsxView {
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
             Long scenarioId = budgetScenarioExcelView.getBudgetScenario().getId();
 
-            BudgetSummaryTerms budgetTerms = new BudgetSummaryTerms(
-                    budgetScenarioExcelView,
-                    budgetScenarioExcelView.getWorkgroup().getName(),
-                    budgetScenarioExcelView.getBudget().getTaCost(),
-                    budgetScenarioExcelView.getBudget().getReaderCost());
-
             // Create Schedule Cost sheet
             for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * budgetScenarioExcelView.getBudget().getTaCost();
@@ -859,10 +130,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 supportCost + sectionCost
                         )
                 );
-                budgetTerms.addSection(sectionGroupCost);
             }
 
-            budgetSummarySheet = budgetTerms.writeTerms(budgetSummarySheet);
+            budgetSummarySheet = writeSummaryTerms(budgetSummarySheet, budgetScenarioExcelView);
 
             // Create Funds sheet
             for(LineItem lineItem : budgetScenarioExcelView.getLineItems()){
@@ -967,4 +237,159 @@ public class BudgetExcelView extends AbstractXlsxView {
         workbook = ExcelHelper.ignoreErrors(workbook, Arrays.asList(IgnoredErrorType.NUMBER_STORED_AS_TEXT));
     }
 
+    private Sheet writeSummaryTerms(Sheet sheet, BudgetScenarioExcelView budgetScenarioExcelView) {
+        List<String> summaryColumns = budgetScenarioExcelView.getTermCodes();
+        summaryColumns.add("combined");
+
+        List<String> rows = Arrays.asList(
+            "TA Count",
+            "TA Cost",
+            "Reader Count",
+            "Reader Cost",
+            "Support Cost",
+            "",
+            "Associate Instructor",
+            "Continuing Lecturer",
+            "Emeriti - Recalled",
+            "Instructor",
+            "Ladder Faculty",
+            "Lecturer SOE",
+            "Unit 18 Pre-Six Lecturer",
+            "Visiting Professor",
+            "Unassigned",
+            "Replacement Cost",
+            "",
+            "Total Teaching Costs",
+            "Funds Cost",
+            "Balance",
+            "",
+            "Units Offered",
+            "Enrollment",
+            "Student Credit Hours (Undergrad)",
+            "Student Credit Hours (Graduate)",
+            "Student Credit Hours",
+            "",
+            "Lower Div Offerings",
+            "Upper Div Offerings",
+            "Graduate Offerings",
+            "Total Offerings",
+            ""
+        );
+
+        for(String row : rows){
+            if(row == ""){
+                List<Object> emptyCells = new ArrayList<>();
+                for(int i =0; i <= sheet.getRow(0).getLastCellNum(); i++){
+                    emptyCells.add("");
+                }
+                sheet = ExcelHelper.writeRowToSheet(
+                        sheet,
+                        emptyCells
+                );
+            } else{
+                sheet = ExcelHelper.writeRowToSheet(
+                        sheet,
+                        summaryRowData(row, budgetScenarioExcelView, summaryColumns)
+                );
+            }
+        }
+        return sheet;
+    }
+
+    private List<Object> summaryRowData(String field, BudgetScenarioExcelView budgetScenarioExcelView, List<String> termCodes) {
+        List<Object> data = new ArrayList<>();
+
+        data.add(budgetScenarioExcelView.getWorkgroup().getName());
+        data.add(budgetScenarioExcelView.budgetScenario.getName());
+        data.add(field);
+
+
+        for(String termCode: termCodes){
+            switch(field){
+                case "TA Count":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COUNT));
+                    break;
+                case "TA Cost":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST));
+                    break;
+                case "Reader Count":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COUNT));
+                    break;
+                case "Reader Cost":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST));
+                    break;
+                case "Support Cost":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TA_COST).add(budgetScenarioExcelView.termTotals.get(termCode).get(READER_COST)));
+                    break;
+                case "Associate Instructor":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(ASSOCIATE_INSTRUCTOR_COST));
+                    break;
+                case "Continuing Lecturer":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(CONTINUING_LECTURER_COST));
+                    break;
+                case "Emeriti - Recalled":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(EMERITI_COST));
+                    break;
+                case "Instructor":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(INSTRUCTOR_COST));
+                    break;
+                case "Ladder Faculty":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LADDER_FACULTY_COST));
+                    break;
+                case "Lecturer SOE":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LECTURER_SOE_COST));
+                    break;
+                case "Unit 18 Pre-Six Lecturer":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNIT18_LECTURER_COST));
+                    break;
+                case "Visiting Professor":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(VISITING_PROFESSOR_COST));
+                    break;
+                case "Unassigned":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNASSIGNED_COST));
+                    break;
+                case "Replacement Cost":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(REPLACEMENT_COST));
+                    break;
+                case "Total Teaching Costs":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_TEACHING_COST));
+                    break;
+                case "Funds Cost":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS));
+                    break;
+                case "Balance":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE));
+                    break;
+                case "Units Offered":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UNITS_OFFERED));
+                    break;
+                case "Enrollment":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_SEATS));
+                    break;
+                case "Student Credit Hours (Undergrad)":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_UNDERGRAD));
+                    break;
+                case "Student Credit Hours (Graduate)":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_GRAD));
+                    break;
+                case "Student Credit Hours":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_UNDERGRAD).add(budgetScenarioExcelView.termTotals.get(termCode).get(SCH_GRAD)));
+                    break;
+                case "Lower Div Offerings":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LOWER_DIV_OFFERINGS));
+                    break;
+                case "Upper Div Offerings":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(UPPER_DIV_OFFERINGS));
+                    break;
+                case "Graduate Offerings":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(GRAD_OFFERINGS));
+                    break;
+                case "Total Offerings":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(LOWER_DIV_OFFERINGS).add(budgetScenarioExcelView.termTotals.get(termCode).get(UPPER_DIV_OFFERINGS)).add(budgetScenarioExcelView.termTotals.get(termCode).get(GRAD_OFFERINGS)));
+                    break;
+            }
+        }
+
+        return data;
+    }
 }
