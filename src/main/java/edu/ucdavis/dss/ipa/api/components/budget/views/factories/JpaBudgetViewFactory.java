@@ -160,7 +160,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<DwCensus> censusList = new ArrayList<>();
         for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
             for (String budgetScenarioTermCode : budgetScenarioTermCodes) {
-                censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, budgetScenarioTermCode).stream().filter(c -> c.getSnapshotCode().equals("CURRENT")).collect(Collectors.toList()));
+                censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, budgetScenarioTermCode).stream().filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList()));
             }
         }
 
