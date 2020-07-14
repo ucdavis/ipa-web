@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
+import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
@@ -52,6 +53,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject TermService termService;
     @Inject BudgetCalculationService budgetCalculationService;
     @Inject Authorization authorization;
+    @Inject BudgetScenarioRepository budgetScenarioRepository;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -63,9 +65,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         Map<String, List<BudgetScenario>> userWorkgroupsScenarios = new HashMap<>();
 
         for (Workgroup userWorkgroup : userWorkgroups) {
-            List<BudgetScenario> workgroupScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year);
-
-            userWorkgroupsScenarios.put(userWorkgroup.getName(), workgroupScenarios);
+            userWorkgroupsScenarios.put(userWorkgroup.getName(), budgetScenarioRepository.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year));
         }
 
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
