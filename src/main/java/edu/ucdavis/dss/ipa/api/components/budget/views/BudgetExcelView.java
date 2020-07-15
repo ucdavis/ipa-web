@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.security.access.method.P;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class BudgetExcelView extends AbstractXlsxView {
@@ -200,7 +201,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                             budgetScenarioExcelView.getBudget().getReaderCost()
                     )
             );
-            HashMap<String, Float> instructorTypeCostMap = new HashMap<String, Float>();
+            HashMap<String, Float> instructorTypeCostMap = new HashMap<>();
             for(InstructorType instructorType : budgetScenarioExcelView.getInstructorTypes()){
                 instructorTypeCostMap.put(
                         instructorType.getDescription(),
@@ -208,16 +209,15 @@ public class BudgetExcelView extends AbstractXlsxView {
                 );
             }
             for(InstructorTypeCost instructorTypeCost : budgetScenarioExcelView.getInstructorTypeCosts()){
-                Float currentCost = instructorTypeCostMap.get(instructorTypeCost.getInstructorType().getDescription());
-                if(currentCost == null){
-                    currentCost = 0.0F;
-                }
-                instructorTypeCostMap.put(
+                if (instructorTypeCost.getCost() != null) {
+                    instructorTypeCostMap.put(
                         instructorTypeCost.getInstructorType().getDescription(),
-                        currentCost + instructorTypeCost.getCost()
-                );
+                        instructorTypeCost.getCost()
+                    );
+                }
             }
-            List<String> instructorCategoryTypes = new ArrayList<String>(instructorTypeCostMap.keySet());
+
+            List<String> instructorCategoryTypes = new ArrayList<>(instructorTypeCostMap.keySet());
             Collections.sort(instructorCategoryTypes);
             for(String instructorCategory : instructorCategoryTypes){
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
