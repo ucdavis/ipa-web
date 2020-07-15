@@ -490,16 +490,8 @@ public class BudgetViewController {
         return lineItemComment;
     }
 
-    @RequestMapping(value = "/api/budgetView/helloworld", method = RequestMethod.POST)
-    public Map generateAllDeparmentsExcel(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Map<String, String> map = new HashMap<>();
-        String url = ipaUrlApi + "";
-        map.put("redirect", url);
-        return map;
-    }
-
-    @RequestMapping(value = "/api/budgetView/helloworld2", method = RequestMethod.POST)
-    public View downloadAllDeparmentsExcel(@RequestBody List<BudgetScenario> budgetScenarioIds, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+    @RequestMapping(value = "/api/budgetView/downloadExcel", method = RequestMethod.POST)
+    public View downloadAllDepartmentsExcel(@RequestBody List<BudgetScenario> budgetScenarioIds, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         return budgetViewFactory.createBudgetExcelView(budgetScenarioIds);
     }
 }
