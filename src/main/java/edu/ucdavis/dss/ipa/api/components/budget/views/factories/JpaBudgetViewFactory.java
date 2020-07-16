@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 import static edu.ucdavis.dss.ipa.entities.enums.TermDescription.*;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetComparisonExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
@@ -147,6 +148,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     }
 
     public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO) {
+        return createBudgetScenarioExcelView(budgetScenarioDTO, false);
+    };
+
+    public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO, Boolean excludeCensus) {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
         List<String> budgetScenarioTermCodes = new ArrayList<>();
@@ -186,26 +191,29 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
             }
         } */
 
-        for (DwCensus census : censusList) {
-            String termCode = census.getTermCode();
-            String sequencePattern = census.getSequencePattern();
-            String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
+        if (excludeCensus) {
+            for (DwCensus census : censusList) {
+                String termCode = census.getTermCode();
+                String sequencePattern = census.getSequencePattern();
+                String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
 
-            if (censusMap.get(termCode) == null) {
-                censusMap.put(termCode, new HashMap<>());
-            }
+                if (censusMap.get(termCode) == null) {
+                    censusMap.put(termCode, new HashMap<>());
+                }
 
-            if (censusMap.get(termCode).get(courseIdentifier) == null) {
-                censusMap.get(termCode).put(courseIdentifier, new HashMap<>());
-            }
+                if (censusMap.get(termCode).get(courseIdentifier) == null) {
+                    censusMap.get(termCode).put(courseIdentifier, new HashMap<>());
+                }
 
-            if (censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
-                censusMap.get(termCode).get(courseIdentifier)
-                    .put(sequencePattern, census.getCurrentEnrolledCount());
-            } else {
-                censusMap.get(termCode).get(courseIdentifier).put(sequencePattern, censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) + census.getCurrentEnrolledCount());
+                if (censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
+                    censusMap.get(termCode).get(courseIdentifier)
+                        .put(sequencePattern, census.getCurrentEnrolledCount());
+                } else {
+                    censusMap.get(termCode).get(courseIdentifier).put(sequencePattern, censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) + census.getCurrentEnrolledCount());
+                }
             }
         }
+
 
         // Calculate totals
         Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
@@ -213,5 +221,21 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 
         return budgetScenarioExcelView;
+    }
+
+    public BudgetComparisonExcelView createBudgetComparisonExcelView(List<List<BudgetScenario>> budgetComparisonList) {
+        // [[s1, s2], [s1, s2], [s1,s2]]
+        List<List<BudgetScenarioExcelView>> budgetScenarioExcelViewPairList = new ArrayList<>();
+
+        for (List<BudgetScenario> budgetComparison : budgetComparisonList) {
+            List<BudgetScenarioExcelView> budgetScenarioExcelViewPair = Arrays.asList(
+                createBudgetScenarioExcelView(budgetComparison.get(0), true),
+                createBudgetScenarioExcelView(budgetComparison.get(1), true)
+            );
+
+            budgetScenarioExcelViewPairList.add(budgetScenarioExcelViewPair);
+        }
+
+        return new BudgetComparisonExcelView(budgetScenarioExcelViewPairList);
     }
 }

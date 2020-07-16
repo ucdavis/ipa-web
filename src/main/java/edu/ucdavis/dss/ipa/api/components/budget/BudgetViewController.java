@@ -1,10 +1,8 @@
 package edu.ucdavis.dss.ipa.api.components.budget;
 
-import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
-import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetComparisonExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
-import edu.ucdavis.dss.ipa.api.components.budget.views.WorkgroupIdBudgetScenarioId;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
@@ -20,7 +18,6 @@ import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
@@ -35,7 +32,6 @@ import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -46,9 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class BudgetViewController {
@@ -493,5 +487,10 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/downloadExcel", method = RequestMethod.POST)
     public View downloadAllDepartmentsExcel(@RequestBody List<BudgetScenario> budgetScenarioIds, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         return budgetViewFactory.createBudgetExcelView(budgetScenarioIds);
+    }
+
+    @RequestMapping(value = "/api/budgetView/downloadBudgetComparisonExcel", method = RequestMethod.POST)
+    public BudgetComparisonExcelView downloadBudgetComparisonsExcel(@RequestBody List<List<BudgetScenario>>  budgetComparisonList, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        return budgetViewFactory.createBudgetComparisonExcelView(budgetComparisonList);
     }
 }

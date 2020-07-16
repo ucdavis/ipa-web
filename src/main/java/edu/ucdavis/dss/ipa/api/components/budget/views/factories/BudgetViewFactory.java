@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetComparisonExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
@@ -16,4 +17,7 @@ public interface BudgetViewFactory {
     BudgetExcelView createBudgetExcelView(List<BudgetScenario> budgetScenarios);
 
     BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenario);
+
+    BudgetComparisonExcelView createBudgetComparisonExcelView(
+        List<List<BudgetScenario>> budgetComparisonList);
 }
