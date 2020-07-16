@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.*;
 
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
+import edu.ucdavis.dss.ipa.entities.enums.FundType;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,7 +57,7 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             Map<BudgetSummary, BigDecimal> previousTotals = previousYear.getTermTotals().get("combined");
             Map<BudgetSummary, BigDecimal> currentTotals = currentYear.getTermTotals().get("combined");
 
-                ExcelHelper.writeRowToSheet(report, Arrays.asList("Emeriti - Recalled", previousTotals.get(EMERITI_COST), previousTotals.get(EMERITI_COUNT), "", "Emeriti - Recalled", currentTotals.get(EMERITI_COST), currentTotals.get(EMERITI_COUNT), "", currentTotals.get(EMERITI_COST).subtract(previousTotals.get(EMERITI_COST)), currentTotals.get(EMERITI_COUNT).subtract(previousTotals.get(EMERITI_COUNT)), getPercentChange(previousTotals.get(EMERITI_COST), currentTotals.get(EMERITI_COST)), getPercentChange(previousTotals.get(EMERITI_COUNT), currentTotals.get(EMERITI_COUNT))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList("Emeriti - Recalled", previousTotals.get(EMERITI_COST), previousTotals.get(EMERITI_COUNT), "", "Emeriti - Recalled", currentTotals.get(EMERITI_COST), currentTotals.get(EMERITI_COUNT), "", currentTotals.get(EMERITI_COST).subtract(previousTotals.get(EMERITI_COST)), currentTotals.get(EMERITI_COUNT).subtract(previousTotals.get(EMERITI_COUNT)), getPercentChange(previousTotals.get(EMERITI_COST), currentTotals.get(EMERITI_COST)), getPercentChange(previousTotals.get(EMERITI_COUNT), currentTotals.get(EMERITI_COUNT))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Visiting Professor", previousTotals.get(VISITING_PROFESSOR_COST), previousTotals.get(VISITING_PROFESSOR_COUNT), "", "Visiting Professor", currentTotals.get(VISITING_PROFESSOR_COST), currentTotals.get(VISITING_PROFESSOR_COUNT), "", currentTotals.get(VISITING_PROFESSOR_COST).subtract(previousTotals.get(VISITING_PROFESSOR_COST)), currentTotals.get(VISITING_PROFESSOR_COUNT).subtract(previousTotals.get(VISITING_PROFESSOR_COUNT)), getPercentChange(previousTotals.get(VISITING_PROFESSOR_COST), currentTotals.get(VISITING_PROFESSOR_COST)), getPercentChange(previousTotals.get(VISITING_PROFESSOR_COUNT), currentTotals.get(VISITING_PROFESSOR_COUNT))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Associate Instructor", previousTotals.get(ASSOCIATE_INSTRUCTOR_COST), previousTotals.get(ASSOCIATE_INSTRUCTOR_COUNT), "", "Associate Instructor", currentTotals.get(ASSOCIATE_INSTRUCTOR_COST), currentTotals.get(ASSOCIATE_INSTRUCTOR_COUNT), "", currentTotals.get(ASSOCIATE_INSTRUCTOR_COST).subtract(previousTotals.get(ASSOCIATE_INSTRUCTOR_COST)), currentTotals.get(ASSOCIATE_INSTRUCTOR_COUNT).subtract(previousTotals.get(ASSOCIATE_INSTRUCTOR_COUNT)), getPercentChange(previousTotals.get(ASSOCIATE_INSTRUCTOR_COST), currentTotals.get(ASSOCIATE_INSTRUCTOR_COST)), getPercentChange(previousTotals.get(ASSOCIATE_INSTRUCTOR_COUNT), currentTotals.get(ASSOCIATE_INSTRUCTOR_COUNT))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Unit 18 Pre-Six Lecturer", previousTotals.get(UNIT18_LECTURER_COST), previousTotals.get(UNIT18_LECTURER_COUNT), "", "Unit 18 Pre-Six Lecturer", currentTotals.get(UNIT18_LECTURER_COST), currentTotals.get(UNIT18_LECTURER_COUNT), "", currentTotals.get(UNIT18_LECTURER_COST).subtract(previousTotals.get(UNIT18_LECTURER_COST)), currentTotals.get(UNIT18_LECTURER_COUNT).subtract(previousTotals.get(UNIT18_LECTURER_COUNT)), getPercentChange(previousTotals.get(UNIT18_LECTURER_COST), currentTotals.get(UNIT18_LECTURER_COST)), getPercentChange(previousTotals.get(UNIT18_LECTURER_COUNT), currentTotals.get(UNIT18_LECTURER_COUNT))));
@@ -86,21 +88,21 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
 
             // Funds section
-            Map<String, BigDecimal> previousFunds = generateFundTotals(previousYear.getLineItems());
-            Map<String, BigDecimal> currentFunds = generateFundTotals(currentYear.getLineItems());
+            Map<FundType, BigDecimal> previousFunds = generateFundTotals(previousYear.getLineItems());
+            Map<FundType, BigDecimal> currentFunds = generateFundTotals(currentYear.getLineItems());
 
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Funding", "Amount", "", "", "Funding", "Amount", "", "", "Funding", "Amount", "% Change"));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Funds From Deans Office", getFund(previousFunds, "Funds From Deans Office"), "", "", "Funds From Deans Office", getFund(currentFunds, "Funds From Deans Office"), "", "", "Funds From Deans Office", getFund(currentFunds, "Funds From Deans Office").subtract(getFund(previousFunds, "Funds From Deans Office")), getPercentChange(getFund(previousFunds, "Funds From Deans Office"), getFund(currentFunds, "Funds From Deans Office"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Internal Buyout", getFund(previousFunds, "Internal Buyout"), "", "", "Internal Buyout", getFund(currentFunds, "Internal Buyout"), "", "", "Internal Buyout", getFund(currentFunds, "Internal Buyout").subtract(getFund(previousFunds, "Internal Buyout")), getPercentChange(getFund(previousFunds, "Internal Buyout"), getFund(currentFunds, "Internal Buyout"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Class Cancelled - Funds no longer needed", getFund(previousFunds, "Class Cancelled - Funds no longer needed"), "", "", "Class Cancelled - Funds no longer needed", getFund(currentFunds, "Class Cancelled - Funds no longer needed"), "", "", "Class Cancelled - Funds no longer needed", getFund(currentFunds, "Class Cancelled - Funds no longer needed").subtract(getFund(previousFunds, "Class Cancelled - Funds no longer needed")), getPercentChange(getFund(previousFunds, "Class Cancelled - Funds no longer needed"), getFund(currentFunds, "Class Cancelled - Funds no longer needed"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Range Adjustment Funds", getFund(previousFunds, "Range Adjustment Funds"), "", "", "Range Adjustment Funds", getFund(currentFunds, "Range Adjustment Funds"), "", "", "Range Adjustment Funds", getFund(currentFunds, "Range Adjustment Funds").subtract(getFund(previousFunds, "Range Adjustment Funds")), getPercentChange(getFund(previousFunds, "Range Adjustment Funds"), getFund(currentFunds, "Range Adjustment Funds"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Work-Life Balance Funds", getFund(previousFunds, "Work-Life Balance Funds"), "", "", "Work-Life Balance Funds", getFund(currentFunds, "Work-Life Balance Funds"), "", "", "Work-Life Balance Funds", getFund(currentFunds, "Work-Life Balance Funds").subtract(getFund(previousFunds, "Work-Life Balance Funds")), getPercentChange(getFund(previousFunds, "Work-Life Balance Funds"), getFund(currentFunds, "Work-Life Balance Funds"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Other Funds", getFund(previousFunds, "Other Funds"), "", "", "Other Funds", getFund(currentFunds, "Other Funds"), "", "", "Other Funds", getFund(currentFunds, "Other Funds").subtract(getFund(previousFunds, "Other Funds")), getPercentChange(getFund(previousFunds, "Other Funds"), getFund(currentFunds, "Other Funds"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("External Buyout", getFund(previousFunds, "External Buyout"), "", "", "External Buyout", getFund(currentFunds, "External Buyout"), "", "", "External Buyout", getFund(currentFunds, "External Buyout").subtract(getFund(previousFunds, "External Buyout")), getPercentChange(getFund(previousFunds, "External Buyout"), getFund(currentFunds, "External Buyout"))));
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("", getFund(previousFunds, "total"), "", "", "", getFund(currentFunds, "total"), "", "", "", getFund(currentFunds, "total").subtract(getFund(previousFunds, "total"))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(DEANS_OFFICE.getDescription(), getFund(previousFunds, DEANS_OFFICE), "", "", DEANS_OFFICE.getDescription(), getFund(currentFunds, DEANS_OFFICE), "", "", DEANS_OFFICE.getDescription(), getFund(currentFunds, DEANS_OFFICE).subtract(getFund(previousFunds, DEANS_OFFICE)), getPercentChange(getFund(previousFunds, DEANS_OFFICE), getFund(currentFunds, DEANS_OFFICE))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(INTERNAL_BUYOUT.getDescription(), getFund(previousFunds, INTERNAL_BUYOUT), "", "", INTERNAL_BUYOUT.getDescription(), getFund(currentFunds, INTERNAL_BUYOUT), "", "", INTERNAL_BUYOUT.getDescription(), getFund(currentFunds, INTERNAL_BUYOUT).subtract(getFund(previousFunds, INTERNAL_BUYOUT)), getPercentChange(getFund(previousFunds, INTERNAL_BUYOUT), getFund(currentFunds, INTERNAL_BUYOUT))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(CLASS_CANCELLED.getDescription(), getFund(previousFunds, CLASS_CANCELLED), "", "", CLASS_CANCELLED.getDescription(), getFund(currentFunds, CLASS_CANCELLED), "", "", CLASS_CANCELLED.getDescription(), getFund(currentFunds, CLASS_CANCELLED).subtract(getFund(previousFunds, CLASS_CANCELLED)), getPercentChange(getFund(previousFunds, CLASS_CANCELLED), getFund(currentFunds, CLASS_CANCELLED))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(RANGE_ADJUSTMENT.getDescription(), getFund(previousFunds, RANGE_ADJUSTMENT), "", "", RANGE_ADJUSTMENT.getDescription(), getFund(currentFunds, RANGE_ADJUSTMENT), "", "", RANGE_ADJUSTMENT.getDescription(), getFund(currentFunds, RANGE_ADJUSTMENT).subtract(getFund(previousFunds, RANGE_ADJUSTMENT)), getPercentChange(getFund(previousFunds, RANGE_ADJUSTMENT), getFund(currentFunds, RANGE_ADJUSTMENT))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(WORK_LIFE.getDescription(), getFund(previousFunds, WORK_LIFE), "", "", WORK_LIFE.getDescription(), getFund(currentFunds, WORK_LIFE), "", "", WORK_LIFE.getDescription(), getFund(currentFunds, WORK_LIFE).subtract(getFund(previousFunds, WORK_LIFE)), getPercentChange(getFund(previousFunds, WORK_LIFE), getFund(currentFunds, WORK_LIFE))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(OTHER.getDescription(), getFund(previousFunds, OTHER), "", "", OTHER.getDescription(), getFund(currentFunds, OTHER), "", "", OTHER.getDescription(), getFund(currentFunds, OTHER).subtract(getFund(previousFunds, OTHER)), getPercentChange(getFund(previousFunds, OTHER), getFund(currentFunds, OTHER))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(EXTERNAL_BUYOUT.getDescription(), getFund(previousFunds, EXTERNAL_BUYOUT), "", "", EXTERNAL_BUYOUT.getDescription(), getFund(currentFunds, EXTERNAL_BUYOUT), "", "", EXTERNAL_BUYOUT.getDescription(), getFund(currentFunds, EXTERNAL_BUYOUT).subtract(getFund(previousFunds, EXTERNAL_BUYOUT)), getPercentChange(getFund(previousFunds, EXTERNAL_BUYOUT), getFund(currentFunds, EXTERNAL_BUYOUT))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList("", getFund(previousFunds, TOTAL), "", "", "", getFund(currentFunds, TOTAL), "", "", "", getFund(currentFunds, TOTAL).subtract(getFund(previousFunds, TOTAL))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
 
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Balance", previousFunds.get("total").subtract(getTotalTeachingCost(previousTotals)), "", "", "Balance", currentFunds.get("total").subtract(getTotalTeachingCost(currentTotals))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList("Balance", previousFunds.get(TOTAL).subtract(getTotalTeachingCost(previousTotals)), "", "", "Balance", currentFunds.get(TOTAL).subtract(getTotalTeachingCost(currentTotals))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
 
             // Course Offering
@@ -119,7 +121,7 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
         }
     }
 
-    private BigDecimal getFund(Map<String, BigDecimal> fundTotals, String fundType) {
+    private BigDecimal getFund(Map<FundType, BigDecimal> fundTotals, FundType fundType) {
         return fundTotals.get(fundType) == null ? BigDecimal.ZERO : fundTotals.get(fundType);
     }
 
@@ -135,20 +137,20 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
         return termTotals.get(LOWER_DIV_SEATS).add(termTotals.get(UPPER_DIV_SEATS).add(termTotals.get(GRAD_SEATS)));
     }
 
-    private Map<String, BigDecimal> generateFundTotals(List<LineItem> lineItems) {
-        Map<String, BigDecimal> fundTotals = new HashMap<>();
-        fundTotals.put("total", BigDecimal.ZERO);
+    private Map<FundType, BigDecimal> generateFundTotals(List<LineItem> lineItems) {
+        Map<FundType, BigDecimal> fundTotals = new HashMap<>();
+        fundTotals.put(FundType.TOTAL, BigDecimal.ZERO);
 
         for (LineItem lineItem : lineItems) {
-            String key = lineItem.getLineItemCategory().getDescription();
+            FundType type = FundType.getById(lineItem.getLineItemCategory().getId());
 
-            if (fundTotals.get(key) == null) {
-                fundTotals.put(key, lineItem.getAmount());
+            if (fundTotals.get(type) == null) {
+                fundTotals.put(type, lineItem.getAmount());
             } else {
-                fundTotals.put(key, fundTotals.get(key).add(lineItem.getAmount()));
+                fundTotals.put(type, fundTotals.get(type).add(lineItem.getAmount()));
             }
 
-            fundTotals.put("total", fundTotals.get("total").add(lineItem.getAmount()));
+            fundTotals.put(FundType.TOTAL, fundTotals.get(FundType.TOTAL).add(lineItem.getAmount()));
         }
         return fundTotals;
     }
@@ -158,10 +160,6 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
         if (prev.compareTo(BigDecimal.ZERO) == 0) {
             return "0%";
         } else {
-
-            BigDecimal test = current.subtract(prev).divide(prev, 4, RoundingMode.HALF_UP);
-            BigDecimal test2 = current.subtract(prev).divide(prev, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-            BigDecimal test3 = current.subtract(prev).divide(prev, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP);
             return current.subtract(prev).divide(prev, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_UP).toString() + "%";
         }
     }
