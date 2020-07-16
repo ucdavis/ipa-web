@@ -86,33 +86,62 @@ public class BudgetCalculationService {
             long instructorTypeId = calculateInstructorTypeId(sectionGroupCost, workgroup);
 
             if(instructorTypeId == EMERITI.typeId()){
+                currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(EMERITI_COST, currentTermSummary.get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(EMERITI_COST, combinedTermSummary.get(EMERITI_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
+                currentTermSummary.put(VISITING_PROFESSOR_COUNT, currentTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(VISITING_PROFESSOR_COUNT, combinedTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(VISITING_PROFESSOR_COST, currentTermSummary.get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(VISITING_PROFESSOR_COST, combinedTermSummary.get(VISITING_PROFESSOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
-               currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
+                currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+
+                currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
+                currentTermSummary.put(UNIT18_LECTURER_COUNT, currentTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(UNIT18_LECTURER_COUNT, combinedTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(UNIT18_LECTURER_COST, currentTermSummary.get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(UNIT18_LECTURER_COST, combinedTermSummary.get(UNIT18_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
+                currentTermSummary.put(CONTINUING_LECTURER_COUNT, currentTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(CONTINUING_LECTURER_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == LADDER_FACULTY.typeId()){
+                currentTermSummary.put(LADDER_FACULTY_COUNT, currentTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(LADDER_FACULTY_COUNT, combinedTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(LADDER_FACULTY_COST, currentTermSummary.get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(LADDER_FACULTY_COST, combinedTermSummary.get(LADDER_FACULTY_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == INSTRUCTOR.typeId()){
+                currentTermSummary.put(INSTRUCTOR_COUNT, currentTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(INSTRUCTOR_COUNT, combinedTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(INSTRUCTOR_COST, currentTermSummary.get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(INSTRUCTOR_COST, combinedTermSummary.get(INSTRUCTOR_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else if (instructorTypeId == LECTURER_SOE.typeId()){
+                currentTermSummary.put(LECTURER_SOE_COUNT, currentTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(LECTURER_SOE_COUNT, combinedTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(LECTURER_SOE_COST, currentTermSummary.get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(LECTURER_SOE_COST, combinedTermSummary.get(LECTURER_SOE_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             } else {
+                currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+
                 currentTermSummary.put(UNASSIGNED_COST, currentTermSummary.get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
                 combinedTermSummary.put(UNASSIGNED_COST, combinedTermSummary.get(UNASSIGNED_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             }
+
+            combinedTermSummary.put(COURSE_COUNT, combinedTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
 
             currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
             combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(calculateInstructorCost(budget, sectionGroupCost, workgroup)));
@@ -232,15 +261,25 @@ public class BudgetCalculationService {
             new SimpleEntry<>(TA_COST, BigDecimal.ZERO),
             new SimpleEntry<>(READER_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(READER_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(LADDER_FACULTY_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(LADDER_FACULTY_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(EMERITI_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(EMERITI_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(ASSOCIATE_INSTRUCTOR_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(ASSOCIATE_INSTRUCTOR_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(UNIT18_LECTURER_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(UNIT18_LECTURER_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(CONTINUING_LECTURER_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(CONTINUING_LECTURER_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(VISITING_PROFESSOR_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(VISITING_PROFESSOR_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(INSTRUCTOR_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(INSTRUCTOR_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(LECTURER_SOE_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(LECTURER_SOE_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(UNASSIGNED_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(UNASSIGNED_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(COURSE_COUNT, BigDecimal.ZERO),
             new SimpleEntry<>(REPLACEMENT_COST, BigDecimal.ZERO),
             new SimpleEntry<>(TOTAL_TEACHING_COST, BigDecimal.ZERO),
             new SimpleEntry<>(TOTAL_BALANCE, BigDecimal.ZERO),
