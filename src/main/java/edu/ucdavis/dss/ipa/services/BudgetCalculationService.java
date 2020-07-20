@@ -247,6 +247,13 @@ public class BudgetCalculationService {
                         return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                     }
                 }
+            } else if (instructorTypeId > 0) {
+                // generic instructor type assignment
+                final long instructorTypeIdFinal = instructorTypeId;
+                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByBudgetId(budget.getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
+                if (instructorTypeCost != null) {
+                    return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
+                }
             }
         }
 
