@@ -233,14 +233,13 @@ public class BudgetCalculationService {
         if (sectionGroupCost.getCost() != null) {
             return new BigDecimal(String.valueOf(sectionGroupCost.getCost()));
         } else {
-            // sectionGroup cost not set, check for instructor salary
             if (sectionGroupCost.getInstructor() != null) {
+                // named instructor assignment, check for instructor salary, else check for category cost for named instructor
                 InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(), budget.getId());
 
                 if (instructorCost != null && instructorCost.getCost() != null) {
                     return instructorCost.getCost() == null ? BigDecimal.ZERO : new BigDecimal(String.valueOf(instructorCost.getCost()));
                 } else {
-                    // no instructor salary, check for category cost
                     final long instructorTypeIdFinal = instructorTypeId;
                     InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByBudgetId(budget.getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
                     if (instructorTypeCost != null && instructorTypeCost.getCost() != null) {
@@ -248,9 +247,11 @@ public class BudgetCalculationService {
                     }
                 }
             } else if (instructorTypeId > 0) {
-                // generic instructor type assignment
+                // unnamed instructor type assignment
                 final long instructorTypeIdFinal = instructorTypeId;
-                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByBudgetId(budget.getId()).stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst().orElse(null);
+                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByBudgetId(budget.getId())
+                        .stream().filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal).findFirst()
+                        .orElse(null);
                 if (instructorTypeCost != null) {
                     return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }
@@ -260,7 +261,6 @@ public class BudgetCalculationService {
         // no cost found, return 0
         return BigDecimal.ZERO;
     }
-
 
     private static Map<BudgetSummary, BigDecimal> generateBudgetSummaryMap() {
         Map<BudgetSummary, BigDecimal> budgetSummaryMap = Stream.of(
