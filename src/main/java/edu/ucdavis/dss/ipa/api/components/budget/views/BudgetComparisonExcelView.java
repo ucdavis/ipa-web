@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.*;
+import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
@@ -33,7 +34,7 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
         throws Exception {
 
         for (List<BudgetScenarioExcelView> budgetScenarioExcelViewPair : budgetComparisonList) {
-            Sheet report = workbook.createSheet(budgetScenarioExcelViewPair.get(0).getWorkgroup().getName());
+            Sheet report = workbook.createSheet(createSafeSheetName(budgetScenarioExcelViewPair.get(0).getWorkgroup().getName()));
 
             BudgetScenarioExcelView previousYear = budgetScenarioExcelViewPair.get(0);
             BudgetScenarioExcelView currentYear = budgetScenarioExcelViewPair.get(1);
