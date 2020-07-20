@@ -10,6 +10,8 @@ import java.util.List;
 public interface InstructorCostService {
     List<InstructorCost> findByBudgetId(Long budgetId);
 
+    InstructorCost findByInstructorIdAndBudgetId(Long instructorId, Long budgetId);
+
     InstructorCost findById(Long instructorCostId);
 
     InstructorCost findOrCreate(InstructorCost instructorCostDto);
