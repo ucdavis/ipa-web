@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.repositories;
 
+import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.dw.dto.DwSection;
@@ -65,6 +66,11 @@ public class MockDataWarehouseRepository implements DataWarehouseRepository {
 
     @Override
     public List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) {
+        return null;
+    }
+
+    @Override
+    public List<DwCensus> getCensusBySubjectCodeAndTermCode(String subjectCode, String termCode) {
         return null;
     }
 }

@@ -134,7 +134,7 @@ public class JpaTermService implements TermService {
 		String termCode = null;
 
 		if (Long.valueOf(term) < 4) {
-			termCode = String.valueOf(year - 1) + term;
+			termCode = String.valueOf(year + 1) + term;
 		} else {
 			termCode = String.valueOf(year) + term;
 		}
