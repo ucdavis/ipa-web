@@ -64,17 +64,17 @@ public class BudgetScenarioController {
    */
   @RequestMapping(value = "/api/years/{year}/budgetScenarios", method = RequestMethod.GET, produces="application/json")
   @ResponseBody
-  public Map<String, Map<String, List<BudgetScenario>>> getBudgetScenariosByYear(@PathVariable long year, HttpServletResponse httpResponse) {
+  public Map<String, Map<String, List<BudgetScenario>>> getDepartmentBudgetComparisonScenariosByYear(@PathVariable long year, HttpServletResponse httpResponse) {
     User currentUser = userService.getOneByLoginId(authorization.getLoginId());
     List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
-    Map<String, Map<String, List<BudgetScenario>>> departmentComparisonScenarios = new HashMap<>();
+    Map<String, Map<String, List<BudgetScenario>>> departmentBudgetComparisonScenarios = new HashMap<>();
 
     for (Workgroup userWorkgroup : userWorkgroups) {
       List<BudgetScenario> currentWorkgroupScenarios =
           budgetScenarioRepository.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year);
       List<BudgetScenario> previousWorkgroupScenarios =
           budgetScenarioRepository.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year - 1);
-      departmentComparisonScenarios
+      departmentBudgetComparisonScenarios
           .put(userWorkgroup.getName(), new HashMap<String, List<BudgetScenario>>() {
             {
               put("current", currentWorkgroupScenarios);
@@ -83,6 +83,6 @@ public class BudgetScenarioController {
           });
     }
 
-    return departmentComparisonScenarios;
+    return departmentBudgetComparisonScenarios;
   }
 }

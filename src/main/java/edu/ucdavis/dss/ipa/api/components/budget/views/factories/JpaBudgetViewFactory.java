@@ -148,10 +148,16 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     }
 
     public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO) {
-        return createBudgetScenarioExcelView(budgetScenarioDTO, false);
+        return createBudgetScenarioExcelView(budgetScenarioDTO, true);
     };
 
-    public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO, Boolean excludeCensus) {
+    /**
+     *
+     * @param budgetScenarioDTO expects budgetScenarioId
+     * @param includeCensus default is true
+     * @return
+     */
+    public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO, Boolean includeCensus) {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
         List<String> budgetScenarioTermCodes = new ArrayList<>();
@@ -191,7 +197,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
             }
         } */
 
-        if (excludeCensus) {
+        if (includeCensus == true) {
             for (DwCensus census : censusList) {
                 String termCode = census.getTermCode();
                 String sequencePattern = census.getSequencePattern();
@@ -229,8 +235,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         for (List<BudgetScenario> budgetComparison : budgetComparisonList) {
             List<BudgetScenarioExcelView> budgetScenarioExcelViewPair = Arrays.asList(
-                createBudgetScenarioExcelView(budgetComparison.get(0), true),
-                createBudgetScenarioExcelView(budgetComparison.get(1), true)
+                createBudgetScenarioExcelView(budgetComparison.get(0), false),
+                createBudgetScenarioExcelView(budgetComparison.get(1), false)
             );
 
             budgetScenarioExcelViewPairList.add(budgetScenarioExcelViewPair);
