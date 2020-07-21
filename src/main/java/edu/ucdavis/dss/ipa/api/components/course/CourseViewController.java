@@ -151,7 +151,7 @@ public class CourseViewController {
 
 		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
 			// need to update live data sgc termCode here or it'll get deleted on budgetView load
-			// update all sectionGroupCosts for existing scenarios
+			// update sectionGroupCosts if they exist for current year's scenarios (live data, initial request, etc...)
 			List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroup.getId(), originalSectionGroup.getCourse().getYear());
 
 			for (BudgetScenario budgetScenario : budgetScenarios) {
@@ -162,7 +162,9 @@ public class CourseViewController {
 						originalSectionGroup.getCourse().getSequencePattern(),
 						budgetScenario.getId(), originalSectionGroup.getTermCode());
 
-				sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+				if (sectionGroupCost != null) {
+					sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+				}
 			}
 
 			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
