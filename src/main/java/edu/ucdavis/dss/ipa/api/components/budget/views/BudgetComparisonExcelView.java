@@ -41,7 +41,7 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
 
             ExcelHelper.setSheetHeader(report, Arrays
                 .asList(previousYear.getBudgetScenario().getName(), "", "", "",
-                    currentYear.getBudgetScenario().getName()));
+                    currentYear.getBudgetScenario().getName(), "", "", "", "", "", "", ""));
             ExcelHelper.writeRowToSheet(report, Arrays
                 .asList(yearToAcademicYear(previousYear.getBudget().getSchedule().getYear()), "",
                     "", "",
@@ -116,10 +116,10 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Total Seats Offered", "", "", "", "Total Seats Offered", "", "", "", "Total Seats Offered"));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("# Lower Div", "# Upper Div", "# Grad", "Total", "# Lower Div", "# Upper Div", "# Grad", "Total", "# Lower Div", "# Upper Div", "# Grad", "Total"));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(previousTotals.get(LOWER_DIV_SEATS), previousTotals.get(UPPER_DIV_SEATS), previousTotals.get(GRAD_SEATS), getTotalSeats(previousTotals), currentTotals.get(LOWER_DIV_SEATS), currentTotals.get(UPPER_DIV_SEATS), currentTotals.get(GRAD_SEATS), getTotalSeats(currentTotals), currentTotals.get(LOWER_DIV_SEATS).subtract(previousTotals.get(LOWER_DIV_SEATS)), currentTotals.get(UPPER_DIV_SEATS).subtract(previousTotals.get(UPPER_DIV_SEATS)), currentTotals.get(GRAD_SEATS).subtract(previousTotals.get(GRAD_SEATS)), getTotalSeats(currentTotals).subtract(getTotalSeats(previousTotals))));
-
-            ExcelHelper.expandHeaders(workbook);
-            ExcelHelper.ignoreErrors(workbook, Arrays.asList(IgnoredErrorType.NUMBER_STORED_AS_TEXT));
         }
+
+        ExcelHelper.expandHeaders(workbook);
+        ExcelHelper.ignoreErrors(workbook, Arrays.asList(IgnoredErrorType.NUMBER_STORED_AS_TEXT));
     }
 
     private BigDecimal getFund(Map<FundType, BigDecimal> fundTotals, FundType fundType) {
