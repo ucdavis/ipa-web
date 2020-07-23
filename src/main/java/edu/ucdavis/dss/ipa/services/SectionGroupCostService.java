@@ -19,6 +19,8 @@ public interface SectionGroupCostService {
 
     List<SectionGroupCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
+    SectionGroupCost findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(String subjectCode, String courseNumber, String sequencePattern, long budgetScenarioId, String termCode);
+
     void delete(Long sectionGroupCostId);
 
     SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario liveDataScenario);
