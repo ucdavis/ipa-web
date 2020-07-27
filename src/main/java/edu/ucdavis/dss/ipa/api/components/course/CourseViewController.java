@@ -16,6 +16,7 @@ import edu.ucdavis.dss.ipa.api.components.course.views.factories.AnnualViewFacto
 import edu.ucdavis.dss.ipa.api.components.course.views.factories.JpaAnnualViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.security.Authorizer;
@@ -43,9 +44,11 @@ public class CourseViewController {
 
 	@Inject AnnualViewFactory annualViewFactory;
 	@Inject SectionGroupService sectionGroupService;
+	@Inject SectionGroupCostService sectionGroupCostService;
 	@Inject	ScheduleService scheduleService;
 	@Inject TagService tagService;
 	@Inject SectionService sectionService;
+	@Inject	BudgetScenarioRepository budgetScenarioRepository;
 	@Inject CourseService courseService;
 	@Inject ActivityService activityService;
 	@Inject TermService termService;
@@ -145,6 +148,27 @@ public class CourseViewController {
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
+
+		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
+			// need to update live data sgc termCode here or it'll get deleted on budgetView load
+			// update sectionGroupCosts if they exist for current year's scenarios (live data, initial request, etc...)
+			List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroup.getId(), originalSectionGroup.getCourse().getYear());
+
+			for (BudgetScenario budgetScenario : budgetScenarios) {
+				SectionGroupCost sectionGroupCost = sectionGroupCostService
+					.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+						originalSectionGroup.getCourse().getSubjectCode(),
+						originalSectionGroup.getCourse().getCourseNumber(),
+						originalSectionGroup.getCourse().getSequencePattern(),
+						budgetScenario.getId(), originalSectionGroup.getTermCode());
+
+				if (sectionGroupCost != null) {
+					sectionGroupCost.setTermCode(sectionGroup.getTermCode());
+				}
+			}
+
+			originalSectionGroup.setTermCode(sectionGroup.getTermCode());
+		}
 
 		return sectionGroupService.save(originalSectionGroup);
 	}

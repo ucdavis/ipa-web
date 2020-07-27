@@ -21,6 +21,8 @@ public interface StudentSupportPreferenceRepository extends CrudRepository<Stude
 
     List<StudentSupportPreference> findBySupportStaffId(Long supportStaffId);
 
+    List<StudentSupportPreference> findBySupportStaffIdAndTermCode(long supportStaffId, String termCode);
+
     @Query( " SELECT s" +
             " FROM Course c, SectionGroup sg, StudentSupportPreference s, Schedule sch" +
             " WHERE sg.course = c" +

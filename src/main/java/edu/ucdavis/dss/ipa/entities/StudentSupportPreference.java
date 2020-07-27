@@ -21,7 +21,7 @@ public class StudentSupportPreference implements Serializable {
     private long id;
     private SectionGroup sectionGroup;
     private SupportStaff supportStaff;
-    private String type, comment;
+    private String type, comment, termCode;
     private long priority;
     private Long appointmentPercentage;
 
@@ -85,6 +85,10 @@ public class StudentSupportPreference implements Serializable {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    public String getTermCode() { return termCode; }
+
+    public void setTermCode(String termCode) { this.termCode = termCode; }
 
     @JsonProperty("supportStaffId")
     @Transient

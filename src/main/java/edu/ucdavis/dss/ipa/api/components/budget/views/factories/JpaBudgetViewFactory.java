@@ -1,48 +1,26 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views.factories;
 
+import static edu.ucdavis.dss.ipa.entities.enums.TermDescription.*;
+
+import edu.ucdavis.dss.dw.dto.DwCensus;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetComparisonExcelView;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
+import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.SupportAssignment;
-import edu.ucdavis.dss.ipa.entities.Tag;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemCommentService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.SupportAssignmentService;
-import edu.ucdavis.dss.ipa.services.TagService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
+import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.security.Authorization;
+import edu.ucdavis.dss.ipa.services.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -72,11 +50,24 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject UserRoleService userRoleService;
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject TagService tagService;
+    @Inject DataWarehouseRepository dwRepository;
+    @Inject TermService termService;
+    @Inject BudgetCalculationService budgetCalculationService;
+    @Inject Authorization authorization;
+    @Inject BudgetScenarioRepository budgetScenarioRepository;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
         Workgroup workgroup = workgroupService.findOneById(workgroupId);
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
+        List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios = new HashMap<>();
+
+        for (Workgroup userWorkgroup : userWorkgroups) {
+            userWorkgroupsScenarios.put(userWorkgroup.getName(), budgetScenarioRepository.findbyWorkgroupIdAndYear(userWorkgroup.getId(), year));
+        }
 
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
@@ -127,7 +118,9 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 instructorTypeCosts,
                 instructorTypes,
                 userRoles,
-                tags);
+                tags,
+                workgroup,
+                userWorkgroupsScenarios);
 
         return budgetView;
     }
@@ -141,5 +134,114 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments);
 
         return budgetScenarioView;
+    }
+
+    public BudgetExcelView createBudgetExcelView(List<BudgetScenario> budgetScenarios) {
+        List<BudgetScenarioExcelView> budgetScenarioExcelViews = new ArrayList<>();
+
+        for (BudgetScenario budgetScenario : budgetScenarios) {
+            BudgetScenarioExcelView budgetScenarioExcelView = this.createBudgetScenarioExcelView(budgetScenario);
+            budgetScenarioExcelViews.add(budgetScenarioExcelView);
+        }
+
+        return new BudgetExcelView(budgetScenarioExcelViews);
+    }
+
+    public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO) {
+        return createBudgetScenarioExcelView(budgetScenarioDTO, true);
+    };
+
+    /**
+     *
+     * @param budgetScenarioDTO expects budgetScenarioId
+     * @param includeCensus default is true
+     * @return
+     */
+    public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO, Boolean includeCensus) {
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
+        Budget budget = budgetScenario.getBudget();
+        List<String> budgetScenarioTermCodes = new ArrayList<>();
+        for(String termCodeShort : Arrays.asList(FALL.getShortTermCode(), WINTER.getShortTermCode(), SPRING.getShortTermCode())){
+            String termCode = termService.getTermCodeFromYearAndTerm(budgetScenario.getBudget().getSchedule().getYear(), termCodeShort);
+            budgetScenarioTermCodes.add(termCode);
+        }
+        Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
+        List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
+        List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
+        List<InstructorCost> instructorCosts = budget.getInstructorCosts();
+        List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
+        List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
+        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
+        List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
+        Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
+        Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
+        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByTeachingAssignments(teachingAssignments));
+        users.addAll(lineItemUsers);
+        users.addAll(teachingAssignmentUsers);
+
+        List<String> budgetScenarioSubjectCodes = sectionGroupCosts.stream().map(SectionGroupCost::getSubjectCode).distinct().collect(Collectors.toList());
+
+        List<DwCensus> censusList = new ArrayList<>();
+        for (String budgetScenarioSubjectCode : budgetScenarioSubjectCodes) {
+            for (String budgetScenarioTermCode : budgetScenarioTermCodes) {
+                censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(budgetScenarioSubjectCode, budgetScenarioTermCode).stream().filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList()));
+            }
+        }
+
+        Map<String, Map<String, Map<String, Long>>> censusMap = new HashMap<>(new HashMap<>());
+        /* {
+            termCode: {
+              subj+crse: {
+                    sequence: long
+              }
+            }
+        } */
+
+        if (includeCensus == true) {
+            for (DwCensus census : censusList) {
+                String termCode = census.getTermCode();
+                String sequencePattern = census.getSequencePattern();
+                String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
+
+                if (censusMap.get(termCode) == null) {
+                    censusMap.put(termCode, new HashMap<>());
+                }
+
+                if (censusMap.get(termCode).get(courseIdentifier) == null) {
+                    censusMap.get(termCode).put(courseIdentifier, new HashMap<>());
+                }
+
+                if (censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
+                    censusMap.get(termCode).get(courseIdentifier)
+                        .put(sequencePattern, census.getCurrentEnrolledCount());
+                } else {
+                    censusMap.get(termCode).get(courseIdentifier).put(sequencePattern, censusMap.get(termCode).get(courseIdentifier).get(sequencePattern) + census.getCurrentEnrolledCount());
+                }
+            }
+        }
+
+
+        // Calculate totals
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
+
+        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
+
+        return budgetScenarioExcelView;
+    }
+
+    public BudgetComparisonExcelView createBudgetComparisonExcelView(List<List<BudgetScenario>> budgetComparisonList) {
+        // [[s1, s2], [s1, s2], [s1,s2]]
+        List<List<BudgetScenarioExcelView>> budgetScenarioExcelViewPairList = new ArrayList<>();
+
+        for (List<BudgetScenario> budgetComparison : budgetComparisonList) {
+            List<BudgetScenarioExcelView> budgetScenarioExcelViewPair = Arrays.asList(
+                createBudgetScenarioExcelView(budgetComparison.get(0), false),
+                createBudgetScenarioExcelView(budgetComparison.get(1), false)
+            );
+
+            budgetScenarioExcelViewPairList.add(budgetScenarioExcelViewPair);
+        }
+
+        return new BudgetComparisonExcelView(budgetScenarioExcelViewPairList);
     }
 }

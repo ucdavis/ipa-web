@@ -1,30 +1,13 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.SupportAssignment;
-import edu.ucdavis.dss.ipa.entities.Tag;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BudgetView {
-    String workgroupId;
+    Workgroup workgroup;
     List<BudgetScenario> budgetScenarios;
     List<SectionGroupCost> sectionGroupCosts;
     List<LineItem> lineItems;
@@ -45,29 +28,31 @@ public class BudgetView {
     List<InstructorType> instructorTypes;
     List<UserRole> userRoles;
     List<Tag> tags;
+    Map<String, List<BudgetScenario>> userWorkgroupsScenarios;
 
     public BudgetView(
-            List<BudgetScenario> budgetScenarios,
-            List<SectionGroupCost> sectionGroupCosts,
-            List<SectionGroupCostComment> sectionGroupCostComments,
-            List<LineItem> lineItems,
-            List<LineItemComment> lineItemComments,
-            Budget budget,
-            List<LineItemCategory> lineItemCategories,
-            List<SectionGroup> sectionGroups,
-            List<Section> sections,
-            List<InstructorCost> instructorCosts,
-            List<Instructor> activeInstructors,
-            Set<Instructor> assignedInstructors,
-            List<Course> courses,
-            List<TeachingAssignment> teachingAssignments,
-            List<SupportAssignment> supportAssignments,
-            Set<User> users,
-            List<InstructorTypeCost> instructorTypeCosts,
-            List<InstructorType> instructorTypes,
-            List<UserRole> userRoles,
-            List<Tag> tags
-    ) {
+        List<BudgetScenario> budgetScenarios,
+        List<SectionGroupCost> sectionGroupCosts,
+        List<SectionGroupCostComment> sectionGroupCostComments,
+        List<LineItem> lineItems,
+        List<LineItemComment> lineItemComments,
+        Budget budget,
+        List<LineItemCategory> lineItemCategories,
+        List<SectionGroup> sectionGroups,
+        List<Section> sections,
+        List<InstructorCost> instructorCosts,
+        List<Instructor> activeInstructors,
+        Set<Instructor> assignedInstructors,
+        List<Course> courses,
+        List<TeachingAssignment> teachingAssignments,
+        List<SupportAssignment> supportAssignments,
+        Set<User> users,
+        List<InstructorTypeCost> instructorTypeCosts,
+        List<InstructorType> instructorTypes,
+        List<UserRole> userRoles,
+        List<Tag> tags,
+        Workgroup workgroup,
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -88,14 +73,16 @@ public class BudgetView {
         setAssignedInstructors(assignedInstructors);
         setUserRoles(userRoles);
         setTags(tags);
+        setWorkgroup(workgroup);
+        setUserWorkgroupsScenarios(userWorkgroupsScenarios);
     }
 
-    public String getWorkgroupId() {
-        return workgroupId;
+    public Workgroup getWorkgroup() {
+        return workgroup;
     }
 
-    public void setWorkgroupId(String workgroupId) {
-        this.workgroupId = workgroupId;
+    public void setWorkgroup(Workgroup workgroup ) {
+        this.workgroup = workgroup;
     }
 
     public List<BudgetScenario> getBudgetScenarios() {
@@ -256,5 +243,14 @@ public class BudgetView {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Map<String, List<BudgetScenario>> getUserWorkgroupsScenarios() {
+        return userWorkgroupsScenarios;
+    }
+
+    public void setUserWorkgroupsScenarios(
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
+        this.userWorkgroupsScenarios = userWorkgroupsScenarios;
     }
 }

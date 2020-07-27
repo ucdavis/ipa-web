@@ -154,6 +154,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     }
 
     @Override
+    public SectionGroupCost findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(String subjectCode, String courseNumber, String sequencePattern, long budgetScenarioId, String termCode) {
+        return this.sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(subjectCode, courseNumber, sequencePattern, budgetScenarioId, termCode);
+    }
+
+    @Override
     public void delete(Long sectionGroupCostId) {
         this.sectionGroupCostRepository.delete(sectionGroupCostId);
     }
