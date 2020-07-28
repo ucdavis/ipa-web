@@ -233,8 +233,9 @@ public class BudgetExcelView extends AbstractXlsxView {
         workbook = ExcelHelper.expandHeaders(workbook);
         workbook = ExcelHelper.ignoreErrors(workbook, Arrays.asList(IgnoredErrorType.NUMBER_STORED_AS_TEXT));
 
-        // Override expanding the comments column on the funds tab
-        // This is because it can be very large
+        // Override expanding the comments and notes columns on the funds tab
+        // This is because it can they can both be quite large
+        fundsSheet.setColumnWidth(4, 2560);
         fundsSheet.setColumnWidth(5, 2560);
     }
 
