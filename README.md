@@ -15,13 +15,13 @@ to use your host computer's MySQL installation, Docker provides special hostname
 "host.docker.internal".
 
 # Deployment
-## Test
+### Test
 1. Go to AWS ECR > `ipa-web-staging`
 2. Follow the steps under `View push commands`
 3. Go to AWS ECS > Clusters > default > `ipa-web-staging`
 4. Update service to `Force new deployment`
 
-## Production
+### Production
 1. Log in to Jenkins
 2. Click on `Build and Deploy ipa-web`
 3. Hit `Build Now`
