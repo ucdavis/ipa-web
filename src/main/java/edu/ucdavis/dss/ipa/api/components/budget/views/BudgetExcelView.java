@@ -39,7 +39,8 @@ public class BudgetExcelView extends AbstractXlsxView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"utf-8\"");
         response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xlsx\"");
-
+        Integer MAX_COLUMN_CHARACTERS = 50;
+        Integer minimumNoteColumnWidth = 10;
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
         budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Department", "Scenario Name", "", "Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
 
@@ -78,6 +79,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
         instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
+
 
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
             Long scenarioId = budgetScenarioExcelView.getBudgetScenario().getId();
@@ -132,13 +134,14 @@ public class BudgetExcelView extends AbstractXlsxView {
                 for (LineItemComment lineItemComment : lineItem.getLineItemComments()){
                     comments.add(lineItemComment.getComment());
                 }
+                minimumNoteColumnWidth = Math.max(minimumNoteColumnWidth, (lineItem.getNotes() == null ? 0 : lineItem.getNotes().length()));
                 List<Object> cellValues = Arrays.asList(
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         budgetScenarioExcelView.getBudgetScenario().getName(),
                         lineItem.getLineItemCategory().getDescription(),
                         lineItem.getDescription(),
                         lineItem.getNotes(),
-                        String.join(",", comments),
+                        String.join("\n\r\n\r", comments),
                         lineItem.getAmount());
                 fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
             }
@@ -235,8 +238,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         // Override expanding the comments and notes columns on the funds tab
         // This is because they can both be quite large
-        fundsSheet.setColumnWidth(4, 2560);
-        fundsSheet.setColumnWidth(5, 2560);
+        fundsSheet.setColumnWidth(4, 256 * Math.min(MAX_COLUMN_CHARACTERS, minimumNoteColumnWidth));
     }
 
     private Sheet writeSummaryTerms(Sheet sheet, BudgetScenarioExcelView budgetScenarioExcelView) {
