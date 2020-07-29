@@ -24,10 +24,11 @@ public class AssignmentViewCourseController {
         return this.courseService.findByWorkgroupIdAndYear(workgroupId, year);
     }
 
-    @RequestMapping(value = "/api/assignmentView/{workgroupId}/courseComments", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/api/assignmentView/{workgroupId}/course/{courseId}/courseComments", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public CourseComment addCourseComment(@RequestBody CourseComment courseComment, @PathVariable long workgroupId) {
+    public CourseComment addCourseComment(@RequestBody CourseComment courseComment, @PathVariable long workgroupId, @PathVariable long courseId) {
         authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+        courseComment.setCourse(courseService.getOneById(courseId));
         return courseCommentService.create(courseComment);
     }
 }
