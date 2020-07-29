@@ -28,6 +28,7 @@ public class Course extends BaseEntity {
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<Tag>(0);
 	private String note;
+	private List<CourseComment> courseComments = new ArrayList<>();
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,6 +75,7 @@ public class Course extends BaseEntity {
 	public List<Tag> getTags() {
 		return tags;
 	}
+
 
 	public void setTags(List<Tag> tags) {
 		this.tags = tags;
@@ -203,5 +205,17 @@ public class Course extends BaseEntity {
 
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	@JsonProperty("courseComments")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "CourseId")
+	@JsonDeserialize
+	public List<CourseComment> getCourseComments() {
+		return courseComments;
+	}
+
+	public void setCourseComments(List<CourseComment> courseComments) {
+		this.courseComments = courseComments;
 	}
 }
