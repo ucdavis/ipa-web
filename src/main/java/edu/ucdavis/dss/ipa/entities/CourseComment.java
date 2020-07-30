@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -89,5 +90,11 @@ public class CourseComment extends BaseEntity {
         } else {
             return 0;
         }
+    }
+
+    @JsonProperty("creationDate")
+    @Transient
+    public Date getCreationDate() {
+        return createdAt;
     }
 }
