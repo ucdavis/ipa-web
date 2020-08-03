@@ -6,6 +6,4 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public interface CourseCommentService {
     CourseComment create(CourseComment courseCommentDTO);
-
-    //List<LineItemComment> findByLineItems(List<LineItem> lineItems);
 }
