@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
+import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import java.util.List;
 import java.util.Set;
@@ -12,17 +13,20 @@ public class SupportCallResponseReportView {
     List<Course> courses;
     List<SectionGroup> sectionGroups;
     List<StudentSupportCallResponse> supportCallResponses;
+    List<StudentSupportPreference> studentSupportPreferences;
     List<SupportStaff> supportStaff;
     Schedule schedule;
 
     public SupportCallResponseReportView(List<Course> courses,
                                          List<SectionGroup> sectionGroups,
                                          List<StudentSupportCallResponse> supportCallResponses,
+                                         List<StudentSupportPreference> studentSupportPreferences,
                                          List<SupportStaff> supportStaff,
                                          Schedule schedule) {
         this.courses = courses;
         this.sectionGroups = sectionGroups;
         this.supportCallResponses = supportCallResponses;
+        this.studentSupportPreferences = studentSupportPreferences;
         this.supportStaff = supportStaff;
         this.schedule = schedule;
     }
@@ -50,6 +54,15 @@ public class SupportCallResponseReportView {
     public void setSupportCallResponses(
         List<StudentSupportCallResponse> supportCallResponses) {
         this.supportCallResponses = supportCallResponses;
+    }
+
+    public List<StudentSupportPreference> getStudentSupportPreferences() {
+        return studentSupportPreferences;
+    }
+
+    public void setStudentSupportPreferences(
+        List<StudentSupportPreference> studentSupportPreferences) {
+        this.studentSupportPreferences = studentSupportPreferences;
     }
 
     public List<SupportStaff> getSupportStaff() {

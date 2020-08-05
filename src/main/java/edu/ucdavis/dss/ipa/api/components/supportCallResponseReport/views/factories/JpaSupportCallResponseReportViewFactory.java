@@ -54,7 +54,7 @@ public class JpaSupportCallResponseReportViewFactory implements SupportCallRespo
         supportStaffSet.addAll(activeStaffList);
         supportStaffSet.addAll(referencedSupportStaff);
 
-        return new SupportCallResponseReportView(courses, sectionGroups, studentSupportCallResponses, new ArrayList<>(supportStaffSet), schedule);
+        return new SupportCallResponseReportView(courses, sectionGroups, studentSupportCallResponses, studentSupportPreferences, new ArrayList<>(supportStaffSet), schedule);
     }
 
     @Override
