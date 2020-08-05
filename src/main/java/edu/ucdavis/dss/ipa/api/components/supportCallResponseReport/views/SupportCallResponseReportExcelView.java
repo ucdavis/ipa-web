@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.enums.LanguageProficiency;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.ArrayList;
@@ -30,44 +31,38 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
                                       HttpServletRequest request, HttpServletResponse response) {
         String filename = "attachment; filename=\"" +
             supportCallResponseReportViewDTO.getSchedule().getWorkgroup().getName() + " - " +
-            supportCallResponseReportViewDTO.getSchedule().getYear() +
+            Term.getYear(supportCallResponseReportViewDTO.getTermCode()) + " - " +
+            Term.getRegistrarName(supportCallResponseReportViewDTO.getTermCode()) +
             " - SupportCallResponseReport.xlsx\"";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        List<SupportStaff> sortedStaff = supportCallResponseReportViewDTO.getSupportStaff().stream()
-            .sorted(Comparator.comparing(SupportStaff::getLastName))
-            .collect(Collectors.toList());
-
-        buildResponsesSheet(workbook, sortedStaff);
+        buildResponsesSheet(workbook);
     }
 
-    private void buildResponsesSheet(Workbook workbook, List<SupportStaff> sortedStaff) {
+    private void buildResponsesSheet(Workbook workbook) {
         Sheet responseSheet = workbook.createSheet("Support Call Responses");
 
-        List<String> collectedColumns = new ArrayList<>(Arrays.asList("Last Name", "First Name"));
+        List<String> collectedColumns = new ArrayList<>(Arrays.asList("Last Name", "First Name", "Preferences"));
 
-        StudentSupportCallResponse sampleResponse =
-            supportCallResponseReportViewDTO.getSupportCallResponses().get(0);
+        Boolean showGeneralComments = supportCallResponseReportViewDTO.getSupportCallResponses().stream().anyMatch(r -> r.isCollectGeneralComments() == true);
+        Boolean showTeachingQualifications = supportCallResponseReportViewDTO.getSupportCallResponses().stream().anyMatch(r -> r.isCollectTeachingQualifications() == true);
+        Boolean showLanguageProficiency = supportCallResponseReportViewDTO.getSupportCallResponses().stream().anyMatch(r -> r.isCollectLanguageProficiencies() == true);
+        Boolean showEligibilityConfirmation = supportCallResponseReportViewDTO.getSupportCallResponses().stream().anyMatch(r -> r.isCollectEligibilityConfirmation() == true);
 
-        if (sampleResponse.isCollectAssociateInstructorPreferences() ||
-            sampleResponse.isCollectTeachingAssistantPreferences() ||
-            sampleResponse.isCollectReaderPreferences()) {
-            collectedColumns.add("Preferences");
-        }
-        if (sampleResponse.isCollectGeneralComments()) {
+        if (showGeneralComments) {
             collectedColumns.add("General Comments");
         }
-        if (sampleResponse.isCollectTeachingQualifications()) {
+        if (showTeachingQualifications) {
             collectedColumns.add("Teaching Qualifications");
         }
-        if (sampleResponse.isCollectLanguageProficiencies()) {
-            collectedColumns.add("Language Proficiencies");
+        if (showLanguageProficiency) {
+            collectedColumns.add("Language Proficiency");
         }
-        if (sampleResponse.isCollectEligibilityConfirmation()) {
-            collectedColumns.add("EligibilityConfirmation");
+        if (showEligibilityConfirmation) {
+            collectedColumns.add("Eligibility Confirmed");
         }
 
         ExcelHelper.setSheetHeader(responseSheet, collectedColumns);

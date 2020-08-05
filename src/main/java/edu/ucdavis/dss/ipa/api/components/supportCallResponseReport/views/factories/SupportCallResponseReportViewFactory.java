@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.Suppor
 import org.springframework.web.servlet.View;
 
 public interface SupportCallResponseReportViewFactory {
-    SupportCallResponseReportView createSupportCallResponseReportView(long workgroupId, long year);
+    SupportCallResponseReportView createSupportCallResponseReportView(long workgroupId, long year, String termShortCode);
 
-    View createSupportCallResponseReportExcelView(long workgroupId, long year);
+    View createSupportCallResponseReportExcelView(long workgroupId, long year, String termShortCode);
 }

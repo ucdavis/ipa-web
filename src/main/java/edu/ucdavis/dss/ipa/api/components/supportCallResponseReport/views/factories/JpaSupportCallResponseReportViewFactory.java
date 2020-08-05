@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.factories;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.termToTermCode;
+
 import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.SupportCallResponseReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.SupportCallResponseReportView;
 import edu.ucdavis.dss.ipa.entities.Course;
@@ -8,8 +10,10 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import java.util.ArrayList;
@@ -26,40 +30,34 @@ import java.util.List;
 public class JpaSupportCallResponseReportViewFactory implements SupportCallResponseReportViewFactory {
     @Inject ScheduleService scheduleService;
     @Inject SectionGroupService sectionGroupService;
+    @Inject StudentSupportCallResponseService studentSupportCallResponseService;
     @Inject StudentSupportPreferenceService studentSupportPreferenceService;
     @Inject UserRoleService userRoleService;
 
     @Override
     public SupportCallResponseReportView createSupportCallResponseReportView(long workgroupId,
-                                                                             long year) {
+                                                                             long year,
+                                                                             String termShortCode) {
         Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
         if (schedule == null) {
             return null;
         }
 
-        // generate for year or just one term?
+        String termCode = Term.getTermCodeByYearAndTermCode(year, termShortCode);
+
         List<Course> courses = schedule.getCourses();
-        List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYear(workgroupId, year);
+        List<SectionGroup> sectionGroups = sectionGroupService.findByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+        List<StudentSupportCallResponse> studentSupportCallResponses = studentSupportCallResponseService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<SupportStaff> studentStaff = userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentSupportPreferences);
 
-        List<StudentSupportCallResponse> studentSupportCallResponses = schedule.getStudentSupportCallResponses();
-        List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(schedule.getId());
-
-        // Find all support staff and combine them
-        Set<SupportStaff> activeStaffList = new HashSet<>(userRoleService.findActiveSupportStaffByWorkgroupIdAndPreferences(workgroupId, studentSupportPreferences));
-        Set<SupportStaff> referencedSupportStaff = new HashSet<> ();
-
-
-        Set<SupportStaff> supportStaffSet = new HashSet<>();
-        supportStaffSet.addAll(activeStaffList);
-        supportStaffSet.addAll(referencedSupportStaff);
-
-        return new SupportCallResponseReportView(courses, sectionGroups, studentSupportCallResponses, studentSupportPreferences, new ArrayList<>(supportStaffSet), schedule);
+        return new SupportCallResponseReportView(courses, sectionGroups, studentSupportCallResponses, studentSupportPreferences, studentStaff, schedule, termCode);
     }
 
     @Override
-    public View createSupportCallResponseReportExcelView(long workgroupId, long year) {
-        SupportCallResponseReportView supportCallResponseReportView = createSupportCallResponseReportView(workgroupId, year);
+    public View createSupportCallResponseReportExcelView(long workgroupId, long year, String termShortCode) {
+        SupportCallResponseReportView supportCallResponseReportView = createSupportCallResponseReportView(workgroupId, year, termShortCode);
         return new SupportCallResponseReportExcelView(supportCallResponseReportView);
     }
 }

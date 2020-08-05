@@ -7,7 +7,6 @@ import edu.ucdavis.dss.ipa.entities.StudentSupportCallResponse;
 import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import java.util.List;
-import java.util.Set;
 
 public class SupportCallResponseReportView {
     List<Course> courses;
@@ -16,19 +15,23 @@ public class SupportCallResponseReportView {
     List<StudentSupportPreference> studentSupportPreferences;
     List<SupportStaff> supportStaff;
     Schedule schedule;
+    String termCode;
 
     public SupportCallResponseReportView(List<Course> courses,
                                          List<SectionGroup> sectionGroups,
                                          List<StudentSupportCallResponse> supportCallResponses,
                                          List<StudentSupportPreference> studentSupportPreferences,
                                          List<SupportStaff> supportStaff,
-                                         Schedule schedule) {
+                                         Schedule schedule,
+                                         String termCode
+    ) {
         this.courses = courses;
         this.sectionGroups = sectionGroups;
         this.supportCallResponses = supportCallResponses;
         this.studentSupportPreferences = studentSupportPreferences;
         this.supportStaff = supportStaff;
         this.schedule = schedule;
+        this.termCode = termCode;
     }
 
     public List<Course> getCourses() {
@@ -79,5 +82,13 @@ public class SupportCallResponseReportView {
 
     public void setSchedule(Schedule schedule) {
         this.schedule = schedule;
+    }
+
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
     }
 }

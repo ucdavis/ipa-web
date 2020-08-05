@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 
@@ -28,12 +29,12 @@ public class SupportCallResponseReportController {
 //    @ResponseBody
 //    public View
 
-    @RequestMapping(value = "/api/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/termCode/{termShortCode}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year, HttpServletRequest httpRequest) {
+    public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termShortCode, HttpServletRequest httpRequest) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        String url = ipaUrlApi + "/download/supportCallResponseReportView/workgroups/" + workgroupId + "/years/"+ year +"/excel";
+        String url = ipaUrlApi + "/download/supportCallResponseReportView/workgroups/" + workgroupId + "/years/" + year + "/termCode/" + termShortCode + "/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
@@ -52,14 +53,15 @@ public class SupportCallResponseReportController {
      *
      * @param workgroupId
      * @param year
+     * @param termShortCode
      * @param salt
      * @param encrypted
      * @param httpRequest
      * @return
      * @throws ParseException
      */
-    @RequestMapping(value = "/download/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
-    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+    @RequestMapping(value = "/download/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/termCode/{termShortCode}/excel/{salt}/{encrypted}")
+    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termShortCode,
                               @PathVariable String salt, @PathVariable String encrypted,
                               HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         long TIMEOUT = 30L; // In seconds
@@ -72,7 +74,7 @@ public class SupportCallResponseReportController {
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
         if (isValidUrl) {
-            return supportCallResponseReportViewFactory.createSupportCallResponseReportExcelView(workgroupId, year);
+            return supportCallResponseReportViewFactory.createSupportCallResponseReportExcelView(workgroupId, year, termShortCode);
         } else {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
