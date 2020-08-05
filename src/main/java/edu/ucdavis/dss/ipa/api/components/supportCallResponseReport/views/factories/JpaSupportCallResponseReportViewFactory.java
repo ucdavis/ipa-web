@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.factories;
 
-import static edu.ucdavis.dss.ipa.api.helpers.Utilities.termToTermCode;
-
 import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.SupportCallResponseReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.SupportCallResponseReportView;
 import edu.ucdavis.dss.ipa.entities.Course;
@@ -16,10 +14,6 @@ import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportPreferenceService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
