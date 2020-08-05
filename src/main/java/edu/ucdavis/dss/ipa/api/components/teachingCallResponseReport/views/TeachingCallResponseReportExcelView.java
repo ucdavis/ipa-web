@@ -131,7 +131,8 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
 
                 List<TeachingAssignment> teachingAssignments = allTeachingAssignments.stream()
                         .filter(
-                                assignment -> assignment.getInstructor().getId() == instructor.getId()
+                                assignment -> assignment.getInstructor() != null
+                                        && assignment.getInstructor().getId() == instructor.getId()
                                         && assignment.getTermCode().equals(termCode)
                                         && assignment.isFromInstructor()
                         ).collect(Collectors.toList());
