@@ -1,17 +1,18 @@
 package edu.ucdavis.dss.ipa.utilities;
 
-import edu.ucdavis.dss.ipa.api.helpers.Utilities;
-import java.util.Currency;
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.IgnoredErrorType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ExcelHelper{
@@ -26,8 +27,13 @@ public class ExcelHelper{
         return workbook;
     }
 
-    public static Workbook expandHeaders(Workbook workbook){
-        for(int i = 0; i < workbook.getNumberOfSheets(); i++){
+    public static Workbook expandHeaders(Workbook wb) {
+        expandHeaders(wb, 0);
+        return wb;
+    }
+
+    public static Workbook expandHeaders(Workbook workbook, int maxCharWidth) {
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet s = workbook.getSheetAt(i);
             if (s.getPhysicalNumberOfRows() > 0) {
                 Row row = s.getRow(s.getFirstRowNum());
@@ -36,6 +42,37 @@ public class ExcelHelper{
                     Cell cell = cellIterator.next();
                     int columnIndex = cell.getColumnIndex();
                     s.autoSizeColumn(columnIndex);
+
+                    // Cap column width if set
+                    if (maxCharWidth > 0) {
+                        final int CHAR_WIDTH_UNIT = 256;
+                        if (s.getColumnWidth(columnIndex) > 12800) {
+                            s.setColumnWidth(columnIndex, CHAR_WIDTH_UNIT * maxCharWidth);
+                        }
+                    }
+                }
+            }
+        }
+        return workbook;
+    }
+
+    public static Workbook wrapCellText(Workbook workbook) {
+        CellStyle cs = workbook.createCellStyle();
+        cs.setWrapText(true);
+
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            Sheet s = workbook.getSheetAt(i);
+            int maxRowIndex = s.getPhysicalNumberOfRows();
+
+            if (maxRowIndex > 0) {
+                for (int rowIndex = 0; rowIndex < maxRowIndex; rowIndex++) {
+                    Row row = CellUtil.getRow(rowIndex, s);
+                    Iterator<Cell> cellIterator = row.cellIterator();
+
+                    while (cellIterator.hasNext()) {
+                        Cell cell = cellIterator.next();
+                        cell.setCellStyle(cs);
+                    }
                 }
             }
         }
