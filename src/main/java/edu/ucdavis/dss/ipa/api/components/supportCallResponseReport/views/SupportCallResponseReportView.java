@@ -11,7 +11,7 @@ import java.util.List;
 public class SupportCallResponseReportView {
     List<Course> courses;
     List<SectionGroup> sectionGroups;
-    List<StudentSupportCallResponse> supportCallResponses;
+    List<StudentSupportCallResponse> studentSupportCallResponses;
     List<StudentSupportPreference> studentSupportPreferences;
     List<SupportStaff> supportStaff;
     Schedule schedule;
@@ -19,7 +19,7 @@ public class SupportCallResponseReportView {
 
     public SupportCallResponseReportView(List<Course> courses,
                                          List<SectionGroup> sectionGroups,
-                                         List<StudentSupportCallResponse> supportCallResponses,
+                                         List<StudentSupportCallResponse> studentSupportCallResponses,
                                          List<StudentSupportPreference> studentSupportPreferences,
                                          List<SupportStaff> supportStaff,
                                          Schedule schedule,
@@ -27,7 +27,7 @@ public class SupportCallResponseReportView {
     ) {
         this.courses = courses;
         this.sectionGroups = sectionGroups;
-        this.supportCallResponses = supportCallResponses;
+        this.studentSupportCallResponses = studentSupportCallResponses;
         this.studentSupportPreferences = studentSupportPreferences;
         this.supportStaff = supportStaff;
         this.schedule = schedule;
@@ -50,13 +50,13 @@ public class SupportCallResponseReportView {
         this.sectionGroups = sectionGroups;
     }
 
-    public List<StudentSupportCallResponse> getSupportCallResponses() {
-        return supportCallResponses;
+    public List<StudentSupportCallResponse> getStudentSupportCallResponses() {
+        return studentSupportCallResponses;
     }
 
-    public void setSupportCallResponses(
-        List<StudentSupportCallResponse> supportCallResponses) {
-        this.supportCallResponses = supportCallResponses;
+    public void setStudentSupportCallResponses(
+        List<StudentSupportCallResponse> studentSupportCallResponses) {
+        this.studentSupportCallResponses = studentSupportCallResponses;
     }
 
     public List<StudentSupportPreference> getStudentSupportPreferences() {

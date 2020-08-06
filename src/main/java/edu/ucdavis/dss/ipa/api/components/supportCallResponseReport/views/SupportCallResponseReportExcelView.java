@@ -48,20 +48,20 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
             new ArrayList<>(Arrays.asList("Last Name", "First Name", "Preferences"));
 
         Boolean showAvailabilities =
-            supportCallResponseReportViewDTO.getSupportCallResponses().stream().anyMatch(
+            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream().anyMatch(
                 r -> r.isCollectAvailabilityByGrid() == true ||
                     r.isCollectAvailabilityByCrn() == true);
         Boolean showGeneralComments =
-            supportCallResponseReportViewDTO.getSupportCallResponses().stream()
+            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectGeneralComments() == true);
         Boolean showTeachingQualifications =
-            supportCallResponseReportViewDTO.getSupportCallResponses().stream()
+            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectTeachingQualifications() == true);
         Boolean showLanguageProficiency =
-            supportCallResponseReportViewDTO.getSupportCallResponses().stream()
+            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectLanguageProficiencies() == true);
         Boolean showEligibilityConfirmation =
-            supportCallResponseReportViewDTO.getSupportCallResponses().stream()
+            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectEligibilityConfirmation() == true);
 
         if (showAvailabilities) {
@@ -83,7 +83,7 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
         ExcelHelper.setSheetHeader(responseSheet, collectedColumns);
 
         for (StudentSupportCallResponse studentResponse : supportCallResponseReportViewDTO
-            .getSupportCallResponses()) {
+            .getStudentSupportCallResponses()) {
             List<Object> rowValues = new ArrayList<>(Arrays
                 .asList(studentResponse.getSupportStaff().getLastName(),
                     studentResponse.getSupportStaff().getFirstName()));

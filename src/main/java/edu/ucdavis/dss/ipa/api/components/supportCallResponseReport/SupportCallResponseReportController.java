@@ -1,12 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.supportCallResponseReport;
 
+import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.SupportCallResponseReportView;
 import edu.ucdavis.dss.ipa.api.components.supportCallResponseReport.views.factories.SupportCallResponseReportViewFactory;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 
@@ -25,9 +25,13 @@ public class SupportCallResponseReportController {
     @Value("${IPA_URL_API}")
     String ipaUrlApi;
 
-//    @RequestMapping(value = "/api/supportCallResponseReportView/workgroup/{workgroupId}/year/{year}/termCode/{termShortCode}", method = RequestMethod.GET, produces = "application/json")
-//    @ResponseBody
-//    public View
+    @RequestMapping(value = "/api/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/termCode/{termShortCode}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public SupportCallResponseReportView getSupportCallResponseReportView(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termShortCode) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        return supportCallResponseReportViewFactory.createSupportCallResponseReportView(workgroupId, year, termShortCode);
+    }
 
     @RequestMapping(value = "/api/supportCallResponseReportView/workgroups/{workgroupId}/years/{year}/termCode/{termShortCode}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
