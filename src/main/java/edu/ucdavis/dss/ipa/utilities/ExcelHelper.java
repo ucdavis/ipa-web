@@ -15,12 +15,15 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ExcelHelper{
-    public static Workbook ignoreErrors(Workbook workbook, List<IgnoredErrorType> errors){
-        for(int i = 0; i < workbook.getNumberOfSheets(); i++){
+public class ExcelHelper {
+    static final int CHAR_WIDTH_UNIT = 256;
+
+    public static Workbook ignoreErrors(Workbook workbook, List<IgnoredErrorType> errors) {
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             XSSFSheet xs = (XSSFSheet) workbook.getSheetAt(i);
-            for(IgnoredErrorType error : errors){
-                xs.addIgnoredErrors(new CellRangeAddress(0, xs.getLastRowNum(), 0, xs.getRow(xs.getLastRowNum()).getLastCellNum()), error);
+            for (IgnoredErrorType error : errors) {
+                xs.addIgnoredErrors(new CellRangeAddress(0, xs.getLastRowNum(), 0,
+                    xs.getRow(xs.getLastRowNum()).getLastCellNum()), error);
             }
 
         }
@@ -45,8 +48,7 @@ public class ExcelHelper{
 
                     // Cap column width if set
                     if (maxCharWidth > 0) {
-                        final int CHAR_WIDTH_UNIT = 256;
-                        if (s.getColumnWidth(columnIndex) > 12800) {
+                        if (s.getColumnWidth(columnIndex) > CHAR_WIDTH_UNIT * maxCharWidth) {
                             s.setColumnWidth(columnIndex, CHAR_WIDTH_UNIT * maxCharWidth);
                         }
                     }
@@ -79,9 +81,9 @@ public class ExcelHelper{
         return workbook;
     }
 
-    public static Sheet writeRowToSheet(Sheet sheet, List<Object> cellValues){
-        Row row = sheet.createRow(sheet.getLastRowNum()+1);
-        for(int i = 0; i < cellValues.size(); i++){
+    public static Sheet writeRowToSheet(Sheet sheet, List<Object> cellValues) {
+        Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+        for (int i = 0; i < cellValues.size(); i++) {
 
             if (cellValues.get(i) == null) {
                 row.createCell(i).setCellValue("");
@@ -89,8 +91,7 @@ public class ExcelHelper{
                 Cell cell = row.createCell(i);
                 cell.setCellValue(cellValues.get(i).toString());
                 cell.setCellType(CellType.STRING);
-            }
-            else {
+            } else {
                 try {
                     Double cellValue = Double.parseDouble(cellValues.get(i).toString());
                     Cell cell = row.createCell(i);
@@ -104,9 +105,9 @@ public class ExcelHelper{
         return sheet;
     }
 
-    public static Sheet setSheetHeader(Sheet sheet, List<String> headers){
+    public static Sheet setSheetHeader(Sheet sheet, List<String> headers) {
         Row excelHeaders = sheet.createRow(0);
-        for(int i = 0; i < headers.size(); i++){
+        for (int i = 0; i < headers.size(); i++) {
             excelHeaders.createCell(i).setCellValue(headers.get(i));
         }
         return sheet;

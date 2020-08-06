@@ -91,7 +91,7 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
             if (studentResponse.isCollectAssociateInstructorPreferences() ||
                 studentResponse.isCollectTeachingAssistantPreferences() ||
                 studentResponse.isCollectReaderPreferences()) {
-                // Set up relation?
+
                 List<StudentSupportPreference> sortedSupportPreferences =
                     supportCallResponseReportViewDTO.getStudentSupportPreferences().stream()
                         .filter(preference -> preference.getSupportStaff().getId() ==
@@ -122,7 +122,7 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
 
                 for (Character dayIndicator : "MTWRF".toCharArray()) {
                     availabilityString +=
-                        dayIndicator + " " + describeAvailability(dayIndicator, studentResponse) +
+                        dayIndicator + " " + studentResponse.describeAvailability(dayIndicator) +
                             "\n";
                 }
 
@@ -162,71 +162,4 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
         ExcelHelper.expandHeaders(workbook, 50);
         ExcelHelper.wrapCellText(workbook);
     }
-
-    private String describeAvailability(Character dayIndicator,
-                                        StudentSupportCallResponse response) {
-        String blob = response.getAvailabilityBlob().replace(",", "");
-
-        Long startHour = 7L;
-
-        Long startTimeBlock = null;
-        Long endTimeBlock = null;
-        List<String> blocks = new ArrayList<String>();
-
-        switch (dayIndicator) {
-            case 'M':
-                blob = blob.substring(0, 14);
-                break;
-            case 'T':
-                blob = blob.substring(15, 29);
-                break;
-            case 'W':
-                blob = blob.substring(30, 44);
-                break;
-            case 'R':
-                blob = blob.substring(45, 59);
-                break;
-            case 'F':
-                blob = blob.substring(60, 74);
-                break;
-        }
-
-        int i = 0;
-        for (Character hourFlag : blob.toCharArray()) {
-            if (hourFlag == '1') {
-                if (startTimeBlock == null) {
-                    startTimeBlock = startHour + i;
-                    endTimeBlock = startHour + i + 1;
-                } else {
-                    endTimeBlock++;
-                }
-            } else if (hourFlag == '0' && startTimeBlock != null) {
-                blocks.add(blockDescription(dayIndicator, startTimeBlock, endTimeBlock));
-                startTimeBlock = null;
-            }
-            i++;
-        }
-
-        if (startTimeBlock != null) {
-            blocks.add(blockDescription(dayIndicator, startTimeBlock, endTimeBlock));
-        }
-
-        if (blocks.size() == 0) {
-            // No availabilities were indicated
-            blocks.add("Not available");
-        }
-
-        return String.join(", ", blocks);
-    }
-
-    ;
-
-    private String blockDescription(Character dayIndicator, Long startTime, Long endTime) {
-        String start = (startTime > 12 ? (startTime - 12) + "pm" : startTime + "am");
-        String end = (endTime > 12 ? (endTime - 12) + "pm" : endTime + "am");
-
-        return start + "-" + end;
-    }
-
-    ;
 }

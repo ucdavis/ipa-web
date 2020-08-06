@@ -1,8 +1,11 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @SuppressWarnings("serial")
 @Entity
@@ -306,5 +306,73 @@ public class StudentSupportCallResponse implements Serializable {
                     + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1," // 30
                     + "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"; // 29
         return blob;
+    }
+
+    /**
+     *
+     * @param dayIndicator ("M", "T", "W", "R", "F")
+     * @return Comma separated string of available times for given day in 12-hour format
+     */
+    @Transient
+    public String describeAvailability(Character dayIndicator) {
+        String blob = this.getAvailabilityBlob().replace(",", "");
+
+        Long startHour = 7L;
+
+        Long startTimeBlock = null;
+        Long endTimeBlock = null;
+        List<String> blocks = new ArrayList<String>();
+
+        switch (dayIndicator) {
+            case 'M':
+                blob = blob.substring(0, 14);
+                break;
+            case 'T':
+                blob = blob.substring(15, 29);
+                break;
+            case 'W':
+                blob = blob.substring(30, 44);
+                break;
+            case 'R':
+                blob = blob.substring(45, 59);
+                break;
+            case 'F':
+                blob = blob.substring(60, 74);
+                break;
+        }
+
+        int i = 0;
+        for (Character hourFlag : blob.toCharArray()) {
+            if (hourFlag == '1') {
+                if (startTimeBlock == null) {
+                    startTimeBlock = startHour + i;
+                    endTimeBlock = startHour + i + 1;
+                } else {
+                    endTimeBlock++;
+                }
+            } else if (hourFlag == '0' && startTimeBlock != null) {
+                blocks.add(blockDescription(startTimeBlock, endTimeBlock));
+                startTimeBlock = null;
+            }
+            i++;
+        }
+
+        if (startTimeBlock != null) {
+            blocks.add(blockDescription(startTimeBlock, endTimeBlock));
+        }
+
+        if (blocks.size() == 0) {
+            // No availabilities were indicated
+            blocks.add("Not available");
+        }
+
+        return String.join(", ", blocks);
+    }
+
+    private String blockDescription(Long startTime, Long endTime) {
+        String start = (startTime > 12 ? (startTime - 12) + "pm" : startTime + "am");
+        String end = (endTime > 12 ? (endTime - 12) + "pm" : endTime + "am");
+
+        return start + "-" + end;
     }
 }
