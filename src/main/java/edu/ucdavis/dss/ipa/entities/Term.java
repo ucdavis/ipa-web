@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import edu.ucdavis.dss.ipa.services.TermService;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,7 +32,7 @@ public class Term implements Serializable {
 	public void setTermCode(String termCode) {
 		this.termCode = termCode;
 	}
-	
+
 	@Basic
 	@Column(name = "BannerStartWindow1", unique = true, nullable = true)
 	@JsonProperty
@@ -44,7 +43,7 @@ public class Term implements Serializable {
 	public void setBannerStartWindow1(Date bannerStartWindow) {
 		this.bannerStartWindow1 = bannerStartWindow;
 	}
-	
+
 	@Basic
 	@Column(name = "BannerEndWindow1", unique = true, nullable = true)
 	@JsonProperty
@@ -121,7 +120,7 @@ public class Term implements Serializable {
 
 		return termCodes;
 	}
-	
+
 	/**
 	 * Provide the two digit code of the provided termCode
 	 *
@@ -132,7 +131,7 @@ public class Term implements Serializable {
 	public static String getTwoDigitTermCode(String termCode) {
 		return termCode.substring(Math.max(termCode.length() - 2, 0));
 	}
-	
+
 	/**
 	 * Returns the equivalent termCode for the provided year
 	 *
@@ -157,7 +156,7 @@ public class Term implements Serializable {
 	 * <p>
 	 * Names are based on the information found at:
 	 * http://registrar.ucdavis.edu/faculty-staff/scheduling-guide/codes.cfm
-	 * 
+	 *
 	 * @return the UCD Registrar name for this.code
 	 */
 	@Transient
@@ -166,9 +165,9 @@ public class Term implements Serializable {
 
 		String term = termCode.length() == 2 ? termCode : termCode.substring(4);
 		int code = Integer.parseInt(term);
-		
+
 		switch(code) {
-			case 1: return "Winter Quarter"; 
+			case 1: return "Winter Quarter";
 			case 2: return "Spring Semester";
 			case 3: return "Spring Quarter";
 			case 4: return "Unused";
