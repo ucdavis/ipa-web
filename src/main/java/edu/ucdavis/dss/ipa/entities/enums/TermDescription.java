@@ -16,4 +16,12 @@ public enum TermDescription {
     public String getShortTermCode() {
         return shortTermCode;
     }
+
+    public String getTermCode(long year) {
+        if (Integer.parseInt(this.shortTermCode) < 4) {
+            return (year + 1) + this.shortTermCode;
+        } else {
+            return year + this.shortTermCode;
+        }
+    }
 }

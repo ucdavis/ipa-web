@@ -7,4 +7,6 @@ public interface SupportCallResponseReportViewFactory {
     SupportCallResponseReportView createSupportCallResponseReportView(long workgroupId, long year, String termShortCode);
 
     View createSupportCallResponseReportExcelView(long workgroupId, long year, String termShortCode);
+
+    View createSupportCallResponseReportExcelView(long workgroupId, long year);
 }

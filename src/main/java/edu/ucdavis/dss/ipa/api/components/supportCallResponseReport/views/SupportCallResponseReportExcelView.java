@@ -18,50 +18,56 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class SupportCallResponseReportExcelView extends AbstractXlsxView {
-    private SupportCallResponseReportView supportCallResponseReportViewDTO = null;
+    private Map<String, SupportCallResponseReportView> supportCallResponseReportViewMap;
 
     public SupportCallResponseReportExcelView(
-        SupportCallResponseReportView supportCallResponseReportViewDTO) {
-        this.supportCallResponseReportViewDTO = supportCallResponseReportViewDTO;
+        Map<String, SupportCallResponseReportView> supportCallResponseReportViewMap) {
+        this.supportCallResponseReportViewMap = supportCallResponseReportViewMap;
     }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
+
+        Map.Entry<String, SupportCallResponseReportView> entry =
+            supportCallResponseReportViewMap.entrySet().iterator().next();
+
         String filename = "attachment; filename=\"" +
-            supportCallResponseReportViewDTO.getSchedule().getWorkgroup().getName() + " - " +
-            Term.getYear(supportCallResponseReportViewDTO.getTermCode()) + " - " +
-            Term.getRegistrarName(supportCallResponseReportViewDTO.getTermCode()) +
+            entry.getValue().getSchedule().getWorkgroup().getName() + " - " +
+            Term.getYear(entry.getValue().getTermCode()) + " - " +
+            Term.getRegistrarName(entry.getValue().getTermCode()) +
             " - SupportCallResponseReport.xlsx\"";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildResponsesSheet(workbook);
+        buildResponsesSheet(workbook, entry);
     }
 
-    private void buildResponsesSheet(Workbook workbook) {
-        Sheet responseSheet = workbook.createSheet("Support Call Responses");
+    private void buildResponsesSheet(Workbook workbook,
+                                     Map.Entry<String, SupportCallResponseReportView> entry) {
+        Sheet responseSheet =
+            workbook.createSheet(Term.getRegistrarName(entry.getValue().getTermCode()));
 
         List<String> collectedColumns =
             new ArrayList<>(Arrays.asList("Last Name", "First Name", "Preferences"));
 
         Boolean showAvailabilities =
-            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream().anyMatch(
+            entry.getValue().getStudentSupportCallResponses().stream().anyMatch(
                 r -> r.isCollectAvailabilityByGrid() == true ||
                     r.isCollectAvailabilityByCrn() == true);
         Boolean showGeneralComments =
-            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
+            entry.getValue().getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectGeneralComments() == true);
         Boolean showTeachingQualifications =
-            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
+            entry.getValue().getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectTeachingQualifications() == true);
         Boolean showLanguageProficiency =
-            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
+            entry.getValue().getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectLanguageProficiencies() == true);
         Boolean showEligibilityConfirmation =
-            supportCallResponseReportViewDTO.getStudentSupportCallResponses().stream()
+            entry.getValue().getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectEligibilityConfirmation() == true);
 
         if (showAvailabilities) {
@@ -82,41 +88,37 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
 
         ExcelHelper.setSheetHeader(responseSheet, collectedColumns);
 
-        for (StudentSupportCallResponse studentResponse : supportCallResponseReportViewDTO
+        for (StudentSupportCallResponse studentResponse : entry.getValue()
             .getStudentSupportCallResponses()) {
             List<Object> rowValues = new ArrayList<>(Arrays
                 .asList(studentResponse.getSupportStaff().getLastName(),
                     studentResponse.getSupportStaff().getFirstName()));
 
-            if (studentResponse.isCollectAssociateInstructorPreferences() ||
-                studentResponse.isCollectTeachingAssistantPreferences() ||
-                studentResponse.isCollectReaderPreferences()) {
+            List<StudentSupportPreference> sortedSupportPreferences =
+                entry.getValue().getStudentSupportPreferences().stream()
+                    .filter(preference -> preference.getSupportStaff().getId() ==
+                        studentResponse.getSupportStaff().getId())
+                    .sorted(Comparator.comparing(StudentSupportPreference::getPriority))
+                    .collect(Collectors.toList());
 
-                List<StudentSupportPreference> sortedSupportPreferences =
-                    supportCallResponseReportViewDTO.getStudentSupportPreferences().stream()
-                        .filter(preference -> preference.getSupportStaff().getId() ==
-                            studentResponse.getSupportStaff().getId())
-                        .sorted(Comparator.comparing(StudentSupportPreference::getPriority))
-                        .collect(Collectors.toList());
+            String cellString = "";
 
-                String cellString = "";
+            for (int i = 0; i < sortedSupportPreferences.size(); i++) {
+                StudentSupportPreference preference = sortedSupportPreferences.get(i);
 
-                for (int i = 0; i < sortedSupportPreferences.size(); i++) {
-                    StudentSupportPreference preference = sortedSupportPreferences.get(i);
-
-                    cellString += preference.getPriority() + ") "
-                        + preference.getSectionGroup().getCourse().getSubjectCode() + " "
-                        + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
-                        +
-                        (preference.getType().equals("Teaching Assistant") ? "Teaching Assistant" :
-                            "Reader")
-                        + (preference.getComment().equals("") ? "" :
-                        "\n      Comment: " + preference.getComment() + "\n")
-                        + (i < sortedSupportPreferences.size() - 1 ? "\n" : "");
-                }
-
-                rowValues.add(cellString);
+                cellString += preference.getPriority() + ") "
+                    + preference.getSectionGroup().getCourse().getSubjectCode() + " "
+                    + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
+                    +
+                    (preference.getType().equals("Teaching Assistant") ? "Teaching Assistant" :
+                        "Reader")
+                    + (preference.getComment().equals("") ? "" :
+                    "\n      Comment: " + preference.getComment() + "\n")
+                    + (i < sortedSupportPreferences.size() - 1 ? "\n" : "");
             }
+
+            rowValues.add(cellString);
+
             if (showAvailabilities && studentResponse.getAvailabilityBlob() != null) {
                 String availabilityString = "";
 
@@ -127,7 +129,7 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
                 }
 
                 rowValues.add(availabilityString);
-            } else {
+            } else if (showAvailabilities) {
                 rowValues.add("");
             }
 
