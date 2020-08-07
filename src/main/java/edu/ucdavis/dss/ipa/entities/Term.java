@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import edu.ucdavis.dss.ipa.services.TermService;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -187,5 +188,25 @@ public class Term implements Serializable {
 		if(termCode.length() != 6) throw new IllegalArgumentException("Cannot get year if termCode is short");
 
 		return termCode.substring(0, 4);
+	}
+
+	/**
+	 * Returns academic year format. Example: 201510 -> 2015-16
+	 *
+	 * @param termCode e.g. "201510"
+	 * @return         "2015-16"
+	 */
+	@Transient
+	public static String getAcademicYear(String termCode) {
+		Long shortTermCode = Long.valueOf(termCode.substring(termCode.length() - 2));
+		Long baseYear;
+
+		if (shortTermCode < 4) {
+			baseYear = Long.valueOf(termCode.substring(0,4)) - 1;
+		} else {
+			baseYear = Long.valueOf(termCode.substring(0,4));
+		}
+
+		return baseYear + "-" + String.valueOf(baseYear + 1).substring(2,4);
 	}
 }

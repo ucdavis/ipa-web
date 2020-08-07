@@ -1,11 +1,11 @@
 package edu.ucdavis.dss.ipa.entities.enums;
 
 public enum TermDescription {
+    SS1("05"),
+    SS2("07"),
     FALL("10"),
     WINTER("01"),
-    SPRING("03"),
-    SS1("05"),
-    SS2("07");
+    SPRING("03");
 
     private final String shortTermCode;
 

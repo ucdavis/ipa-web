@@ -18,56 +18,64 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class SupportCallResponseReportExcelView extends AbstractXlsxView {
-    private Map<String, SupportCallResponseReportView> supportCallResponseReportViewMap;
+    private List<SupportCallResponseReportView> supportCallResponseReportViewList;
 
     public SupportCallResponseReportExcelView(
-        Map<String, SupportCallResponseReportView> supportCallResponseReportViewMap) {
-        this.supportCallResponseReportViewMap = supportCallResponseReportViewMap;
+        List<SupportCallResponseReportView> supportCallResponseReportViewList) {
+        this.supportCallResponseReportViewList = supportCallResponseReportViewList;
     }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
 
-        Map.Entry<String, SupportCallResponseReportView> entry =
-            supportCallResponseReportViewMap.entrySet().iterator().next();
+        SupportCallResponseReportView supportCallResponseReportView =
+            supportCallResponseReportViewList.get(0);
 
-        String filename = "attachment; filename=\"" +
-            entry.getValue().getSchedule().getWorkgroup().getName() + " - " +
-            Term.getYear(entry.getValue().getTermCode()) + " - " +
-            Term.getRegistrarName(entry.getValue().getTermCode()) +
-            " - SupportCallResponseReport.xlsx\"";
+        String filename =
+            "attachment; filename=\"" +
+                supportCallResponseReportView.getSchedule().getWorkgroup().getName() +
+                " - ";
+        if (supportCallResponseReportViewList.size() == 1) {
+            filename += Term.getYear(supportCallResponseReportView.getTermCode()) + " - " + Term.getRegistrarName(supportCallResponseReportView.getTermCode());
+        } else {
+            filename += Term.getAcademicYear(supportCallResponseReportView.getTermCode());
+
+        }
+        filename += " - SupportCallResponseReport.xlsx\"";
 
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildResponsesSheet(workbook, entry);
+        for (SupportCallResponseReportView termView : supportCallResponseReportViewList) {
+            buildResponsesSheet(workbook, termView);
+        }
     }
 
     private void buildResponsesSheet(Workbook workbook,
-                                     Map.Entry<String, SupportCallResponseReportView> entry) {
+                                     SupportCallResponseReportView termView) {
         Sheet responseSheet =
-            workbook.createSheet(Term.getRegistrarName(entry.getValue().getTermCode()));
+            workbook.createSheet(Term.getRegistrarName(termView.getTermCode()));
 
         List<String> collectedColumns =
             new ArrayList<>(Arrays.asList("Last Name", "First Name", "Preferences"));
 
         Boolean showAvailabilities =
-            entry.getValue().getStudentSupportCallResponses().stream().anyMatch(
+            termView.getStudentSupportCallResponses().stream().anyMatch(
                 r -> r.isCollectAvailabilityByGrid() == true ||
                     r.isCollectAvailabilityByCrn() == true);
         Boolean showGeneralComments =
-            entry.getValue().getStudentSupportCallResponses().stream()
+            termView.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectGeneralComments() == true);
         Boolean showTeachingQualifications =
-            entry.getValue().getStudentSupportCallResponses().stream()
+            termView.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectTeachingQualifications() == true);
         Boolean showLanguageProficiency =
-            entry.getValue().getStudentSupportCallResponses().stream()
+            termView.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectLanguageProficiencies() == true);
         Boolean showEligibilityConfirmation =
-            entry.getValue().getStudentSupportCallResponses().stream()
+            termView.getStudentSupportCallResponses().stream()
                 .anyMatch(r -> r.isCollectEligibilityConfirmation() == true);
 
         if (showAvailabilities) {
@@ -88,14 +96,14 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
 
         ExcelHelper.setSheetHeader(responseSheet, collectedColumns);
 
-        for (StudentSupportCallResponse studentResponse : entry.getValue()
+        for (StudentSupportCallResponse studentResponse : termView
             .getStudentSupportCallResponses()) {
             List<Object> rowValues = new ArrayList<>(Arrays
                 .asList(studentResponse.getSupportStaff().getLastName(),
                     studentResponse.getSupportStaff().getFirstName()));
 
             List<StudentSupportPreference> sortedSupportPreferences =
-                entry.getValue().getStudentSupportPreferences().stream()
+                termView.getStudentSupportPreferences().stream()
                     .filter(preference -> preference.getSupportStaff().getId() ==
                         studentResponse.getSupportStaff().getId())
                     .sorted(Comparator.comparing(StudentSupportPreference::getPriority))
