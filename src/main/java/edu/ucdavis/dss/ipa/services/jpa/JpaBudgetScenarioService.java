@@ -167,6 +167,12 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return budgetScenario;
     }
 
+    public BudgetScenario createSnapshot(long scenarioId) {
+        BudgetScenario budgetScenarioSnapshot = null;
+
+        return budgetScenarioSnapshot;
+    }
+
     @Override
     public BudgetScenario update(BudgetScenario budgetScenario) {
         return budgetScenarioRepository.save(budgetScenario);

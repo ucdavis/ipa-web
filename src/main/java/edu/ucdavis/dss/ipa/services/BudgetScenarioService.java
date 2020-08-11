@@ -19,4 +19,6 @@ public interface BudgetScenarioService {
     BudgetScenario update(BudgetScenario budgetScenario);
 
     List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year);
+
+    BudgetScenario createSnapshot(long scenarioId);
 }
