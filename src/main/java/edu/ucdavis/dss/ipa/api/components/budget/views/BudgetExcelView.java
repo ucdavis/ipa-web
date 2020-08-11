@@ -80,7 +80,6 @@ public class BudgetExcelView extends AbstractXlsxView {
         Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
         instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
 
-
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
             Long scenarioId = budgetScenarioExcelView.getBudgetScenario().getId();
 
