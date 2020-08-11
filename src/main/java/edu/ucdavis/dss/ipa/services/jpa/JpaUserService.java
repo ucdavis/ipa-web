@@ -2,12 +2,14 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
+import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
+import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.repositories.UserRepository;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
@@ -27,6 +29,7 @@ public class JpaUserService implements UserService {
 	@Inject UserRepository userRepository;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject EmailService emailService;
+	@Inject InstructorRepository instructorRepository;
 
 	@Override
 	public User save(User user)
@@ -190,6 +193,58 @@ public class JpaUserService implements UserService {
 		}
 
 		return users;
+	}
+
+	/**
+	 * Creates a user and instructor entity for the user
+	 * @param user
+	 * @return
+	 */
+	@Override
+	public User createPlaceholder(User user) {
+		String loginId = "changeme" + user.getLastName();
+		User previouslyCreatedUser = userRepository.findByLoginId(loginId);
+
+		// Should do nothing, placeholder is unnecessary as this user already exists
+		if (previouslyCreatedUser != null) {
+			return previouslyCreatedUser;
+		}
+
+		user.setLoginId(loginId);
+		user.setPlaceholder(true);
+		user = this.save(user);
+
+		// Make placeholder instructor
+		Instructor instructor = new Instructor();
+		instructor.setEmail(user.getEmail());
+		instructor.setFirstName(user.getFirstName());
+		instructor.setLastName(user.getLastName());
+		instructor.setLoginId(user.getLoginId());
+		instructorRepository.save(instructor);
+
+		return user;
+	}
+
+	@Override
+	public User updatePlaceholder(String previousLoginId, User user) {
+
+		User previouslyCreatedUser = userRepository.findByLoginId(previousLoginId);
+		previouslyCreatedUser.setLoginId(user.getLoginId());
+		previouslyCreatedUser.setFirstName(user.getFirstName());
+		previouslyCreatedUser.setLastName(user.getLastName());
+		previouslyCreatedUser.setEmail(user.getEmail());
+		previouslyCreatedUser.setDisplayName(user.getDisplayName());
+		previouslyCreatedUser.setPlaceholder(false);
+		previouslyCreatedUser = this.save(previouslyCreatedUser);
+
+		Instructor previouslyCreatedInstructor = instructorRepository.findByLoginIdIgnoreCase(previousLoginId);
+		previouslyCreatedInstructor.setLoginId(user.getLoginId());
+		previouslyCreatedInstructor.setLastName(user.getLastName());
+		previouslyCreatedInstructor.setFirstName(user.getFirstName());
+		previouslyCreatedInstructor.setEmail(user.getEmail());
+		instructorRepository.save(previouslyCreatedInstructor);
+
+		return previouslyCreatedUser;
 	}
 
 	@Override

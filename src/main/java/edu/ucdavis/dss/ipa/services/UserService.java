@@ -47,7 +47,7 @@ public interface UserService {
 	
 	void contact(@Valid User user, String messageBody, String subject);
 
-    void updateLastAccessed(User user);
+	void updateLastAccessed(User user);
 
 	List<User> findAllByWorkgroupAndRoleToken(Workgroup workgroup, String roleToken);
 
@@ -56,4 +56,8 @@ public interface UserService {
 	List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments);
 
 	List<User> findAllByWorkgroup(Workgroup workgroup);
+
+	User createPlaceholder(User user);
+
+	User updatePlaceholder(String previousLoginId, User user);
 }

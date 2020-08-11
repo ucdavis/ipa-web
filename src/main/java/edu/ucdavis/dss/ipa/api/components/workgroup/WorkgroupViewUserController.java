@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.workgroup;
 import edu.ucdavis.dss.dw.dto.DwPerson;
 import edu.ucdavis.dss.ipa.api.helpers.CurrentUser;
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
+import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.Role;
 import edu.ucdavis.dss.ipa.entities.User;
@@ -10,6 +11,7 @@ import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorizer;
+import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
 import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
@@ -40,7 +42,6 @@ public class WorkgroupViewUserController {
     @Inject RoleService roleService;
     @Inject UserRoleService userRoleService;
     @Inject InstructorTypeService instructorTypeService;
-
     @Inject CurrentUser currentUser;
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
@@ -252,5 +253,35 @@ public class WorkgroupViewUserController {
         userRole.setRole(role);
 
         return userRoleService.save(userRole);
+    }
+
+    @RequestMapping(value = "/api/workgroups/{workgroupId}/users/placeholder", method = RequestMethod.POST)
+    @ResponseBody
+    public User createPlaceholderUser(@PathVariable Long workgroupId, @RequestBody User user, HttpServletResponse httpResponse) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+        if (workgroup == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        return userService.createPlaceholder(user);
+    }
+
+    @RequestMapping(value = "/api/workgroups/{workgroupId}/users/placeholder/{previousLoginId}", method = RequestMethod.PUT)
+    @ResponseBody
+    public User updatePlaceholder(@PathVariable Long workgroupId, @PathVariable String previousLoginId, @RequestBody User user, HttpServletResponse httpResponse) {
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+        if (workgroup == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
+
+        return userService.updatePlaceholder(previousLoginId, user);
     }
 }
