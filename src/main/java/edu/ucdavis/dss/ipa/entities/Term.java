@@ -32,7 +32,7 @@ public class Term implements Serializable {
 	public void setTermCode(String termCode) {
 		this.termCode = termCode;
 	}
-	
+
 	@Basic
 	@Column(name = "BannerStartWindow1", unique = true, nullable = true)
 	@JsonProperty
@@ -43,7 +43,7 @@ public class Term implements Serializable {
 	public void setBannerStartWindow1(Date bannerStartWindow) {
 		this.bannerStartWindow1 = bannerStartWindow;
 	}
-	
+
 	@Basic
 	@Column(name = "BannerEndWindow1", unique = true, nullable = true)
 	@JsonProperty
@@ -120,7 +120,7 @@ public class Term implements Serializable {
 
 		return termCodes;
 	}
-	
+
 	/**
 	 * Provide the two digit code of the provided termCode
 	 *
@@ -131,7 +131,7 @@ public class Term implements Serializable {
 	public static String getTwoDigitTermCode(String termCode) {
 		return termCode.substring(Math.max(termCode.length() - 2, 0));
 	}
-	
+
 	/**
 	 * Returns the equivalent termCode for the provided year
 	 *
@@ -156,7 +156,7 @@ public class Term implements Serializable {
 	 * <p>
 	 * Names are based on the information found at:
 	 * http://registrar.ucdavis.edu/faculty-staff/scheduling-guide/codes.cfm
-	 * 
+	 *
 	 * @return the UCD Registrar name for this.code
 	 */
 	@Transient
@@ -165,9 +165,9 @@ public class Term implements Serializable {
 
 		String term = termCode.length() == 2 ? termCode : termCode.substring(4);
 		int code = Integer.parseInt(term);
-		
+
 		switch(code) {
-			case 1: return "Winter Quarter"; 
+			case 1: return "Winter Quarter";
 			case 2: return "Spring Semester";
 			case 3: return "Spring Quarter";
 			case 4: return "Unused";
@@ -187,5 +187,25 @@ public class Term implements Serializable {
 		if(termCode.length() != 6) throw new IllegalArgumentException("Cannot get year if termCode is short");
 
 		return termCode.substring(0, 4);
+	}
+
+	/**
+	 * Returns academic year format. Example: 201510 -> 2015-16
+	 *
+	 * @param termCode e.g. "201510"
+	 * @return         "2015-16"
+	 */
+	@Transient
+	public static String getAcademicYear(String termCode) {
+		Long shortTermCode = Long.valueOf(termCode.substring(termCode.length() - 2));
+		Long baseYear;
+
+		if (shortTermCode < 4) {
+			baseYear = Long.valueOf(termCode.substring(0,4)) - 1;
+		} else {
+			baseYear = Long.valueOf(termCode.substring(0,4));
+		}
+
+		return baseYear + "-" + String.valueOf(baseYear + 1).substring(2,4);
 	}
 }

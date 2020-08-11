@@ -6,6 +6,7 @@ drop table if exists ActivityLogTag;
 drop table if exists BudgetScenarios;
 drop table if exists Budgets;
 drop table if exists Courses;
+drop table if exists CourseComments;
 drop table if exists Courses_has_Tags;
 drop table if exists InstructorCosts;
 drop table if exists InstructorNotes;
