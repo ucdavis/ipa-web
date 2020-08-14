@@ -157,6 +157,7 @@ public class JpaInstructorCostService implements InstructorCostService {
         for (InstructorCost originalInstructorCost : originalInstructorCostList) {
             InstructorCost instructorCost = new InstructorCost();
 
+            instructorCost.setBudget(originalInstructorCost.getBudget());
             instructorCost.setInstructor(originalInstructorCost.getInstructor());
             instructorCost.setCost(originalInstructorCost.getCost());
             instructorCost.setLecturer(originalInstructorCost.getLecturer());
