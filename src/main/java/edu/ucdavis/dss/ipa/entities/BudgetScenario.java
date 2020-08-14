@@ -28,6 +28,8 @@ public class BudgetScenario extends BaseEntity {
     private List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
     private List<LineItem> lineItems = new ArrayList<>();
     private Boolean fromLiveData;
+    private Boolean isSnapshot = false;
+    private Float taCost, readerCost;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -191,5 +193,29 @@ public class BudgetScenario extends BaseEntity {
         }
 
         return this.activeTermsBlob;
+    }
+
+    public Boolean getIsSnapshot() {
+        return isSnapshot;
+    }
+
+    public void setIsSnapshot(Boolean snapshot) {
+        isSnapshot = snapshot;
+    }
+
+    public Float getTaCost() {
+        return taCost;
+    }
+
+    public void setTaCost(Float taCost) {
+        this.taCost = taCost;
+    }
+
+    public Float getReaderCost() {
+        return readerCost;
+    }
+
+    public void setReaderCost(Float readerCost) {
+        this.readerCost = readerCost;
     }
 }

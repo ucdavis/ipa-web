@@ -148,4 +148,26 @@ public class JpaInstructorCostService implements InstructorCostService {
 
         return instructorCosts;
     }
+
+    @Override
+    public List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+        List<InstructorCost> originalInstructorCostList = originalBudgetScenario.getBudget().getInstructorCosts();
+        List<InstructorCost> snapshotInstructorCostList = new ArrayList<>();
+
+        for (InstructorCost originalInstructorCost : originalInstructorCostList) {
+            InstructorCost instructorCost = new InstructorCost();
+
+            instructorCost.setInstructor(originalInstructorCost.getInstructor());
+            instructorCost.setCost(originalInstructorCost.getCost());
+            instructorCost.setLecturer(originalInstructorCost.getLecturer());
+            instructorCost.setInstructorTypeCost(originalInstructorCost.getInstructorTypeCost());
+            instructorCost.setBudgetScenarioId(snapshotBudgetScenario.getId());
+
+            InstructorCost snapshotInstructorCost = this.instructorCostRepository.save(instructorCost);
+
+            snapshotInstructorCostList.add(snapshotInstructorCost);
+        }
+
+        return snapshotInstructorCostList;
+    }
 }

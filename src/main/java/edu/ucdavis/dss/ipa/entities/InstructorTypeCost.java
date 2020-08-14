@@ -34,6 +34,7 @@ public class InstructorTypeCost extends BaseEntity {
     private Float cost;
     private InstructorType instructorType;
     private List<InstructorCost> instructorCosts = new ArrayList<>();
+    private Long budgetScenarioId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +49,7 @@ public class InstructorTypeCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BudgetId", nullable = false)
-    @NotNull
+    @JoinColumn(name = "BudgetId", nullable = true)
     @JsonIgnore
     public Budget getBudget() {
         return budget;
@@ -116,5 +116,13 @@ public class InstructorTypeCost extends BaseEntity {
         } else {
             return null;
         }
+    }
+
+    public Long getBudgetScenarioId() {
+        return budgetScenarioId;
+    }
+
+    public void setBudgetScenarioId(Long budgetScenarioId) {
+        this.budgetScenarioId = budgetScenarioId;
     }
 }

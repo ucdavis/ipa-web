@@ -143,13 +143,12 @@ public class BudgetViewController {
     @ResponseBody
     public BudgetScenarioView createBudgetScenarioSnapshot(@PathVariable long budgetId,
                                                            @PathVariable long budgetScenarioId,
-                                                           @RequestBody BudgetScenario budgetScenarioDTO,
                                                            HttpServletResponse httpResponse) {
 
         Budget budget = budgetService.findById(budgetId);
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
-        if (budget == null || budgetScenario == null || budgetScenarioDTO.getName().length() == 0) {
+        if (budget == null || budgetScenario == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }

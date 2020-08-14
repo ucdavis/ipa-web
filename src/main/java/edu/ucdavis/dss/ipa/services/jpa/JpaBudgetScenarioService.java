@@ -3,6 +3,9 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Section;
@@ -15,12 +18,17 @@ import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.BudgetService;
 import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.InstructorCostService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +52,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject BudgetService budgetService;
     @Inject TeachingAssignmentService teachingAssignmentService;
+    @Inject InstructorCostService instructorCostService;
+    @Inject InstructorTypeCostService instructorTypeCostService;
 
     @Override
     @Transactional
@@ -168,9 +178,41 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     public BudgetScenario createSnapshot(long scenarioId) {
-        BudgetScenario budgetScenarioSnapshot = null;
+        // create snapshot from existing scenario
+        BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
 
-        return budgetScenarioSnapshot;
+        if (originalScenario == null) { return null; }
+
+        // create new budgetScenario with isSnapshot true, copy Budget TaCost, ReaderCost
+        BudgetScenario snapshotScenario = new BudgetScenario();
+        snapshotScenario.setBudget(originalScenario.getBudget());
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = format.format(Calendar.getInstance().getTime());
+        snapshotScenario.setName("SNAPSHOT - " + originalScenario.getName() + " - " + dateString);
+        snapshotScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
+        snapshotScenario.setFromLiveData(false);
+        snapshotScenario.setIsSnapshot(true);
+        snapshotScenario.setTaCost(originalScenario.getBudget().getTaCost());
+        snapshotScenario.setReaderCost(originalScenario.getBudget().getReaderCost());
+        snapshotScenario = budgetScenarioRepository.save(snapshotScenario);
+
+        // clone existing SectionGroupsCosts, LineItems. clone comments?
+        List<SectionGroupCost> sectionGroupCostList = snapshotScenario.getSectionGroupCosts();
+        for (SectionGroupCost originalSectionGroupCost : originalScenario.getSectionGroupCosts()) {
+            SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, snapshotScenario);
+            sectionGroupCostList.add(sectionGroupCost);
+        }
+        snapshotScenario.setSectionGroupCosts(sectionGroupCostList);
+
+        List<LineItem> lineItemList = snapshotScenario.getLineItems();
+        lineItemList.addAll(lineItemService.duplicateFunds(snapshotScenario, originalScenario));
+        snapshotScenario.setLineItems(lineItemList);
+
+        // clone InstructorCost, InstructorTypeCost with snapshotScenarioId
+        instructorCostService.snapshotInstructorCosts(snapshotScenario, originalScenario);
+        instructorTypeCostService.snapshotInstructorTypeCosts(snapshotScenario, originalScenario);
+
+        return budgetScenarioRepository.save(snapshotScenario);
     }
 
     @Override

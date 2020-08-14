@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.services;
 
 import edu.ucdavis.dss.ipa.entities.Budget;
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.InstructorCost;
 import org.springframework.validation.annotation.Validated;
 
@@ -25,4 +26,6 @@ public interface InstructorCostService {
     void removeAssociationByInstructorTypeId(long instructorTypeId);
 
     List<InstructorCost> findByWorkgroupIdAndYear(long workgroupId, long year);
+
+    List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
 }

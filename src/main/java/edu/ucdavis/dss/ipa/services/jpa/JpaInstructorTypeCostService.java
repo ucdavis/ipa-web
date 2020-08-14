@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeCostRepository;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,5 +72,25 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Override
     public List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return this.instructorTypeCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
+
+    @Override
+    public List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+        List<InstructorTypeCost> originalInstructorTypeCostList = originalBudgetScenario.getBudget().getInstructorTypeCosts();
+        List<InstructorTypeCost> snapshotInstructorTypeCostList = new ArrayList<>();
+
+        for (InstructorTypeCost originalInstructorTypeCost : originalInstructorTypeCostList) {
+            InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
+
+            instructorTypeCost.setCost(originalInstructorTypeCost.getCost());
+            instructorTypeCost.setInstructorType(originalInstructorTypeCost.getInstructorType());
+            instructorTypeCost.setBudgetScenarioId(snapshotBudgetScenario.getId());
+
+            InstructorTypeCost snapshotInstructorCost = instructorTypeCostRepository.save(instructorTypeCost);
+
+            snapshotInstructorTypeCostList.add(snapshotInstructorCost);
+        }
+
+        return snapshotInstructorTypeCostList;
     }
 }
