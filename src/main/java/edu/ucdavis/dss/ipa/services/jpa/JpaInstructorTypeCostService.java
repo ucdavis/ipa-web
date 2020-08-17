@@ -96,4 +96,9 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
 
         return snapshotInstructorTypeCostList;
     }
+
+    @Override
+    public List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification) {
+        return instructorTypeCostRepository.findByBudgetScenarioId(budgetScenarioIdentification);
+    }
 }

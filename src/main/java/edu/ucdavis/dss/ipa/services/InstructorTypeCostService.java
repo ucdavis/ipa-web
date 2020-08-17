@@ -21,4 +21,6 @@ public interface InstructorTypeCostService {
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
     List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
+
+    List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification);
 }
