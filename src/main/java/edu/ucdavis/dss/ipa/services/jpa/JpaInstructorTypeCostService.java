@@ -80,6 +80,8 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         List<InstructorTypeCost> snapshotInstructorTypeCostList = new ArrayList<>();
 
         for (InstructorTypeCost originalInstructorTypeCost : originalInstructorTypeCostList) {
+            if (originalInstructorTypeCost.getBudgetScenarioId() != null) { continue; }
+
             InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
 
             instructorTypeCost.setBudget(originalBudgetScenario.getBudget());
