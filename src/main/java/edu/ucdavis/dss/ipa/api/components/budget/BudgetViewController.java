@@ -5,35 +5,10 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.WorkgroupIdBudgetScenarioId;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.BudgetService;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemCommentService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +31,7 @@ public class BudgetViewController {
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject SectionGroupCostService sectionGroupCostService;
+    @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
     @Inject InstructorCostService instructorCostService;
     @Inject UserService userService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
@@ -496,5 +472,12 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/downloadBudgetComparisonExcel", method = RequestMethod.POST)
     public BudgetComparisonExcelView downloadBudgetComparisonsExcel(@RequestBody List<List<BudgetScenario>>  budgetComparisonList, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         return budgetViewFactory.createBudgetComparisonExcelView(budgetComparisonList);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public SectionGroupCostInstructor addSectionGroupCostInstructor(@RequestBody SectionGroupCostInstructor sectionGroupCostInstructor, @PathVariable long sectionGroupCostId) {
+        sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+        return sectionGroupCostInstructorService.create(sectionGroupCostInstructor);
     }
 }
