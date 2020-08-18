@@ -8,11 +8,14 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostInstructorDeserializer;
 
 
 @Entity
 @Table(name = "SectionGroupCostInstructors")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonDeserialize(using = SectionGroupCostInstructorDeserializer.class)
 public class SectionGroupCostInstructor extends BaseEntity {
     private long id;
     private Instructor instructor;
