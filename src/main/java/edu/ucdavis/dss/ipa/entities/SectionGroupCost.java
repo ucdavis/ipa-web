@@ -31,6 +31,7 @@ public class SectionGroupCost extends BaseEntity {
     private BigDecimal cost;
     private Float taCount, readerCount, unitsHigh, unitsLow, unitsVariable;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
+    private List<SectionGroupCostInstructor> sectionGroupCostInstructors = new ArrayList<>();
     private InstructorType instructorType;
 	private boolean disabled;
 
@@ -283,4 +284,16 @@ public class SectionGroupCost extends BaseEntity {
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
 	}
+
+    @JsonProperty("sectionGroupCostInstructors")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "SectionGroupCostId")
+    @JsonDeserialize
+    public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
+        return sectionGroupCostInstructors;
+    }
+
+    public void setSectionGroupCostInstructors(List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
+    }
 }
