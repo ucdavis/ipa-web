@@ -170,10 +170,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
-        List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
+        List<InstructorCost> instructorCosts = budgetScenario.getIsSnapshot() ? instructorCostService.findByBudgetScenarioId(budgetScenario.getId()) : budget.getInstructorCosts();
+        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsSnapshot() ? instructorTypeCostService.findByBudgetScenarioId(budgetScenario.getId()) : instructorTypeCostService.findByBudgetId(budget.getId());
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
