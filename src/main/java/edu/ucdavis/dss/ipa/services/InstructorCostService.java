@@ -30,4 +30,6 @@ public interface InstructorCostService {
     List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
 
     InstructorCost findByInstructorIdAndBudgetScenarioId(Long instructorId, Long budgetScenarioId);
+
+    List<InstructorCost> findByBudgetScenarioId(Long budgetScenarioId);
 }

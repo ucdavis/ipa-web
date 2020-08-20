@@ -130,8 +130,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItem> lineItems = budgetScenario.getLineItems();
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
+        List<InstructorCost> instructorCosts = instructorCostService.findByBudgetScenarioId(budgetScenario.getId());
+        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetScenarioId(budgetScenario.getId());
 
-        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments);
+        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments, instructorCosts, instructorTypeCosts);
 
         return budgetScenarioView;
     }

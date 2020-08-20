@@ -31,4 +31,6 @@ public interface InstructorCostRepository extends CrudRepository<InstructorCost,
     List<InstructorCost> findByWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
 
     InstructorCost findByInstructorIdAndBudgetScenarioId(Long instructorId, Long budgetScenarioId);
+
+    List<InstructorCost> findByBudgetScenarioId(Long budgetScenarioId);
 }
