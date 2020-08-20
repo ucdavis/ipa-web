@@ -33,4 +33,26 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
         return sectionGroupCostInstructor;
     }
 
+    @Override
+    public SectionGroupCostInstructor findById(long sectionGroupCostInstructorId) {
+        return this.sectionGroupCostInstructorRepository.findById(sectionGroupCostInstructorId);
+    }
+
+    @Override
+    public SectionGroupCostInstructor update(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
+        SectionGroupCostInstructor originalSectionGroupCostInstructor = this.findById(sectionGroupCostInstructorDTO.getId());
+
+        if(originalSectionGroupCostInstructor == null) {
+            return null;
+        }
+
+        originalSectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostInstructorDTO.getSectionGroupCost());
+        originalSectionGroupCostInstructor.setInstructor(sectionGroupCostInstructorDTO.getInstructor());
+        originalSectionGroupCostInstructor.setCost(sectionGroupCostInstructorDTO.getCost());
+        return this.save(originalSectionGroupCostInstructor);
+    }
+
+    private SectionGroupCostInstructor save(SectionGroupCostInstructor sectionGroupCostInstructor) {
+        return this.sectionGroupCostInstructorRepository.save(sectionGroupCostInstructor);
+    }
 }

@@ -480,4 +480,22 @@ public class BudgetViewController {
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
         return sectionGroupCostInstructorService.create(sectionGroupCostInstructor);
     }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public SectionGroupCostInstructor updateSectionGroupCost(@PathVariable long sectionGroupCostId,
+                                                   @PathVariable long sectionGroupCostInstructorId,
+                                                   @RequestBody SectionGroupCostInstructor sectionGroupCostInstructor,
+                                                   HttpServletResponse httpResponse) {
+        // Ensure valid params
+        SectionGroupCostInstructor originalSectionGroupCostInstructor = sectionGroupCostInstructorService.findById(sectionGroupCostInstructorId);
+
+        if (originalSectionGroupCostInstructor == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+        return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
+    }
 }
