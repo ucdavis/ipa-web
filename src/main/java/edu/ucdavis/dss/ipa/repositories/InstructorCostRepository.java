@@ -15,7 +15,7 @@ public interface InstructorCostRepository extends CrudRepository<InstructorCost,
 
     List<InstructorCost> findByBudgetId(Long budgetId);
 
-    InstructorCost findByInstructorIdAndBudgetId(long id, long id1);
+    InstructorCost findByInstructorIdAndBudgetIdAndBudgetScenarioIdIsNull(long id, long id1);
 
     @Modifying
     @Query("UPDATE InstructorCost ic SET ic.instructorTypeCost = NULL WHERE ic.instructorTypeCost.id = :instructorTypeCostId")

@@ -24,7 +24,7 @@ public class JpaInstructorCostService implements InstructorCostService {
 
     @Override
     public InstructorCost findByInstructorIdAndBudgetId(Long instructorId, Long budgetId) {
-        return instructorCostRepository.findByInstructorIdAndBudgetId(instructorId, budgetId);
+        return instructorCostRepository.findByInstructorIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorId, budgetId);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class JpaInstructorCostService implements InstructorCostService {
 
     @Override
     public InstructorCost findOrCreate(InstructorCost instructorCostDto) {
-        InstructorCost instructorCost = this.instructorCostRepository.findByInstructorIdAndBudgetId(instructorCostDto.getInstructor().getId(), instructorCostDto.getBudget().getId());
+        InstructorCost instructorCost = this.instructorCostRepository.findByInstructorIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorCostDto.getInstructor().getId(), instructorCostDto.getBudget().getId());
 
         if (instructorCost != null) {
             return instructorCost;
