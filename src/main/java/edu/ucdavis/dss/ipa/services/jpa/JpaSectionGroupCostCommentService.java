@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostCommentRepository;
 import edu.ucdavis.dss.ipa.services.*;
-import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -34,15 +33,22 @@ public class JpaSectionGroupCostCommentService implements SectionGroupCostCommen
     }
 
     @Override
-    public SectionGroupCostComment createDuplicate(SectionGroupCostComment originalSectionGroupCostComment, SectionGroupCost newSectionGroupCost) {
-        SectionGroupCostComment sectionGroupCostCommentCopy = new SectionGroupCostComment();
+    public List<SectionGroupCostComment> copyComments(SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost) {
+        List<SectionGroupCostComment> originalSectionGroupCostComments = originalSectionGroupCost.getSectionGroupCostComments();
+        List<SectionGroupCostComment> newSectionGroupCostComments = newSectionGroupCost.getSectionGroupCostComments();
 
-        sectionGroupCostCommentCopy.setSectionGroupCost(newSectionGroupCost);
-        sectionGroupCostCommentCopy.setUser(originalSectionGroupCostComment.getUser());
-        sectionGroupCostCommentCopy.setAuthorName(originalSectionGroupCostComment.getAuthorName());
-        sectionGroupCostCommentCopy.setComment(originalSectionGroupCostComment.getComment());
+        for (SectionGroupCostComment originalSectionGroupCostComment : originalSectionGroupCostComments) {
+            SectionGroupCostComment newSectionGroupCostComment = new SectionGroupCostComment();
 
-        return sectionGroupCostCommentRepository.save(sectionGroupCostCommentCopy);
+            newSectionGroupCostComment.setSectionGroupCost(newSectionGroupCost);
+            newSectionGroupCostComment.setUser(originalSectionGroupCostComment.getUser());
+            newSectionGroupCostComment.setAuthorName(originalSectionGroupCostComment.getAuthorName());
+            newSectionGroupCostComment.setComment(originalSectionGroupCostComment.getComment());
+
+            newSectionGroupCostComments.add(sectionGroupCostCommentRepository.save(newSectionGroupCostComment));
+        }
+
+        return newSectionGroupCostComments;
     }
 
     @Override

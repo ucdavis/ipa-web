@@ -10,7 +10,7 @@ import java.util.List;
 public interface SectionGroupCostCommentService {
     SectionGroupCostComment create(SectionGroupCostComment sectionGroupCostCommentDTO);
 
-    SectionGroupCostComment createDuplicate(SectionGroupCostComment originalSectionGroupCostComment, SectionGroupCost newSectionGroupCost);
+    List<SectionGroupCostComment> copyComments(SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost);
 
     List<SectionGroupCostComment> findBySectionGroupCosts(List<SectionGroupCost> sectionGroupCosts);
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public interface LineItemCommentService {
     LineItemComment create(LineItemComment lineItemCommentDTO);
 
-    LineItemComment createDuplicate(LineItemComment originalLineItemComment, LineItem newLineItem);
+    List<LineItemComment> copyComments(LineItem originalLineItem, LineItem newLineItem);
 
     List<LineItemComment> findByLineItems(List<LineItem> lineItems);
 }

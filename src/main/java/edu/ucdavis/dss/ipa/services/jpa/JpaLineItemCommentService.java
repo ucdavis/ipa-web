@@ -33,15 +33,22 @@ public class JpaLineItemCommentService implements LineItemCommentService {
     }
 
     @Override
-    public LineItemComment createDuplicate(LineItemComment originalLineItemComment, LineItem newLineItem) {
-        LineItemComment newLineItemComment = new LineItemComment();
+    public List<LineItemComment> copyComments(LineItem originalLineItem, LineItem newLineItem) {
+        List<LineItemComment> originalLineItemComments = originalLineItem.getLineItemComments();
+        List<LineItemComment> newLineItemComments = newLineItem.getLineItemComments();
 
-        newLineItemComment.setLineItem(newLineItem);
-        newLineItemComment.setUser(originalLineItemComment.getUser());
-        newLineItemComment.setAuthorName(originalLineItemComment.getAuthorName());
-        newLineItemComment.setComment(originalLineItemComment.getComment());
+        for (LineItemComment originalLineItemComment : originalLineItemComments) {
+            LineItemComment newLineItemComment = new LineItemComment();
 
-        return lineItemCommentRepository.save(newLineItemComment);
+            newLineItemComment.setLineItem(newLineItem);
+            newLineItemComment.setUser(originalLineItemComment.getUser());
+            newLineItemComment.setAuthorName(originalLineItemComment.getAuthorName());
+            newLineItemComment.setComment(originalLineItemComment.getComment());
+
+            newLineItemComments.add(lineItemCommentRepository.save(newLineItemComment));
+        }
+
+        return newLineItemComments;
     }
 
     @Override

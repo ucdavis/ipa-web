@@ -151,7 +151,7 @@ public class JpaInstructorCostService implements InstructorCostService {
     }
 
     @Override
-    public List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+    public List<InstructorCost> copyInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
         List<InstructorCost> originalInstructorCostList = originalBudgetScenario.getBudget().getInstructorCosts();
         List<InstructorCost> snapshotInstructorCostList = new ArrayList<>();
 

@@ -27,7 +27,7 @@ public interface InstructorCostService {
 
     List<InstructorCost> findByWorkgroupIdAndYear(long workgroupId, long year);
 
-    List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
+    List<InstructorCost> copyInstructorCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
 
     InstructorCost findByInstructorIdAndBudgetScenarioId(Long instructorId, Long budgetScenarioId);
 
