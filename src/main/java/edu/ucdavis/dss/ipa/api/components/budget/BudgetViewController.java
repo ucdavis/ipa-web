@@ -157,7 +157,6 @@ public class BudgetViewController {
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        // create snapshot
         BudgetScenario budgetScenarioSnapshot = budgetScenarioService.createSnapshot(budgetScenarioId);
 
         return budgetViewFactory.createBudgetScenarioView(budgetScenarioSnapshot);

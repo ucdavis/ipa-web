@@ -178,7 +178,6 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     public BudgetScenario createSnapshot(long scenarioId) {
-        // create snapshot from existing scenario
         BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalScenario == null) { return null; }
