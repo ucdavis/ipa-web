@@ -49,7 +49,7 @@ public class InstructorTypeCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BudgetId", nullable = true)
+    @JoinColumn(name = "BudgetId")
     @JsonIgnore
     public Budget getBudget() {
         return budget;
