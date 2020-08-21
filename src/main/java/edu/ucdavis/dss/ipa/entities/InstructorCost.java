@@ -129,4 +129,14 @@ public class InstructorCost extends BaseEntity {
     public void setBudgetScenario(BudgetScenario budgetScenario) {
         this.budgetScenario = budgetScenario;
     }
+
+    @JsonProperty("budgetScenarioId")
+    @Transient
+    public long getBudgetScenarioIdentification() {
+        if(budgetScenario != null) {
+            return budgetScenario.getId();
+        } else {
+            return 0;
+        }
+    }
 }
