@@ -27,6 +27,8 @@ public class BudgetScenario extends BaseEntity {
     private String name, activeTermsBlob;
     private List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
     private List<LineItem> lineItems = new ArrayList<>();
+    private List<InstructorCost> instructorCosts = new ArrayList<>();
+    private List<InstructorTypeCost> instructorTypeCosts = new ArrayList<>();
     private Boolean fromLiveData;
     private Boolean isSnapshot = false;
     private Float taCost, readerCost;
@@ -83,6 +85,26 @@ public class BudgetScenario extends BaseEntity {
 
     public void setLineItems(List<LineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budgetScenario", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "budgetScenario", cascade = {CascadeType.ALL})
+    @JsonIgnore
+    public List<InstructorTypeCost> getInstructorTypeCosts() {
+        return instructorTypeCosts;
+    }
+
+    public void setInstructorTypeCosts(List<InstructorTypeCost> instructorTypeCosts) {
+        this.instructorTypeCosts = instructorTypeCosts;
     }
 
     /**

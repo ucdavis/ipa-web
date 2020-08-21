@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorCostRepository;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
@@ -155,7 +156,7 @@ public class JpaInstructorCostService implements InstructorCostService {
         List<InstructorCost> snapshotInstructorCostList = new ArrayList<>();
 
         for (InstructorCost originalInstructorCost : originalInstructorCostList) {
-            if (originalInstructorCost.getBudgetScenarioId() != null) { continue; }
+            if (originalInstructorCost.getBudgetScenario() != null) { continue; }
 
             InstructorCost instructorCost = new InstructorCost();
 
@@ -164,7 +165,7 @@ public class JpaInstructorCostService implements InstructorCostService {
             instructorCost.setCost(originalInstructorCost.getCost());
             instructorCost.setLecturer(originalInstructorCost.getLecturer());
             instructorCost.setInstructorTypeCost(originalInstructorCost.getInstructorTypeCost());
-            instructorCost.setBudgetScenarioId(snapshotBudgetScenario.getId());
+            instructorCost.setBudgetScenario(snapshotBudgetScenario);
 
             InstructorCost snapshotInstructorCost = this.instructorCostRepository.save(instructorCost);
 

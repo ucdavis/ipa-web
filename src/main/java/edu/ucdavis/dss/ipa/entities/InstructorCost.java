@@ -23,7 +23,7 @@ public class InstructorCost extends BaseEntity {
     private BigDecimal cost;
     private Boolean lecturer = false;
     private InstructorTypeCost instructorTypeCost;
-    private Long budgetScenarioId;
+    private BudgetScenario budgetScenario;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -119,11 +119,14 @@ public class InstructorCost extends BaseEntity {
         }
     }
 
-    public Long getBudgetScenarioId() {
-        return budgetScenarioId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BudgetScenarioId")
+    @JsonIgnore
+    public BudgetScenario getBudgetScenario() {
+        return budgetScenario;
     }
 
-    public void setBudgetScenarioId(Long budgetScenarioId) {
-        this.budgetScenarioId = budgetScenarioId;
+    public void setBudgetScenario(BudgetScenario budgetScenario) {
+        this.budgetScenario = budgetScenario;
     }
 }
