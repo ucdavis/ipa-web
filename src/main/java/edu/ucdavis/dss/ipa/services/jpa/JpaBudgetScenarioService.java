@@ -3,14 +3,12 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.Budget;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
+import edu.ucdavis.dss.ipa.entities.LineItemComment;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
@@ -21,8 +19,10 @@ import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
 import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
+import edu.ucdavis.dss.ipa.services.LineItemCommentService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
@@ -50,10 +50,10 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject LineItemService lineItemService;
     @Inject CourseService courseService;
     @Inject LineItemCategoryService lineItemCategoryService;
-    @Inject BudgetService budgetService;
-    @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject InstructorCostService instructorCostService;
     @Inject InstructorTypeCostService instructorTypeCostService;
+    @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
+    @Inject LineItemCommentService lineItemCommentService;
 
     @Override
     @Transactional
@@ -195,16 +195,32 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         snapshotScenario.setReaderCost(originalScenario.getBudget().getReaderCost());
         snapshotScenario = budgetScenarioRepository.save(snapshotScenario);
 
-        // clone existing SectionGroupsCosts, LineItems. clone comments?
+        // clone existing SectionGroupsCosts, LineItems, and corresponding comments
         List<SectionGroupCost> sectionGroupCostList = snapshotScenario.getSectionGroupCosts();
         for (SectionGroupCost originalSectionGroupCost : originalScenario.getSectionGroupCosts()) {
-            SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, snapshotScenario);
-            sectionGroupCostList.add(sectionGroupCost);
+            SectionGroupCost newSectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, snapshotScenario);
+
+            sectionGroupCostList.add(newSectionGroupCost);
+
+            List<SectionGroupCostComment> originalSectionGroupCostComments = originalSectionGroupCost.getSectionGroupCostComments();
+
+            List<SectionGroupCostComment> newSectionGroupCostComments = newSectionGroupCost.getSectionGroupCostComments();
+            for (SectionGroupCostComment originalSectionGroupCostComment : originalSectionGroupCostComments) {
+                newSectionGroupCostComments.add(sectionGroupCostCommentService.createDuplicate(originalSectionGroupCostComment, newSectionGroupCost));
+            }
         }
         snapshotScenario.setSectionGroupCosts(sectionGroupCostList);
 
         List<LineItem> lineItemList = snapshotScenario.getLineItems();
-        lineItemList.addAll(lineItemService.duplicateFunds(snapshotScenario, originalScenario));
+        for (LineItem originalLineItem : originalScenario.getLineItems()) {
+            LineItem newLineItem = lineItemService.createDuplicate(originalLineItem, snapshotScenario);
+            lineItemList.add(newLineItem);
+
+            List<LineItemComment> newLineItemComments = newLineItem.getLineItemComments();
+            for (LineItemComment originalLineItemComment : originalLineItem.getLineItemComments()) {
+                newLineItemComments.add(lineItemCommentService.createDuplicate(originalLineItemComment, newLineItem));
+            }
+        }
         snapshotScenario.setLineItems(lineItemList);
 
         // clone InstructorCost, InstructorTypeCost with snapshotScenarioId

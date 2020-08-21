@@ -1,9 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.repositories.LineItemCommentRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostCommentRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -31,6 +31,18 @@ public class JpaSectionGroupCostCommentService implements SectionGroupCostCommen
         sectionGroupCostComment = this.sectionGroupCostCommentRepository.save(sectionGroupCostComment);
 
         return sectionGroupCostComment;
+    }
+
+    @Override
+    public SectionGroupCostComment createDuplicate(SectionGroupCostComment originalSectionGroupCostComment, SectionGroupCost newSectionGroupCost) {
+        SectionGroupCostComment sectionGroupCostCommentCopy = new SectionGroupCostComment();
+
+        sectionGroupCostCommentCopy.setSectionGroupCost(newSectionGroupCost);
+        sectionGroupCostCommentCopy.setUser(originalSectionGroupCostComment.getUser());
+        sectionGroupCostCommentCopy.setAuthorName(originalSectionGroupCostComment.getAuthorName());
+        sectionGroupCostCommentCopy.setComment(originalSectionGroupCostComment.getComment());
+
+        return sectionGroupCostCommentRepository.save(sectionGroupCostCommentCopy);
     }
 
     @Override

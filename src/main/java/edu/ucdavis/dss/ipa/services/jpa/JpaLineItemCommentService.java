@@ -33,6 +33,18 @@ public class JpaLineItemCommentService implements LineItemCommentService {
     }
 
     @Override
+    public LineItemComment createDuplicate(LineItemComment originalLineItemComment, LineItem newLineItem) {
+        LineItemComment newLineItemComment = new LineItemComment();
+
+        newLineItemComment.setLineItem(newLineItem);
+        newLineItemComment.setUser(originalLineItemComment.getUser());
+        newLineItemComment.setAuthorName(originalLineItemComment.getAuthorName());
+        newLineItemComment.setComment(originalLineItemComment.getComment());
+
+        return lineItemCommentRepository.save(newLineItemComment);
+    }
+
+    @Override
     public List<LineItemComment> findByLineItems(List<LineItem> lineItems) {
         List<LineItemComment> lineItemComments = new ArrayList<>();
 
