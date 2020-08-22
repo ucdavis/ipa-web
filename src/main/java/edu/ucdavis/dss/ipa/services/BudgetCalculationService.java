@@ -255,15 +255,8 @@ public class BudgetCalculationService {
                 } else {
                     final long instructorTypeIdFinal = instructorTypeId;
                     InstructorTypeCost instructorTypeCost = budgetScenario.getIsSnapshot()
-                        ? instructorTypeCostService
-                        .findByBudgetScenarioId(sectionGroupCost.getBudgetScenarioIdentification())
-                        .stream()
-                        .filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal)
-                        .findFirst()
-                        .orElse(null)
-                        : instructorTypeCostService.findByBudgetId(budget.getId()).stream()
-                        .filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal)
-                        .findFirst().orElse(null);
+                        ? instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeIdFinal, budgetScenario.getId())
+                        : instructorTypeCostService.findByInstructorTypeIdAndBudgetId(instructorTypeIdFinal, budget.getId());
                     if (instructorTypeCost != null && instructorTypeCost.getCost() != null) {
                         return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                     }
@@ -272,17 +265,8 @@ public class BudgetCalculationService {
                 // unnamed instructor type assignment
                 final long instructorTypeIdFinal = instructorTypeId;
                 InstructorTypeCost instructorTypeCost = budgetScenario.getIsSnapshot()
-                    ? instructorTypeCostService
-                    .findByBudgetScenarioId(sectionGroupCost.getBudgetScenarioIdentification())
-                    .stream()
-                    .filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal)
-                    .findFirst()
-                    .orElse(null)
-                    : instructorTypeCostService.findByBudgetId(budget.getId())
-                    .stream()
-                    .filter(itc -> itc.getInstructorTypeIdIfExists() == instructorTypeIdFinal)
-                    .findFirst()
-                    .orElse(null);
+                    ? instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeIdFinal, budgetScenario.getId())
+                    : instructorTypeCostService.findByInstructorTypeIdAndBudgetId(instructorTypeIdFinal, budget.getId());
                 if (instructorTypeCost != null) {
                     return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }

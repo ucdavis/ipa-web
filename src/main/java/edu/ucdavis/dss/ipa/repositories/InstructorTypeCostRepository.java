@@ -13,7 +13,7 @@ public interface InstructorTypeCostRepository extends CrudRepository<InstructorT
 
     void deleteById(long instructorTypeCostId);
 
-    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+    InstructorTypeCost findByInstructorTypeIdAndBudgetIdAndBudgetScenarioIdIsNull(long instructorTypeId, long budgetId);
 
     List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
@@ -25,6 +25,8 @@ public interface InstructorTypeCostRepository extends CrudRepository<InstructorT
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
+
+    InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeId, long budgetScenarioId);
 
     List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification);
 }

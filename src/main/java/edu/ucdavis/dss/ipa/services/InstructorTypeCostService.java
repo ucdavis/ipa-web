@@ -20,7 +20,11 @@ public interface InstructorTypeCostService {
 
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
+    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+
     List<InstructorTypeCost> copyInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
+
+    InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeId, long budgetScenarioId);
 
     List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification);
 }

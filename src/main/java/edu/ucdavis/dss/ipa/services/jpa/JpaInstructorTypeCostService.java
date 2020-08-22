@@ -60,7 +60,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
-        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
+        InstructorTypeCost existingInstructorTypeCost = this.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
 
         if (existingInstructorTypeCost != null) {
             return existingInstructorTypeCost;
@@ -72,6 +72,11 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Override
     public List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return this.instructorTypeCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
+
+    @Override
+    public InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId) {
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorTypeId, budgetId);
     }
 
     @Override
@@ -95,6 +100,11 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
         }
 
         return snapshotInstructorTypeCostList;
+    }
+
+    @Override
+    public InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeCostId, long budgetScenarioId) {
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeCostId, budgetScenarioId);
     }
 
     @Override
