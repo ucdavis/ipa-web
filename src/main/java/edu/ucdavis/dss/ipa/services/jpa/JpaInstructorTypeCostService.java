@@ -76,11 +76,11 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
 
     @Override
     public InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId) {
-        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorTypeId, budgetId);
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeId, budgetId);
     }
 
     @Override
-    public List<InstructorTypeCost> copyInstructorTypeCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+    public List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
         List<InstructorTypeCost> originalInstructorTypeCostList = originalBudgetScenario.getBudget().getInstructorTypeCosts();
         List<InstructorTypeCost> snapshotInstructorTypeCostList = new ArrayList<>();
 
@@ -88,8 +88,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             if (originalInstructorTypeCost.getBudgetScenario() != null) { continue; }
 
             InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
-
-            instructorTypeCost.setBudget(originalBudgetScenario.getBudget());
             instructorTypeCost.setCost(originalInstructorTypeCost.getCost());
             instructorTypeCost.setInstructorType(originalInstructorTypeCost.getInstructorType());
             instructorTypeCost.setBudgetScenario(snapshotBudgetScenario);

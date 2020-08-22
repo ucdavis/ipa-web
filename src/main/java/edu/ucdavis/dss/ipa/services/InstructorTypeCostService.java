@@ -22,7 +22,7 @@ public interface InstructorTypeCostService {
 
     InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
 
-    List<InstructorTypeCost> copyInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
+    List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
 
     InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeId, long budgetScenarioId);
 

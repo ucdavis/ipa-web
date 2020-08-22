@@ -5,7 +5,9 @@ ALTER TABLE `BudgetScenarios`
     MODIFY `Name` VARCHAR(100);
 
 ALTER TABLE `InstructorCosts`
-    ADD COLUMN `BudgetScenarioId` INT(11) NULL;
+    ADD COLUMN `BudgetScenarioId` INT(11) NULL AFTER `BudgetId`,
+    MODIFY `BudgetId` INT(11) NULL;
 
 ALTER TABLE `InstructorTypeCosts`
-    ADD COLUMN `BudgetScenarioId` INT(11) NULL;
+    ADD COLUMN `BudgetScenarioId` INT(11) NULL AFTER `BudgetId`,
+    MODIFY `BudgetId` INT(11) NULL;

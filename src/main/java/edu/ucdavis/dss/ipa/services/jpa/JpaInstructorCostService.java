@@ -24,7 +24,7 @@ public class JpaInstructorCostService implements InstructorCostService {
 
     @Override
     public InstructorCost findByInstructorIdAndBudgetId(Long instructorId, Long budgetId) {
-        return instructorCostRepository.findByInstructorIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorId, budgetId);
+        return instructorCostRepository.findByInstructorIdAndBudgetId(instructorId, budgetId);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class JpaInstructorCostService implements InstructorCostService {
 
     @Override
     public InstructorCost findOrCreate(InstructorCost instructorCostDto) {
-        InstructorCost instructorCost = this.instructorCostRepository.findByInstructorIdAndBudgetIdAndBudgetScenarioIdIsNull(instructorCostDto.getInstructor().getId(), instructorCostDto.getBudget().getId());
+        InstructorCost instructorCost = this.instructorCostRepository.findByInstructorIdAndBudgetId(instructorCostDto.getInstructor().getId(), instructorCostDto.getBudget().getId());
 
         if (instructorCost != null) {
             return instructorCost;
@@ -151,7 +151,7 @@ public class JpaInstructorCostService implements InstructorCostService {
     }
 
     @Override
-    public List<InstructorCost> copyInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+    public List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
         List<InstructorCost> originalInstructorCostList = originalBudgetScenario.getBudget().getInstructorCosts();
         List<InstructorCost> snapshotInstructorCostList = new ArrayList<>();
 
@@ -159,8 +159,6 @@ public class JpaInstructorCostService implements InstructorCostService {
             if (originalInstructorCost.getBudgetScenario() != null) { continue; }
 
             InstructorCost instructorCost = new InstructorCost();
-
-            instructorCost.setBudget(originalInstructorCost.getBudget());
             instructorCost.setInstructor(originalInstructorCost.getInstructor());
             instructorCost.setCost(originalInstructorCost.getCost());
             instructorCost.setLecturer(originalInstructorCost.getLecturer());
