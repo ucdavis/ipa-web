@@ -22,8 +22,9 @@ public interface InstructorCostRepository extends CrudRepository<InstructorCost,
     void removeAssociationByInstructorTypeId(@Param("instructorTypeCost") long instructorTypeCostId);
 
     @Query( " SELECT DISTINCT ic" +
-    " FROM Schedule s, Workgroup w, Budget b, InstructorCost ic" +
-    " WHERE ic.budget = b" +
+    " FROM Schedule s, Workgroup w, Budget b, BudgetScenario bs, InstructorCost ic" +
+    " WHERE (ic.budget = b OR ic.budgetScenario = bs)" +
+    " AND bs.budget = b" +
     " AND b.schedule = s" +
     " AND s.workgroup = w" +
     " AND w.id = :workgroupId" +
