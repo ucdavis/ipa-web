@@ -2,7 +2,9 @@ package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 
+import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,6 +25,10 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class BudgetExcelView extends AbstractXlsxView {
     private List<BudgetScenarioExcelView> budgetScenarioExcelViews;
+
+    private BudgetCalculationService getBudgetCalculationService() {
+        return SpringContext.getBean(BudgetCalculationService.class);
+    }
     public BudgetExcelView (List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
         this.budgetScenarioExcelViews = budgetScenarioExcelViews;
     }
@@ -80,13 +86,12 @@ public class BudgetExcelView extends AbstractXlsxView {
             Float baseTaCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
             Float baseReaderCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
 
-
             // Create Schedule Cost sheet
             for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * baseTaCost;
                 Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * baseReaderCost;
                 Float supportCost = taCost + readerCost;
-                Float sectionCost = sectionGroupCost.getCost() == null ? 0.0F : sectionGroupCost.getCost().floatValue();
+                Float instructorCost = getBudgetCalculationService().calculateInstructorCost(budgetScenarioExcelView.budget, budgetScenarioExcelView.budgetScenario, sectionGroupCost, budgetScenarioExcelView.workgroup).floatValue();
                 Long currentEnrollment = null;
                 if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()) != null){
                     if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()) != null){
@@ -117,8 +122,8 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 taCost,
                                 readerCost,
                                 supportCost,
-                                sectionCost,
-                                supportCost + sectionCost
+                                instructorCost,
+                                supportCost + instructorCost
                         )
                 );
             }

@@ -229,7 +229,7 @@ public class BudgetCalculationService {
         return 0;
     };
 
-    private BigDecimal calculateInstructorCost(Budget budget, BudgetScenario budgetScenario, SectionGroupCost sectionGroupCost,
+    public BigDecimal calculateInstructorCost(Budget budget, BudgetScenario budgetScenario, SectionGroupCost sectionGroupCost,
                                                Workgroup workgroup) {
         // 1. use sectionGroupCost.getCost if explicitly set
         // 2. use instructorCost if available ("instructor salary")
@@ -244,7 +244,7 @@ public class BudgetCalculationService {
                 InstructorCost instructorCost = budgetScenario.getIsSnapshot()
                     ? instructorCostService
                     .findByInstructorIdAndBudgetScenarioId(sectionGroupCost.getInstructor().getId(),
-                        sectionGroupCost.getBudgetScenarioIdentification())
+                        budgetScenario.getId())
                     : instructorCostService
                     .findByInstructorIdAndBudgetId(sectionGroupCost.getInstructor().getId(),
                         budget.getId());
