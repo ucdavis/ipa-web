@@ -210,8 +210,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         }
         snapshotScenario.setLineItems(lineItemList);
 
-        instructorCostService.copyInstructorCosts(snapshotScenario, originalScenario);
-        instructorTypeCostService.copyInstructorTypeCosts(snapshotScenario, originalScenario);
+        instructorCostService.snapshotInstructorCosts(snapshotScenario, originalScenario);
+        instructorTypeCostService.snapshotInstructorTypeCosts(snapshotScenario, originalScenario);
 
         return budgetScenarioRepository.save(snapshotScenario);
     }
