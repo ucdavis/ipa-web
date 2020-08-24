@@ -36,6 +36,10 @@ public class SectionGroupCostInstructorDeserializer extends JsonDeserializer<Obj
             sectionGroupCostInstructor.setCost(node.get("cost").decimalValue());
         }
 
+        if (node.has("reason")) {
+            sectionGroupCostInstructor.setReason(node.get("reason").textValue());
+        }
+
         return sectionGroupCostInstructor;
     }
 }

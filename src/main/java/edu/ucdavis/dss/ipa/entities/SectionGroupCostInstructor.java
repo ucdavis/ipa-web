@@ -21,6 +21,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
     private Instructor instructor;
     private SectionGroupCost sectionGroupCost;
     private BigDecimal cost;
+    private String reason;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,6 +67,14 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     public void setCost(BigDecimal cost) {
         this.cost = cost;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 
