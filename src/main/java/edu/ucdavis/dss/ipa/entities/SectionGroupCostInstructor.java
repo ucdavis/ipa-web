@@ -88,4 +88,14 @@ public class SectionGroupCostInstructor extends BaseEntity {
             return 0;
         }
     }
+
+    @JsonProperty("instructorName")
+    @Transient
+    public String getInsturctorName() {
+        if(instructor != null) {
+            return instructor.getFullName();
+        } else {
+            return "";
+        }
+    }
 }
