@@ -64,6 +64,10 @@ public class JpaInstructorCostService implements InstructorCostService {
             return null;
         }
 
+        if (originalInstructorCost.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         originalInstructorCost.setCost(instructorCostDTO.getCost());
         originalInstructorCost.setInstructorTypeCost(instructorCostDTO.getInstructorTypeCost());
 

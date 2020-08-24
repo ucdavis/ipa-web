@@ -49,6 +49,10 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
+        if (originalInstructorType.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         originalInstructorType.setCost(newInstructorTypeCost.getCost());
 
         return this.instructorTypeCostRepository.save(originalInstructorType);

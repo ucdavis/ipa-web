@@ -61,6 +61,10 @@ public class JpaLineItemService implements LineItemService {
             return null;
         }
 
+        if (originalLineItem.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         originalLineItem.setDescription(lineItem.getDescription());
         originalLineItem.setAmount(lineItem.getAmount());
         originalLineItem.setDocumentNumber(lineItem.getDocumentNumber());
