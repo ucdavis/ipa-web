@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 

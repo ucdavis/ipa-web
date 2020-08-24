@@ -286,8 +286,7 @@ public class SectionGroupCost extends BaseEntity {
 	}
 
     @JsonProperty("sectionGroupCostInstructors")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "SectionGroupCostId")
+    @OneToMany(mappedBy = "sectionGroupCost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonDeserialize
     public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
         return sectionGroupCostInstructors;
@@ -295,5 +294,19 @@ public class SectionGroupCost extends BaseEntity {
 
     public void setSectionGroupCostInstructors(List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
         this.sectionGroupCostInstructors = sectionGroupCostInstructors;
+    }
+
+    @JsonProperty("isLiveData")
+    @Transient
+    public boolean isLiveData() {
+        if(budgetScenario != null){
+          if(budgetScenario.getFromLiveData()) {
+              return true;
+          } else {
+              return false;
+          }
+        } else{
+            return false;
+        }
     }
 }
