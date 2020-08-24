@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -239,5 +240,11 @@ public class BudgetScenario extends BaseEntity {
 
     public void setReaderCost(Float readerCost) {
         this.readerCost = readerCost;
+    }
+
+    @JsonProperty("creationDate")
+    @Transient
+    public Date getCreationDate() {
+        return createdAt;
     }
 }
