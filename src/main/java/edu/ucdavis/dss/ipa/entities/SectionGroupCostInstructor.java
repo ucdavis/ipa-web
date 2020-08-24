@@ -19,6 +19,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
     private long id;
     private Instructor instructor;
     private SectionGroupCost sectionGroupCost;
+    private TeachingAssignment teachingAssignment;
     private BigDecimal cost;
     private String reason;
 
@@ -46,6 +47,17 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     public void setSectionGroupCost(SectionGroupCost sectionGroupCost) {
         this.sectionGroupCost = sectionGroupCost;
+    }
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TeachingAssignmentId")
+    @JsonIgnore
+    public TeachingAssignment getTeachingAssignment() {
+        return teachingAssignment;
+    }
+
+    public void setTeachingAssignment(TeachingAssignment teachingAssignment) {
+        this.teachingAssignment = teachingAssignment;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

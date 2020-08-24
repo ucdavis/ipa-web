@@ -15,6 +15,8 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     InstructorService instructorService;
     @Inject
     SectionGroupCostService sectionGroupCostService;
+    @Inject
+    TeachingAssignmentService teachingAssignmentService;
 
     @Override
     public SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
@@ -22,7 +24,11 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
         Instructor instructor = instructorService.getOneById(sectionGroupCostInstructorDTO.getInstructor().getId());
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostInstructorDTO.getSectionGroupCost().getId());
-        // TODO do we need to use service?
+        if(sectionGroupCostInstructorDTO.getTeachingAssignment() != null){
+            TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(sectionGroupCostInstructorDTO.getTeachingAssignment().getId());
+            sectionGroupCostInstructor.setTeachingAssignment(teachingAssignment);
+        }
+
 
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCost);
         sectionGroupCostInstructor.setInstructor(instructor);

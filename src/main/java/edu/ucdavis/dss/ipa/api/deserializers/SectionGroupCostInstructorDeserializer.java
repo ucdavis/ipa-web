@@ -32,6 +32,12 @@ public class SectionGroupCostInstructorDeserializer extends JsonDeserializer<Obj
             sectionGroupCostInstructor.setInstructor(instructor);
         }
 
+        if (node.has("teachingAssignmentId")) {
+           TeachingAssignment teachingAssignment = new TeachingAssignment();
+           teachingAssignment.setId(node.get("teachingAssignmentId").longValue());
+           sectionGroupCostInstructor.setTeachingAssignment(teachingAssignment);
+        }
+
         if (node.has("cost")) {
             sectionGroupCostInstructor.setCost(node.get("cost").decimalValue());
         }
