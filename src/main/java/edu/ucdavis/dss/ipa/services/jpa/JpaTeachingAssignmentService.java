@@ -50,7 +50,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	@Override
 	@Transactional
 	public void delete(Long id) {
-		teachingAssignmentRepository.deleteById(id);
+		//teachingAssignmentRepository.deleteById(id);
+		teachingAssignmentRepository.delete(id);
 	}
 
 	@Override

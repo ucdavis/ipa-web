@@ -18,6 +18,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostInstructorDeseriali
 public class SectionGroupCostInstructor extends BaseEntity {
     private long id;
     private Instructor instructor;
+    private Instructor originalInstructor;
     private SectionGroupCost sectionGroupCost;
     private TeachingAssignment teachingAssignment;
     private BigDecimal cost;
@@ -49,7 +50,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
         this.sectionGroupCost = sectionGroupCost;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name = "TeachingAssignmentId")
     @JsonIgnore
     public TeachingAssignment getTeachingAssignment() {
@@ -70,6 +71,17 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OriginalInstructorId")
+    @JsonIgnore
+    public Instructor getOriginalInstructor() {
+        return originalInstructor;
+    }
+
+    public void setOriginalInstructor(Instructor originalInstructor) {
+        this.originalInstructor = originalInstructor;
     }
 
     public BigDecimal getCost() {
@@ -114,6 +126,16 @@ public class SectionGroupCostInstructor extends BaseEntity {
     public String getInsturctorName() {
         if(instructor != null) {
             return instructor.getFullName();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonProperty("originalInstructorName")
+    @Transient
+    public String getOriginalInsturctorName() {
+        if(originalInstructor != null) {
+            return originalInstructor.getFullName();
         } else {
             return "";
         }
