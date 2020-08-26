@@ -19,6 +19,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
     private long id;
     private Instructor instructor;
     private Instructor originalInstructor;
+    private InstructorType instructorType;
     private SectionGroupCost sectionGroupCost;
     private TeachingAssignment teachingAssignment;
     private BigDecimal cost;
@@ -70,6 +71,17 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
+    }
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstructorTypeId", nullable = true)
+    public InstructorType getInstructorType() {
+        return instructorType;
+    }
+
+    public void setInstructorType(InstructorType instructorType) {
+        this.instructorType = instructorType;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -137,6 +149,16 @@ public class SectionGroupCostInstructor extends BaseEntity {
             return originalInstructor.getFullName();
         } else {
             return "";
+        }
+    }
+
+    @JsonProperty("instructorTypeId")
+    @Transient
+    public Long getInstructorTypeId() {
+        if(instructorType != null) {
+            return instructorType.getId();
+        } else {
+            return null;
         }
     }
 }

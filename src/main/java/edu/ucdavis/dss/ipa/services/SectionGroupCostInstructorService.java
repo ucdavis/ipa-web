@@ -10,4 +10,6 @@ public interface SectionGroupCostInstructorService {
     SectionGroupCostInstructor findById(long sectionGroupCostInstructorId);
 
     SectionGroupCostInstructor update(SectionGroupCostInstructor sectionGroupCostInstructorDTO);
+
+    void delete(long sectionGroupCostInstructorId);
 }

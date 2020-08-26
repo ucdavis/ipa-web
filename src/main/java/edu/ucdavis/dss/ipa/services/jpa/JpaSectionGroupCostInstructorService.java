@@ -17,6 +17,8 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     SectionGroupCostService sectionGroupCostService;
     @Inject
     TeachingAssignmentService teachingAssignmentService;
+    @Inject
+    InstructorTypeService instructorTypeService;
 
     @Override
     public SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
@@ -24,6 +26,7 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
         Instructor instructor = instructorService.getOneById(sectionGroupCostInstructorDTO.getInstructor().getId());
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostInstructorDTO.getSectionGroupCost().getId());
+        InstructorType instructorType = instructorTypeService.findById(sectionGroupCostInstructorDTO.getInstructorType().getId());
         if(sectionGroupCostInstructorDTO.getTeachingAssignment() != null){
             TeachingAssignment teachingAssignment = teachingAssignmentService.findOneById(sectionGroupCostInstructorDTO.getTeachingAssignment().getId());
             sectionGroupCostInstructor.setTeachingAssignment(teachingAssignment);
@@ -32,6 +35,7 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCost);
         sectionGroupCostInstructor.setInstructor(instructor);
+        sectionGroupCostInstructor.setInstructorType(instructorType);
         sectionGroupCostInstructor.setCost(sectionGroupCostInstructorDTO.getCost());
         sectionGroupCostInstructor.setReason(sectionGroupCostInstructorDTO.getReason());
 
@@ -55,12 +59,19 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
         originalSectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostInstructorDTO.getSectionGroupCost());
         originalSectionGroupCostInstructor.setInstructor(sectionGroupCostInstructorDTO.getInstructor());
+        originalSectionGroupCostInstructor.setInstructorType(sectionGroupCostInstructorDTO.getInstructorType());
         originalSectionGroupCostInstructor.setCost(sectionGroupCostInstructorDTO.getCost());
         originalSectionGroupCostInstructor.setReason(sectionGroupCostInstructorDTO.getReason());
+
         return this.save(originalSectionGroupCostInstructor);
     }
 
     private SectionGroupCostInstructor save(SectionGroupCostInstructor sectionGroupCostInstructor) {
         return this.sectionGroupCostInstructorRepository.save(sectionGroupCostInstructor);
+    }
+
+    @Override
+    public void delete(long sectionGroupCostInstructorId){
+        this.sectionGroupCostInstructorRepository.delete(sectionGroupCostInstructorId);
     }
 }

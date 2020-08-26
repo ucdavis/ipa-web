@@ -498,4 +498,24 @@ public class BudgetViewController {
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
         return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
     }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public Long deleteSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @PathVariable long sectionGroupCostInstructorId, HttpServletResponse httpResponse) {
+        // Ensure valid params
+        SectionGroupCostInstructor sectionGroupCostInstructor = sectionGroupCostInstructorService.findById(sectionGroupCostInstructorId);
+
+        if (sectionGroupCostInstructor == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        /*Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");*/
+
+        sectionGroupCostInstructorService.delete(sectionGroupCostInstructorId);
+
+        return sectionGroupCostInstructorId;
+    }
 }
