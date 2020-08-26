@@ -1,7 +1,8 @@
 CREATE TABLE `SectionGroupCostInstructors`(
   `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `InstructorId` int(11) NOT NULL,
+  `InstructorId` int(11),
   `OriginalInstructorId` int(11),
+  `InstructorTypeId` int(11),
   `SectionGroupCostId` int(11) NOT NULL,
   `TeachingAssignmentId` int(11),
   `Cost` decimal(15,2),

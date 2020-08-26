@@ -494,7 +494,7 @@ public class BudgetViewController {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
-
+        sectionGroupCostInstructor.setInstructor(instructorService.getOneById(sectionGroupCostInstructor.getInstructor().getId()));
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
         return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
     }

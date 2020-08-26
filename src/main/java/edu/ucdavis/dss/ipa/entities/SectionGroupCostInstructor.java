@@ -62,8 +62,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "InstructorId", nullable = false)
-    @NotNull
+    @JoinColumn(name = "InstructorId")
     @JsonIgnore
     public Instructor getInstructor() {
         return instructor;
