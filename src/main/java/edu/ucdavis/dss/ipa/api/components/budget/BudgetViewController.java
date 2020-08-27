@@ -476,9 +476,13 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public SectionGroupCostInstructor addSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @RequestBody SectionGroupCostInstructor sectionGroupCostInstructor) {
-        sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
-        return sectionGroupCostInstructorService.create(sectionGroupCostInstructor);
+    public List<SectionGroupCostInstructor> addSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @RequestBody List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        List<SectionGroupCostInstructor> instructors = new ArrayList<>();
+        for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
+            sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+            instructors.add(sectionGroupCostInstructorService.create(sectionGroupCostInstructor));
+        }
+        return instructors;
     }
 
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.PUT, produces="application/json")
