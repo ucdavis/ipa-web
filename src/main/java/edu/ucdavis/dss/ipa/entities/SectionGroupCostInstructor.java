@@ -161,4 +161,14 @@ public class SectionGroupCostInstructor extends BaseEntity {
             return null;
         }
     }
+
+    @JsonProperty("instructorTypeDescription")
+    @Transient
+    public String getInstructorTypeDescription() {
+        if(instructorType != null) {
+            return instructorType.getDescription();
+        } else {
+            return "";
+        }
+    }
 }

@@ -24,7 +24,6 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     public SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
         SectionGroupCostInstructor sectionGroupCostInstructor = new SectionGroupCostInstructor();
 
-        Instructor instructor = instructorService.getOneById(sectionGroupCostInstructorDTO.getInstructor().getId());
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostInstructorDTO.getSectionGroupCost().getId());
         InstructorType instructorType = instructorTypeService.findById(sectionGroupCostInstructorDTO.getInstructorType().getId());
         if(sectionGroupCostInstructorDTO.getTeachingAssignment() != null){
@@ -32,9 +31,12 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
             sectionGroupCostInstructor.setTeachingAssignment(teachingAssignment);
         }
 
+        if(sectionGroupCostInstructorDTO.getInstructor() != null){
+            Instructor instructor = instructorService.getOneById(sectionGroupCostInstructorDTO.getInstructor().getId());
+            sectionGroupCostInstructor.setInstructor(instructor);
+        }
 
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCost);
-        sectionGroupCostInstructor.setInstructor(instructor);
         sectionGroupCostInstructor.setInstructorType(instructorType);
         sectionGroupCostInstructor.setCost(sectionGroupCostInstructorDTO.getCost());
         sectionGroupCostInstructor.setReason(sectionGroupCostInstructorDTO.getReason());
