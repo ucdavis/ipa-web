@@ -477,6 +477,9 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public List<SectionGroupCostInstructor> addSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @RequestBody List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        Long workGroupId = sectionGroupCostService.findById(sectionGroupCostId).getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
         List<SectionGroupCostInstructor> instructors = new ArrayList<>();
         for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
             sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
@@ -498,9 +501,15 @@ public class BudgetViewController {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
+
         sectionGroupCostInstructor.setInstructor(instructorService.getOneById(sectionGroupCostInstructor.getInstructor().getId()));
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
         sectionGroupCostInstructor.setInstructorType(instructorTypeService.findById(sectionGroupCostInstructor.getInstructorType().getId()));
+
+        // Authorization check
+        Long workGroupId = sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
         return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
     }
 
@@ -516,8 +525,8 @@ public class BudgetViewController {
         }
 
         // Authorization check
-        /*Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");*/
+        Long workGroupId = sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         sectionGroupCostInstructorService.delete(sectionGroupCostInstructorId);
 
