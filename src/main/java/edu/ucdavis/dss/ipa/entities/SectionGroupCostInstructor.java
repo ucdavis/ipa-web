@@ -171,4 +171,14 @@ public class SectionGroupCostInstructor extends BaseEntity {
             return "";
         }
     }
+
+    @JsonProperty("teachingAssignmentId")
+    @Transient
+    public Long getTeachingAssignmentId() {
+        if(teachingAssignment != null) {
+            return teachingAssignment.getId();
+        } else {
+            return null;
+        }
+    }
 }

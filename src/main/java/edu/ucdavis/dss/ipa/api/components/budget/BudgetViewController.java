@@ -500,6 +500,7 @@ public class BudgetViewController {
         }
         sectionGroupCostInstructor.setInstructor(instructorService.getOneById(sectionGroupCostInstructor.getInstructor().getId()));
         sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+        sectionGroupCostInstructor.setInstructorType(instructorTypeService.findById(sectionGroupCostInstructor.getInstructorType().getId()));
         return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
     }
 

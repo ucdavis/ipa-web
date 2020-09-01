@@ -9,6 +9,8 @@ import java.util.List;
 public interface InstructorTypeCostService {
     List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
+    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+
     InstructorTypeCost findById(Long instructorTypeId);
 
     void deleteById(long instructorTypeId);

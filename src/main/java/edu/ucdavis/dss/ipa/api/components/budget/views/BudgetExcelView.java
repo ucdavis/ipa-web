@@ -59,7 +59,7 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Enrollment",
            "Current Enrollment",
            "Sections",
-           "Instructor",
+           "Instructor(s)",
            "Regular Instructor",
            "Reason",
            "TAs",
@@ -95,6 +95,16 @@ public class BudgetExcelView extends AbstractXlsxView {
                         currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sectionGroupCost.getSequencePattern());
                     }
                 }
+                List<String> instructors = new ArrayList<>();
+                if (sectionGroupCost.getInstructor() != null){
+                    instructors.add(sectionGroupCost.getInstructor().getFullName());
+                }
+                List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
+                for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
+                    if(sectionGroupCostInstructor.getInstructor() != null){
+                        instructors.add(sectionGroupCostInstructor.getInstructor().getFullName());
+                    }
+                }
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
@@ -111,7 +121,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getEnrollment(),
                                 currentEnrollment,
                                 sectionGroupCost.getSectionCount(),
-                                (sectionGroupCost.getInstructor() == null ? "" : sectionGroupCost.getInstructor().getFullName()),
+                                String.join(", ", instructors),
                                 (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
                                 sectionGroupCost.getReason(),
                                 sectionGroupCost.getTaCount(),
