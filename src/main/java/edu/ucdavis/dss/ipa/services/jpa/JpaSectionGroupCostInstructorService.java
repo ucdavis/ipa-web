@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
 
 @Service
 public class JpaSectionGroupCostInstructorService implements SectionGroupCostInstructorService {
@@ -75,5 +76,26 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     @Override
     public void delete(long sectionGroupCostInstructorId){
         this.sectionGroupCostInstructorRepository.delete(sectionGroupCostInstructorId);
+    }
+
+    @Override
+    public List<SectionGroupCostInstructor> copyInstructors(SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost){
+        List<SectionGroupCostInstructor> originalSectionGroupCostInstructors = originalSectionGroupCost.getSectionGroupCostInstructors();
+        List<SectionGroupCostInstructor> newSectionGroupCostInstructors = newSectionGroupCost.getSectionGroupCostInstructors();
+
+        for(SectionGroupCostInstructor originalSectionGroupCostInstructor : originalSectionGroupCostInstructors){
+            SectionGroupCostInstructor newSectionGroupCostInstructor = new SectionGroupCostInstructor();
+            newSectionGroupCostInstructor.setSectionGroupCost(newSectionGroupCost);
+            newSectionGroupCostInstructor.setCost(originalSectionGroupCostInstructor.getCost());
+            newSectionGroupCostInstructor.setReason(originalSectionGroupCostInstructor.getReason());
+            newSectionGroupCostInstructor.setInstructorType(originalSectionGroupCostInstructor.getInstructorType());
+
+            if(originalSectionGroupCostInstructor.getInstructor() != null){
+                newSectionGroupCostInstructor.setInstructor(originalSectionGroupCostInstructor.getInstructor());
+            }
+
+            newSectionGroupCostInstructors.add(sectionGroupCostInstructorRepository.save(newSectionGroupCostInstructor));
+        }
+        return newSectionGroupCostInstructors;
     }
 }
