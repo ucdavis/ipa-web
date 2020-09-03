@@ -2,23 +2,18 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.repositories.LineItemRepository;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
 import edu.ucdavis.dss.ipa.services.LineItemService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JpaLineItemService implements LineItemService {
     @Inject LineItemRepository lineItemRepository;
-    @Inject LineItemCategoryService lineItemCategoryService;
 
     @Override
     public List<LineItem> findByBudgetId(Long budgetId) {
@@ -63,6 +58,10 @@ public class JpaLineItemService implements LineItemService {
         LineItem originalLineItem = this.findById(lineItem.getId());
 
         if(originalLineItem == null) {
+            return null;
+        }
+
+        if (originalLineItem.getBudgetScenario().getIsSnapshot()) {
             return null;
         }
 

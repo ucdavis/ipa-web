@@ -115,6 +115,29 @@ public class BudgetViewController {
         return budgetViewFactory.createBudgetScenarioView(budgetScenario);
     }
 
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios/{budgetScenarioId}/snapshot", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public BudgetScenarioView createBudgetScenarioSnapshot(@PathVariable long budgetId,
+                                                           @PathVariable long budgetScenarioId,
+                                                           HttpServletResponse httpResponse) {
+
+        Budget budget = budgetService.findById(budgetId);
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budget == null || budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budget.getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        BudgetScenario budgetScenarioSnapshot = budgetScenarioService.createSnapshot(budgetScenarioId);
+
+        return budgetViewFactory.createBudgetScenarioView(budgetScenarioSnapshot);
+    };
+
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Long deleteBudgetScenario(@PathVariable long budgetScenarioId,

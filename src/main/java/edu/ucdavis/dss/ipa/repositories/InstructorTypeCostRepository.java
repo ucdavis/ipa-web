@@ -18,11 +18,16 @@ public interface InstructorTypeCostRepository extends CrudRepository<InstructorT
     List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
     @Query( " SELECT DISTINCT itc" +
-        " FROM Schedule s, Workgroup w, Budget b, InstructorTypeCost itc" +
-        " WHERE itc.budget = b" +
+        " FROM Schedule s, Workgroup w, Budget b, BudgetScenario bs, InstructorTypeCost itc" +
+        " WHERE (itc.budgetScenario = bs OR itc.budget = b)" +
+        " AND bs.budget = b" +
         " AND b.schedule = s" +
         " AND s.workgroup = w" +
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
+
+    InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeId, long budgetScenarioId);
+
+    List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification);
 }

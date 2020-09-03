@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.InstructorCost;
+import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.LineItemComment;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
@@ -16,18 +18,24 @@ public class BudgetScenarioView {
     List<LineItem> lineItems;
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<LineItemComment> lineItemComments;
+    List<InstructorCost> instructorCosts;
+    List<InstructorTypeCost> instructorTypeCosts;
 
     public BudgetScenarioView(
-            BudgetScenario budgetScenario,
-            List<SectionGroupCost> sectionGroupCosts,
-            List<SectionGroupCostComment> sectionGroupCostComments,
-            List<LineItem> lineItems,
-            List<LineItemComment> lineItemComments) {
+        BudgetScenario budgetScenario,
+        List<SectionGroupCost> sectionGroupCosts,
+        List<SectionGroupCostComment> sectionGroupCostComments,
+        List<LineItem> lineItems,
+        List<LineItemComment> lineItemComments,
+        List<InstructorCost> instructorCosts,
+        List<InstructorTypeCost> instructorTypeCosts) {
         setBudgetScenario(budgetScenario);
         setSectionGroupCosts(sectionGroupCosts);
         setLineItems(lineItems);
         setSectionGroupCostComments(sectionGroupCostComments);
         setLineItemComments(lineItemComments);
+        setInstructorCosts(instructorCosts);
+        setInstructorTypeCosts(instructorTypeCosts);
     }
 
     public BudgetScenario getBudgetScenario() {
@@ -68,5 +76,23 @@ public class BudgetScenarioView {
 
     public void setLineItemComments(List<LineItemComment> lineItemComments) {
         this.lineItemComments = lineItemComments;
+    }
+
+    public List<InstructorCost> getInstructorCosts() {
+        return instructorCosts;
+    }
+
+    public void setInstructorCosts(
+        List<InstructorCost> instructorCosts) {
+        this.instructorCosts = instructorCosts;
+    }
+
+    public List<InstructorTypeCost> getInstructorTypeCosts() {
+        return instructorTypeCosts;
+    }
+
+    public void setInstructorTypeCosts(
+        List<InstructorTypeCost> instructorTypeCosts) {
+        this.instructorTypeCosts = instructorTypeCosts;
     }
 }
