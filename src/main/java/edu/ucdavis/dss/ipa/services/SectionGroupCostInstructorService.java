@@ -16,6 +16,6 @@ public interface SectionGroupCostInstructorService {
 
     void delete(long sectionGroupCostInstructorId);
 
-    List<SectionGroupCostInstructor> copyInstructors(SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost);
+    List<SectionGroupCostInstructor> copyInstructors(long workgroupId, SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost);
 
 }

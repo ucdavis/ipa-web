@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,6 +21,8 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     TeachingAssignmentService teachingAssignmentService;
     @Inject
     InstructorTypeService instructorTypeService;
+    @Inject
+    SectionGroupService sectionGroupService;
 
     @Override
     public SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
@@ -79,9 +82,10 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     }
 
     @Override
-    public List<SectionGroupCostInstructor> copyInstructors(SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost){
+    public List<SectionGroupCostInstructor> copyInstructors(long workgroupId, SectionGroupCost originalSectionGroupCost, SectionGroupCost newSectionGroupCost){
         List<SectionGroupCostInstructor> originalSectionGroupCostInstructors = originalSectionGroupCost.getSectionGroupCostInstructors();
         List<SectionGroupCostInstructor> newSectionGroupCostInstructors = newSectionGroupCost.getSectionGroupCostInstructors();
+        List<Long> teachingAssingmentIds = new ArrayList<>();
 
         for(SectionGroupCostInstructor originalSectionGroupCostInstructor : originalSectionGroupCostInstructors){
             SectionGroupCostInstructor newSectionGroupCostInstructor = new SectionGroupCostInstructor();
@@ -93,8 +97,37 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
             if(originalSectionGroupCostInstructor.getInstructor() != null){
                 newSectionGroupCostInstructor.setInstructor(originalSectionGroupCostInstructor.getInstructor());
             }
+            if(originalSectionGroupCostInstructor.getTeachingAssignment() != null){
+                teachingAssingmentIds.add(originalSectionGroupCostInstructor.getTeachingAssignment().getId());
+            }
 
             newSectionGroupCostInstructors.add(sectionGroupCostInstructorRepository.save(newSectionGroupCostInstructor));
+        }
+
+        if(originalSectionGroupCost.getBudgetScenario().getFromLiveData()){
+            SectionGroup sectionGroup = sectionGroupService.findBySectionGroupCostDetails(
+                    workgroupId,
+                    originalSectionGroupCost.getCourseNumber(),
+                    originalSectionGroupCost.getSequencePattern(),
+                    originalSectionGroupCost.getTermCode(),
+                    originalSectionGroupCost.getSubjectCode());
+            if(sectionGroup != null){
+                List<TeachingAssignment> teachingAssignments = sectionGroup.getTeachingAssignments();
+                for(TeachingAssignment teachingAssignment : teachingAssignments){
+                    if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
+                        SectionGroupCostInstructor newSectionGroupCostInstructor = new SectionGroupCostInstructor();
+                        newSectionGroupCostInstructor.setSectionGroupCost(newSectionGroupCost);
+                        if(teachingAssignment.getInstructor() != null){
+                            newSectionGroupCostInstructor.setInstructor(teachingAssignment.getInstructor());
+                        }
+                        if(teachingAssignment.getInstructorType() != null){
+                            newSectionGroupCostInstructor.setInstructorType(teachingAssignment.getInstructorType());
+                        }
+                        newSectionGroupCostInstructors.add(newSectionGroupCostInstructor);
+                    }
+                }
+
+            }
         }
         return newSectionGroupCostInstructors;
     }

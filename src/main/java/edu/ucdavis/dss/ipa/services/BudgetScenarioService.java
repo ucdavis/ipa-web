@@ -20,5 +20,5 @@ public interface BudgetScenarioService {
 
     List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
-    BudgetScenario createSnapshot(long scenarioId);
+    BudgetScenario createSnapshot(long workgroupId, long scenarioId);
 }

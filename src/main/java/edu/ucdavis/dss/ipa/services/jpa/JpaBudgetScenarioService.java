@@ -153,7 +153,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return budgetScenario;
     }
 
-    public BudgetScenario createSnapshot(long scenarioId) {
+    public BudgetScenario createSnapshot(long workgroupId, long scenarioId) {
         BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalScenario == null) { return null; }
@@ -174,7 +174,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             SectionGroupCost newSectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, snapshotScenario);
 
             sectionGroupCostCommentService.copyComments(originalSectionGroupCost, newSectionGroupCost);
-            sectionGroupCostInstructorService.copyInstructors(originalSectionGroupCost, newSectionGroupCost);
+            sectionGroupCostInstructorService.copyInstructors(workgroupId, originalSectionGroupCost, newSectionGroupCost);
 
             sectionGroupCostList.add(newSectionGroupCost);
         }
