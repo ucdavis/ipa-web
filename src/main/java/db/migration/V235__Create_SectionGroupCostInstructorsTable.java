@@ -40,9 +40,11 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
             Long instructorTypeId = rsSectionGroupCostsQuery.getLong("InstructorTypeId");
             BigDecimal cost = rsSectionGroupCostsQuery.getBigDecimal("Cost");
             String reason = rsSectionGroupCostsQuery.getString("Reason");
+            Integer fromLiveData = rsSectionGroupCostsQuery.getInt("FromLiveData");
+            Long teachingAssignmentId = rsSectionGroupCostsQuery.getLong("TeachingAssignmentId");
 
             if(instructorId != 0 || instructorTypeId != 0){
-                PreparedStatement psCreateSectionGroupCostInstructor = connection.prepareStatement("INSERT INTO SectionGroupCostInstructors (SectionGroupCostId, InstructorId, InstructorTypeId, Cost, Reason) VALUES (?, ?, ?, ?, ?);");
+                PreparedStatement psCreateSectionGroupCostInstructor = connection.prepareStatement("INSERT INTO SectionGroupCostInstructors (SectionGroupCostId, InstructorId, InstructorTypeId, Cost, Reason, TeachingAssignmentId) VALUES (?, ?, ?, ?, ?, ?);");
                 psCreateSectionGroupCostInstructor.setLong(1, sectionGroupCostId);
                 if(instructorId != 0){
                     psCreateSectionGroupCostInstructor.setLong(2, instructorId);
@@ -59,8 +61,12 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                 } else{
                     psCreateSectionGroupCostInstructor.setNull(4, Types.FLOAT);
                 }
-
                 psCreateSectionGroupCostInstructor.setString(5, reason);
+                if(fromLiveData == 1 && teachingAssignmentId != 0){
+                    psCreateSectionGroupCostInstructor.setLong(6, teachingAssignmentId);
+                } else {
+                    psCreateSectionGroupCostInstructor.setNull(6, Types.INTEGER);
+                }
                 psCreateSectionGroupCostInstructor.execute();
                 psCreateSectionGroupCostInstructor.close();
             }
