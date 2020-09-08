@@ -131,4 +131,20 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
         }
         return newSectionGroupCostInstructors;
     }
+
+    @Override
+    public List<SectionGroupCostInstructor> findBySectionGroupCosts(List<SectionGroupCost> sectionGroupCosts) {
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors = new ArrayList<>();
+
+        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            sectionGroupCostInstructors.addAll(sectionGroupCost.getSectionGroupCostInstructors());
+        }
+
+        return sectionGroupCostInstructors;
+    }
+
+    @Override
+    public List<SectionGroupCostInstructor> findByBudgetId(long budgetId) {
+        return sectionGroupCostInstructorRepository.findByBudgetId(budgetId);
+    }
 }

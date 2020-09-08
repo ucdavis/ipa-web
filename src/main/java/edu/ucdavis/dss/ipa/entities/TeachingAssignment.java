@@ -285,6 +285,7 @@ public class TeachingAssignment implements Serializable {
     }
     @JsonProperty("sectionGroupCostInstructor")
     @OneToOne(mappedBy="teachingAssignment", fetch = FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     public SectionGroupCostInstructor getSectionGroupCostInstructor() {
         return sectionGroupCostInstructor;
     }

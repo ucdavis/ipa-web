@@ -55,6 +55,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject BudgetCalculationService budgetCalculationService;
     @Inject Authorization authorization;
     @Inject BudgetScenarioRepository budgetScenarioRepository;
+    @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -92,6 +93,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         assignedInstructors.addAll(budgetedInstructors);
 
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCostInstructorService.findByBudgetId(budget.getId());
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
@@ -109,6 +111,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 budgetScenarios,
                 sectionGroupCosts,
                 sectionGroupCostComments,
+                sectionGroupCostInstructors,
                 lineItems,
                 lineItemComments,
                 budget,

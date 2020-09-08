@@ -287,7 +287,7 @@ public class SectionGroupCost extends BaseEntity {
 
     @JsonProperty("sectionGroupCostInstructors")
     @OneToMany(mappedBy = "sectionGroupCost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonDeserialize
+    @JsonIgnore
     public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
         return sectionGroupCostInstructors;
     }
