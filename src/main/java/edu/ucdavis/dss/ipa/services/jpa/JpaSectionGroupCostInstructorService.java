@@ -147,4 +147,9 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     public List<SectionGroupCostInstructor> findByBudgetId(long budgetId) {
         return sectionGroupCostInstructorRepository.findByBudgetId(budgetId);
     }
+
+    @Override
+    public List<SectionGroupCostInstructor> findByBudgetScenarioId(long budgetScenarioId) {
+        return sectionGroupCostInstructorRepository.findByBudgetScenarioId(budgetScenarioId);
+    }
 }

@@ -20,4 +20,13 @@ public interface SectionGroupCostInstructorRepository extends CrudRepository<Sec
     )
     List<SectionGroupCostInstructor> findByBudgetId(
             @Param("budgetId") long budgetId);
+
+    @Query( " SELECT DISTINCT sgci" +
+            " FROM SectionGroupCostInstructor sgci, SectionGroupCost sgc, BudgetScenario bs" +
+            " WHERE bs.id = :budgetScenarioId" +
+            " AND sgci.sectionGroupCost = sgc" +
+            " AND sgc.budgetScenario = bs"
+    )
+    List<SectionGroupCostInstructor> findByBudgetScenarioId(
+            @Param("budgetScenarioId") long budgetScenarioId);
 }

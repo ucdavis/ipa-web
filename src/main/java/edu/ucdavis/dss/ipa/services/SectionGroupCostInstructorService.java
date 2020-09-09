@@ -23,4 +23,6 @@ public interface SectionGroupCostInstructorService {
     List<SectionGroupCostInstructor> findBySectionGroupCosts(List<SectionGroupCost> sectionGroupCosts);
 
     List<SectionGroupCostInstructor> findByBudgetId(long budgetId);
+
+    List<SectionGroupCostInstructor> findByBudgetScenarioId(long budgetScenarioId);
 }
