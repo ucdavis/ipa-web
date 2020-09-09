@@ -141,9 +141,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                     }
                 }
                 List<String> instructors = new ArrayList<>();
-                if (sectionGroupCost.getInstructor() != null){
-                    instructors.add(sectionGroupCost.getInstructor().getFullName());
-                }
                 List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
                 for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                     if(sectionGroupCostInstructor.getInstructor() != null){

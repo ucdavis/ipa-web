@@ -116,7 +116,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
      */
     @Transactional
     @Override
-    public BudgetScenario createFromExisting(Long scenarioId, String name, boolean copyFunds) {
+    public BudgetScenario createFromExisting(Long workgroupId, Long scenarioId, String name, boolean copyFunds) {
         BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalBudgetScenario == null) {
@@ -135,6 +135,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
             SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetScenario);
+            sectionGroupCostInstructorService.copyInstructors(workgroupId, originalSectionGroupCost, sectionGroupCost);
             sectionGroupCostList.add(sectionGroupCost);
         }
 
