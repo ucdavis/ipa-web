@@ -31,7 +31,7 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
 
         // Get SectionGroupCosts
         PreparedStatement psSectionGroupCostsQuery = connection.prepareStatement(
-                "SELECT ta.InstructorId as TeachingAssingmentInstructorId, ta.Id as TeachingAssignmentId, bs.FromLiveData AS FromLiveData, sgc.Id AS SectionGroupCostId, sgc.InstructorId AS InstructorId, sgc.InstructorTypeId AS InstructorTypeId, sgc.Cost AS Cost, sgc.Reason AS Reason FROM SectionGroupCosts AS sgc LEFT JOIN BudgetScenarios AS bs ON bs.Id = sgc.BudgetScenarioId LEFT JOIN Budgets as b on bs.BudgetId = b.Id LEFT JOIN Schedules as s on b.ScheduleId = s.Id LEFT JOIN Courses as c on c.ScheduleId = s.Id AND c.SequencePattern = sgc.SequencePattern AND c.CourseNumber = sgc.CourseNumber AND c.SubjectCode = sgc.SubjectCode LEFT JOIN SectionGroups AS sg ON sg.CourseId = c.Id AND sg.TermCode = sgc.TermCode LEFT JOIN TeachingAssignments AS ta ON ta.Id = (SELECT tas.Id FROM TeachingAssignments as tas WHERE tas.SectionGroupId=sg.Id AND (tas.InstructorId = sgc.InstructorId or tas.InstructorTypeId = sgc.InstructorTypeId) ORDER BY tas.InstructorId DESC LIMIT 1) WHERE sgc.InstructorId IS NOT NULL OR sgc.InstructorTypeId IS NOT NULL ORDER BY sgc.id;  ");
+                "SELECT ta.InstructorId as TeachingAssingmentInstructorId, ta.Id as TeachingAssignmentId, bs.FromLiveData AS FromLiveData, sgc.Id AS SectionGroupCostId, sgc.InstructorId AS InstructorId, sgc.InstructorTypeId AS InstructorTypeId, sgc.Cost AS Cost, sgc.Reason AS Reason FROM SectionGroupCosts AS sgc LEFT JOIN BudgetScenarios AS bs ON bs.Id = sgc.BudgetScenarioId LEFT JOIN Budgets as b on bs.BudgetId = b.Id LEFT JOIN Schedules as s on b.ScheduleId = s.Id LEFT JOIN Courses as c on c.ScheduleId = s.Id AND c.SequencePattern = sgc.SequencePattern AND c.CourseNumber = sgc.CourseNumber AND c.SubjectCode = sgc.SubjectCode LEFT JOIN SectionGroups AS sg ON sg.CourseId = c.Id AND sg.TermCode = sgc.TermCode LEFT JOIN TeachingAssignments AS ta ON ta.Id = (SELECT tas.Id FROM TeachingAssignments as tas WHERE tas.SectionGroupId=sg.Id AND tas.Approved = 1 AND (tas.InstructorId = sgc.InstructorId or tas.InstructorTypeId = sgc.InstructorTypeId) ORDER BY tas.InstructorId DESC LIMIT 1) ORDER BY sgc.id;  ");
 
         ResultSet rsSectionGroupCostsQuery = psSectionGroupCostsQuery.executeQuery();
         while(rsSectionGroupCostsQuery.next()){
@@ -43,26 +43,26 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
             Integer fromLiveData = rsSectionGroupCostsQuery.getInt("FromLiveData");
             Long teachingAssignmentId = rsSectionGroupCostsQuery.getLong("TeachingAssignmentId");
 
-            if(instructorId != 0 || instructorTypeId != 0){
+            if(instructorId != 0 || instructorTypeId != 0 || reason != null || cost != null) {
                 PreparedStatement psCreateSectionGroupCostInstructor = connection.prepareStatement("INSERT INTO SectionGroupCostInstructors (SectionGroupCostId, InstructorId, InstructorTypeId, Cost, Reason, TeachingAssignmentId) VALUES (?, ?, ?, ?, ?, ?);");
                 psCreateSectionGroupCostInstructor.setLong(1, sectionGroupCostId);
-                if(instructorId != 0){
+                if (instructorId != 0) {
                     psCreateSectionGroupCostInstructor.setLong(2, instructorId);
-                } else{
+                } else {
                     psCreateSectionGroupCostInstructor.setNull(2, Types.INTEGER);
                 }
-                if(instructorTypeId != 0){
+                if (instructorTypeId != 0) {
                     psCreateSectionGroupCostInstructor.setLong(3, instructorTypeId);
-                } else{
+                } else {
                     psCreateSectionGroupCostInstructor.setNull(3, Types.INTEGER);
                 }
-                if(cost != BigDecimal.ZERO){
+                if (cost != BigDecimal.ZERO) {
                     psCreateSectionGroupCostInstructor.setBigDecimal(4, cost);
-                } else{
+                } else {
                     psCreateSectionGroupCostInstructor.setNull(4, Types.FLOAT);
                 }
                 psCreateSectionGroupCostInstructor.setString(5, reason);
-                if(fromLiveData == 1 && teachingAssignmentId != 0){
+                if (fromLiveData == 1 && teachingAssignmentId != 0) {
                     psCreateSectionGroupCostInstructor.setLong(6, teachingAssignmentId);
                 } else {
                     psCreateSectionGroupCostInstructor.setNull(6, Types.INTEGER);
@@ -70,7 +70,6 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                 psCreateSectionGroupCostInstructor.execute();
                 psCreateSectionGroupCostInstructor.close();
             }
-
         }
         rsSectionGroupCostsQuery.close();
     }
