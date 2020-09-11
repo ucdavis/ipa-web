@@ -72,7 +72,8 @@ public class BudgetCalculationService {
 
             for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                 BigDecimal instructorCost = calculateSectionGroupInstructorCost(workgroup, budget, sectionGroupCostInstructor);
-                Long instructorTypeId = sectionGroupCostInstructor.getInstructorTypeId();
+                long instructorTypeId = calculateSectionGroupInstructorTypeId(sectionGroupCostInstructor, workgroup);
+
                 if(instructorTypeId == EMERITI.typeId()){
                     currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
@@ -280,23 +281,36 @@ public class BudgetCalculationService {
         return BigDecimal.ZERO;
     }
 
-    private BigDecimal calculateSectionGroupInstructorCost(Workgroup workgroup, Budget budget, SectionGroupCostInstructor sectionGroupCostInstructor) {
+    private long calculateSectionGroupInstructorTypeId(
+            SectionGroupCostInstructor sectionGroupCostInstructor, Workgroup workgroup) {
         if(sectionGroupCostInstructor.getInstructorTypeId() != null){
-            if(sectionGroupCostInstructor.getCost() != null){
-                return sectionGroupCostInstructor.getCost();
-            } else {
-                if (sectionGroupCostInstructor.getInstructor() != null) {
-                    InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
-                    if (instructorCost != null && instructorCost.getCost() != null) {
-                        return instructorCost.getCost();
-                    }
+            return sectionGroupCostInstructor.getInstructorTypeId();
+        } else if (sectionGroupCostInstructor.getInstructor() != null){
+            UserRole instructorRole = userService.getOneByLoginId(sectionGroupCostInstructor.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && workgroup.getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+            if (instructorRole != null) {
+                return instructorRole.getInstructorType().getId();
+            }
+        }
+        return 0;
+    };
+
+    private BigDecimal calculateSectionGroupInstructorCost(Workgroup workgroup, Budget budget, SectionGroupCostInstructor sectionGroupCostInstructor) {
+        if(sectionGroupCostInstructor.getCost() != null){
+            return sectionGroupCostInstructor.getCost();
+        } else {
+            if (sectionGroupCostInstructor.getInstructor() != null) {
+                InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
+                if (instructorCost != null && instructorCost.getCost() != null) {
+                    return instructorCost.getCost();
                 }
+            } else if (sectionGroupCostInstructor.getInstructorTypeId() != null){
                 InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorTypeId(), budget.getId());
                 if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
-                   return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
+                    return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }
             }
         }
+
 
         return BigDecimal.ZERO;
     }
