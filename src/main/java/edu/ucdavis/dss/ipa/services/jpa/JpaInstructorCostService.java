@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorCostRepository;
+import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
@@ -60,6 +61,10 @@ public class JpaInstructorCostService implements InstructorCostService {
         InstructorCost originalInstructorCost = this.findById(instructorCostDTO.getId());
 
         if(originalInstructorCost == null) {
+            return null;
+        }
+
+        if (originalInstructorCost.getBudgetScenario().getIsSnapshot()) {
             return null;
         }
 
@@ -147,5 +152,39 @@ public class JpaInstructorCostService implements InstructorCostService {
         }
 
         return instructorCosts;
+    }
+
+    @Override
+    public List<InstructorCost> snapshotInstructorCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+        List<InstructorCost> originalInstructorCostList = originalBudgetScenario.getBudget().getInstructorCosts();
+        List<InstructorCost> snapshotInstructorCostList = new ArrayList<>();
+
+        for (InstructorCost originalInstructorCost : originalInstructorCostList) {
+            if (originalInstructorCost.getBudgetScenario() != null) { continue; }
+
+            InstructorCost instructorCost = new InstructorCost();
+            instructorCost.setInstructor(originalInstructorCost.getInstructor());
+            instructorCost.setCost(originalInstructorCost.getCost());
+            instructorCost.setLecturer(originalInstructorCost.getLecturer());
+            instructorCost.setInstructorTypeCost(originalInstructorCost.getInstructorTypeCost());
+            instructorCost.setBudgetScenario(snapshotBudgetScenario);
+
+            InstructorCost snapshotInstructorCost = this.instructorCostRepository.save(instructorCost);
+
+            snapshotInstructorCostList.add(snapshotInstructorCost);
+        }
+
+        return snapshotInstructorCostList;
+    }
+
+    @Override
+    public InstructorCost findByInstructorIdAndBudgetScenarioId(Long instructorId,
+                                                                Long budgetScenarioId) {
+        return instructorCostRepository.findByInstructorIdAndBudgetScenarioId(instructorId, budgetScenarioId);
+    }
+
+    @Override
+    public List<InstructorCost> findByBudgetScenarioId(Long budgetScenarioId) {
+        return instructorCostRepository.findByBudgetScenarioId(budgetScenarioId);
     }
 }

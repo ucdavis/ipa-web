@@ -1,7 +1,42 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
-import static edu.ucdavis.dss.ipa.entities.enums.FundType.*;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.COURSE_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.REPLACEMENT_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNASSIGNED_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.CLASS_CANCELLED;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.DEANS_OFFICE;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.EXTERNAL_BUYOUT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.INTERNAL_BUYOUT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.OTHER;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.RANGE_ADJUSTMENT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.TOTAL;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.WORK_LIFE;
 import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 
 import edu.ucdavis.dss.ipa.entities.LineItem;
@@ -10,6 +45,8 @@ import edu.ucdavis.dss.ipa.entities.enums.FundType;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +60,8 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class BudgetComparisonExcelView extends AbstractXlsxView {
     private List<List<BudgetScenarioExcelView>> budgetComparisonList;
+
+    private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public BudgetComparisonExcelView(List<List<BudgetScenarioExcelView>> budgetComparisonList) {
         this.budgetComparisonList = budgetComparisonList;
@@ -39,9 +78,18 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             BudgetScenarioExcelView previousYear = budgetScenarioExcelViewPair.get(0);
             BudgetScenarioExcelView currentYear = budgetScenarioExcelViewPair.get(1);
 
+            String previousScenarioName = previousYear.getBudgetScenario().getIsSnapshot() ?
+                previousYear.getBudgetScenario().getName() + " - SNAPSHOT - " +
+                    format.format(previousYear.getBudgetScenario().getCreatedAt()) :
+                previousYear.getBudgetScenario().getName();
+            String currentScenarioName = currentYear.getBudgetScenario().getIsSnapshot() ?
+                currentYear.getBudgetScenario().getName() + " - SNAPSHOT - " +
+                    format.format(currentYear.getBudgetScenario().getCreatedAt()) :
+                currentYear.getBudgetScenario().getName();
+
             ExcelHelper.setSheetHeader(report, Arrays
-                .asList(previousYear.getBudgetScenario().getName(), "", "", "",
-                    currentYear.getBudgetScenario().getName(), "", "", "", "", "", "", ""));
+                .asList(previousScenarioName, "", "", "",
+                    currentScenarioName, "", "", "", "", "", "", ""));
             ExcelHelper.writeRowToSheet(report, Arrays
                 .asList(yearToAcademicYear(previousYear.getBudget().getSchedule().getYear()), "",
                     "", "",

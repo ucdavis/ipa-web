@@ -23,6 +23,7 @@ public class InstructorCost extends BaseEntity {
     private BigDecimal cost;
     private Boolean lecturer = false;
     private InstructorTypeCost instructorTypeCost;
+    private BudgetScenario budgetScenario;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +40,7 @@ public class InstructorCost extends BaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BudgetId", nullable = false)
-    @NotNull
+    @JoinColumn(name = "BudgetId")
     @JsonIgnore
     public Budget getBudget() {
         return budget;
@@ -114,6 +114,27 @@ public class InstructorCost extends BaseEntity {
     public long getBudgetIdentification() {
         if(budget != null) {
             return budget.getId();
+        } else {
+            return 0;
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BudgetScenarioId")
+    @JsonIgnore
+    public BudgetScenario getBudgetScenario() {
+        return budgetScenario;
+    }
+
+    public void setBudgetScenario(BudgetScenario budgetScenario) {
+        this.budgetScenario = budgetScenario;
+    }
+
+    @JsonProperty("budgetScenarioId")
+    @Transient
+    public long getBudgetScenarioIdentification() {
+        if(budgetScenario != null) {
+            return budgetScenario.getId();
         } else {
             return 0;
         }
