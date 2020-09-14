@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,4 +19,12 @@ public interface InstructorTypeCostService {
     InstructorTypeCost findOrCreate(InstructorTypeCost instructorTypeCostDTO);
 
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
+
+    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+
+    List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
+
+    InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeId, long budgetScenarioId);
+
+    List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification);
 }

@@ -1,9 +1,11 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeCostRepository;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,10 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
+        if (originalInstructorType.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         originalInstructorType.setCost(newInstructorTypeCost.getCost());
 
         return this.instructorTypeCostRepository.save(originalInstructorType);
@@ -58,7 +64,7 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
             return null;
         }
 
-        InstructorTypeCost existingInstructorTypeCost = this.instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
+        InstructorTypeCost existingInstructorTypeCost = this.findByInstructorTypeIdAndBudgetId(instructorTypeCostDTO.getInstructorType().getId(), instructorTypeCostDTO.getBudget().getId());
 
         if (existingInstructorTypeCost != null) {
             return existingInstructorTypeCost;
@@ -70,5 +76,41 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Override
     public List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return this.instructorTypeCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
+    }
+
+    @Override
+    public InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId) {
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeId, budgetId);
+    }
+
+    @Override
+    public List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotBudgetScenario, BudgetScenario originalBudgetScenario) {
+        List<InstructorTypeCost> originalInstructorTypeCostList = originalBudgetScenario.getBudget().getInstructorTypeCosts();
+        List<InstructorTypeCost> snapshotInstructorTypeCostList = new ArrayList<>();
+
+        for (InstructorTypeCost originalInstructorTypeCost : originalInstructorTypeCostList) {
+            if (originalInstructorTypeCost.getBudgetScenario() != null) { continue; }
+
+            InstructorTypeCost instructorTypeCost = new InstructorTypeCost();
+            instructorTypeCost.setCost(originalInstructorTypeCost.getCost());
+            instructorTypeCost.setInstructorType(originalInstructorTypeCost.getInstructorType());
+            instructorTypeCost.setBudgetScenario(snapshotBudgetScenario);
+
+            InstructorTypeCost snapshotInstructorCost = instructorTypeCostRepository.save(instructorTypeCost);
+
+            snapshotInstructorTypeCostList.add(snapshotInstructorCost);
+        }
+
+        return snapshotInstructorTypeCostList;
+    }
+
+    @Override
+    public InstructorTypeCost findByInstructorTypeIdAndBudgetScenarioId(long instructorTypeCostId, long budgetScenarioId) {
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeCostId, budgetScenarioId);
+    }
+
+    @Override
+    public List<InstructorTypeCost> findByBudgetScenarioId(Long budgetScenarioIdentification) {
+        return instructorTypeCostRepository.findByBudgetScenarioId(budgetScenarioIdentification);
     }
 }

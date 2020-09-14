@@ -27,6 +27,10 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
+        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId(), originalSectionGroupCost.getTermCode());
 
         if (sectionGroupCost == null) {
@@ -130,6 +134,10 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
+        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+            return null;
+        }
+
         originalSectionGroupCost.setTaCount(sectionGroupCostDTO.getTaCount());
         originalSectionGroupCost.setReaderCount(sectionGroupCostDTO.getReaderCount());
         originalSectionGroupCost.setEnrollment(sectionGroupCostDTO.getEnrollment());
@@ -166,6 +174,10 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     @Override
     public SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
         boolean updateRequired = false;
+
+        if (budgetScenario.getIsSnapshot()) {
+            return null;
+        }
 
         SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(sectionGroup.getCourse().getSubjectCode(), sectionGroup.getCourse().getCourseNumber(), sectionGroup.getCourse().getSequencePattern(), budgetScenario.getId(), sectionGroup.getTermCode());
 

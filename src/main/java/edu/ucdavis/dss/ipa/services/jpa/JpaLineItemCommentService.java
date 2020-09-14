@@ -33,6 +33,25 @@ public class JpaLineItemCommentService implements LineItemCommentService {
     }
 
     @Override
+    public List<LineItemComment> copyComments(LineItem originalLineItem, LineItem newLineItem) {
+        List<LineItemComment> originalLineItemComments = originalLineItem.getLineItemComments();
+        List<LineItemComment> newLineItemComments = newLineItem.getLineItemComments();
+
+        for (LineItemComment originalLineItemComment : originalLineItemComments) {
+            LineItemComment newLineItemComment = new LineItemComment();
+
+            newLineItemComment.setLineItem(newLineItem);
+            newLineItemComment.setUser(originalLineItemComment.getUser());
+            newLineItemComment.setAuthorName(originalLineItemComment.getAuthorName());
+            newLineItemComment.setComment(originalLineItemComment.getComment());
+
+            newLineItemComments.add(lineItemCommentRepository.save(newLineItemComment));
+        }
+
+        return newLineItemComments;
+    }
+
+    @Override
     public List<LineItemComment> findByLineItems(List<LineItem> lineItems) {
         List<LineItemComment> lineItemComments = new ArrayList<>();
 

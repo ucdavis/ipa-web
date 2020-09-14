@@ -78,6 +78,13 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
         List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
+
+        // fetch any additional costs from budgetScenario snapshots
+        for (BudgetScenario budgetScenario : budgetScenarios) {
+            instructorCosts.addAll(budgetScenario.getInstructorCosts());
+            instructorTypeCosts.addAll(budgetScenario.getInstructorTypeCosts());
+        }
+
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroupId);
         Set<Instructor> assignedInstructors = new HashSet<> (instructorService.findAssignedByScheduleId(schedule.getId()));
@@ -130,8 +137,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItem> lineItems = budgetScenario.getLineItems();
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
+        List<InstructorCost> instructorCosts = instructorCostService.findByBudgetScenarioId(budgetScenario.getId());
+        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetScenarioId(budgetScenario.getId());
 
-        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments);
+        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments, instructorCosts, instructorTypeCosts);
 
         return budgetScenarioView;
     }
@@ -168,10 +177,10 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
-        List<InstructorCost> instructorCosts = budget.getInstructorCosts();
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetId(budget.getId());
+        List<InstructorCost> instructorCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
+        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorTypeCosts() : budget.getInstructorTypeCosts();
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
@@ -222,7 +231,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
 
         // Calculate totals
-        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, budgetScenario, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 
