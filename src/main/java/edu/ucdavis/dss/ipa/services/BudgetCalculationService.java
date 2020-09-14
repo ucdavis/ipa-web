@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import java.math.BigDecimal;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class BudgetCalculationService {
     @Inject InstructorCostService instructorCostService;
     @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject UserService userService;
+    @Inject TeachingAssignmentService teachingAssignmentService;
 
     /**
      * @return {
@@ -61,7 +63,7 @@ public class BudgetCalculationService {
         BigDecimal baseReaderCost = budgetScenario.getIsSnapshot() ? new BigDecimal(String.valueOf(budgetScenario.getReaderCost())) : new BigDecimal(String.valueOf(budget.getReaderCost()));
 
         Map<BudgetSummary, BigDecimal> combinedTermSummary = termTotals.get("combined");
-
+        List<Long> teachingAssingmentIds = new ArrayList<>();
         for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
 
@@ -73,7 +75,9 @@ public class BudgetCalculationService {
             for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                 BigDecimal instructorCost = calculateSectionGroupInstructorCost(workgroup, budget, sectionGroupCostInstructor);
                 long instructorTypeId = calculateSectionGroupInstructorTypeId(sectionGroupCostInstructor, workgroup);
-
+                if(null != sectionGroupCostInstructor.getTeachingAssignment()){
+                    teachingAssingmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
+                }
                 if(instructorTypeId == EMERITI.typeId()){
                     currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
@@ -186,6 +190,77 @@ public class BudgetCalculationService {
             combinedTermSummary.put(TOTAL_SEATS, combinedTermSummary.get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
         }
 
+
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findApprovedByWorkgroupIdAndYear(workgroup.getId(), budget.getSchedule().getYear());
+        for(TeachingAssignment teachingAssignment : teachingAssignments){
+            if(termCodes.contains(teachingAssignment.getTermCode()) && !teachingAssingmentIds.contains(teachingAssignment.getId())){
+                Map<BudgetSummary, BigDecimal> currentTermSummary = termTotals.get(teachingAssignment.getTermCode());
+                System.err.println("Add teaching assignment id " + teachingAssignment.getId());
+                BigDecimal instructorCost = calculateTeachingAssignmentCost(workgroup, budget, teachingAssignment);
+                long instructorTypeId = calculateTeachingAssignmentTypeId(teachingAssignment, workgroup);
+                System.err.println("Cost is " + instructorCost + " type is " + instructorTypeId);
+                if(instructorTypeId == EMERITI.typeId()){
+                    currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(EMERITI_COST, currentTermSummary.get(EMERITI_COST).add(instructorCost));
+                    combinedTermSummary.put(EMERITI_COST, combinedTermSummary.get(EMERITI_COST).add(instructorCost));
+                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
+                    currentTermSummary.put(VISITING_PROFESSOR_COUNT, currentTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(VISITING_PROFESSOR_COUNT, combinedTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(VISITING_PROFESSOR_COST, currentTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
+                    combinedTermSummary.put(VISITING_PROFESSOR_COST, combinedTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
+                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
+                    currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
+                    combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
+                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
+                    currentTermSummary.put(UNIT18_LECTURER_COUNT, currentTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(UNIT18_LECTURER_COUNT, combinedTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(UNIT18_LECTURER_COST, currentTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
+                    combinedTermSummary.put(UNIT18_LECTURER_COST, combinedTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
+                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
+                    currentTermSummary.put(CONTINUING_LECTURER_COUNT, currentTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(CONTINUING_LECTURER_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
+                    combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
+                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
+                    currentTermSummary.put(LADDER_FACULTY_COUNT, currentTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(LADDER_FACULTY_COUNT, combinedTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(LADDER_FACULTY_COST, currentTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
+                    combinedTermSummary.put(LADDER_FACULTY_COST, combinedTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
+                } else if (instructorTypeId == INSTRUCTOR.typeId()){
+                    currentTermSummary.put(INSTRUCTOR_COUNT, currentTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(INSTRUCTOR_COUNT, combinedTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(INSTRUCTOR_COST, currentTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
+                    combinedTermSummary.put(INSTRUCTOR_COST, combinedTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
+                } else if (instructorTypeId == LECTURER_SOE.typeId()){
+                    currentTermSummary.put(LECTURER_SOE_COUNT, currentTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(LECTURER_SOE_COUNT, combinedTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(LECTURER_SOE_COST, currentTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
+                    combinedTermSummary.put(LECTURER_SOE_COST, combinedTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
+                } else {
+                    currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+                    combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+
+                    currentTermSummary.put(UNASSIGNED_COST, currentTermSummary.get(UNASSIGNED_COST).add(instructorCost));
+                    combinedTermSummary.put(UNASSIGNED_COST, combinedTermSummary.get(UNASSIGNED_COST).add(instructorCost));
+                }
+                currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(instructorCost));
+                combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(instructorCost));
+                currentTermSummary.put(TOTAL_TEACHING_COST, currentTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
+                combinedTermSummary.put(TOTAL_TEACHING_COST, combinedTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
+            }
+        }
+
         BigDecimal funds = BigDecimal.ZERO;
         for(LineItem lineItem: lineItems){
             funds = funds.add(lineItem.getAmount());
@@ -294,25 +369,56 @@ public class BudgetCalculationService {
         return 0;
     };
 
+    private long calculateTeachingAssignmentTypeId(
+            TeachingAssignment teachingAssignment, Workgroup workgroup) {
+        if(teachingAssignment.getInstructorType() != null){
+            return teachingAssignment.getInstructorType().getId();
+        } else if (teachingAssignment.getInstructor() != null){
+            UserRole instructorRole = userService.getOneByLoginId(teachingAssignment.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && workgroup.getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
+            if (instructorRole != null) {
+                return instructorRole.getInstructorType().getId();
+            }
+        }
+        return 0;
+    };
+
     private BigDecimal calculateSectionGroupInstructorCost(Workgroup workgroup, Budget budget, SectionGroupCostInstructor sectionGroupCostInstructor) {
-        if(sectionGroupCostInstructor.getCost() != null){
-            return sectionGroupCostInstructor.getCost();
-        } else {
-            if (sectionGroupCostInstructor.getInstructor() != null) {
-                InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
-                if (instructorCost != null && instructorCost.getCost() != null) {
-                    return instructorCost.getCost();
-                } else {
-                    InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorTypeId(), budget.getId());
-                    if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
-                        return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
-                    }
-                }
-            } else if (sectionGroupCostInstructor.getInstructorTypeId() != null){
-                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorTypeId(), budget.getId());
+        if (sectionGroupCostInstructor.getInstructor() != null) {
+            InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
+            if (instructorCost != null && instructorCost.getCost() != null) {
+                return instructorCost.getCost();
+            } else {
+                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorType().getId(), budget.getId());
                 if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
                     return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }
+            }
+        } else if (sectionGroupCostInstructor.getInstructorType() != null){
+            InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorType().getId(), budget.getId());
+            if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
+                return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
+            }
+        }
+
+
+        return BigDecimal.ZERO;
+    }
+
+    private BigDecimal calculateTeachingAssignmentCost(Workgroup workgroup, Budget budget, TeachingAssignment teachingAssignment) {
+        if (teachingAssignment.getInstructor() != null) {
+            InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(teachingAssignment.getInstructor().getId(), budget.getId());
+            if (instructorCost != null && instructorCost.getCost() != null) {
+                return instructorCost.getCost();
+            } else {
+                InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(teachingAssignment.getInstructorType().getId(), budget.getId());
+                if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
+                    return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
+                }
+            }
+        } else if (teachingAssignment.getInstructorType() != null){
+            InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(teachingAssignment.getInstructorType().getId(), budget.getId());
+            if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
+                return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
             }
         }
 

@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -29,4 +30,15 @@ public interface SectionGroupCostInstructorRepository extends CrudRepository<Sec
     )
     List<SectionGroupCostInstructor> findByBudgetScenarioId(
             @Param("budgetScenarioId") long budgetScenarioId);
+
+    @Query( " SELECT DISTINCT sgci" +
+            " FROM Schedule s, Workgroup w, Budget b, BudgetScenario bs, SectionGroupCost sgc, SectionGroupCostInstructor sgci" +
+            " WHERE sgci.sectionGroupCost = sgc" +
+            " AND sgc.budgetScenario = bs" +
+            " AND bs.budget = b" +
+            " AND b.schedule = s" +
+            " AND s.workgroup = w" +
+            " AND w.id = :workgroupId" +
+            " AND s.year = :year")
+    List<SectionGroupCostInstructor> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
 }
