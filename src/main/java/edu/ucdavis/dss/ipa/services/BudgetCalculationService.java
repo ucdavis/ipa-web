@@ -195,10 +195,8 @@ public class BudgetCalculationService {
         for(TeachingAssignment teachingAssignment : teachingAssignments){
             if(termCodes.contains(teachingAssignment.getTermCode()) && !teachingAssingmentIds.contains(teachingAssignment.getId())){
                 Map<BudgetSummary, BigDecimal> currentTermSummary = termTotals.get(teachingAssignment.getTermCode());
-                System.err.println("Add teaching assignment id " + teachingAssignment.getId());
                 BigDecimal instructorCost = calculateTeachingAssignmentCost(workgroup, budget, teachingAssignment);
                 long instructorTypeId = calculateTeachingAssignmentTypeId(teachingAssignment, workgroup);
-                System.err.println("Cost is " + instructorCost + " type is " + instructorTypeId);
                 if(instructorTypeId == EMERITI.typeId()){
                     currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
