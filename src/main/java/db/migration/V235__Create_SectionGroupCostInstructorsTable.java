@@ -17,7 +17,6 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                         "CREATE TABLE `SectionGroupCostInstructors`(" +
                                 "  `Id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
                                 "  `InstructorId` int(11)," +
-                                "  `OriginalInstructorId` int(11)," +
                                 "  `InstructorTypeId` int(11)," +
                                 "  `SectionGroupCostId` int(11) NOT NULL," +
                                 "  `TeachingAssignmentId` int(11)," +
