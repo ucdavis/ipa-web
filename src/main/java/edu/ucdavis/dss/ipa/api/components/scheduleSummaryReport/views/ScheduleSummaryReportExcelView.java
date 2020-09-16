@@ -6,6 +6,10 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
+import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -26,11 +30,9 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     }
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (scheduleSummaryReportViewDTO.isSimpleView()){
-            System.err.println("simple view true");
-        }
+        boolean simpleView = scheduleSummaryReportViewDTO.isSimpleView();
         List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
-        Set<String> shortTermCodes = new java.util.HashSet<String>();
+        List<String> shortTermCodes = new ArrayList<>();
         Long year = scheduleSummaryReportViewDTO.getYear();
 
         String shortTermCode = scheduleSummaryReportViewDTO.getTermCode();
@@ -51,25 +53,25 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
             shortTermCodes.add(fullTermCode);
             fileName = "attachment; filename=\"" + workgroupName + "-" + fullTermCode + "-schedule_summary-" + dateOfDownload + ".xls\"";
         } else{
-            for(Course course : courses) {
-                for (SectionGroup sectionGroup : course.getSectionGroups()) {
-                    shortTermCodes.add(sectionGroup.getTermCode());
-                }
-            }
+            final Long finalYear = year;
+            shortTermCodes = Arrays.stream(TermDescription.values()).map(v -> v.getTermCode(finalYear)).collect(Collectors.toList());
+
             fileName = "attachment; filename=\"" + workgroupName + "-" + year + "-" + (year+1) + "-schedule_summary-" + dateOfDownload + ".xls\"";
         }
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", fileName);
         for(String termCode : shortTermCodes){
-            printTerm(workbook, courses, termCode);
+            printTerm(workbook, courses, termCode, simpleView);
         }
+
+        ExcelHelper.expandHeaders(workbook);
     }
 
-    private void printTerm(Workbook workbook, List<Course> courses, String termCode){
+    private void printTerm(Workbook workbook, List<Course> courses, String termCode, boolean simpleView){
         // Create sheet
         Sheet sheet = workbook.createSheet(Term.getRegistrarName(termCode));
-        setExcelHeader(sheet);
+        setExcelHeader(sheet, simpleView);
         sheet.setColumnWidth(0, 9000);
         int row = 1;
         // Sort courses by subjectCode, course number, and sequence pattern
@@ -109,6 +111,11 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                     }
                 }
                 excelHeader.createCell(col).setCellValue(String.join(", ", instructorNames));
+
+                if (simpleView) {
+                    row++;
+                    continue;
+                }
 
                 // Set TAs column
                 col = 2;
@@ -201,19 +208,21 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
         }
     }
 
-    private void setExcelHeader(Sheet excelSheet) {
+    private void setExcelHeader(Sheet excelSheet, boolean simpleView) {
         Row excelHeader = excelSheet.createRow(0);
         excelHeader.createCell(0).setCellValue("Course");
         excelHeader.createCell(1).setCellValue("Instructors");
-        excelHeader.createCell(2).setCellValue("TAs");
-        excelHeader.createCell(3).setCellValue("Section");
-        excelHeader.createCell(4).setCellValue("CRN");
-        excelHeader.createCell(5).setCellValue("Seats");
-        excelHeader.createCell(6).setCellValue("Section TAs");
-        excelHeader.createCell(7).setCellValue("Activity");
-        excelHeader.createCell(8).setCellValue("Days");
-        excelHeader.createCell(9).setCellValue("Start");
-        excelHeader.createCell(10).setCellValue("End");
-        excelHeader.createCell(11).setCellValue("Location");
+        if (simpleView == false) {
+            excelHeader.createCell(2).setCellValue("TAs");
+            excelHeader.createCell(3).setCellValue("Section");
+            excelHeader.createCell(4).setCellValue("CRN");
+            excelHeader.createCell(5).setCellValue("Seats");
+            excelHeader.createCell(6).setCellValue("Section TAs");
+            excelHeader.createCell(7).setCellValue("Activity");
+            excelHeader.createCell(8).setCellValue("Days");
+            excelHeader.createCell(9).setCellValue("Start");
+            excelHeader.createCell(10).setCellValue("End");
+            excelHeader.createCell(11).setCellValue("Location");
+        }
     }
 }

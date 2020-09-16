@@ -136,7 +136,7 @@ public class ScheduleSummaryReportController {
         }
     }
 
-    @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/generateExcel/simple", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/generateExcel/simpleView", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> generateExcelYearSimple(@PathVariable long workgroupId, @PathVariable long year,
                                              HttpServletRequest httpRequest) {
