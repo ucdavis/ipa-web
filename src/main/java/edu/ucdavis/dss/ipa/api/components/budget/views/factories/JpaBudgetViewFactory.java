@@ -169,6 +169,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     public BudgetScenarioExcelView createBudgetScenarioExcelView(BudgetScenario budgetScenarioDTO, Boolean includeCensus) {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioDTO.getId());
         Budget budget = budgetScenario.getBudget();
+        System.err.println(budget.getId());
         List<String> budgetScenarioTermCodes = new ArrayList<>();
         for(String termCodeShort : Arrays.asList(FALL.getShortTermCode(), WINTER.getShortTermCode(), SPRING.getShortTermCode())){
             String termCode = termService.getTermCodeFromYearAndTerm(budgetScenario.getBudget().getSchedule().getYear(), termCodeShort);

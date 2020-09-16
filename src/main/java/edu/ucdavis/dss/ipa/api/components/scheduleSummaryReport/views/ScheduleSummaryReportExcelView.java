@@ -26,6 +26,9 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
     }
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (scheduleSummaryReportViewDTO.isSimpleView()){
+            System.err.println("simple view true");
+        }
         List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
         Set<String> shortTermCodes = new java.util.HashSet<String>();
         Long year = scheduleSummaryReportViewDTO.getYear();

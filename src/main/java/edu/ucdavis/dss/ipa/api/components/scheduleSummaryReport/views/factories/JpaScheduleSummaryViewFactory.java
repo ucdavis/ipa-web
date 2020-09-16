@@ -26,7 +26,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject InstructorService instructorService;
 
     @Override
-    public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode) {
+    public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode, boolean simpleView) {
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         List<Course> courses = schedule.getCourses();
         List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
@@ -43,12 +43,18 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes);
+        return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments, instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes, simpleView);
     }
 
     @Override
     public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode) {
-        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode);
+        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode, false);
+        return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);
+    }
+
+    @Override
+    public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode, boolean simpleView) {
+        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode, simpleView);
         return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);
     }
 
