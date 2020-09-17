@@ -47,12 +47,6 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     }
 
     @Override
-    public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode) {
-        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode, false);
-        return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);
-    }
-
-    @Override
     public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode, boolean simpleView) {
         ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode, simpleView);
         return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);

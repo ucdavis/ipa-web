@@ -78,7 +78,7 @@ public class ScheduleSummaryReportController {
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
         if (isValidUrl) {
-            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, termCode);
+            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, termCode, false);
         } else {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
@@ -129,7 +129,7 @@ public class ScheduleSummaryReportController {
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
         if (isValidUrl) {
-            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, null);
+            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, null, false);
         } else {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
