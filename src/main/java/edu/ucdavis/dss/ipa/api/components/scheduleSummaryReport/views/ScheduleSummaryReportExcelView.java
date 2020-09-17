@@ -1,4 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
+
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Section;
@@ -6,10 +7,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -21,47 +19,42 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.ArrayList;
+
 public class ScheduleSummaryReportExcelView extends AbstractXlsView {
-    private ScheduleSummaryReportView scheduleSummaryReportViewDTO = null;
+    private ScheduleSummaryReportView scheduleSummaryReportViewDTO;
+
     public ScheduleSummaryReportExcelView(ScheduleSummaryReportView scheduleSummaryReportViewDTO) {
         this.scheduleSummaryReportViewDTO = scheduleSummaryReportViewDTO;
     }
+
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        boolean simpleView = scheduleSummaryReportViewDTO.isSimpleView();
-        List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
-        List<String> shortTermCodes = new ArrayList<>();
-        Long year = scheduleSummaryReportViewDTO.getYear();
+        final boolean simpleView = scheduleSummaryReportViewDTO.isSimpleView();
+        final Long year = scheduleSummaryReportViewDTO.getYear();
 
         String shortTermCode = scheduleSummaryReportViewDTO.getTermCode();
+        List<Course> courses = scheduleSummaryReportViewDTO.getCourses();
+        List<String> termCodes = new ArrayList<>();
+
         String workgroupName = "";
         if (scheduleSummaryReportViewDTO.getCourses().size() > 0) {
             workgroupName = scheduleSummaryReportViewDTO.getCourses().get(0).getSchedule().getWorkgroup().getName();
         }
         String dateOfDownload = new Date().toString();
         String fileName = "";
-        if(shortTermCode != null){
-            String fullTermCode = "";
-            if (Long.valueOf(shortTermCode) > 4) {
-                fullTermCode = year + shortTermCode;
-            } else {
-                year = Long.valueOf(year) + 1;
-                fullTermCode = year + shortTermCode;
-            }
-            shortTermCodes.add(fullTermCode);
-            fileName = "attachment; filename=\"" + workgroupName + "-" + fullTermCode + "-schedule_summary-" + dateOfDownload + ".xls\"";
+        if (shortTermCode != null){
+            String termCode = Term.getTermCodeByYearAndShortTermCode(year, shortTermCode);
+            termCodes.add(termCode);
+            fileName = "attachment; filename=\"" + workgroupName + "-" + termCode + "-schedule_summary-" + dateOfDownload + ".xls\"";
         } else{
-            final Long finalYear = year;
-            shortTermCodes = Arrays.stream(TermDescription.values()).map(v -> v.getTermCode(finalYear)).collect(Collectors.toList());
-
+            termCodes = Term.getQuarterTermCodesByYear(year);
             fileName = "attachment; filename=\"" + workgroupName + "-" + year + "-" + (year+1) + "-schedule_summary-" + dateOfDownload + ".xls\"";
         }
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", fileName);
-        for(String termCode : shortTermCodes){
+        for(String termCode : termCodes){
             printTerm(workbook, courses, termCode, simpleView);
         }
 
