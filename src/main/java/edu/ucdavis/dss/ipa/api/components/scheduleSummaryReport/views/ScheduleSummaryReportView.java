@@ -18,6 +18,7 @@ public class ScheduleSummaryReportView {
     List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
+    boolean simpleView = false;
 
     public ScheduleSummaryReportView(List<Course> courses,
                                      List<SectionGroup> sectionGroups,
@@ -29,7 +30,8 @@ public class ScheduleSummaryReportView {
                                      Long year,
                                      List<SupportAssignment> supportAssignments,
                                      List<SupportStaff> supportStaffList,
-                                     List<InstructorType> instructorTypes) {
+                                     List<InstructorType> instructorTypes,
+                                     boolean simpleView) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -41,6 +43,7 @@ public class ScheduleSummaryReportView {
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setInstructorTypes(instructorTypes);
+        setSimpleView(simpleView);
     }
 
     public List<Course> getCourses() {
@@ -129,5 +132,13 @@ public class ScheduleSummaryReportView {
 
     public void setInstructorTypes(List<InstructorType> instructorTypes) {
         this.instructorTypes = instructorTypes;
+    }
+
+    public boolean isSimpleView() {
+        return simpleView;
+    }
+
+    public void setSimpleView(boolean simpleView) {
+        this.simpleView = simpleView;
     }
 }

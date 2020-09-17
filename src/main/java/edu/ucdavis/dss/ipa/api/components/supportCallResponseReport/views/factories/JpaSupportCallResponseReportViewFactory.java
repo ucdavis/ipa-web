@@ -77,8 +77,7 @@ public class JpaSupportCallResponseReportViewFactory
     public View createSupportCallResponseReportExcelView(long workgroupId, long year) {
         List<SupportCallResponseReportView> supportCallResponseReportViewList = new ArrayList<>();
 
-        List<String> quarterTermCodes = Arrays.stream(TermDescription.values())
-            .map(v -> v.getTermCode(year)).collect(Collectors.toList());
+        List<String> quarterTermCodes = Term.getQuarterTermCodesByYear(year);
 
         for (String termCode : quarterTermCodes) {
             SupportCallResponseReportView supportCallResponseReportView =
