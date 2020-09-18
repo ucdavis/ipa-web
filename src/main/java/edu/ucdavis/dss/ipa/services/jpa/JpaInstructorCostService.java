@@ -64,7 +64,7 @@ public class JpaInstructorCostService implements InstructorCostService {
             return null;
         }
 
-        if (originalInstructorCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalInstructorCost.getBudgetScenario() != null && originalInstructorCost.getBudgetScenario().getIsSnapshot()) {
             return null;
         }
 
