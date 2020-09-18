@@ -296,21 +296,21 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/instructorTypeCosts/{instructorTypeId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public InstructorTypeCost updateInstructorTypeCost(@PathVariable long instructorTypeId,
-                                                   @RequestBody InstructorTypeCost newInstructorType,
+                                                   @RequestBody InstructorTypeCost newInstructorTypeCost,
                                                    HttpServletResponse httpResponse) {
         // Ensure valid params
-        InstructorTypeCost originalInstructorType = instructorTypeCostService.findById(instructorTypeId);
+        InstructorTypeCost originalInstructorTypeCost = instructorTypeCostService.findById(instructorTypeId);
 
-        if (originalInstructorType == null) {
+        if (originalInstructorTypeCost == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
         // Authorization check
-        Long workGroupId = originalInstructorType.getBudget().getSchedule().getWorkgroup().getId();
+        Long workGroupId = originalInstructorTypeCost.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        return instructorTypeCostService.update(newInstructorType);
+        return instructorTypeCostService.update(newInstructorTypeCost);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
