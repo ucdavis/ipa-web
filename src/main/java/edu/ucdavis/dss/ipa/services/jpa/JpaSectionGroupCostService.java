@@ -27,10 +27,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
-            return null;
-        }
-
         SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId(), originalSectionGroupCost.getTermCode());
 
         if (sectionGroupCost == null) {
