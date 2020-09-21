@@ -110,6 +110,9 @@ public class BudgetExcelView extends AbstractXlsxView {
         Sheet fundsSheet = workbook.createSheet("Funds");
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
+        Sheet expensesSheet = workbook.createSheet("Expenses");
+        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Amount"));
+
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
 
@@ -222,6 +225,17 @@ public class BudgetExcelView extends AbstractXlsxView {
                         lineItem.getDocumentNumber(),
                         lineItem.getAmount());
                 fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
+            }
+
+            // Create Expenses sheet
+            for(ExpenseItem expenseItem : budgetScenarioExcelView.getBudgetScenario().getExpenseItems()){
+                List<Object> cellValues = Arrays.asList(
+                        budgetScenarioExcelView.getWorkgroup().getName(),
+                        scenarioName,
+                        expenseItem.getExpenseItemCategoryDescription(),
+                        expenseItem.getDescription(),
+                        expenseItem.getAmount());
+                expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
             }
 
             // Creating Instructor Salaries sheet
