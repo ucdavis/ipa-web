@@ -43,19 +43,19 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
      */
     @Override
     public InstructorTypeCost update(InstructorTypeCost newInstructorTypeCost) {
-        InstructorTypeCost originalInstructorType = this.findById(newInstructorTypeCost.getId());
+        InstructorTypeCost originalInstructorTypeCost = this.findById(newInstructorTypeCost.getId());
 
-        if(originalInstructorType == null) {
+        if(originalInstructorTypeCost == null) {
             return null;
         }
 
-        if (originalInstructorType.getBudgetScenario().getIsSnapshot()) {
+        if (originalInstructorTypeCost.getBudgetScenario() != null && originalInstructorTypeCost.getBudgetScenario().getIsSnapshot()) {
             return null;
         }
 
-        originalInstructorType.setCost(newInstructorTypeCost.getCost());
+        originalInstructorTypeCost.setCost(newInstructorTypeCost.getCost());
 
-        return this.instructorTypeCostRepository.save(originalInstructorType);
+        return this.instructorTypeCostRepository.save(originalInstructorTypeCost);
     }
 
     @Override
