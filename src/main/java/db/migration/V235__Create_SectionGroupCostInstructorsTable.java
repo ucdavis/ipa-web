@@ -21,7 +21,7 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                                 "  `SectionGroupCostId` int(11) NOT NULL," +
                                 "  `TeachingAssignmentId` int(11)," +
                                 "  `Cost` decimal(15,2)," +
-                                "  `Reason` varchar(30)," +
+                                "  `Reason` varchar(200)," +
                                 "  `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP," +
                                 "  `UpdatedAt` timestamp NULL DEFAULT NULL," +
                                 "  `ModifiedBy` varchar(16) DEFAULT NULL" +
