@@ -160,7 +160,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                             sectionGroupCost.getSubjectCode());
                     if(sectionGroup != null){
                         for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
-                            if(!teachingAssingmentIds.contains(teachingAssignment.getId())){
+                            if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
                                 if(teachingAssignment.getInstructor() != null){
                                     instructors.add(teachingAssignment.getInstructor().getFullName());
                                 } else if (sectionGroupCost.getInstructorType() != null) {
