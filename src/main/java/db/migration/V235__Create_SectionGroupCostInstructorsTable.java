@@ -24,7 +24,8 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                                 "  `Reason` varchar(200)," +
                                 "  `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP," +
                                 "  `UpdatedAt` timestamp NULL DEFAULT NULL," +
-                                "  `ModifiedBy` varchar(16) DEFAULT NULL" +
+                                "  `ModifiedBy` varchar(16) DEFAULT NULL," +
+                                "   INDEX `SectionGroupCostInstructors_TeachingCallAssignmentId_idx` (`TeachingAssignmentId` ASC)" +
                                 ");");
         psCreateSectionGroupCostInstructorsTable.execute();
 
