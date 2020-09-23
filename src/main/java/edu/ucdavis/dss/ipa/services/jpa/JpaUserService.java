@@ -171,6 +171,10 @@ public class JpaUserService implements UserService {
 			}
 		}
 
+		if(loginIds.size() < 1){
+			return new ArrayList<>();
+		}
+
 		return userRepository.findByLoginIds(loginIds);
 	}
 
