@@ -189,7 +189,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
-        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByTeachingAssignments(teachingAssignments));
+        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByBudgetTeachingAssignments(budgetScenario.getBudget().getId()));
         users.addAll(lineItemUsers);
         users.addAll(teachingAssignmentUsers);
 
