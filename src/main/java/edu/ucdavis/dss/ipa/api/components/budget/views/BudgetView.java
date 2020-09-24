@@ -10,6 +10,7 @@ public class BudgetView {
     Workgroup workgroup;
     List<BudgetScenario> budgetScenarios;
     List<SectionGroupCost> sectionGroupCosts;
+    List<ReasonCategory> reasonCategories;
     List<LineItem> lineItems;
     Budget budget;
     List<LineItemCategory> lineItemCategories;
@@ -36,6 +37,7 @@ public class BudgetView {
         List<SectionGroupCost> sectionGroupCosts,
         List<SectionGroupCostComment> sectionGroupCostComments,
         List<SectionGroupCostInstructor> sectionGroupCostInstructors,
+        List<ReasonCategory> reasonCategories,
         List<LineItem> lineItems,
         List<LineItemComment> lineItemComments,
         Budget budget,
@@ -65,6 +67,7 @@ public class BudgetView {
         setInstructorCosts(instructorCosts);
         setSectionGroupCostComments(sectionGroupCostComments);
         setSectionGroupCostInstructors(sectionGroupCostInstructors);
+        setReasonCategories(reasonCategories);
         setLineItemComments(lineItemComments);
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
@@ -263,5 +266,13 @@ public class BudgetView {
     public void setUserWorkgroupsScenarios(
         Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         this.userWorkgroupsScenarios = userWorkgroupsScenarios;
+    }
+
+    public List<ReasonCategory> getReasonCategories() {
+        return reasonCategories;
+    }
+
+    public void setReasonCategories(List<ReasonCategory> reasonCategories) {
+        this.reasonCategories = reasonCategories;
     }
 }
