@@ -20,6 +20,7 @@ drop table if exists LineItemComments;
 drop table if exists LineItems;
 drop table if exists Locations;
 drop table if exists Notices;
+drop table if exists ReasonCategories;
 drop table if exists Roles;
 drop table if exists ScheduleInstructorNotes;
 drop table if exists Schedules;
