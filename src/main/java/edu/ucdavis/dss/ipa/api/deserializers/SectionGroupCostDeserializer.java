@@ -9,11 +9,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.*;
 
 public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
 
@@ -119,6 +115,12 @@ public class SectionGroupCostDeserializer extends JsonDeserializer<Object> {
             if (node.get("unitsLow").isNull() == false) {
                 sectionGroupCost.setUnitsLow(node.get("unitsLow").floatValue());
             }
+        }
+
+        if (node.has("reasonCategoryId")) {
+            ReasonCategory reasonCategory = new ReasonCategory();
+            reasonCategory.setId(node.get("reasonCategoryId").longValue());
+            sectionGroupCost.setReasonCategory(reasonCategory);
         }
 
         return sectionGroupCost;

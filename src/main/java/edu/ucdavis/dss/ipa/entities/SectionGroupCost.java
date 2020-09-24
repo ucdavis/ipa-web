@@ -34,6 +34,7 @@ public class SectionGroupCost extends BaseEntity {
     private List<SectionGroupCostInstructor> sectionGroupCostInstructors = new ArrayList<>();
     private InstructorType instructorType;
 	private boolean disabled;
+	private ReasonCategory reasonCategory;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -307,6 +308,27 @@ public class SectionGroupCost extends BaseEntity {
           }
         } else{
             return false;
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReasonCategoryId", nullable = true)
+    @JsonIgnore
+    public ReasonCategory getReasonCategory() {
+        return reasonCategory;
+    }
+
+    public void setReasonCategory(ReasonCategory reasonCategory) {
+        this.reasonCategory = reasonCategory;
+    }
+
+    @JsonProperty("reasonCategoryDescription")
+    @Transient
+    public String getReasonCategoryDescription() {
+        if(reasonCategory != null) {
+            return reasonCategory.getDescription();
+        } else {
+            return "";
         }
     }
 }
