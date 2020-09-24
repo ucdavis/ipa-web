@@ -16,6 +16,12 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
     public void migrate(Connection connection) throws Exception {
         connection.setAutoCommit(false);
         try {
+            // Extend Reason Size on SectionGroupCost Table
+            PreparedStatement psResizeReasonOnSectionGroupCost =
+                    connection.prepareStatement(
+                            "ALTER TABLE `SectionGroupCosts` MODIFY `Reason` varchar(200);");
+            psResizeReasonOnSectionGroupCost.execute();
+
             // Add new Reason Category to SectionGroupCost Table
             PreparedStatement psAddReasonCategoryToSectionGroupCost =
                     connection.prepareStatement(
@@ -82,12 +88,11 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                 Long instructorId = rsSectionGroupCostsQuery.getLong("InstructorId");
                 Long instructorTypeId = rsSectionGroupCostsQuery.getLong("InstructorTypeId");
                 BigDecimal cost = rsSectionGroupCostsQuery.getBigDecimal("Cost");
-                String reason = rsSectionGroupCostsQuery.getString("Reason");
                 Integer fromLiveData = rsSectionGroupCostsQuery.getInt("FromLiveData");
                 Long teachingAssignmentId = rsSectionGroupCostsQuery.getLong("TeachingAssignmentId");
 
-                if (instructorId != 0 || instructorTypeId != 0 || reason != null || cost != null) {
-                    PreparedStatement psCreateSectionGroupCostInstructor = connection.prepareStatement("INSERT INTO SectionGroupCostInstructors (SectionGroupCostId, InstructorId, InstructorTypeId, Cost, Reason, TeachingAssignmentId) VALUES (?, ?, ?, ?, ?, ?);");
+                if (instructorId != 0 || instructorTypeId != 0 || cost != null) {
+                    PreparedStatement psCreateSectionGroupCostInstructor = connection.prepareStatement("INSERT INTO SectionGroupCostInstructors (SectionGroupCostId, InstructorId, InstructorTypeId, Cost, TeachingAssignmentId) VALUES (?, ?, ?, ?, ?);");
                     psCreateSectionGroupCostInstructor.setLong(1, sectionGroupCostId);
                     if (instructorId != 0) {
                         psCreateSectionGroupCostInstructor.setLong(2, instructorId);
@@ -104,11 +109,10 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                     } else {
                         psCreateSectionGroupCostInstructor.setNull(4, Types.FLOAT);
                     }
-                    psCreateSectionGroupCostInstructor.setString(5, reason);
                     if (fromLiveData == 1 && teachingAssignmentId != 0) {
-                        psCreateSectionGroupCostInstructor.setLong(6, teachingAssignmentId);
+                        psCreateSectionGroupCostInstructor.setLong(5, teachingAssignmentId);
                     } else {
-                        psCreateSectionGroupCostInstructor.setNull(6, Types.INTEGER);
+                        psCreateSectionGroupCostInstructor.setNull(5, Types.INTEGER);
                     }
                     psCreateSectionGroupCostInstructor.execute();
                     psCreateSectionGroupCostInstructor.close();
