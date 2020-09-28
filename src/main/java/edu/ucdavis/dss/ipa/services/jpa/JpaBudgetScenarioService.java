@@ -172,46 +172,46 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return budgetScenario;
     }
 
-    public BudgetScenario createSnapshot(long scenarioId) {
+    public BudgetScenario createBudgetRequestScenario(long scenarioId) {
         BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalScenario == null) { return null; }
 
         // create new budgetScenario with isSnapshot true, copy Budget TaCost, ReaderCost
-        BudgetScenario snapshotScenario = new BudgetScenario();
-        snapshotScenario.setBudget(originalScenario.getBudget());
+        BudgetScenario budgetRequestScenario = new BudgetScenario();
+        budgetRequestScenario.setBudget(originalScenario.getBudget());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        snapshotScenario.setName("Budget Request - " + simpleDateFormat.format(new Date()));
-        snapshotScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
-        snapshotScenario.setFromLiveData(false);
-        snapshotScenario.setIsSnapshot(true);
-        snapshotScenario.setTaCost(originalScenario.getBudget().getTaCost());
-        snapshotScenario.setReaderCost(originalScenario.getBudget().getReaderCost());
-        snapshotScenario = budgetScenarioRepository.save(snapshotScenario);
+        budgetRequestScenario.setName("Budget Request - " + simpleDateFormat.format(new Date()));
+        budgetRequestScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
+        budgetRequestScenario.setFromLiveData(false);
+        budgetRequestScenario.setIsBudgetRequest(true);
+        budgetRequestScenario.setTaCost(originalScenario.getBudget().getTaCost());
+        budgetRequestScenario.setReaderCost(originalScenario.getBudget().getReaderCost());
+        budgetRequestScenario = budgetScenarioRepository.save(budgetRequestScenario);
 
-        List<SectionGroupCost> sectionGroupCostList = snapshotScenario.getSectionGroupCosts();
+        List<SectionGroupCost> sectionGroupCostList = budgetRequestScenario.getSectionGroupCosts();
         for (SectionGroupCost originalSectionGroupCost : originalScenario.getSectionGroupCosts()) {
-            SectionGroupCost newSectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, snapshotScenario);
+            SectionGroupCost newSectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetRequestScenario);
 
             sectionGroupCostCommentService.copyComments(originalSectionGroupCost, newSectionGroupCost);
 
             sectionGroupCostList.add(newSectionGroupCost);
         }
-        snapshotScenario.setSectionGroupCosts(sectionGroupCostList);
+        budgetRequestScenario.setSectionGroupCosts(sectionGroupCostList);
 
-        List<LineItem> lineItemList = snapshotScenario.getLineItems();
+        List<LineItem> lineItemList = budgetRequestScenario.getLineItems();
         for (LineItem originalLineItem : originalScenario.getLineItems()) {
-            LineItem newLineItem = lineItemService.createDuplicate(originalLineItem, snapshotScenario);
+            LineItem newLineItem = lineItemService.createDuplicate(originalLineItem, budgetRequestScenario);
 
             lineItemCommentService.copyComments(originalLineItem, newLineItem);
             lineItemList.add(newLineItem);
         }
-        snapshotScenario.setLineItems(lineItemList);
+        budgetRequestScenario.setLineItems(lineItemList);
 
-        instructorCostService.snapshotInstructorCosts(snapshotScenario, originalScenario);
-        instructorTypeCostService.snapshotInstructorTypeCosts(snapshotScenario, originalScenario);
+        instructorCostService.snapshotInstructorCosts(budgetRequestScenario, originalScenario);
+        instructorTypeCostService.snapshotInstructorTypeCosts(budgetRequestScenario, originalScenario);
 
-        return budgetScenarioRepository.save(snapshotScenario);
+        return budgetScenarioRepository.save(budgetRequestScenario);
     }
 
     @Override
