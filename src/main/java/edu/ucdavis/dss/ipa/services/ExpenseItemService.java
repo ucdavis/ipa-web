@@ -10,6 +10,8 @@ import java.util.List;
 public interface ExpenseItemService {
     List<ExpenseItem> findByBudgetId(Long budgetId);
 
+    List<ExpenseItem> findByBudgetScenarioId(Long budgetScenarioId);
+
     ExpenseItem findById(Long expenseItemId);
 
     void deleteById(long expenseItemId);

@@ -1,30 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_OFFERINGS;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_OFFERINGS;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COUNT;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.REPLACEMENT_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.SCH_GRAD;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.SCH_UNDERGRAD;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COUNT;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_BALANCE;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_FUNDS;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_SEATS;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_TEACHING_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNASSIGNED_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COST;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNITS_OFFERED;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERINGS;
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
-
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
@@ -49,6 +24,8 @@ import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
+
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 
 public class BudgetExcelView extends AbstractXlsxView {
     private List<BudgetScenarioExcelView> budgetScenarioExcelViews;
@@ -357,6 +334,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             "",
             "Total Teaching Costs",
             "Funds Cost",
+            "Expenses",
             "Balance",
             "",
             "Units Offered",
@@ -451,6 +429,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                     break;
                 case "Funds Cost":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS));
+                    break;
+                case "Expenses":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES));
                     break;
                 case "Balance":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE));

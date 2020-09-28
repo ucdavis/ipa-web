@@ -192,6 +192,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
         List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCostInstructorService.findByBudgetScenarioId(budgetScenario.getId());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
+        List<ExpenseItem> expenseItems = expenseItemService.findByBudgetScenarioId(budgetScenario.getId());
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
         List<InstructorCost> instructorCosts = budgetScenario.getIsBudgetRequest() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
@@ -246,7 +247,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
 
         // Calculate totals
-        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, budgetScenario, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
+        Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, budgetScenario, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems, expenseItems);
 
         BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, sectionGroupCostInstructors, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 

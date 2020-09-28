@@ -43,7 +43,8 @@ public class BudgetCalculationService {
                                                                            List<SectionGroupCost> sectionGroupCosts,
                                                                            List<String> termCodes,
                                                                            Workgroup workgroup,
-                                                                           List<LineItem> lineItems) {
+                                                                           List<LineItem> lineItems,
+                                                                           List<ExpenseItem> expenseItems) {
         Map<String, Map<BudgetSummary, BigDecimal>> termTotals = new HashMap<>();
 
         for (String termCode : termCodes) {
@@ -266,8 +267,14 @@ public class BudgetCalculationService {
         for(LineItem lineItem: lineItems){
             funds = funds.add(lineItem.getAmount());
         }
+        BigDecimal expenses = BigDecimal.ZERO;
+        for(ExpenseItem expenseItem : expenseItems){
+            expenses = expenses.add(expenseItem.getAmount());
+        }
+
         combinedTermSummary.put(TOTAL_FUNDS, funds);
-        combinedTermSummary.put(TOTAL_BALANCE, funds.subtract(combinedTermSummary.get(TOTAL_TEACHING_COST)));
+        combinedTermSummary.put(TOTAL_EXPENSES, expenses);
+        combinedTermSummary.put(TOTAL_BALANCE, funds.subtract(combinedTermSummary.get(TOTAL_TEACHING_COST).add(expenses)));
 
         return termTotals;
     }
@@ -391,6 +398,7 @@ public class BudgetCalculationService {
             new SimpleEntry<>(TOTAL_TEACHING_COST, BigDecimal.ZERO),
             new SimpleEntry<>(TOTAL_BALANCE, BigDecimal.ZERO),
             new SimpleEntry<>(TOTAL_FUNDS, BigDecimal.ZERO),
+            new SimpleEntry<>(TOTAL_EXPENSES, BigDecimal.ZERO),
             new SimpleEntry<>(LOWER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_OFFERINGS, BigDecimal.ZERO),

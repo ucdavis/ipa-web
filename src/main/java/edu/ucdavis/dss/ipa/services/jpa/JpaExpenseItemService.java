@@ -20,6 +20,10 @@ public class JpaExpenseItemService implements ExpenseItemService {
         return expenseItemRepository.findByBudgetId(budgetId);
     }
 
+    public List<ExpenseItem> findByBudgetScenarioId(Long budgetScenarioId) {
+        return expenseItemRepository.findByBudgetScenarioId(budgetScenarioId);
+    }
+
     @Override
     public ExpenseItem findById(Long expenseItemId) {
         return expenseItemRepository.findById(expenseItemId);

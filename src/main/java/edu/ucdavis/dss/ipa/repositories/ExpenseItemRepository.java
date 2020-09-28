@@ -16,6 +16,12 @@ public interface ExpenseItemRepository extends CrudRepository<ExpenseItem, Long>
             " AND b.id = :budgetId ")
     List<ExpenseItem> findByBudgetId(@Param("budgetId") Long budgetId);
 
+    @Query( " SELECT DISTINCT e" +
+            " FROM BudgetScenario bs, ExpenseItem e" +
+            " WHERE e.budgetScenario = bs" +
+            " AND bs.id = :budgetScenarioId ")
+    List<ExpenseItem> findByBudgetScenarioId(@Param("budgetScenarioId") Long budgetScenarioId);
+
     ExpenseItem findById(Long expenseItemId);
 
     void deleteById(long expenseItemId);
