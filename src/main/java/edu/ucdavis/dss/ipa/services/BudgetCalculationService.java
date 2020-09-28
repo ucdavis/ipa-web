@@ -267,7 +267,7 @@ public class BudgetCalculationService {
                 InstructorTypeCost instructorTypeCost = budgetScenario.getIsSnapshot()
                     ? instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeIdFinal, budgetScenario.getId())
                     : instructorTypeCostService.findByInstructorTypeIdAndBudgetId(instructorTypeIdFinal, budget.getId());
-                if (instructorTypeCost != null) {
+                if (instructorTypeCost != null && instructorTypeCost.getCost() != null) {
                     return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }
             }
