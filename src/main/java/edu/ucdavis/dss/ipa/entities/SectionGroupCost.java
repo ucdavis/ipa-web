@@ -331,4 +331,14 @@ public class SectionGroupCost extends BaseEntity {
             return "";
         }
     }
+
+    @JsonProperty("reasonCategoryId")
+    @Transient
+    public long getReasonCategoryId() {
+        if(reasonCategory != null) {
+            return reasonCategory.getId();
+        } else {
+            return 0;
+        }
+    }
 }

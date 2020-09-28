@@ -58,6 +58,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             sectionGroupCost.setInstructor(instructor);
         }
 
+        if (originalSectionGroupCost.getReasonCategory() != null) {
+            ReasonCategory reasonCategory = reasonCategoryRepository.findById(originalSectionGroupCost.getReasonCategory().getId());
+            sectionGroupCost.setReasonCategory(reasonCategory);
+        }
+
         sectionGroupCost.setBudgetScenario(budgetScenario);
         sectionGroupCost.setInstructorType(originalSectionGroupCost.getInstructorType());
         sectionGroupCost.setEnrollment(originalSectionGroupCost.getEnrollment());
