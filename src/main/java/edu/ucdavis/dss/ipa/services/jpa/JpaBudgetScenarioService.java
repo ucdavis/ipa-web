@@ -22,6 +22,8 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -178,7 +180,8 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         // create new budgetScenario with isSnapshot true, copy Budget TaCost, ReaderCost
         BudgetScenario snapshotScenario = new BudgetScenario();
         snapshotScenario.setBudget(originalScenario.getBudget());
-        snapshotScenario.setName(originalScenario.getName());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        snapshotScenario.setName("Budget Request - " + simpleDateFormat.format(new Date()));
         snapshotScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
         snapshotScenario.setFromLiveData(false);
         snapshotScenario.setIsSnapshot(true);
