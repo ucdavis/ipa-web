@@ -656,7 +656,7 @@ public class BudgetViewController {
         return expenseItemIds;
     }
 
-    /*@RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public List<ExpenseItem> getExpenseItems(@PathVariable long budgetScenarioId,
                                              HttpServletResponse httpResponse) {
@@ -674,5 +674,5 @@ public class BudgetViewController {
         List<ExpenseItem> expenseItems = expenseItemService.findByBudgetScenarioId(budgetScenarioId);
 
         return expenseItems;
-    }*/
+    }
 }

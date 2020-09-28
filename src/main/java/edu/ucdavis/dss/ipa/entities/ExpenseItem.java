@@ -95,4 +95,14 @@ public class ExpenseItem {
             return "";
         }
     }
+
+    @JsonProperty("budgetScenarioId")
+    @Transient
+    public long getBudgetScenarioId(){
+        if(budgetScenario != null){
+            return budgetScenario.getId();
+        } else {
+            return 0;
+        }
+    }
 }
