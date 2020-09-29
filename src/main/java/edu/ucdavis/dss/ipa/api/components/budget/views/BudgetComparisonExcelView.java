@@ -78,14 +78,8 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             BudgetScenarioExcelView previousYear = budgetScenarioExcelViewPair.get(0);
             BudgetScenarioExcelView currentYear = budgetScenarioExcelViewPair.get(1);
 
-            String previousScenarioName = previousYear.getBudgetScenario().getIsSnapshot() ?
-                previousYear.getBudgetScenario().getName() + " - SNAPSHOT - " +
-                    format.format(previousYear.getBudgetScenario().getCreatedAt()) :
-                previousYear.getBudgetScenario().getName();
-            String currentScenarioName = currentYear.getBudgetScenario().getIsSnapshot() ?
-                currentYear.getBudgetScenario().getName() + " - SNAPSHOT - " +
-                    format.format(currentYear.getBudgetScenario().getCreatedAt()) :
-                currentYear.getBudgetScenario().getName();
+            String previousScenarioName = previousYear.getBudgetScenario().getName();
+            String currentScenarioName = currentYear.getBudgetScenario().getName();
 
             ExcelHelper.setSheetHeader(report, Arrays
                 .asList(previousScenarioName, "", "", "",

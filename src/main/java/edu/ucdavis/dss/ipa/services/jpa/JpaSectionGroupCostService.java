@@ -29,7 +29,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         SectionGroupCost sectionGroupCost;
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
             // allow cloning a snapshot's sectionGroupCost, but not updating
             sectionGroupCost = null;
         } else {
@@ -137,7 +137,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 
@@ -178,7 +178,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     public SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
         boolean updateRequired = false;
 
-        if (budgetScenario.getIsSnapshot()) {
+        if (budgetScenario.getIsBudgetRequest()) {
             return null;
         }
 

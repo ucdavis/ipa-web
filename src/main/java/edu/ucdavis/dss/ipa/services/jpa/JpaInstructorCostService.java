@@ -2,7 +2,6 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorCostRepository;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.InstructorCostService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import org.springframework.stereotype.Service;
@@ -64,7 +63,7 @@ public class JpaInstructorCostService implements InstructorCostService {
             return null;
         }
 
-        if (originalInstructorCost.getBudgetScenario() != null && originalInstructorCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalInstructorCost.getBudgetScenario() != null && originalInstructorCost.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 
