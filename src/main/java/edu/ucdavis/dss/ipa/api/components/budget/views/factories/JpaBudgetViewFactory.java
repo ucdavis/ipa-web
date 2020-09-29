@@ -187,8 +187,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        List<InstructorCost> instructorCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
-        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorTypeCosts() : budget.getInstructorTypeCosts();
+        List<InstructorCost> instructorCosts = budgetScenario.getIsBudgetRequest() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
+        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsBudgetRequest() ? budgetScenario.getInstructorTypeCosts() : budget.getInstructorTypeCosts();
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));

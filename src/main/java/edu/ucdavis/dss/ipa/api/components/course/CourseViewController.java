@@ -155,6 +155,8 @@ public class CourseViewController {
 			List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroup.getId(), originalSectionGroup.getCourse().getYear());
 
 			for (BudgetScenario budgetScenario : budgetScenarios) {
+				if (budgetScenario.getIsBudgetRequest()) { continue; }
+
 				SectionGroupCost sectionGroupCost = sectionGroupCostService
 					.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
 						originalSectionGroup.getCourse().getSubjectCode(),

@@ -59,8 +59,8 @@ public class BudgetCalculationService {
         // new BigDecimal(String.valueOf()) = 7303.83
         // new BigDecimal(float) = 7303.830078125
         // BigDecimal.valueOf(float) = 7303.830078125
-        BigDecimal baseTaCost = budgetScenario.getIsSnapshot() ? new BigDecimal(String.valueOf(budgetScenario.getTaCost())) : new BigDecimal(String.valueOf(budget.getTaCost()));
-        BigDecimal baseReaderCost = budgetScenario.getIsSnapshot() ? new BigDecimal(String.valueOf(budgetScenario.getReaderCost())) : new BigDecimal(String.valueOf(budget.getReaderCost()));
+        BigDecimal baseTaCost = budgetScenario.getIsBudgetRequest() ? new BigDecimal(String.valueOf(budgetScenario.getTaCost())) : new BigDecimal(String.valueOf(budget.getTaCost()));
+        BigDecimal baseReaderCost = budgetScenario.getIsBudgetRequest() ? new BigDecimal(String.valueOf(budgetScenario.getReaderCost())) : new BigDecimal(String.valueOf(budget.getReaderCost()));
 
         Map<BudgetSummary, BigDecimal> combinedTermSummary = termTotals.get("combined");
         List<Long> teachingAssignmentIds = new ArrayList<>();
@@ -321,7 +321,7 @@ public class BudgetCalculationService {
         } else {
             if (sectionGroupCost.getInstructor() != null) {
                 // named instructor assignment, check for instructor salary, else check for category cost for named instructor
-                InstructorCost instructorCost = budgetScenario.getIsSnapshot()
+                InstructorCost instructorCost = budgetScenario.getIsBudgetRequest()
                     ? instructorCostService
                     .findByInstructorIdAndBudgetScenarioId(sectionGroupCost.getInstructor().getId(),
                         budgetScenario.getId())
@@ -334,7 +334,7 @@ public class BudgetCalculationService {
                         new BigDecimal(String.valueOf(instructorCost.getCost()));
                 } else {
                     final long instructorTypeIdFinal = instructorTypeId;
-                    InstructorTypeCost instructorTypeCost = budgetScenario.getIsSnapshot()
+                    InstructorTypeCost instructorTypeCost = budgetScenario.getIsBudgetRequest()
                         ? instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeIdFinal, budgetScenario.getId())
                         : instructorTypeCostService.findByInstructorTypeIdAndBudgetId(instructorTypeIdFinal, budget.getId());
                     if (instructorTypeCost != null && instructorTypeCost.getCost() != null) {
@@ -344,10 +344,10 @@ public class BudgetCalculationService {
             } else if (instructorTypeId > 0) {
                 // unnamed instructor type assignment
                 final long instructorTypeIdFinal = instructorTypeId;
-                InstructorTypeCost instructorTypeCost = budgetScenario.getIsSnapshot()
+                InstructorTypeCost instructorTypeCost = budgetScenario.getIsBudgetRequest()
                     ? instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(instructorTypeIdFinal, budgetScenario.getId())
                     : instructorTypeCostService.findByInstructorTypeIdAndBudgetId(instructorTypeIdFinal, budget.getId());
-                if (instructorTypeCost != null) {
+                if (instructorTypeCost != null && instructorTypeCost.getCost() != null) {
                     return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
                 }
             }

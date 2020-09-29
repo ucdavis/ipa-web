@@ -29,11 +29,14 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
-            return null;
-        }
+        SectionGroupCost sectionGroupCost;
 
-        SectionGroupCost sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId(), originalSectionGroupCost.getTermCode());
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
+            // allow cloning a snapshot's sectionGroupCost, but not updating
+            sectionGroupCost = null;
+        } else {
+            sectionGroupCost = sectionGroupCostRepository.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(originalSectionGroupCost.getSubjectCode(), originalSectionGroupCost.getCourseNumber(), originalSectionGroupCost.getSequencePattern(), budgetScenario.getId(), originalSectionGroupCost.getTermCode());
+        }
 
         if (sectionGroupCost == null) {
             sectionGroupCost = new SectionGroupCost();
@@ -141,7 +144,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 
@@ -185,7 +188,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     public SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
         boolean updateRequired = false;
 
-        if (budgetScenario.getIsSnapshot()) {
+        if (budgetScenario.getIsBudgetRequest()) {
             return null;
         }
 

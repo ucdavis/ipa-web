@@ -117,14 +117,11 @@ public class BudgetExcelView extends AbstractXlsxView {
         instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
 
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
-            Boolean isSnapshot = budgetScenarioExcelView.getBudgetScenario().getIsSnapshot();
             Boolean isLiveData = budgetScenarioExcelView.getBudgetScenario().getFromLiveData();
-            String scenarioName = isSnapshot ?
-                budgetScenarioExcelView.getBudgetScenario().getName() + " - SNAPSHOT - " +
-                    format.format(budgetScenarioExcelView.getBudgetScenario().getCreatedAt()) :
-                budgetScenarioExcelView.getBudgetScenario().getName();
-            Float baseTaCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
-            Float baseReaderCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
+            Boolean isBudgetRequest = budgetScenarioExcelView.getBudgetScenario().getIsBudgetRequest();
+            String scenarioName = budgetScenarioExcelView.getBudgetScenario().getName();
+            Float baseTaCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
+            Float baseReaderCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
 
             // Create Schedule Cost sheet
             for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
@@ -381,12 +378,8 @@ public class BudgetExcelView extends AbstractXlsxView {
         List<Object> data = new ArrayList<>();
 
         data.add(budgetScenarioExcelView.getWorkgroup().getName());
-        data.add(budgetScenarioExcelView.budgetScenario.getIsSnapshot() ?
-            budgetScenarioExcelView.budgetScenario.getName() + " - SNAPSHOT - " +
-                format.format(budgetScenarioExcelView.budgetScenario.getCreatedAt()) :
-            budgetScenarioExcelView.budgetScenario.getName());
+        data.add(budgetScenarioExcelView.budgetScenario.getName());
         data.add(field);
-
 
         for(String termCode: termCodes){
             switch(field){
