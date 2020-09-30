@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigration {
+public class V237__Create_SectionGroupCostInstructorsTable implements JdbcMigration {
     @Override
     public void migrate(Connection connection) throws Exception {
         connection.setAutoCommit(false);
@@ -41,7 +41,7 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
             psCreateReasonCategoryTable.execute();
 
             List<String> reasonCategories = Arrays.asList(
-                    "Accomodations",
+                    "Accommodations",
                     "Additional section",
                     "Increase enrollment",
                     "Conversion to Lecturer",
@@ -49,7 +49,24 @@ public class V235__Create_SectionGroupCostInstructorsTable implements JdbcMigrat
                     "Lecturer Medical Leave",
                     "Additional workload",
                     "Resignation",
-                    "Retirement"
+                    "Retirement",
+                    "Freshmen Seminar (Internal BO)",
+                    "Univ Honors Program (Internal BO)",
+                    "Prof Dev Award (Internal BO)",
+                    "Internal Buyout",
+                    "External Buyout",
+                    "Chair",
+                    "Vice Chair",
+                    "Admin Appointment",
+                    "Editor",
+                    "Course Teaching Credit",
+                    "Mentoring Credit",
+                    "Personal Leave Without Pay",
+                    "Fellowship",
+                    "FMLA",
+                    "Work Life Balance",
+                    "Conversion",
+                    "Other"
                     );
             for(String reasonCategory : reasonCategories){
                 PreparedStatement psAddReasonCategory =
