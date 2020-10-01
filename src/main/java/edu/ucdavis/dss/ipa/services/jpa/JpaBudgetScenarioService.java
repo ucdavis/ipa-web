@@ -183,7 +183,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
         String budgetRequestPrefix;
         if (originalScenario.getBudget().getBudgetScenarios().stream().anyMatch(bs -> bs.getIsBudgetRequest() == true)) {
-            budgetRequestPrefix = "Updated";
+            budgetRequestPrefix = "Revised";
         } else {
             budgetRequestPrefix = "Initial";
         }
