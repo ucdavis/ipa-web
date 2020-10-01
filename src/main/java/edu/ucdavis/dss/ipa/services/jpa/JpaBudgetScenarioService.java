@@ -180,8 +180,16 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         // create new budgetScenario with isSnapshot true, copy Budget TaCost, ReaderCost
         BudgetScenario budgetRequestScenario = new BudgetScenario();
         budgetRequestScenario.setBudget(originalScenario.getBudget());
+
+        String budgetRequestPrefix;
+        if (originalScenario.getBudget().getBudgetScenarios().stream().anyMatch(bs -> bs.getIsBudgetRequest() == true)) {
+            budgetRequestPrefix = "Updated";
+        } else {
+            budgetRequestPrefix = "Initial";
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        budgetRequestScenario.setName("Budget Request - " + simpleDateFormat.format(new Date()));
+        budgetRequestScenario.setName(budgetRequestPrefix + " Budget Request - " + simpleDateFormat.format(new Date()));
+
         budgetRequestScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
         budgetRequestScenario.setFromLiveData(false);
         budgetRequestScenario.setIsBudgetRequest(true);
