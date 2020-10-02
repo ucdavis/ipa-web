@@ -247,4 +247,10 @@ public class BudgetScenario extends BaseEntity {
     public Date getCreationDate() {
         return createdAt;
     }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
+    }
 }
