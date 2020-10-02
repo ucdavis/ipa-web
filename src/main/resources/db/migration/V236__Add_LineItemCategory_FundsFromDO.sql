@@ -1,1 +1,1 @@
-INSERT INTO `LineItemCategories` (`Description`) VALUES ('Additional Funds from DO');
+INSERT INTO `LineItemCategories` (`Description`) VALUES ("Additional Funds From Dean's Office");
