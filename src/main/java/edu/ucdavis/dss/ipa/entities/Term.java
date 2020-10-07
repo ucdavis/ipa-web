@@ -1,10 +1,14 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -122,6 +126,17 @@ public class Term implements Serializable {
 	}
 
 	/**
+	 * Provide quarter term codes (SS1, SS2, Fall, Winter, Spring) for an academic year.
+	 *
+	 * @param year first year in the academic year, e.g. for "2013-14", provide 2013
+	 * @return     list of all quarter term codes for the given academic year
+	 */
+	@Transient
+	public static List<String> getQuarterTermCodesByYear(long year) {
+		return Arrays.stream(TermDescription.values()).map(td -> getTermCodeByYearAndShortTermCode(year, td.getShortTermCode())).collect(Collectors.toList());
+	}
+
+	/**
 	 * Provide the two digit code of the provided termCode
 	 *
 	 * @param termCode e.g. for "201510"
@@ -148,6 +163,22 @@ public class Term implements Serializable {
 		}
 
 		return year + twoDigitTermCode;
+	}
+
+	/**
+	 * Returns the full termCode for the provided year and two digit term code
+	 *
+	 * @param year e.g. 2016
+	 * @param shortTermCode e.g. "01"
+	 * @return         "201701"
+	 */
+	@Transient
+	public static String getTermCodeByYearAndShortTermCode(long year, String shortTermCode) {
+		if (Long.valueOf(shortTermCode) > 4) {
+			return year + shortTermCode;
+		} else {
+			return (Long.valueOf(year) + 1) + shortTermCode;
+		}
 	}
 
 	/**

@@ -111,6 +111,11 @@ public class JpaSectionGroupService implements SectionGroupService {
 		return sectionGroups;
 	}
 
+	@Override
+	public SectionGroup findBySectionGroupCostDetails(long workgroupId, String courseNumber, String sequencePattern, String termCode, String subjectCode){
+		return sectionGroupRepository.findBySectionGroupCostDetails(workgroupId, courseNumber, sequencePattern, termCode, subjectCode);
+	}
+
 	/**
 	 * Returns sectionGroups that have an support assignment for a type that is relevant to the specified student support call.
 	 * @param scheduleId

@@ -61,7 +61,7 @@ public class JpaLineItemService implements LineItemService {
             return null;
         }
 
-        if (originalLineItem.getBudgetScenario().getIsSnapshot()) {
+        if (originalLineItem.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 

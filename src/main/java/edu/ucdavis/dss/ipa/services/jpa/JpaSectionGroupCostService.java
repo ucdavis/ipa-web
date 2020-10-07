@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
+import edu.ucdavis.dss.ipa.repositories.ReasonCategoryRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     @Inject SectionGroupCostRepository sectionGroupCostRepository;
     @Inject InstructorRepository instructorRepository;
     @Inject InstructorTypeRepository instructorTypeRepository;
+    @Inject ReasonCategoryRepository reasonCategoryRepository;
 
     @Override
     public List<SectionGroupCost> findByBudgetId(Long budgetId) {
@@ -29,7 +31,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         SectionGroupCost sectionGroupCost;
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
             // allow cloning a snapshot's sectionGroupCost, but not updating
             sectionGroupCost = null;
         } else {
@@ -57,6 +59,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         if (originalSectionGroupCost.getInstructor() != null) {
             Instructor instructor = instructorRepository.findById(originalSectionGroupCost.getInstructor().getId());
             sectionGroupCost.setInstructor(instructor);
+        }
+
+        if (originalSectionGroupCost.getReasonCategory() != null) {
+            ReasonCategory reasonCategory = reasonCategoryRepository.findById(originalSectionGroupCost.getReasonCategory().getId());
+            sectionGroupCost.setReasonCategory(reasonCategory);
         }
 
         sectionGroupCost.setBudgetScenario(budgetScenario);
@@ -137,7 +144,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             return null;
         }
 
-        if (originalSectionGroupCost.getBudgetScenario().getIsSnapshot()) {
+        if (originalSectionGroupCost.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 
@@ -152,6 +159,9 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
         originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
         originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
+        if(sectionGroupCostDTO.getReasonCategory() != null){
+            originalSectionGroupCost.setReasonCategory(reasonCategoryRepository.findById(sectionGroupCostDTO.getReasonCategory().getId()));
+        }
         return this.save(originalSectionGroupCost);
     }
 
@@ -178,7 +188,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     public SectionGroupCost updateFromSectionGroup(SectionGroup sectionGroup, BudgetScenario budgetScenario) {
         boolean updateRequired = false;
 
-        if (budgetScenario.getIsSnapshot()) {
+        if (budgetScenario.getIsBudgetRequest()) {
             return null;
         }
 

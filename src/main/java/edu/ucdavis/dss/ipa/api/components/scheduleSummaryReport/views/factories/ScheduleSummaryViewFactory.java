@@ -4,8 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSu
 import org.springframework.web.servlet.View;
 
 public interface ScheduleSummaryViewFactory {
+    ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String termCode, boolean simpleView);
 
-    ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String termCode);
-
-    View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode);
+    View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode, boolean simpleView);
 }

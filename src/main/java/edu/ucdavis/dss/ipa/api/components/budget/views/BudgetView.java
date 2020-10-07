@@ -10,6 +10,7 @@ public class BudgetView {
     Workgroup workgroup;
     List<BudgetScenario> budgetScenarios;
     List<SectionGroupCost> sectionGroupCosts;
+    List<ReasonCategory> reasonCategories;
     List<LineItem> lineItems;
     Budget budget;
     List<LineItemCategory> lineItemCategories;
@@ -19,6 +20,7 @@ public class BudgetView {
     List<Instructor> activeInstructors;
     Set<Instructor> assignedInstructors;
     List<SectionGroupCostComment> sectionGroupCostComments;
+    List<SectionGroupCostInstructor> sectionGroupCostInstructors;
     List<LineItemComment> lineItemComments;
     List<Course> courses;
     List<TeachingAssignment> teachingAssignments;
@@ -34,6 +36,8 @@ public class BudgetView {
         List<BudgetScenario> budgetScenarios,
         List<SectionGroupCost> sectionGroupCosts,
         List<SectionGroupCostComment> sectionGroupCostComments,
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors,
+        List<ReasonCategory> reasonCategories,
         List<LineItem> lineItems,
         List<LineItemComment> lineItemComments,
         Budget budget,
@@ -62,6 +66,8 @@ public class BudgetView {
         setLineItemCategories(lineItemCategories);
         setInstructorCosts(instructorCosts);
         setSectionGroupCostComments(sectionGroupCostComments);
+        setSectionGroupCostInstructors(sectionGroupCostInstructors);
+        setReasonCategories(reasonCategories);
         setLineItemComments(lineItemComments);
         setCourses(courses);
         setTeachingAssignments(teachingAssignments);
@@ -165,6 +171,14 @@ public class BudgetView {
         this.sectionGroupCostComments = sectionGroupCostComments;
     }
 
+    public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
+        return sectionGroupCostInstructors;
+    }
+
+    public void setSectionGroupCostInstructors(List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
+    }
+
     public List<LineItemComment> getLineItemComments() {
         return lineItemComments;
     }
@@ -252,5 +266,13 @@ public class BudgetView {
     public void setUserWorkgroupsScenarios(
         Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         this.userWorkgroupsScenarios = userWorkgroupsScenarios;
+    }
+
+    public List<ReasonCategory> getReasonCategories() {
+        return reasonCategories;
+    }
+
+    public void setReasonCategories(List<ReasonCategory> reasonCategories) {
+        this.reasonCategories = reasonCategories;
     }
 }

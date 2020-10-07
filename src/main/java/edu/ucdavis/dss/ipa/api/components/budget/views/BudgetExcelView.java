@@ -26,18 +26,10 @@ import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERIN
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
 
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -66,6 +58,11 @@ public class BudgetExcelView extends AbstractXlsxView {
     private BudgetCalculationService getBudgetCalculationService() {
         return SpringContext.getBean(BudgetCalculationService.class);
     }
+
+    private SectionGroupService getSectionGroupService() {
+        return SpringContext.getBean(SectionGroupService.class);
+    }
+
     public BudgetExcelView (List<BudgetScenarioExcelView> budgetScenarioExcelViews) {
         this.budgetScenarioExcelViews = budgetScenarioExcelViews;
     }
@@ -97,9 +94,10 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Enrollment",
            "Current Enrollment",
            "Sections",
-           "Instructor",
+           "Instructor(s)",
            "Regular Instructor",
-           "Reason",
+           "Reason Category",
+           "Additional Comments",
            "TAs",
            "Readers",
            "TA Cost",
@@ -119,13 +117,11 @@ public class BudgetExcelView extends AbstractXlsxView {
         instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
 
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
-            Boolean isSnapshot = budgetScenarioExcelView.getBudgetScenario().getIsSnapshot();
-            String scenarioName = isSnapshot ?
-                budgetScenarioExcelView.getBudgetScenario().getName() + " - SNAPSHOT - " +
-                    format.format(budgetScenarioExcelView.getBudgetScenario().getCreatedAt()) :
-                budgetScenarioExcelView.getBudgetScenario().getName();
-            Float baseTaCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
-            Float baseReaderCost = isSnapshot ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
+            Boolean isLiveData = budgetScenarioExcelView.getBudgetScenario().getFromLiveData();
+            Boolean isBudgetRequest = budgetScenarioExcelView.getBudgetScenario().getIsBudgetRequest();
+            String scenarioName = budgetScenarioExcelView.getBudgetScenario().getName();
+            Float baseTaCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
+            Float baseReaderCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
 
             // Create Schedule Cost sheet
             for(SectionGroupCost sectionGroupCost : budgetScenarioExcelView.getSectionGroupCosts().stream().sorted(Comparator.comparing(SectionGroupCost::getTermCode).thenComparing(SectionGroupCost::getSubjectCode).thenComparing(SectionGroupCost::getCourseNumber)).collect(Collectors.toList()) ){
@@ -139,6 +135,40 @@ public class BudgetExcelView extends AbstractXlsxView {
                         currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sectionGroupCost.getSequencePattern());
                     }
                 }
+                List<String> instructors = new ArrayList<>();
+                List<Long> teachingAssingmentIds = new ArrayList<>();
+                List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
+                for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
+                    if(sectionGroupCostInstructor.getInstructor() != null){
+                        instructors.add(sectionGroupCostInstructor.getInstructor().getFullName());
+                    } else if (sectionGroupCostInstructor.getInstructorType() != null) {
+                        instructors.add(sectionGroupCostInstructor.getInstructorType().getDescription());
+                    }
+                    if(sectionGroupCostInstructor.getTeachingAssignment() != null) {
+                        teachingAssingmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
+                    }
+                }
+
+                if(isLiveData){
+                    SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
+                            budgetScenarioExcelView.getWorkgroup().getId(),
+                            sectionGroupCost.getCourseNumber(),
+                            sectionGroupCost.getSequencePattern(),
+                            sectionGroupCost.getTermCode(),
+                            sectionGroupCost.getSubjectCode());
+                    if(sectionGroup != null){
+                        for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
+                            if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
+                                if(teachingAssignment.getInstructor() != null){
+                                    instructors.add(teachingAssignment.getInstructor().getFullName());
+                                } else if (sectionGroupCost.getInstructorType() != null) {
+                                    instructors.add(teachingAssignment.getInstructorType().getDescription());
+                                }
+                            }
+                        }
+                    }
+                }
+
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
@@ -155,8 +185,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getEnrollment(),
                                 currentEnrollment,
                                 sectionGroupCost.getSectionCount(),
-                                (sectionGroupCost.getInstructor() == null ? "" : sectionGroupCost.getInstructor().getFullName()),
+                                String.join(", ", instructors),
                                 (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
+                                sectionGroupCost.getReasonCategoryDescription(),
                                 sectionGroupCost.getReason(),
                                 sectionGroupCost.getTaCount(),
                                 sectionGroupCost.getReaderCount(),
@@ -347,12 +378,8 @@ public class BudgetExcelView extends AbstractXlsxView {
         List<Object> data = new ArrayList<>();
 
         data.add(budgetScenarioExcelView.getWorkgroup().getName());
-        data.add(budgetScenarioExcelView.budgetScenario.getIsSnapshot() ?
-            budgetScenarioExcelView.budgetScenario.getName() + " - SNAPSHOT - " +
-                format.format(budgetScenarioExcelView.budgetScenario.getCreatedAt()) :
-            budgetScenarioExcelView.budgetScenario.getName());
+        data.add(budgetScenarioExcelView.budgetScenario.getName());
         data.add(field);
-
 
         for(String termCode: termCodes){
             switch(field){

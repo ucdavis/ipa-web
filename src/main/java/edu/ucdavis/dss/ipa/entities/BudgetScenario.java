@@ -31,7 +31,7 @@ public class BudgetScenario extends BaseEntity {
     private List<InstructorCost> instructorCosts = new ArrayList<>();
     private List<InstructorTypeCost> instructorTypeCosts = new ArrayList<>();
     private Boolean fromLiveData;
-    private Boolean isSnapshot = false;
+    private Boolean isBudgetRequest = false;
     private Float taCost, readerCost;
 
     @Id
@@ -218,12 +218,12 @@ public class BudgetScenario extends BaseEntity {
         return this.activeTermsBlob;
     }
 
-    public Boolean getIsSnapshot() {
-        return isSnapshot;
+    public Boolean getIsBudgetRequest() {
+        return isBudgetRequest;
     }
 
-    public void setIsSnapshot(Boolean snapshot) {
-        isSnapshot = snapshot;
+    public void setIsBudgetRequest(Boolean budgetRequest) {
+        isBudgetRequest = budgetRequest;
     }
 
     public Float getTaCost() {
@@ -246,5 +246,11 @@ public class BudgetScenario extends BaseEntity {
     @Transient
     public Date getCreationDate() {
         return createdAt;
+    }
+
+    @JsonProperty("lastModifiedOn")
+    @Transient
+    public Date getLastModifiedOn() {
+        return updatedAt;
     }
 }

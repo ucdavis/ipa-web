@@ -31,7 +31,7 @@ public class ScheduleSummaryReportController {
                                                         @PathVariable String termCode) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        return scheduleSummaryViewFactory.createScheduleSummaryReportView(workgroupId, year, termCode);
+        return scheduleSummaryViewFactory.createScheduleSummaryReportView(workgroupId, year, termCode, false);
     }
 
     @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/terms/{termCode}/generateExcel", method = RequestMethod.GET)
@@ -78,7 +78,7 @@ public class ScheduleSummaryReportController {
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
         if (isValidUrl) {
-            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, termCode);
+            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, termCode, false);
         } else {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;
@@ -129,7 +129,58 @@ public class ScheduleSummaryReportController {
         boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
 
         if (isValidUrl) {
-            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, null);
+            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, null, false);
+        } else {
+            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/generateExcel/simpleView", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> generateExcelYearSimple(@PathVariable long workgroupId, @PathVariable long year,
+                                             HttpServletRequest httpRequest) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/excel/simple";
+        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+        return map;
+    }
+
+    /**
+     * Exports a schedule as an Excel .xls file
+     *
+     * @param workgroupId
+     * @param year
+     * @param salt
+     * @param encrypted
+     * @param httpRequest
+     * @return
+     * @throws ParseException
+     */
+    @RequestMapping(value = "/download/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/excel/simple/{salt}/{encrypted}")
+    public View downloadExcelYearSimple(@PathVariable long workgroupId, @PathVariable long year,
+                              @PathVariable String salt, @PathVariable String encrypted,
+                              HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        long TIMEOUT = 30L; // In seconds
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
+
+        if (isValidUrl) {
+            return scheduleSummaryViewFactory.createScheduleSummaryReportExcelView(workgroupId, year, null, true);
         } else {
             httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return null;

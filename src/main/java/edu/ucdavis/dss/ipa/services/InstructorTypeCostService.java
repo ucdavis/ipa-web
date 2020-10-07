@@ -10,6 +10,8 @@ import java.util.List;
 public interface InstructorTypeCostService {
     List<InstructorTypeCost> findByBudgetId(Long budgetId);
 
+    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
+
     InstructorTypeCost findById(Long instructorTypeId);
 
     void deleteById(long instructorTypeId);
@@ -19,8 +21,6 @@ public interface InstructorTypeCostService {
     InstructorTypeCost findOrCreate(InstructorTypeCost instructorTypeCostDTO);
 
     List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year);
-
-    InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);
 
     List<InstructorTypeCost> snapshotInstructorTypeCosts(BudgetScenario snapshotScenario, BudgetScenario originalScenario);
 

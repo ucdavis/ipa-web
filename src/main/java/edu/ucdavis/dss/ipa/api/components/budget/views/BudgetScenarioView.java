@@ -1,12 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
+import edu.ucdavis.dss.ipa.entities.*;
 
 import javax.sound.sampled.Line;
 import java.util.ArrayList;
@@ -17,6 +11,7 @@ public class BudgetScenarioView {
     List<SectionGroupCost> sectionGroupCosts;
     List<LineItem> lineItems;
     List<SectionGroupCostComment> sectionGroupCostComments;
+    List<SectionGroupCostInstructor> sectionGroupCostInstructors;
     List<LineItemComment> lineItemComments;
     List<InstructorCost> instructorCosts;
     List<InstructorTypeCost> instructorTypeCosts;
@@ -25,6 +20,7 @@ public class BudgetScenarioView {
         BudgetScenario budgetScenario,
         List<SectionGroupCost> sectionGroupCosts,
         List<SectionGroupCostComment> sectionGroupCostComments,
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors,
         List<LineItem> lineItems,
         List<LineItemComment> lineItemComments,
         List<InstructorCost> instructorCosts,
@@ -33,6 +29,7 @@ public class BudgetScenarioView {
         setSectionGroupCosts(sectionGroupCosts);
         setLineItems(lineItems);
         setSectionGroupCostComments(sectionGroupCostComments);
+        setSectionGroupCostInstructors(sectionGroupCostInstructors);
         setLineItemComments(lineItemComments);
         setInstructorCosts(instructorCosts);
         setInstructorTypeCosts(instructorTypeCosts);
@@ -68,6 +65,14 @@ public class BudgetScenarioView {
 
     public void setSectionGroupCostComments(List<SectionGroupCostComment> sectionGroupCostComments) {
         this.sectionGroupCostComments = sectionGroupCostComments;
+    }
+
+    public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
+        return sectionGroupCostInstructors;
+    }
+
+    public void setSectionGroupCostInstructors (List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
     }
 
     public List<LineItemComment> getLineItemComments() {

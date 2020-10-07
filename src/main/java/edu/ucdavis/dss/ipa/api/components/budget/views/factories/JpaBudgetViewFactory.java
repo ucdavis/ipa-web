@@ -55,6 +55,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject BudgetCalculationService budgetCalculationService;
     @Inject Authorization authorization;
     @Inject BudgetScenarioRepository budgetScenarioRepository;
+    @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
+    @Inject ReasonCategoryService reasonCategoryService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -71,6 +73,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
 
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findByBudgetId(budget.getId());
+        List<ReasonCategory> reasonCategories = reasonCategoryService.findAll();
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
@@ -92,6 +95,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         assignedInstructors.addAll(budgetedInstructors);
 
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCostInstructorService.findByBudgetId(budget.getId());
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
         List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
@@ -109,6 +113,8 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 budgetScenarios,
                 sectionGroupCosts,
                 sectionGroupCostComments,
+                sectionGroupCostInstructors,
+                reasonCategories,
                 lineItems,
                 lineItemComments,
                 budget,
@@ -136,11 +142,12 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts();
         List<LineItem> lineItems = budgetScenario.getLineItems();
         List<SectionGroupCostComment> sectionGroupCostComments = sectionGroupCostCommentService.findBySectionGroupCosts(sectionGroupCosts);
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCostInstructorService.findByBudgetScenarioId(budgetScenario.getId());
         List<LineItemComment> lineItemComments = lineItemCommentService.findByLineItems(lineItems);
         List<InstructorCost> instructorCosts = instructorCostService.findByBudgetScenarioId(budgetScenario.getId());
         List<InstructorTypeCost> instructorTypeCosts = instructorTypeCostService.findByBudgetScenarioId(budgetScenario.getId());
 
-        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, lineItems, lineItemComments, instructorCosts, instructorTypeCosts);
+        BudgetScenarioView budgetScenarioView = new BudgetScenarioView(budgetScenario, sectionGroupCosts, sectionGroupCostComments, sectionGroupCostInstructors, lineItems, lineItemComments, instructorCosts, instructorTypeCosts);
 
         return budgetScenarioView;
     }
@@ -176,15 +183,16 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         }
         Workgroup workgroup = budgetScenario.getBudget().getSchedule().getWorkgroup();
         List<SectionGroupCost> sectionGroupCosts = budgetScenario.getSectionGroupCosts().stream().filter(sgc -> (sgc.isDisabled() == false && budgetScenarioTermCodes.contains(sgc.getTermCode()))).collect(Collectors.toList());
+        List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCostInstructorService.findByBudgetScenarioId(budgetScenario.getId());
         List<LineItem> lineItems = budgetScenario.getLineItems().stream().filter(li -> li.getHidden() == false).collect(Collectors.toList());
         List<TeachingAssignment> teachingAssignments = budget.getSchedule().getTeachingAssignments();
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
-        List<InstructorCost> instructorCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
-        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsSnapshot() ? budgetScenario.getInstructorTypeCosts() : budget.getInstructorTypeCosts();
+        List<InstructorCost> instructorCosts = budgetScenario.getIsBudgetRequest() ? budgetScenario.getInstructorCosts() : budget.getInstructorCosts();
+        List<InstructorTypeCost> instructorTypeCosts = budgetScenario.getIsBudgetRequest() ? budgetScenario.getInstructorTypeCosts() : budget.getInstructorTypeCosts();
         List<Instructor> activeInstructors = instructorService.findActiveByWorkgroupId(workgroup.getId());
         Set<User> users = new HashSet<> (userService.findAllByWorkgroup(workgroup));
         Set<User> lineItemUsers = new HashSet<> (userService.findAllByLineItems(lineItems));
-        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByTeachingAssignments(teachingAssignments));
+        Set<User> teachingAssignmentUsers = new HashSet<>(userService.findAllByBudgetTeachingAssignments(budgetScenario.getBudget().getId()));
         users.addAll(lineItemUsers);
         users.addAll(teachingAssignmentUsers);
 
@@ -233,7 +241,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         // Calculate totals
         Map<String, Map<BudgetSummary, BigDecimal>> termTotals = budgetCalculationService.calculateTermTotals(budget, budgetScenario, sectionGroupCosts, budgetScenarioTermCodes, workgroup, lineItems);
 
-        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
+        BudgetScenarioExcelView budgetScenarioExcelView = new BudgetScenarioExcelView(budget, budgetScenario, workgroup, sectionGroupCosts, sectionGroupCostInstructors, lineItems, instructorCosts, teachingAssignments, instructorTypes, instructorTypeCosts, activeInstructors, users, censusMap, budgetScenarioTermCodes, termTotals);
 
         return budgetScenarioExcelView;
     }
