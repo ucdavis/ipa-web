@@ -37,4 +37,6 @@ public interface SectionGroupService {
 	SectionGroup identifyAndCondenseSharedActivities(SectionGroup sectionGroup);
 
 	List<SectionGroup> findByScheduleId(long scheduleId);
+
+	SectionGroup findBySectionGroupCostDetails(long workgroupId, String courseNumber, String sequencePattern, String termCode, String subjectCode);
 }

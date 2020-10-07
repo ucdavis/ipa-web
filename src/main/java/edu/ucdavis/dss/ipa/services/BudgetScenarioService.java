@@ -14,11 +14,11 @@ public interface BudgetScenarioService {
 
     void deleteById(long budgetScenarioId);
 
-    BudgetScenario createFromExisting(Long scenarioId, String name, boolean copyFunds);
+    BudgetScenario createFromExisting(Long budgetId, Long scenarioId, String name, boolean copyFunds);
 
     BudgetScenario update(BudgetScenario budgetScenario);
 
     List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
-    BudgetScenario createBudgetRequestScenario(long scenarioId);
+    BudgetScenario createBudgetRequestScenario(long workgroupId, long scenarioId);
 }

@@ -92,8 +92,8 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
 
             ExcelHelper.writeRowToSheet(report, Arrays
-                .asList("Categories", "Total Cost", "# Courses", "",
-                    "Categories", "Total Cost", "# Courses", "", "Cost", "# Courses", "% Cost",
+                .asList("Categories", "Total Cost", "Assignments"/*"# Courses"*/, "",
+                    "Categories", "Total Cost", "Assignments"/*"# Courses"*/, "", "Cost", "Assignments"/*"# Courses"*/, "% Cost",
                     "% Courses"));
 
             // Instructor Costs

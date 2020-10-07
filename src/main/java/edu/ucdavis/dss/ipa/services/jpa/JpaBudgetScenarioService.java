@@ -1,14 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
@@ -22,6 +14,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostInstructorService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.stereotype.Service;
@@ -48,6 +41,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject InstructorCostService instructorCostService;
     @Inject InstructorTypeCostService instructorTypeCostService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
+    @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
     @Inject LineItemCommentService lineItemCommentService;
 
     @Override
@@ -135,7 +129,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
      */
     @Transactional
     @Override
-    public BudgetScenario createFromExisting(Long scenarioId, String name, boolean copyFunds) {
+    public BudgetScenario createFromExisting(Long workgroupId, Long scenarioId, String name, boolean copyFunds) {
         BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalBudgetScenario == null) {
@@ -154,6 +148,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         // Clone sectionGroupCosts
         for(SectionGroupCost originalSectionGroupCost : originalBudgetScenario.getSectionGroupCosts()) {
             SectionGroupCost sectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetScenario);
+            sectionGroupCostInstructorService.copyInstructors(workgroupId, originalSectionGroupCost, sectionGroupCost);
             sectionGroupCostList.add(sectionGroupCost);
         }
 
@@ -172,7 +167,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return budgetScenario;
     }
 
-    public BudgetScenario createBudgetRequestScenario(long scenarioId) {
+    public BudgetScenario createBudgetRequestScenario(long workgroupId, long scenarioId) {
         BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
 
         if (originalScenario == null) { return null; }
@@ -202,6 +197,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             SectionGroupCost newSectionGroupCost = sectionGroupCostService.createOrUpdateFrom(originalSectionGroupCost, budgetRequestScenario);
 
             sectionGroupCostCommentService.copyComments(originalSectionGroupCost, newSectionGroupCost);
+            sectionGroupCostInstructorService.copyInstructors(workgroupId, originalSectionGroupCost, newSectionGroupCost);
 
             sectionGroupCostList.add(newSectionGroupCost);
         }

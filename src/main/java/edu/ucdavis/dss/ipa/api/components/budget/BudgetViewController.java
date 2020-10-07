@@ -5,35 +5,10 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.WorkgroupIdBudgetScenarioId;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.LineItemCategory;
-import edu.ucdavis.dss.ipa.entities.LineItemComment;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCostComment;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.BudgetService;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemCommentService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +31,7 @@ public class BudgetViewController {
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
     @Inject SectionGroupCostService sectionGroupCostService;
+    @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
     @Inject InstructorCostService instructorCostService;
     @Inject UserService userService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
@@ -126,7 +102,7 @@ public class BudgetViewController {
 
         // If a budget scenario id was supplied, copy data, else create from schedule
         if (scenarioId != null && scenarioId != 0) {
-            budgetScenario = budgetScenarioService.createFromExisting(scenarioId, budgetScenarioDTO.getName(), copyFunds);
+            budgetScenario = budgetScenarioService.createFromExisting(workGroupId, scenarioId, budgetScenarioDTO.getName(), copyFunds);
         } else {
             budgetScenario = budgetScenarioService.findOrCreate(budget, budgetScenarioDTO.getName());
         }
@@ -157,7 +133,7 @@ public class BudgetViewController {
         Long workGroupId = budget.getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
-        BudgetScenario budgetRequestScenario = budgetScenarioService.createBudgetRequestScenario(budgetScenarioId);
+        BudgetScenario budgetRequestScenario = budgetScenarioService.createBudgetRequestScenario(workGroupId, budgetScenarioId);
 
         return budgetViewFactory.createBudgetScenarioView(budgetRequestScenario);
     };
@@ -519,5 +495,64 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/downloadBudgetComparisonExcel", method = RequestMethod.POST)
     public BudgetComparisonExcelView downloadBudgetComparisonsExcel(@RequestBody List<List<BudgetScenario>>  budgetComparisonList, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
         return budgetViewFactory.createBudgetComparisonExcelView(budgetComparisonList);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public List<SectionGroupCostInstructor> addSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @RequestBody List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        Long workGroupId = sectionGroupCostService.findById(sectionGroupCostId).getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        List<SectionGroupCostInstructor> instructors = new ArrayList<>();
+        for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
+            sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+            instructors.add(sectionGroupCostInstructorService.create(sectionGroupCostInstructor));
+        }
+        return instructors;
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.PUT, produces="application/json")
+    @ResponseBody
+    public SectionGroupCostInstructor updateSectionGroupCost(@PathVariable long sectionGroupCostId,
+                                                   @PathVariable long sectionGroupCostInstructorId,
+                                                   @RequestBody SectionGroupCostInstructor sectionGroupCostInstructor,
+                                                   HttpServletResponse httpResponse) {
+        // Ensure valid params
+        SectionGroupCostInstructor originalSectionGroupCostInstructor = sectionGroupCostInstructorService.findById(sectionGroupCostInstructorId);
+
+        if (originalSectionGroupCostInstructor == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        sectionGroupCostInstructor.setInstructor(instructorService.getOneById(sectionGroupCostInstructor.getInstructor().getId()));
+        sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
+        sectionGroupCostInstructor.setInstructorType(instructorTypeService.findById(sectionGroupCostInstructor.getInstructorType().getId()));
+
+        // Authorization check
+        Long workGroupId = sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        return sectionGroupCostInstructorService.update(sectionGroupCostInstructor);
+    }
+
+    @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.DELETE, produces = "application/json")
+    @ResponseBody
+    public Long deleteSectionGroupCostInstructor(@PathVariable long sectionGroupCostId, @PathVariable long sectionGroupCostInstructorId, HttpServletResponse httpResponse) {
+        // Ensure valid params
+        SectionGroupCostInstructor sectionGroupCostInstructor = sectionGroupCostInstructorService.findById(sectionGroupCostInstructorId);
+
+        if (sectionGroupCostInstructor == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        sectionGroupCostInstructorService.delete(sectionGroupCostInstructorId);
+
+        return sectionGroupCostInstructorId;
     }
 }

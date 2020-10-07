@@ -31,8 +31,10 @@ public class SectionGroupCost extends BaseEntity {
     private BigDecimal cost;
     private Float taCount, readerCount, unitsHigh, unitsLow, unitsVariable;
     private List<SectionGroupCostComment> sectionGroupCostComments = new ArrayList<>();
+    private List<SectionGroupCostInstructor> sectionGroupCostInstructors = new ArrayList<>();
     private InstructorType instructorType;
 	private boolean disabled;
+	private ReasonCategory reasonCategory;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -283,4 +285,60 @@ public class SectionGroupCost extends BaseEntity {
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
 	}
+
+    @JsonProperty("sectionGroupCostInstructors")
+    @OneToMany(mappedBy = "sectionGroupCost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
+        return sectionGroupCostInstructors;
+    }
+
+    public void setSectionGroupCostInstructors(List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
+    }
+
+    @JsonProperty("isLiveData")
+    @Transient
+    public boolean isLiveData() {
+        if(budgetScenario != null){
+          if(budgetScenario.getFromLiveData()) {
+              return true;
+          } else {
+              return false;
+          }
+        } else{
+            return false;
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ReasonCategoryId", nullable = true)
+    @JsonIgnore
+    public ReasonCategory getReasonCategory() {
+        return reasonCategory;
+    }
+
+    public void setReasonCategory(ReasonCategory reasonCategory) {
+        this.reasonCategory = reasonCategory;
+    }
+
+    @JsonProperty("reasonCategoryDescription")
+    @Transient
+    public String getReasonCategoryDescription() {
+        if(reasonCategory != null) {
+            return reasonCategory.getDescription();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonProperty("reasonCategoryId")
+    @Transient
+    public long getReasonCategoryId() {
+        if(reasonCategory != null) {
+            return reasonCategory.getId();
+        } else {
+            return 0;
+        }
+    }
 }

@@ -27,11 +27,6 @@ public interface TeachingAssignmentRepository extends CrudRepository<TeachingAss
 	@Query("SELECT ta FROM TeachingAssignment ta WHERE ta.sectionGroup IS NOT NULL AND ta.sectionGroup.course.id = :courseId")
 	List<TeachingAssignment> findByCourseId(@Param("courseId") long courseId);
 
-	@Modifying
-	@Transactional
-	@Query(value="delete from TeachingAssignment ta WHERE ta.id = ?1")
-	void deleteById(long teachingAssignmentId);
-
 	TeachingAssignment findOneByScheduleAndInstructorAndTermCodeAndSuggestedCourseNumberAndSuggestedSubjectCodeAndSuggestedEffectiveTermCode(
 			Schedule schedule, Instructor instructor, String termCode, String suggestedCourseNumber, String suggestedSubjectCode, String suggestedEffectiveTermCode);
 

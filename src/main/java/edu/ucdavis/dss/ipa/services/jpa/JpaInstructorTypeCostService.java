@@ -23,6 +23,11 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     }
 
     @Override
+    public InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId) {
+        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeId, budgetId);
+    }
+
+    @Override
     public InstructorTypeCost findById(Long instructorTypeId) {
         return instructorTypeCostRepository.findById(instructorTypeId);
     }
@@ -76,11 +81,6 @@ public class JpaInstructorTypeCostService implements InstructorTypeCostService {
     @Override
     public List<InstructorTypeCost> findbyWorkgroupIdAndYear(long workgroupId, long year) {
         return this.instructorTypeCostRepository.findbyWorkgroupIdAndYear(workgroupId, year);
-    }
-
-    @Override
-    public InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId) {
-        return instructorTypeCostRepository.findByInstructorTypeIdAndBudgetId(instructorTypeId, budgetId);
     }
 
     @Override

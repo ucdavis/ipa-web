@@ -161,23 +161,21 @@ public class JpaUserService implements UserService {
 
 	@Override
 	public List<User> findAllByLineItems(List<LineItem> lineItems) {
-		List<User> users = new ArrayList<>();
 		List<String> loginIds = new ArrayList<>();
 
 		for (LineItem lineItem : lineItems) {
 			String loginId = lineItem.getLastModifiedByAsLoginId();
 
 			if (loginIds.indexOf(loginId) == -1) {
-				User user = this.getOneByLoginId(loginId);
-
-				if (user != null) {
-					users.add(user);
-					loginIds.add(loginId);
-				}
+				loginIds.add(loginId);
 			}
 		}
 
-		return users;
+		if(loginIds.size() < 1){
+			return new ArrayList<>();
+		}
+
+		return userRepository.findByLoginIds(loginIds);
 	}
 
 	@Override
@@ -209,6 +207,11 @@ public class JpaUserService implements UserService {
 		}
 
 		return users;
+	}
+
+	@Override
+	public List<User> findAllByBudgetTeachingAssignments(long budgetId) {
+		return userRepository.findByTeachingAssignments(budgetId);
 	}
 
 	@Override

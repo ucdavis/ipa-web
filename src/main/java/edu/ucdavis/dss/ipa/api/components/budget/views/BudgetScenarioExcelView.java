@@ -1,16 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import edu.ucdavis.dss.ipa.entities.Budget;
-import edu.ucdavis.dss.ipa.entities.BudgetScenario;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorCost;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
-import edu.ucdavis.dss.ipa.entities.InstructorTypeCost;
-import edu.ucdavis.dss.ipa.entities.LineItem;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.User;
-import edu.ucdavis.dss.ipa.entities.Workgroup;
+import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +12,7 @@ public class BudgetScenarioExcelView {
     BudgetScenario budgetScenario;
     Workgroup workgroup;
     List<SectionGroupCost> sectionGroupCosts;
+    List<SectionGroupCostInstructor> sectionGroupCostInstructors;
     List<LineItem> lineItems;
     List<InstructorCost> instructorCosts;
     List<TeachingAssignment> teachingAssignments;
@@ -37,6 +28,7 @@ public class BudgetScenarioExcelView {
                                    BudgetScenario budgetScenario,
                                    Workgroup workgroup,
                                    List<SectionGroupCost> sectionGroupCosts,
+                                   List<SectionGroupCostInstructor> sectionGroupCostInstructors,
                                    List<LineItem> lineItems,
                                    List<InstructorCost> instructorCosts,
                                    List<TeachingAssignment> teachingAssignments,
@@ -51,6 +43,7 @@ public class BudgetScenarioExcelView {
         this.budgetScenario = budgetScenario;
         this.workgroup = workgroup;
         this.sectionGroupCosts = sectionGroupCosts;
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
         this.lineItems = lineItems;
         this.instructorCosts = instructorCosts;
         this.teachingAssignments = teachingAssignments;
@@ -94,6 +87,14 @@ public class BudgetScenarioExcelView {
     public void setSectionGroupCosts(
         List<SectionGroupCost> sectionGroupCosts) {
         this.sectionGroupCosts = sectionGroupCosts;
+    }
+
+    public List<SectionGroupCostInstructor> getSectionGroupCostInstructors() {
+        return sectionGroupCostInstructors;
+    }
+
+    public void setSectionGroupCostInstructors(List<SectionGroupCostInstructor> sectionGroupCostInstructors) {
+        this.sectionGroupCostInstructors = sectionGroupCostInstructors;
     }
 
     public List<LineItem> getLineItems() {

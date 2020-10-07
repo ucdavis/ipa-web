@@ -56,4 +56,6 @@ public interface UserService {
 	List<User> findAllByTeachingAssignments(List<TeachingAssignment> teachingAssignments);
 
 	List<User> findAllByWorkgroup(Workgroup workgroup);
+
+	List<User> findAllByBudgetTeachingAssignments(long budgetId);
 }
