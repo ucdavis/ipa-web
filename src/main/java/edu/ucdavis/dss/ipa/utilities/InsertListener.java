@@ -1,11 +1,11 @@
 package edu.ucdavis.dss.ipa.utilities;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import javax.inject.Inject;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.hibernate.Session;
-import org.hibernate.event.spi.PostCommitUpdateEventListener;
+import org.hibernate.event.spi.PostCommitInsertEventListener;
+import org.hibernate.event.spi.PostInsertEvent;
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.stereotype.Component;
@@ -13,49 +13,38 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
 
+import javax.inject.Inject;
 import java.util.UUID;
 
-
 @Component
-public class UpdateListener implements PostCommitUpdateEventListener {
-
+public class InsertListener implements PostCommitInsertEventListener
+{
     @Inject
     Authorizer authorizer;
 
     @Inject
     WorkgroupService workgroupService;
 
-    @Override
-    public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
+    public void onPostInsert(PostInsertEvent postInsertEvent) {
         long start = System.currentTimeMillis();
         try {
             // Web request
 
-            System.err.println("**********Stating Update Listener*************");
+            System.err.println("**********Stating Insert Listener*************");
             if (RequestContextHolder.getRequestAttributes() != null) {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
                                 RequestAttributes.SCOPE_REQUEST);
                 String moduleRaw = handler.getBean().toString();
-                Object entity = postUpdateEvent.getEntity();
+                Object entity = postInsertEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
+                if(ActivityLogFormatter.isAudited(moduleRaw, entityName)){
+                    String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
+                    String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
+                    String userDisplayName = authorizer.getUserDisplayName();
 
-                String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
-                String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
-
-                String[] props =
-                        postUpdateEvent.getPersister().getEntityMetamodel().getPropertyNames();
-                Object[] oldState = postUpdateEvent.getOldState();
-                Object[] state = postUpdateEvent.getState();
-                String userDisplayName = authorizer.getUserDisplayName();
-
-                UUID transactionId = UUID.randomUUID();
-                for (int i : postUpdateEvent.getDirtyProperties()) {
+                    UUID transactionId = UUID.randomUUID();
                     StringBuilder sb = new StringBuilder();
-                    if (!ActivityLogFormatter.isAudited(moduleRaw, entityName, props[i])) {
-                        System.err.println("Skipping prop " + props[i] + " on entity " + entityName + " from " + moduleRaw);
-                        continue;
-                    }
                     String endYear = ActivityLogFormatter.getYear(entity);
                     String startYear = String.valueOf(Integer.parseInt(endYear)-1);
                     String years = startYear + "-" + endYear;
@@ -66,12 +55,11 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         sb.append(", **" + termCode + "**");
                     }
 
-                    sb.append("\nChanged ");
+                    sb.append("\nInserted ");
                     sb.append(entityDescription);
-                    sb.append(" **" + ActivityLogFormatter.getFormattedPropName(props[i]) + "** from **" + ActivityLogFormatter.getEntityDisplayName(props[i], oldState[i]) + "** to **" + ActivityLogFormatter.getEntityDisplayName(props[i], state[i]) + "**");
                     System.err.println(sb.toString());
 
-                    Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
+                    Session session = postInsertEvent.getPersister().getFactory().openTemporarySession();
                     AuditLog auditLogEntry = new AuditLog();
                     auditLogEntry.setMessage(sb.toString());
                     auditLogEntry.setLoginId(authorizer.getLoginId());
@@ -83,6 +71,8 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                     session.save(auditLogEntry);
                     session.close();
                     System.err.println("*********Inserted to Audit Log + " + auditLogEntry.getId() + "************");
+                } else {
+                    System.err.println("Skipping insert of entity " + entityName + " from " + moduleRaw);
                 }
             }
         } catch (Exception ex) {
@@ -90,7 +80,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
             //TODO explore options
             //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
         }
-        System.err.println("*********Ending Update Listener took + " + (System.currentTimeMillis() - start) + "*************");
+        System.err.println("*********Ending Insert Listener took + " + (System.currentTimeMillis() - start) + "*************");
     }
 
     @Override
@@ -99,5 +89,5 @@ public class UpdateListener implements PostCommitUpdateEventListener {
     }
 
     @Override
-    public void onPostUpdateCommitFailed(PostUpdateEvent postUpdateEvent){}
+    public void onPostInsertCommitFailed(PostInsertEvent postInsertEvent){}
 }
