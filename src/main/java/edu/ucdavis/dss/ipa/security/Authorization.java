@@ -108,4 +108,14 @@ public class Authorization {
     public int roleCount() {
         return this.getUserRoles().size();
     }
+
+    public String getUserDisplayName() {
+
+        User user = this.userService.getOneByLoginId(this.loginId);
+        if(user != null){
+            return user.getDisplayName();
+        }else{
+            return "";
+        }
+    }
 }
