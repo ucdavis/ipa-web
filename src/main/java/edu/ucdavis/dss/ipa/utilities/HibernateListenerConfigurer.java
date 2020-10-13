@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ipa.utilities;
 
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
-import org.hibernate.event.spi.PostCollectionUpdateEventListener;
 import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +20,16 @@ public class HibernateListenerConfigurer {
 
     private UpdateListener updateListener;
     private InsertListener insertListener;
-    private CollectionUpdateEventListener collectionUpdateEventListener;
+    private DeleteListener deleteListener;
 
     @Autowired
     public HibernateListenerConfigurer(
             UpdateListener updateListener,
             InsertListener insertListener,
-            CollectionUpdateEventListener collectionUpdateEventListener) {
+            DeleteListener deleteListener) {
         this.updateListener = updateListener;
         this.insertListener = insertListener;
-        this.collectionUpdateEventListener = collectionUpdateEventListener;
+        this.deleteListener = deleteListener;
     }
 
     @PostConstruct
@@ -38,6 +38,6 @@ public class HibernateListenerConfigurer {
         EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
         registry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(updateListener);
         registry.getEventListenerGroup(EventType.POST_COMMIT_INSERT).appendListener(insertListener);
-        registry.getEventListenerGroup(EventType.POST_COLLECTION_UPDATE).appendListener(collectionUpdateEventListener);
+        registry.getEventListenerGroup(EventType.POST_COMMIT_DELETE).appendListener(deleteListener);
     }
 }

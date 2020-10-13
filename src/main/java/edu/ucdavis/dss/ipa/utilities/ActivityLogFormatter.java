@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.*;
+
+import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +14,10 @@ public final class ActivityLogFormatter {
         // Course view entities to be audited.
         HashMap<String, HashMap<String, Boolean>> courseView = new HashMap<String, HashMap<String, Boolean>>();
 
+        // Fields to audit in course view for course
+        HashMap<String, Boolean> courseViewCourse = new HashMap<String, Boolean>();
+        courseView.put("Course", courseViewCourse);
+
         // Fields to audit in course view for section
         HashMap<String, Boolean> courseViewSection = new HashMap<String, Boolean>();
         courseViewSection.put("seats", true);
@@ -19,10 +25,8 @@ public final class ActivityLogFormatter {
 
         // Fields to audit in course view for sectionGroup
         HashMap<String, Boolean> courseViewSectionGroup = new HashMap<String, Boolean>();
-        HashMap<String, Boolean> courseViewCoursesHasTags = new HashMap<String, Boolean>();
         courseViewSectionGroup.put("termCode", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
-        courseView.put("Courses_has_Tags", courseViewCoursesHasTags);
         temp.put("courseViewController", courseView);
 
         // Budget view entities to be audited.
@@ -54,6 +58,9 @@ public final class ActivityLogFormatter {
         String simpleName = obj.getClass().getSimpleName();
         System.err.println("Object is of class " + obj.getClass().getSimpleName());
         switch (simpleName){
+            case "Course":
+                Course course = (Course) obj;
+                return course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
             case "Section":
                 Section section = (Section) obj;
                 Course sectionCourse = section.getSectionGroup().getCourse();
@@ -101,8 +108,12 @@ public final class ActivityLogFormatter {
         }
     }
 
+    // Returns year for use with DB entries
     public static String getYear(Object obj) {
-        if(obj instanceof Section){
+        if(obj instanceof  Course){
+            Course course = (Course) obj;
+            return String.valueOf(course.getYear());
+        } else if(obj instanceof Section){
             Section section = (Section) obj;
             return Term.getYear(section.getSectionGroup().getTermCode());
         } else if (obj instanceof SectionGroup){
@@ -116,8 +127,30 @@ public final class ActivityLogFormatter {
         }
     }
 
+    // Returns years ex. 2020-2021, for use with customer facing fields
+    public static String getYears(Object obj) {
+        if(obj instanceof  Course){
+            Course course = (Course) obj;
+            return course.getYear() + "-" + (course.getYear() + 1);
+        } else if(obj instanceof Section){
+            Section section = (Section) obj;
+            return Term.getAcademicYear(section.getSectionGroup().getTermCode());
+        } else if (obj instanceof SectionGroup){
+            SectionGroup sectionGroup = (SectionGroup) obj;
+            return Term.getAcademicYear(sectionGroup.getTermCode());
+        } else if(obj instanceof LineItem){
+            LineItem lineItem = (LineItem) obj;
+            return String.valueOf(lineItem.getBudgetScenario().getBudget().getSchedule().getYear());
+        } else{
+            return "";
+        }
+    }
+
     public static long getWorkgroupId(Object obj){
-        if(obj instanceof Section){
+        if(obj instanceof  Course){
+            Course course = (Course) obj;
+            return course.getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof Section){
             Section section = (Section) obj;
             return section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
         } else if(obj instanceof SectionGroup){

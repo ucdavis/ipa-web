@@ -30,7 +30,7 @@ public class InsertListener implements PostCommitInsertEventListener
         try {
             // Web request
 
-            System.err.println("**********Stating Insert Listener*************");
+            System.err.println("**********Starting Insert Listener*************");
             if (RequestContextHolder.getRequestAttributes() != null) {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
@@ -45,9 +45,8 @@ public class InsertListener implements PostCommitInsertEventListener
 
                     UUID transactionId = UUID.randomUUID();
                     StringBuilder sb = new StringBuilder();
-                    String endYear = ActivityLogFormatter.getYear(entity);
-                    String startYear = String.valueOf(Integer.parseInt(endYear)-1);
-                    String years = startYear + "-" + endYear;
+                    String year = ActivityLogFormatter.getYear(entity);
+                    String years = ActivityLogFormatter.getYears(entity);
                     sb.append("**" + userDisplayName + "**");
                     sb.append(" in **" + module + "** - **" + years + "**");
                     String termCode = ActivityLogFormatter.getTermCode(entity);
@@ -56,7 +55,7 @@ public class InsertListener implements PostCommitInsertEventListener
                     }
 
                     sb.append("\nInserted ");
-                    sb.append(entityDescription);
+                    sb.append("**" + entityDescription + "**");
                     System.err.println(sb.toString());
 
                     Session session = postInsertEvent.getPersister().getFactory().openTemporarySession();
@@ -65,7 +64,7 @@ public class InsertListener implements PostCommitInsertEventListener
                     auditLogEntry.setLoginId(authorizer.getLoginId());
                     auditLogEntry.setUserName(userDisplayName);
                     auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
-                    auditLogEntry.setYear(Integer.parseInt(endYear));
+                    auditLogEntry.setYear(Integer.parseInt(year));
                     auditLogEntry.setModule(module);
                     auditLogEntry.setTransactionId(transactionId);
                     session.save(auditLogEntry);
@@ -80,7 +79,7 @@ public class InsertListener implements PostCommitInsertEventListener
             //TODO explore options
             //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
         }
-        System.err.println("*********Ending Insert Listener took + " + (System.currentTimeMillis() - start) + "*************");
+        System.err.println("*********Ending Insert Listener took + " + (System.currentTimeMillis() - start) + " ms*************");
     }
 
     @Override

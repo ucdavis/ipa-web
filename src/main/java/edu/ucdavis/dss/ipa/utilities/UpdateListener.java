@@ -56,9 +56,8 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         System.err.println("Skipping prop " + props[i] + " on entity " + entityName + " from " + moduleRaw);
                         continue;
                     }
-                    String endYear = ActivityLogFormatter.getYear(entity);
-                    String startYear = String.valueOf(Integer.parseInt(endYear)-1);
-                    String years = startYear + "-" + endYear;
+                    String year = ActivityLogFormatter.getYear(entity);
+                    String years = ActivityLogFormatter.getYears(entity);
                     sb.append("**" + userDisplayName + "**");
                     sb.append(" in **" + module + "** - **" + years + "**");
                     String termCode = ActivityLogFormatter.getTermCode(entity);
@@ -77,7 +76,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                     auditLogEntry.setLoginId(authorizer.getLoginId());
                     auditLogEntry.setUserName(userDisplayName);
                     auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
-                    auditLogEntry.setYear(Integer.parseInt(endYear));
+                    auditLogEntry.setYear(Integer.parseInt(year));
                     auditLogEntry.setModule(module);
                     auditLogEntry.setTransactionId(transactionId);
                     session.save(auditLogEntry);
@@ -90,7 +89,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
             //TODO explore options
             //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
         }
-        System.err.println("*********Ending Update Listener took + " + (System.currentTimeMillis() - start) + "*************");
+        System.err.println("*********Ending Update Listener took + " + (System.currentTimeMillis() - start) + "ms*************");
     }
 
     @Override
