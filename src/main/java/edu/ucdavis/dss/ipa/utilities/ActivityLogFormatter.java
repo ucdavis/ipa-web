@@ -26,10 +26,11 @@ public final class ActivityLogFormatter {
         // Fields to audit in course view for sectionGroup
         HashMap<String, Boolean> courseViewSectionGroup = new HashMap<String, Boolean>();
         courseViewSectionGroup.put("termCode", true);
+        courseViewSectionGroup.put("plannedSeats", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
         temp.put("courseViewController", courseView);
 
-        // Budget view entities to be audited.
+        /*// Budget view entities to be audited.
         HashMap<String, HashMap<String, Boolean>> budgetView = new HashMap<String, HashMap<String, Boolean>>();
 
         // Fields to audit in budget view for line item (funds)
@@ -37,7 +38,7 @@ public final class ActivityLogFormatter {
         budgetViewSection.put("documentNumber", true);
         budgetViewSection.put("amount", true);
         budgetView.put("LineItem", budgetViewSection);
-        temp.put("budgetViewController", budgetView);
+        temp.put("budgetViewController", budgetView);*/
 
         auditProps = temp;
     }
@@ -81,21 +82,27 @@ public final class ActivityLogFormatter {
     public static String getFormattedPropName(String prop){
         switch (prop){
             case "termCode":
-                return "Term Code";
+                return "Term";
+            case "plannedSeats":
+                return "Planned Seats";
             default:
                 return prop;
         }
     }
 
-    public static String getEntityDisplayName(String propName, Object obj){
-        System.err.println("Field being updated is of class " + obj.getClass().getSimpleName() + " is instructor? " + (obj instanceof Instructor));
+    public static String getFormattedPropValue(String propName, Object obj){
+        //System.err.println("Field being updated is of class " + obj.getClass().getSimpleName() + " is instructor? " + (obj instanceof Instructor));
         if(obj instanceof Instructor){
             Instructor instructor = (Instructor) obj;
             return instructor.getFullName();
         } else if (propName == "termCode"){
             return Term.getRegistrarName(obj.toString());
         } else {
-            return obj.toString();
+            if(obj == null){
+                return "";
+            }else {
+                return obj.toString();
+            }
         }
     }
 
@@ -103,7 +110,10 @@ public final class ActivityLogFormatter {
         if(obj instanceof Section){
             Section section = (Section) obj;
             return Term.getRegistrarName(section.getSectionGroup().getTermCode());
-        } else{
+        } else if(obj instanceof SectionGroup){
+            SectionGroup sectionGroup = (SectionGroup) obj;
+            return Term.getRegistrarName(sectionGroup.getTermCode());
+        } else {
             return "";
         }
     }
@@ -115,10 +125,10 @@ public final class ActivityLogFormatter {
             return String.valueOf(course.getYear());
         } else if(obj instanceof Section){
             Section section = (Section) obj;
-            return Term.getYear(section.getSectionGroup().getTermCode());
+            return String.valueOf(section.getSectionGroup().getCourse().getYear());
         } else if (obj instanceof SectionGroup){
             SectionGroup sectionGroup = (SectionGroup) obj;
-            return Term.getYear(sectionGroup.getTermCode());
+            return String.valueOf(sectionGroup.getCourse().getYear());
         } else if(obj instanceof LineItem){
             LineItem lineItem = (LineItem) obj;
             return String.valueOf(lineItem.getBudgetScenario().getBudget().getSchedule().getYear());

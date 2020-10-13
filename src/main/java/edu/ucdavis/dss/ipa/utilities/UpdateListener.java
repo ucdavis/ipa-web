@@ -25,6 +25,9 @@ public class UpdateListener implements PostCommitUpdateEventListener {
     @Inject
     WorkgroupService workgroupService;
 
+    @Inject
+    EmailService emailService;
+
     @Override
     public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
         long start = System.currentTimeMillis();
@@ -39,55 +42,54 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postUpdateEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
+                if (ActivityLogFormatter.isAudited(moduleRaw, entityName)) {
+                    String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
+                    String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
 
-                String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
-                String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
+                    String[] props =
+                            postUpdateEvent.getPersister().getEntityMetamodel().getPropertyNames();
+                    Object[] oldState = postUpdateEvent.getOldState();
+                    Object[] state = postUpdateEvent.getState();
+                    String userDisplayName = authorizer.getUserDisplayName();
 
-                String[] props =
-                        postUpdateEvent.getPersister().getEntityMetamodel().getPropertyNames();
-                Object[] oldState = postUpdateEvent.getOldState();
-                Object[] state = postUpdateEvent.getState();
-                String userDisplayName = authorizer.getUserDisplayName();
+                    UUID transactionId = UUID.randomUUID();
+                    for (int i : postUpdateEvent.getDirtyProperties()) {
+                        StringBuilder sb = new StringBuilder();
+                        if (!ActivityLogFormatter.isAudited(moduleRaw, entityName, props[i])) {
+                            System.err.println("Skipping prop " + props[i] + " on entity " + entityName + " from " + moduleRaw);
+                            continue;
+                        }
+                        String year = ActivityLogFormatter.getYear(entity);
+                        String years = ActivityLogFormatter.getYears(entity);
+                        sb.append("**" + userDisplayName + "**");
+                        sb.append(" in **" + module + "** - **" + years + "**");
+                        String termCode = ActivityLogFormatter.getTermCode(entity);
+                        if (termCode.length() > 0) {
+                            sb.append(", **" + termCode + "**");
+                        }
 
-                UUID transactionId = UUID.randomUUID();
-                for (int i : postUpdateEvent.getDirtyProperties()) {
-                    StringBuilder sb = new StringBuilder();
-                    if (!ActivityLogFormatter.isAudited(moduleRaw, entityName, props[i])) {
-                        System.err.println("Skipping prop " + props[i] + " on entity " + entityName + " from " + moduleRaw);
-                        continue;
+                        sb.append("\nChanged ");
+                        sb.append("**" + entityDescription + "**");
+                        sb.append(" **" + ActivityLogFormatter.getFormattedPropName(props[i]) + "** from **" + ActivityLogFormatter.getFormattedPropValue(props[i], oldState[i]) + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
+                        System.err.println(sb.toString());
+
+                        Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
+                        AuditLog auditLogEntry = new AuditLog();
+                        auditLogEntry.setMessage(sb.toString());
+                        auditLogEntry.setLoginId(authorizer.getLoginId());
+                        auditLogEntry.setUserName(userDisplayName);
+                        auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
+                        auditLogEntry.setYear(Integer.parseInt(year));
+                        auditLogEntry.setModule(module);
+                        auditLogEntry.setTransactionId(transactionId);
+                        session.save(auditLogEntry);
+                        session.close();
+                        System.err.println("*********Inserted to Audit Log + " + auditLogEntry.getId() + "************");
                     }
-                    String year = ActivityLogFormatter.getYear(entity);
-                    String years = ActivityLogFormatter.getYears(entity);
-                    sb.append("**" + userDisplayName + "**");
-                    sb.append(" in **" + module + "** - **" + years + "**");
-                    String termCode = ActivityLogFormatter.getTermCode(entity);
-                    if(termCode.length() > 0){
-                        sb.append(", **" + termCode + "**");
-                    }
-
-                    sb.append("\nChanged ");
-                    sb.append(entityDescription);
-                    sb.append(" **" + ActivityLogFormatter.getFormattedPropName(props[i]) + "** from **" + ActivityLogFormatter.getEntityDisplayName(props[i], oldState[i]) + "** to **" + ActivityLogFormatter.getEntityDisplayName(props[i], state[i]) + "**");
-                    System.err.println(sb.toString());
-
-                    Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
-                    AuditLog auditLogEntry = new AuditLog();
-                    auditLogEntry.setMessage(sb.toString());
-                    auditLogEntry.setLoginId(authorizer.getLoginId());
-                    auditLogEntry.setUserName(userDisplayName);
-                    auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
-                    auditLogEntry.setYear(Integer.parseInt(year));
-                    auditLogEntry.setModule(module);
-                    auditLogEntry.setTransactionId(transactionId);
-                    session.save(auditLogEntry);
-                    session.close();
-                    System.err.println("*********Inserted to Audit Log + " + auditLogEntry.getId() + "************");
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            //TODO explore options
-            //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
+            emailService.reportException(ex, "Failed to log update operation(s) to audit log");
         }
         System.err.println("*********Ending Update Listener took + " + (System.currentTimeMillis() - start) + "ms*************");
     }

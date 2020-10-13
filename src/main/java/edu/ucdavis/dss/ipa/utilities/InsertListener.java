@@ -25,6 +25,9 @@ public class InsertListener implements PostCommitInsertEventListener
     @Inject
     WorkgroupService workgroupService;
 
+    @Inject
+    EmailService emailService;
+
     public void onPostInsert(PostInsertEvent postInsertEvent) {
         long start = System.currentTimeMillis();
         try {
@@ -54,7 +57,7 @@ public class InsertListener implements PostCommitInsertEventListener
                         sb.append(", **" + termCode + "**");
                     }
 
-                    sb.append("\nInserted ");
+                    sb.append("\nCreated ");
                     sb.append("**" + entityDescription + "**");
                     System.err.println(sb.toString());
 
@@ -75,9 +78,7 @@ public class InsertListener implements PostCommitInsertEventListener
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            //TODO explore options
-            //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
+            emailService.reportException(ex, "Failed to log insert operation to audit log");
         }
         System.err.println("*********Ending Insert Listener took + " + (System.currentTimeMillis() - start) + " ms*************");
     }

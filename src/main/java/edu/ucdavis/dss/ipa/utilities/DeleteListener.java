@@ -23,6 +23,9 @@ public class DeleteListener implements PostCommitDeleteEventListener {
     @Inject
     WorkgroupService workgroupService;
 
+    @Inject
+    EmailService emailService;
+
     public void onPostDelete(PostDeleteEvent postDeleteEvent) {
         long start = System.currentTimeMillis();
         try {
@@ -73,9 +76,7 @@ public class DeleteListener implements PostCommitDeleteEventListener {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            //TODO explore options
-            //ConsoleEmailService.reportException(ex, "Failed to log CRUD operations in activity log");
+            emailService.reportException(ex, "Failed to log delete operation to audit log");
         }
         System.err.println("*********Ending Delete Listener took + " + (System.currentTimeMillis() - start) + " ms*************");
     }
