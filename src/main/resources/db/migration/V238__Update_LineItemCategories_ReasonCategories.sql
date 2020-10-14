@@ -9,5 +9,6 @@ INSERT INTO `LineItemCategories` (`Id`, `Description`) VALUES (8, "Additional Fu
 INSERT INTO `LineItemCategories` (`Id`, `Description`) VALUES (9, "Funds not in GENT Account");
 
 -- remove unused entries
-DELETE FROM `ReasonCategories` WHERE `Id` < 10;
-UPDATE `SectionGroupCosts` SET `ReasonCategoryId` = NULL WHERE `ReasonCategoryId` < 10;
+DELETE FROM `ReasonCategories` WHERE id < 10;
+UPDATE `SectionGroupCosts` SET `ReasonCategoryId` = 25 WHERE ReasonCategoryId = 4;
+UPDATE `SectionGroupCosts` SET `ReasonCategoryId` = NULL WHERE ReasonCategoryId < 10;
