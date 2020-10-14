@@ -84,14 +84,13 @@ public final class ActivityLogFormatter {
             case "termCode":
                 return "Term";
             case "plannedSeats":
-                return "Planned Seats";
+                return "planned seats";
             default:
                 return prop;
         }
     }
 
     public static String getFormattedPropValue(String propName, Object obj){
-        //System.err.println("Field being updated is of class " + obj.getClass().getSimpleName() + " is instructor? " + (obj instanceof Instructor));
         if(obj instanceof Instructor){
             Instructor instructor = (Instructor) obj;
             return instructor.getFullName();

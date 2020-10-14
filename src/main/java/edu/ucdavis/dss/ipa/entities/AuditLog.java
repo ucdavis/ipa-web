@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -110,5 +111,11 @@ public class AuditLog extends BaseEntity{
 
     public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
+    }
+
+    @JsonProperty("createdOn")
+    @Transient
+    public Date getCreatedOn() {
+        return createdAt;
     }
 }
