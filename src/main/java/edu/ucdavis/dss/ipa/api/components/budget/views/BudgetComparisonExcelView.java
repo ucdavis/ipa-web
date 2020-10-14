@@ -29,10 +29,12 @@ import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERIN
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_SEATS;
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.ADDITIONAL_DEANS_OFFICE;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.CLASS_CANCELLED;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.DEANS_OFFICE;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.EXTERNAL_BUYOUT;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.INTERNAL_BUYOUT;
+import static edu.ucdavis.dss.ipa.entities.enums.FundType.NOT_GENT;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.OTHER;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.RANGE_ADJUSTMENT;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.TOTAL;
@@ -142,6 +144,8 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(report, Arrays.asList(WORK_LIFE.getDescription(), getFund(previousFunds, WORK_LIFE), "", "", WORK_LIFE.getDescription(), getFund(currentFunds, WORK_LIFE), "", "", WORK_LIFE.getDescription(), getFund(currentFunds, WORK_LIFE).subtract(getFund(previousFunds, WORK_LIFE)), getPercentChange(getFund(previousFunds, WORK_LIFE), getFund(currentFunds, WORK_LIFE))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(OTHER.getDescription(), getFund(previousFunds, OTHER), "", "", OTHER.getDescription(), getFund(currentFunds, OTHER), "", "", OTHER.getDescription(), getFund(currentFunds, OTHER).subtract(getFund(previousFunds, OTHER)), getPercentChange(getFund(previousFunds, OTHER), getFund(currentFunds, OTHER))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(EXTERNAL_BUYOUT.getDescription(), getFund(previousFunds, EXTERNAL_BUYOUT), "", "", EXTERNAL_BUYOUT.getDescription(), getFund(currentFunds, EXTERNAL_BUYOUT), "", "", EXTERNAL_BUYOUT.getDescription(), getFund(currentFunds, EXTERNAL_BUYOUT).subtract(getFund(previousFunds, EXTERNAL_BUYOUT)), getPercentChange(getFund(previousFunds, EXTERNAL_BUYOUT), getFund(currentFunds, EXTERNAL_BUYOUT))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(ADDITIONAL_DEANS_OFFICE.getDescription(), getFund(previousFunds, ADDITIONAL_DEANS_OFFICE), "", "", ADDITIONAL_DEANS_OFFICE.getDescription(), getFund(currentFunds, ADDITIONAL_DEANS_OFFICE), "", "", ADDITIONAL_DEANS_OFFICE.getDescription(), getFund(currentFunds, ADDITIONAL_DEANS_OFFICE).subtract(getFund(previousFunds, ADDITIONAL_DEANS_OFFICE)), getPercentChange(getFund(previousFunds, ADDITIONAL_DEANS_OFFICE), getFund(currentFunds, ADDITIONAL_DEANS_OFFICE))));
+            ExcelHelper.writeRowToSheet(report, Arrays.asList(NOT_GENT.getDescription(), getFund(previousFunds, NOT_GENT), "", "", NOT_GENT.getDescription(), getFund(currentFunds, NOT_GENT), "", "", NOT_GENT.getDescription(), getFund(currentFunds, NOT_GENT).subtract(getFund(previousFunds, NOT_GENT)), getPercentChange(getFund(previousFunds, NOT_GENT), getFund(currentFunds, NOT_GENT))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("", getFund(previousFunds, TOTAL), "", "", "", getFund(currentFunds, TOTAL), "", "", "", getFund(currentFunds, TOTAL).subtract(getFund(previousFunds, TOTAL))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
 
