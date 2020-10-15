@@ -128,7 +128,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 Float taCost = (sectionGroupCost.getTaCount() == null ? 0.0F : sectionGroupCost.getTaCount()) * baseTaCost;
                 Float readerCost = (sectionGroupCost.getReaderCount() == null ? 0.0F: sectionGroupCost.getReaderCount() ) * baseReaderCost;
                 Float supportCost = taCost + readerCost;
-                Float instructorCost = getBudgetCalculationService().calculateInstructorCost(budgetScenarioExcelView.budget, budgetScenarioExcelView.budgetScenario, sectionGroupCost, budgetScenarioExcelView.workgroup).floatValue();
+                Float instructorCost = 0.0F;
                 Long currentEnrollment = null;
                 if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()) != null){
                     if(budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()) != null){
@@ -147,6 +147,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     if(sectionGroupCostInstructor.getTeachingAssignment() != null) {
                         teachingAssingmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
                     }
+                    instructorCost += getBudgetCalculationService().calculateSectionGroupInstructorCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, sectionGroupCostInstructor).floatValue();
                 }
 
                 if(isLiveData){
@@ -164,6 +165,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 } else if (sectionGroupCost.getInstructorType() != null) {
                                     instructors.add(teachingAssignment.getInstructorType().getDescription());
                                 }
+                                instructorCost += getBudgetCalculationService().calculateTeachingAssignmentCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, teachingAssignment).floatValue();
                             }
                         }
                     }
