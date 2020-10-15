@@ -29,11 +29,8 @@ public class InsertListener implements PostCommitInsertEventListener
     EmailService emailService;
 
     public void onPostInsert(PostInsertEvent postInsertEvent) {
-        long start = System.currentTimeMillis();
         try {
             // Web request
-
-            System.err.println("**********Starting Insert Listener*************");
             if (RequestContextHolder.getRequestAttributes() != null) {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
@@ -59,7 +56,6 @@ public class InsertListener implements PostCommitInsertEventListener
 
                     sb.append("\nCreated ");
                     sb.append("**" + entityDescription + "**");
-                    System.err.println(sb.toString());
 
                     Session session = postInsertEvent.getPersister().getFactory().openTemporarySession();
                     AuditLog auditLogEntry = new AuditLog();
@@ -72,15 +68,11 @@ public class InsertListener implements PostCommitInsertEventListener
                     auditLogEntry.setTransactionId(transactionId);
                     session.save(auditLogEntry);
                     session.close();
-                    System.err.println("*********Inserted to Audit Log + " + auditLogEntry.getId() + "************");
-                } else {
-                    System.err.println("Skipping insert of entity " + entityName + " from " + moduleRaw);
                 }
             }
         } catch (Exception ex) {
             emailService.reportException(ex, "Failed to log insert operation to audit log");
         }
-        System.err.println("*********Ending Insert Listener took + " + (System.currentTimeMillis() - start) + " ms*************");
     }
 
     @Override

@@ -30,11 +30,8 @@ public class UpdateListener implements PostCommitUpdateEventListener {
 
     @Override
     public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
-        long start = System.currentTimeMillis();
         try {
             // Web request
-
-            System.err.println("**********Stating Update Listener*************");
             if (RequestContextHolder.getRequestAttributes() != null) {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
@@ -56,7 +53,6 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                     for (int i : postUpdateEvent.getDirtyProperties()) {
                         StringBuilder sb = new StringBuilder();
                         if (!ActivityLogFormatter.isAudited(moduleRaw, entityName, props[i])) {
-                            System.err.println("Skipping prop " + props[i] + " on entity " + entityName + " from " + moduleRaw);
                             continue;
                         }
                         String year = ActivityLogFormatter.getYear(entity);
@@ -68,10 +64,17 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                             sb.append(", **" + termCode + "**");
                         }
 
-                        sb.append("\nChanged ");
-                        sb.append("**" + entityDescription + "**");
-                        sb.append(" **" + ActivityLogFormatter.getFormattedPropName(props[i]) + "** from **" + ActivityLogFormatter.getFormattedPropValue(props[i], oldState[i]) + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
-                        System.err.println(sb.toString());
+                        String initialValue = ActivityLogFormatter.getFormattedPropValue(props[i], oldState[i]);
+                        if (initialValue == null) {
+                            sb.append("\nSet ");
+                            sb.append("**" + entityDescription + "**");
+                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
+                        } else{
+                            sb.append("\nChanged ");
+                            sb.append("**" + entityDescription + "**");
+                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** from **" + initialValue + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
+
+                        }
 
                         Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
                         AuditLog auditLogEntry = new AuditLog();
@@ -84,14 +87,12 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         auditLogEntry.setTransactionId(transactionId);
                         session.save(auditLogEntry);
                         session.close();
-                        System.err.println("*********Inserted to Audit Log + " + auditLogEntry.getId() + "************");
                     }
                 }
             }
         } catch (Exception ex) {
             emailService.reportException(ex, "Failed to log update operation(s) to audit log");
         }
-        System.err.println("*********Ending Update Listener took + " + (System.currentTimeMillis() - start) + "ms*************");
     }
 
     @Override

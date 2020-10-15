@@ -30,21 +30,10 @@ public final class ActivityLogFormatter {
         courseView.put("SectionGroup", courseViewSectionGroup);
         temp.put("courseViewController", courseView);
 
-        /*// Budget view entities to be audited.
-        HashMap<String, HashMap<String, Boolean>> budgetView = new HashMap<String, HashMap<String, Boolean>>();
-
-        // Fields to audit in budget view for line item (funds)
-        HashMap<String, Boolean> budgetViewSection = new HashMap<String, Boolean>();
-        budgetViewSection.put("documentNumber", true);
-        budgetViewSection.put("amount", true);
-        budgetView.put("LineItem", budgetViewSection);
-        temp.put("budgetViewController", budgetView);*/
-
         auditProps = temp;
     }
 
     public static String getFormattedModule(String moduleNameRaw){
-        System.err.println("Raw Module is " + moduleNameRaw);
         switch (moduleNameRaw) {
             case "courseViewController":
                 return "Courses";
@@ -57,19 +46,18 @@ public final class ActivityLogFormatter {
 
     public static String getFormattedEntityDescription(Object obj){
         String simpleName = obj.getClass().getSimpleName();
-        System.err.println("Object is of class " + obj.getClass().getSimpleName());
         switch (simpleName){
             case "Course":
                 Course course = (Course) obj;
-                return course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
+                return "Course " + course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
             case "Section":
                 Section section = (Section) obj;
                 Course sectionCourse = section.getSectionGroup().getCourse();
-                return sectionCourse.getSubjectCode() + " " + sectionCourse.getCourseNumber() + " - " + section.getSequenceNumber();
+                return "Section " + sectionCourse.getSubjectCode() + " " + sectionCourse.getCourseNumber() + " - " + section.getSequenceNumber();
             case "SectionGroup":
                 SectionGroup sectionGroup = (SectionGroup) obj;
                 Course sectionGroupCourse = sectionGroup.getCourse();
-                return sectionGroupCourse.getSubjectCode() + " " + sectionGroupCourse.getCourseNumber() + " - " + sectionGroupCourse.getSequencePattern();
+                return "Section Group " + sectionGroupCourse.getSubjectCode() + " " + sectionGroupCourse.getCourseNumber() + " - " + sectionGroupCourse.getSequencePattern();
             case "LineItem":
                 LineItem lineItem = (LineItem) obj;
                 return lineItem.getDescription();
@@ -82,7 +70,7 @@ public final class ActivityLogFormatter {
     public static String getFormattedPropName(String prop){
         switch (prop){
             case "termCode":
-                return "Term";
+                return "term";
             case "plannedSeats":
                 return "planned seats";
             default:
@@ -97,10 +85,10 @@ public final class ActivityLogFormatter {
         } else if (propName == "termCode"){
             return Term.getRegistrarName(obj.toString());
         } else {
-            if(obj == null){
-                return "";
-            }else {
+            if(obj != null){
                 return obj.toString();
+            }else{
+                return null;
             }
         }
     }
@@ -176,7 +164,7 @@ public final class ActivityLogFormatter {
         }
     }
 
-    // For updates
+    // Check field level audit
     public static Boolean isAudited(String module, String entity, String field){
         if(auditProps.containsKey(module) && auditProps.get(module).containsKey(entity) && auditProps.get(module).get(entity).containsKey(field)){
             return auditProps.get(module).get(entity).get(field);
@@ -184,7 +172,7 @@ public final class ActivityLogFormatter {
         return false;
     }
 
-    // For inserts
+    // Check entity level audit
     public static Boolean isAudited(String module, String entity){
         if(auditProps.containsKey(module) && auditProps.get(module).containsKey(entity)){
             return true;
