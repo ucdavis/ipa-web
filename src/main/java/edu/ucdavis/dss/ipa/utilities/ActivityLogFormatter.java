@@ -30,20 +30,70 @@ public final class ActivityLogFormatter {
         courseView.put("SectionGroup", courseViewSectionGroup);
         temp.put("courseViewController", courseView);
 
+        // Assignment view entities to be audited.
+        HashMap<String, HashMap<String, Boolean>> assignmentView = new HashMap<String, HashMap<String, Boolean>>();
+
+        // Fields to audit in assignment view for teachingAssignment
+        HashMap<String, Boolean> teachingAssignmentViewTeachingAssignment = new HashMap<String, Boolean>();
+        assignmentView.put("TeachingAssignment", teachingAssignmentViewTeachingAssignment);
+        temp.put("assignmentViewTeachingAssignmentController", assignmentView);
+
+        // Budget view entities to be audited
+        HashMap<String, HashMap<String, Boolean>> budgetView = new HashMap<String, HashMap<String, Boolean>>();
+
+        // Fields to audit in assignment view for budgetScenario
+        HashMap<String, Boolean> budgetViewBudgetScenario = new HashMap<String, Boolean>();
+        budgetView.put("BudgetScenario", budgetViewBudgetScenario);
+        temp.put("budgetViewController", budgetView);
+
         auditProps = temp;
     }
 
+    // Get workgroup CRUD operations is tied to.
+    // Required for all entities
+    public static long getWorkgroupId(Object obj){
+        if(obj instanceof  Course){
+            Course course = (Course) obj;
+            return course.getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof Section){
+            Section section = (Section) obj;
+            return section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof SectionGroup){
+            SectionGroup sectionGroup = (SectionGroup) obj;
+            return sectionGroup.getCourse().getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof Tag){
+            Tag tag = (Tag) obj;
+            return tag.getWorkgroup().getId();
+        } else if(obj instanceof LineItem){
+            LineItem lineItem = (LineItem) obj;
+            return lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof TeachingAssignment){
+            TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
+            return teachingAssignment.getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof BudgetScenario){
+            BudgetScenario budgetScenario = (BudgetScenario) obj;
+            return budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        } else {
+            return 0;
+        }
+    }
+
+    // Get user friendly module that originated change.
+    // Ex. "courseViewController" becomes "Courses"
     public static String getFormattedModule(String moduleNameRaw){
         switch (moduleNameRaw) {
             case "courseViewController":
                 return "Courses";
             case "budgetViewController":
                 return "Budget";
+            case "assignmentViewTeachingAssignmentController":
+                return "Assign Instructors";
             default:
-                return "";
+                return moduleNameRaw;
         }
     }
 
+    // Get user friendly description of record.
     public static String getFormattedEntityDescription(Object obj){
         String simpleName = obj.getClass().getSimpleName();
         switch (simpleName){
@@ -61,38 +111,23 @@ public final class ActivityLogFormatter {
             case "LineItem":
                 LineItem lineItem = (LineItem) obj;
                 return lineItem.getDescription();
+            case "TeachingAssignment":
+                TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
+                Course teachingAssignmentCourse = teachingAssignment.getSectionGroup().getCourse();
+                return "Assignment: " + teachingAssignment.getInstructorDisplayName() + " on "
+                        + teachingAssignmentCourse.getSubjectCode() + " " +
+                        teachingAssignmentCourse.getCourseNumber() + " - " +
+                        teachingAssignmentCourse.getSequencePattern();
+            case "BudgetScenario":
+                BudgetScenario budgetScenario = (BudgetScenario) obj;
+                return "Budget Scenario: " + budgetScenario.getName();
             default:
                 return simpleName;
         }
 
     }
 
-    public static String getFormattedPropName(String prop){
-        switch (prop){
-            case "termCode":
-                return "term";
-            case "plannedSeats":
-                return "planned seats";
-            default:
-                return prop;
-        }
-    }
-
-    public static String getFormattedPropValue(String propName, Object obj){
-        if(obj instanceof Instructor){
-            Instructor instructor = (Instructor) obj;
-            return instructor.getFullName();
-        } else if (propName == "termCode"){
-            return Term.getRegistrarName(obj.toString());
-        } else {
-            if(obj != null){
-                return obj.toString();
-            }else{
-                return null;
-            }
-        }
-    }
-
+    // Get term code if applicable for entity
     public static String getTermCode(Object obj){
         if(obj instanceof Section){
             Section section = (Section) obj;
@@ -100,6 +135,8 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof SectionGroup){
             SectionGroup sectionGroup = (SectionGroup) obj;
             return Term.getRegistrarName(sectionGroup.getTermCode());
+        } else if (obj instanceof TeachingAssignment){
+            TeachingAssignment teachingAssignment = (TeachingAssignment)
         } else {
             return "";
         }
@@ -119,8 +156,14 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof LineItem){
             LineItem lineItem = (LineItem) obj;
             return String.valueOf(lineItem.getBudgetScenario().getBudget().getSchedule().getYear());
-        } else{
-            return "";
+        } else if(obj instanceof TeachingAssignment){
+            TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
+            return String.valueOf(teachingAssignment.getSchedule().getYear());
+        } else if(obj instanceof BudgetScenario){
+            BudgetScenario budgetScenario = (BudgetScenario) obj;
+            return String.valueOf(budgetScenario.getBudget().getSchedule().getYear());
+        } else {
+            return "0";
         }
     }
 
@@ -138,29 +181,44 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof LineItem){
             LineItem lineItem = (LineItem) obj;
             return String.valueOf(lineItem.getBudgetScenario().getBudget().getSchedule().getYear());
-        } else{
+        } else if(obj instanceof TeachingAssignment){
+            TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
+            return Term.getAcademicYear(teachingAssignment.getTermCode());
+        } else if(obj instanceof BudgetScenario){
+            BudgetScenario budgetScenario = (BudgetScenario) obj;
+            return budgetScenario.getBudget().getSchedule().getYear() + "-" + (budgetScenario.getBudget().getSchedule().getYear()+1);
+        } else {
             return "";
         }
     }
 
-    public static long getWorkgroupId(Object obj){
-        if(obj instanceof  Course){
-            Course course = (Course) obj;
-            return course.getSchedule().getWorkgroup().getId();
-        } else if(obj instanceof Section){
-            Section section = (Section) obj;
-            return section.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
-        } else if(obj instanceof SectionGroup){
-            SectionGroup sectionGroup = (SectionGroup) obj;
-            return sectionGroup.getCourse().getSchedule().getWorkgroup().getId();
-        } else if(obj instanceof Tag){
-            Tag tag = (Tag) obj;
-            return tag.getWorkgroup().getId();
-        } else if(obj instanceof LineItem){
-            LineItem lineItem = (LineItem) obj;
-            return lineItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        }else{
-            return 0;
+    // Returns user friendly property name.  Ex. "termCode" becomes "term"
+    // Applicable only to update
+    public static String getFormattedPropName(String prop){
+        switch (prop){
+            case "termCode":
+                return "term";
+            case "plannedSeats":
+                return "planned seats";
+            default:
+                return prop;
+        }
+    }
+
+    // Return user friendly prop value.  Ex. Instructor reference becomes "Edgar Perez"
+    // Applicable only to update
+    public static String getFormattedPropValue(String propName, Object obj){
+        if(obj instanceof Instructor){
+            Instructor instructor = (Instructor) obj;
+            return instructor.getFullName();
+        } else if (propName == "termCode"){
+            return Term.getRegistrarName(obj.toString());
+        } else {
+            if(obj != null){
+                return obj.toString();
+            }else{
+                return null;
+            }
         }
     }
 

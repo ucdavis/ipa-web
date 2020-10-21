@@ -38,6 +38,7 @@ public class InsertListener implements PostCommitInsertEventListener
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postInsertEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
+                System.err.println(moduleRaw + " " + entityName);
                 if(ActivityLogFormatter.isAudited(moduleRaw, entityName)){
                     String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
                     String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
