@@ -1,17 +1,14 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.AuditLog;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.repositories.AuditLogRepository;
 import edu.ucdavis.dss.ipa.services.AuditLogService;
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 import java.util.List;
+import javax.inject.Inject;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JpaAuditLogService implements AuditLogService {
-
     @Inject
     AuditLogRepository auditLogRepository;
 
@@ -28,5 +25,11 @@ public class JpaAuditLogService implements AuditLogService {
     @Override
     public List<AuditLog> findByWorkgroupIdAndModule(long workgroupId, String module){
         return this.auditLogRepository.findByWorkgroupIdAndModule(workgroupId, module);
+    }
+
+    @Override
+    public List<AuditLog> findByWorkgroupIdAndModuleOrderByCreatedAtDesc(long workgroupId,
+                                                                         String module) {
+        return this.auditLogRepository.findByWorkgroupIdAndModuleOrderByCreatedAtDesc(workgroupId, module);
     }
 }

@@ -13,4 +13,6 @@ public interface AuditLogService {
     List<AuditLog> findByWorkgroupId(long workgroupId);
 
     List<AuditLog> findByWorkgroupIdAndModule(long workgroupId, String module);
+
+    List<AuditLog> findByWorkgroupIdAndModuleOrderByCreatedAtDesc(long workgroupId, String module);
 }
