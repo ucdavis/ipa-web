@@ -41,9 +41,34 @@ public final class ActivityLogFormatter {
         // Budget view entities to be audited
         HashMap<String, HashMap<String, Boolean>> budgetView = new HashMap<String, HashMap<String, Boolean>>();
 
-        // Fields to audit in assignment view for budgetScenario
+        // Fields to audit in budget view for budgetScenario
         HashMap<String, Boolean> budgetViewBudgetScenario = new HashMap<String, Boolean>();
         budgetView.put("BudgetScenario", budgetViewBudgetScenario);
+
+        // Fields to audit in budget view for lineItem
+        HashMap<String, Boolean> budgetViewLineItem = new HashMap<>();
+        budgetViewLineItem.put("amount", true);
+        budgetViewLineItem.put("documentNumber", true);
+        budgetView.put("LineItem", budgetViewLineItem);
+
+        // Fields to audit in budget view for instructorCost
+        HashMap<String, Boolean> budgetViewInstructorCost = new HashMap<>();
+        budgetViewInstructorCost.put("cost", true);
+        budgetView.put("InstructorCost", budgetViewInstructorCost);
+
+        // Fields to audit in budget view for instructorTypeCost
+        HashMap<String, Boolean> budgetViewInstructorTypeCost = new HashMap<>();
+        budgetViewInstructorTypeCost.put("cost", true);
+        budgetView.put("InstructorTypeCost", budgetViewInstructorTypeCost);
+
+        // Fields to audit in budget view for budget
+        // Special case because TA/Reader live under
+        // Category Costs (InstructorTypeCosts) in UI
+        HashMap<String, Boolean> budgetViewBudget = new HashMap<>();
+        budgetViewBudget.put("taCost", true);
+        budgetViewBudget.put("readerCost", true);
+        budgetView.put("Budget", budgetViewBudget);
+
         temp.put("budgetViewController", budgetView);
 
         auditProps = temp;
@@ -73,6 +98,15 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof BudgetScenario){
             BudgetScenario budgetScenario = (BudgetScenario) obj;
             return budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof InstructorCost){
+            InstructorCost instructorCost = (InstructorCost) obj;
+            return instructorCost.getBudget().getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof InstructorTypeCost){
+            InstructorTypeCost instructorTypeCost = (InstructorTypeCost) obj;
+            return instructorTypeCost.getBudget().getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof Budget){
+            Budget budget = (Budget) obj;
+            return budget.getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -99,28 +133,44 @@ public final class ActivityLogFormatter {
         switch (simpleName){
             case "Course":
                 Course course = (Course) obj;
-                return "Course " + course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
+                return "Course: " + course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
             case "Section":
                 Section section = (Section) obj;
                 Course sectionCourse = section.getSectionGroup().getCourse();
-                return "Section " + sectionCourse.getSubjectCode() + " " + sectionCourse.getCourseNumber() + " - " + section.getSequenceNumber();
+                return "Section: " + sectionCourse.getSubjectCode() + " " + sectionCourse.getCourseNumber() + " - " + section.getSequenceNumber();
             case "SectionGroup":
                 SectionGroup sectionGroup = (SectionGroup) obj;
                 Course sectionGroupCourse = sectionGroup.getCourse();
-                return "Section Group " + sectionGroupCourse.getSubjectCode() + " " + sectionGroupCourse.getCourseNumber() + " - " + sectionGroupCourse.getSequencePattern();
+                return "Section Group: " + sectionGroupCourse.getSubjectCode() + " " + sectionGroupCourse.getCourseNumber() + " - " + sectionGroupCourse.getSequencePattern();
             case "LineItem":
                 LineItem lineItem = (LineItem) obj;
-                return lineItem.getDescription();
+                return "Fund: " + lineItem.getLineItemCategory().getDescription() +
+                        " - " + lineItem.getDescription() + " on " +
+                        "Scenario: " + lineItem.getBudgetScenario().getName();
             case "TeachingAssignment":
                 TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
                 Course teachingAssignmentCourse = teachingAssignment.getSectionGroup().getCourse();
-                return "Assignment: " + teachingAssignment.getInstructorDisplayName() + " on "
+                String instructorName = "";
+                if (teachingAssignment.getInstructor() != null){
+                    instructorName = teachingAssignment.getInstructor().getFullName();
+                } else {
+                    instructorName = teachingAssignment.getInstructorType().getDescription();
+                }
+                return "Assignment: " + instructorName + " on "
                         + teachingAssignmentCourse.getSubjectCode() + " " +
                         teachingAssignmentCourse.getCourseNumber() + " - " +
                         teachingAssignmentCourse.getSequencePattern();
             case "BudgetScenario":
                 BudgetScenario budgetScenario = (BudgetScenario) obj;
                 return "Budget Scenario: " + budgetScenario.getName();
+            case "InstructorCost":
+                InstructorCost instructorCost = (InstructorCost) obj;
+                return "Salary: " + instructorCost.getInstructor().getFullName();
+            case "InstructorTypeCost":
+                InstructorTypeCost instructorTypeCost = (InstructorTypeCost) obj;
+                return "Category Cost: " + instructorTypeCost.getInstructorType().getDescription();
+            case "Budget":
+                return "Category Cost:";
             default:
                 return simpleName;
         }
@@ -136,7 +186,8 @@ public final class ActivityLogFormatter {
             SectionGroup sectionGroup = (SectionGroup) obj;
             return Term.getRegistrarName(sectionGroup.getTermCode());
         } else if (obj instanceof TeachingAssignment){
-            TeachingAssignment teachingAssignment = (TeachingAssignment)
+            TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
+            return Term.getRegistrarName(teachingAssignment.getTermCode());
         } else {
             return "";
         }
@@ -162,6 +213,15 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof BudgetScenario){
             BudgetScenario budgetScenario = (BudgetScenario) obj;
             return String.valueOf(budgetScenario.getBudget().getSchedule().getYear());
+        } else if (obj instanceof InstructorCost){
+            InstructorCost instructorCost = (InstructorCost) obj;
+            return String.valueOf(instructorCost.getBudget().getSchedule().getYear());
+        } else if (obj instanceof InstructorTypeCost){
+            InstructorTypeCost instructorTypeCost = (InstructorTypeCost) obj;
+            return String.valueOf(instructorTypeCost.getBudget().getSchedule().getYear());
+        } else if (obj instanceof Budget){
+            Budget budget = (Budget) obj;
+            return String.valueOf(budget.getSchedule().getYear());
         } else {
             return "0";
         }
@@ -187,7 +247,16 @@ public final class ActivityLogFormatter {
         } else if(obj instanceof BudgetScenario){
             BudgetScenario budgetScenario = (BudgetScenario) obj;
             return budgetScenario.getBudget().getSchedule().getYear() + "-" + (budgetScenario.getBudget().getSchedule().getYear()+1);
-        } else {
+        } else if (obj instanceof InstructorCost){
+            InstructorCost instructorCost = (InstructorCost) obj;
+            return instructorCost.getBudget().getSchedule().getYear() + "-" +  (instructorCost.getBudget().getSchedule().getYear()+1);
+        } else if (obj instanceof InstructorTypeCost){
+            InstructorTypeCost instructorTypeCost = (InstructorTypeCost) obj;
+            return instructorTypeCost.getBudget().getSchedule().getYear() + "-" +  (instructorTypeCost.getBudget().getSchedule().getYear()+1);
+        } else if (obj instanceof Budget){
+            Budget budget = (Budget) obj;
+            return budget.getSchedule().getYear() + "-" + (budget.getSchedule().getYear()+1);
+        }else {
             return "";
         }
     }
@@ -200,6 +269,10 @@ public final class ActivityLogFormatter {
                 return "term";
             case "plannedSeats":
                 return "planned seats";
+            case "taCost":
+                return "TA";
+            case "readerCost":
+                return "Reader";
             default:
                 return prop;
         }
