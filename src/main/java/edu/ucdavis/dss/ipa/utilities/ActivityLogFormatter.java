@@ -69,6 +69,24 @@ public final class ActivityLogFormatter {
         budgetViewBudget.put("readerCost", true);
         budgetView.put("Budget", budgetViewBudget);
 
+        // Fields to audit in budget view for sectionGroupCost
+        HashMap<String, Boolean> budgetViewSectionGroupCost = new HashMap<>();
+        budgetViewSectionGroupCost.put("reason", true);
+        budgetViewSectionGroupCost.put("reasonCategory", true);
+        budgetViewSectionGroupCost.put("originalInstructor", true);
+        budgetViewSectionGroupCost.put("enrollment", true);
+        budgetViewSectionGroupCost.put("sectionCount", true);
+        budgetViewSectionGroupCost.put("taCount", true);
+        budgetViewSectionGroupCost.put("readerCount", true);
+        budgetViewSectionGroupCost.put("disabled", true);
+        budgetView.put("SectionGroupCost", budgetViewSectionGroupCost);
+
+        HashMap<String, Boolean> budgetViewSectionGroupCostInstructor = new HashMap<>();
+        budgetViewSectionGroupCostInstructor.put("cost", true);
+        budgetViewSectionGroupCostInstructor.put("instructor", true);
+        budgetViewSectionGroupCostInstructor.put("instructorType", true);
+        budgetView.put("SectionGroupCostInstructor", budgetViewSectionGroupCostInstructor);
+
         temp.put("budgetViewController", budgetView);
 
         auditProps = temp;
@@ -107,6 +125,12 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Budget){
             Budget budget = (Budget) obj;
             return budget.getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof SectionGroupCost){
+            SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+            return sectionGroupCost.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof SectionGroupCostInstructor){
+            SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+            return sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -171,6 +195,18 @@ public final class ActivityLogFormatter {
                 return "Category Cost: " + instructorTypeCost.getInstructorType().getDescription();
             case "Budget":
                 return "Category Cost:";
+            case "SectionGroupCost":
+                SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+                return "Schedule Cost: " + sectionGroupCost.getSubjectCode() +
+                        " " + sectionGroupCost.getCourseNumber() +
+                        " - " + sectionGroupCost.getSequencePattern();
+            case "SectionGroupCostInstructor":
+                SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+                if(sectionGroupCostInstructor.getInstructor() != null){
+                    return "Schedule Cost Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName();
+                } else {
+                    return "Schedule Cost Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription();
+                }
             default:
                 return simpleName;
         }
@@ -188,6 +224,12 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof TeachingAssignment){
             TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
             return Term.getRegistrarName(teachingAssignment.getTermCode());
+        } else if (obj instanceof SectionGroupCost) {
+            SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+            return Term.getRegistrarName(sectionGroupCost.getTermCode());
+        } else if (obj instanceof SectionGroupCostInstructor) {
+            SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+            return Term.getRegistrarName(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
         } else {
             return "";
         }
@@ -222,6 +264,12 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Budget){
             Budget budget = (Budget) obj;
             return String.valueOf(budget.getSchedule().getYear());
+        } else if (obj instanceof SectionGroupCost){
+            SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+            return Term.getYear(sectionGroupCost.getTermCode());
+        } else if (obj instanceof SectionGroupCostInstructor){
+            SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+            return Term.getYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
         } else {
             return "0";
         }
@@ -256,7 +304,13 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Budget){
             Budget budget = (Budget) obj;
             return budget.getSchedule().getYear() + "-" + (budget.getSchedule().getYear()+1);
-        }else {
+        } else if (obj instanceof SectionGroupCost){
+            SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+            return Term.getAcademicYear(sectionGroupCost.getTermCode());
+        } else if (obj instanceof SectionGroupCostInstructor){
+            SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+            return Term.getAcademicYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
+        } else {
             return "";
         }
     }
@@ -272,7 +326,21 @@ public final class ActivityLogFormatter {
             case "taCost":
                 return "TA";
             case "readerCost":
-                return "Reader";
+                return "reader";
+            case "reason":
+                return "additional comments";
+            case "reasonCategory":
+                return "reason category";
+            case "enrollment":
+                return "enroll";
+            case "sectionCount":
+                return "sections";
+            case "taCount":
+                return "TAs";
+            case "readerCount":
+                return "readers";
+            case "instructorType":
+                return "instructor type";
             default:
                 return prop;
         }
@@ -286,6 +354,12 @@ public final class ActivityLogFormatter {
             return instructor.getFullName();
         } else if (propName == "termCode"){
             return Term.getRegistrarName(obj.toString());
+        } else if (obj instanceof ReasonCategory){
+            ReasonCategory reasonCategory = (ReasonCategory) obj;
+            return reasonCategory.getDescription();
+        } else if (obj instanceof InstructorType){
+            InstructorType instructorType = (InstructorType) obj;
+            return instructorType.getDescription();
         } else {
             if(obj != null){
                 return obj.toString();

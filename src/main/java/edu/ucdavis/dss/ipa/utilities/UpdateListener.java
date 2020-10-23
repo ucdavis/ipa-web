@@ -66,14 +66,19 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         }
 
                         String initialValue = ActivityLogFormatter.getFormattedPropValue(props[i], oldState[i]);
+                        String newValue = ActivityLogFormatter.getFormattedPropValue(props[i], state[i]);
                         if (initialValue == null) {
                             sb.append("\nSet ");
                             sb.append("**" + entityDescription + "**");
-                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
-                        } else{
+                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** to **" + newValue + "**");
+                        } else if(newValue == null){
+                            sb.append("\nCleared ");
+                            sb.append("**" + entityDescription + "**");
+                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "**");
+                        } else {
                             sb.append("\nChanged ");
                             sb.append("**" + entityDescription + "**");
-                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** from **" + initialValue + "** to **" + ActivityLogFormatter.getFormattedPropValue(props[i], state[i]) + "**");
+                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** from **" + initialValue + "** to **" + newValue + "**");
 
                         }
 
