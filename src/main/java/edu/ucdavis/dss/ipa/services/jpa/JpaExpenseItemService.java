@@ -60,7 +60,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
             return null;
         }
 
-        if (originalExpenseItem.getBudgetScenario().getIsSnapshot()) {
+        if (originalExpenseItem.getBudgetScenario().getIsBudgetRequest()) {
             return null;
         }
 
