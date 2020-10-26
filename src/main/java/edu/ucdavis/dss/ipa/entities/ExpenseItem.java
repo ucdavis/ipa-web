@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ExpenseItemDeserializer;
-import edu.ucdavis.dss.ipa.api.deserializers.LineItemDeserializer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +20,7 @@ public class ExpenseItem {
     private BigDecimal amount = new BigDecimal(0);
     private String description;
     private ExpenseItemCategory expenseItemCategory;
+    private String termCode;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +64,14 @@ public class ExpenseItem {
         this.description = description;
     }
 
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ExpenseItemCategoryId", nullable = false)
     @NotNull
@@ -91,6 +99,38 @@ public class ExpenseItem {
     public String getExpenseItemCategoryDescription() {
         if(expenseItemCategory != null) {
             return expenseItemCategory.getDescription();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonProperty("termDescription")
+    @Transient
+    public String getTermDescription() {
+        if(termCode != null) {
+            String shortTermCode = termCode.substring(4,6);
+            switch (shortTermCode){
+                case "05":
+                    return "Summer Session 1";
+                case "06":
+                    return "Summer Special Session";
+                case "07":
+                    return "Summer Session 2";
+                case "08":
+                    return "Summer Quarter";
+                case "09":
+                    return "Fall Semester";
+                case "10":
+                    return "Fall Quarter";
+                case "01":
+                    return "Winter Quarter";
+                case "02":
+                    return "Spring Semester";
+                case "03":
+                    return "Spring Quarter";
+                default:
+                    return "";
+            }
         } else {
             return "";
         }

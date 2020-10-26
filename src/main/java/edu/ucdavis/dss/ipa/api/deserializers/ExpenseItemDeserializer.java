@@ -42,6 +42,10 @@ public class ExpenseItemDeserializer extends JsonDeserializer<Object> {
             expenseItem.setDescription(node.get("description").textValue());
         }
 
+        if (node.has("termCode")){
+            expenseItem.setTermCode(node.get("termCode").textValue());
+        }
+
         if (node.has("amount")) {
             BigDecimal amount = node.get("amount").decimalValue();
             expenseItem.setAmount(amount);

@@ -48,6 +48,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
         expenseItem.setExpenseItemCategory(expenseItemDTO.getExpenseItemCategory());
         expenseItem.setAmount(expenseItemDTO.getAmount());
         expenseItem.setDescription(expenseItemDTO.getDescription());
+        expenseItem.setTermCode(expenseItemDTO.getTermCode());
 
         return expenseItemRepository.save(expenseItem);
     }
@@ -67,6 +68,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
         originalExpenseItem.setDescription(expenseItem.getDescription());
         originalExpenseItem.setAmount(expenseItem.getAmount());
         originalExpenseItem.setExpenseItemCategory(expenseItem.getExpenseItemCategory());
+        originalExpenseItem.setTermCode(expenseItem.getTermCode());
 
         return this.expenseItemRepository.save(originalExpenseItem);
     }

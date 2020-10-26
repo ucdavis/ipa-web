@@ -5,6 +5,7 @@ CREATE TABLE `ExpenseItems`(
   `Notes` varchar(50) NULL,
   `BudgetScenarioId` int(11) NOT NULL,
   `ExpenseItemCategoryId` int(11) NULL,
+  `TermCode` varchar(6) NULL,
   `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `UpdatedAt` timestamp NULL DEFAULT NULL,
   `ModifiedBy` varchar(16) DEFAULT NULL
