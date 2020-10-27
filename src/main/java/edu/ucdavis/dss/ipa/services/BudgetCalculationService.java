@@ -269,7 +269,10 @@ public class BudgetCalculationService {
         }
         BigDecimal expenses = BigDecimal.ZERO;
         for(ExpenseItem expenseItem : expenseItems){
-            expenses = expenses.add(expenseItem.getAmount());
+            if(termCodes.contains(expenseItem.getTermCode())){
+                termTotals.get(expenseItem.getTermCode()).put(TOTAL_EXPENSES, termTotals.get(expenseItem.getTermCode()).get(TOTAL_EXPENSES).add(expenseItem.getAmount()));
+                expenses = expenses.add(expenseItem.getAmount());
+            }
         }
 
         combinedTermSummary.put(TOTAL_FUNDS, funds);

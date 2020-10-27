@@ -87,8 +87,8 @@ public class BudgetExcelView extends AbstractXlsxView {
         Sheet fundsSheet = workbook.createSheet("Funds");
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
-        Sheet expensesSheet = workbook.createSheet("Expenses");
-        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Amount"));
+        Sheet expensesSheet = workbook.createSheet("Other Costs");
+        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
@@ -205,14 +205,20 @@ public class BudgetExcelView extends AbstractXlsxView {
             }
 
             // Create Expenses sheet
+            List<String> termCodes = budgetScenarioExcelView.getTermCodes();
             for(ExpenseItem expenseItem : budgetScenarioExcelView.getBudgetScenario().getExpenseItems()){
-                List<Object> cellValues = Arrays.asList(
-                        budgetScenarioExcelView.getWorkgroup().getName(),
-                        scenarioName,
-                        expenseItem.getExpenseItemCategoryDescription(),
-                        expenseItem.getDescription(),
-                        expenseItem.getAmount());
-                expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
+
+                if(termCodes.contains(expenseItem.getTermCode())){
+                    List<Object> cellValues = Arrays.asList(
+                            budgetScenarioExcelView.getWorkgroup().getName(),
+                            scenarioName,
+                            Term.getRegistrarName(expenseItem.getTermCode()),
+                            expenseItem.getExpenseItemCategoryDescription(),
+                            expenseItem.getDescription(),
+                            expenseItem.getAmount());
+                    expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
+                }
+
             }
 
             // Creating Instructor Salaries sheet
@@ -334,7 +340,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             "",
             "Total Teaching Costs",
             "Funds Cost",
-            "Expenses",
+            "Other Cost",
             "Balance",
             "",
             "Units Offered",
@@ -430,7 +436,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 case "Funds Cost":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS));
                     break;
-                case "Expenses":
+                case "Other Cost":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES));
                     break;
                 case "Balance":
