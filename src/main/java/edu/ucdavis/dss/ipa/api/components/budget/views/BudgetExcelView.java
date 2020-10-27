@@ -88,6 +88,7 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Subject Code",
            "Course Number",
            "Title",
+           "Tags",
            "Units High",
            "Units Low",
            "Sequence",
@@ -150,13 +151,14 @@ public class BudgetExcelView extends AbstractXlsxView {
                     instructorCost += getBudgetCalculationService().calculateSectionGroupInstructorCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, sectionGroupCostInstructor).floatValue();
                 }
 
+                SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
+                    budgetScenarioExcelView.getWorkgroup().getId(),
+                    sectionGroupCost.getCourseNumber(),
+                    sectionGroupCost.getSequencePattern(),
+                    sectionGroupCost.getTermCode(),
+                    sectionGroupCost.getSubjectCode());
+
                 if(isLiveData){
-                    SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
-                            budgetScenarioExcelView.getWorkgroup().getId(),
-                            sectionGroupCost.getCourseNumber(),
-                            sectionGroupCost.getSequencePattern(),
-                            sectionGroupCost.getTermCode(),
-                            sectionGroupCost.getSubjectCode());
                     if(sectionGroup != null){
                         for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
                             if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
@@ -171,6 +173,10 @@ public class BudgetExcelView extends AbstractXlsxView {
                     }
                 }
 
+                List<String> courseTags = new ArrayList<>();
+                if (sectionGroup != null) {
+                    courseTags = sectionGroup.getCourse().getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
+                }
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
@@ -181,6 +187,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getSubjectCode(),
                                 sectionGroupCost.getCourseNumber(),
                                 sectionGroupCost.getTitle(),
+                                String.join(", ", courseTags),
                                 sectionGroupCost.getUnitsHigh(),
                                 sectionGroupCost.getUnitsLow(),
                                 sectionGroupCost.getSequencePattern(),
