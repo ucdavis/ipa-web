@@ -82,6 +82,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
         expenseItem.setAmount(originalExpenseItem.getAmount());
         expenseItem.setDescription(originalExpenseItem.getDescription());
         expenseItem.setExpenseItemCategory(originalExpenseItem.getExpenseItemCategory());
+        expenseItem.setTermCode(originalExpenseItem.getTermCode());
 
         return this.expenseItemRepository.save(expenseItem);
     }
@@ -100,14 +101,13 @@ public class JpaExpenseItemService implements ExpenseItemService {
     }
 
     @Override
-    public List<ExpenseItem> duplicateFunds(BudgetScenario budgetScenario, BudgetScenario originalBudgetScenario) {
+    public List<ExpenseItem> duplicateExpenses(BudgetScenario budgetScenario, BudgetScenario originalBudgetScenario) {
         List<ExpenseItem> expenseItems = new ArrayList<>();
 
-        // TODO implement duplicate for creating snapshots/new scenarios
-        /*for (ExpenseItem originalExpenseItem : originalBudgetScenario.getExpenseItems()) {
+        for (ExpenseItem originalExpenseItem : originalBudgetScenario.getExpenseItems()) {
             ExpenseItem expenseItem = this.createDuplicate(originalExpenseItem, budgetScenario);
             expenseItems.add(expenseItem);
-        }*/
+        }
 
         return expenseItems;
     }

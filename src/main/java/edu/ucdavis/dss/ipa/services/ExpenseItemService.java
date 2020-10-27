@@ -26,5 +26,5 @@ public interface ExpenseItemService {
 
     List<ExpenseItem> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
-    List<ExpenseItem> duplicateFunds(BudgetScenario budgetScenario, BudgetScenario originalBudgetScenario);
+    List<ExpenseItem> duplicateExpenses(BudgetScenario budgetScenario, BudgetScenario originalBudgetScenario);
 }

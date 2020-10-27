@@ -604,6 +604,8 @@ public class BudgetViewController {
         if (expenseItemCategory == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
+        } else {
+            expenseItemDTO.setExpenseItemCategory(expenseItemCategory);
         }
 
         // Authorization check
