@@ -271,13 +271,14 @@ public class BudgetCalculationService {
         for(ExpenseItem expenseItem : expenseItems){
             if(termCodes.contains(expenseItem.getTermCode())){
                 termTotals.get(expenseItem.getTermCode()).put(TOTAL_EXPENSES, termTotals.get(expenseItem.getTermCode()).get(TOTAL_EXPENSES).add(expenseItem.getAmount()));
+                termTotals.get(expenseItem.getTermCode()).put(TOTAL_TEACHING_COST, termTotals.get(expenseItem.getTermCode()).get(TOTAL_TEACHING_COST).add(expenseItem.getAmount()));
                 expenses = expenses.add(expenseItem.getAmount());
             }
         }
-
+        combinedTermSummary.put(TOTAL_TEACHING_COST, combinedTermSummary.get(TOTAL_TEACHING_COST).add(expenses));
         combinedTermSummary.put(TOTAL_FUNDS, funds);
         combinedTermSummary.put(TOTAL_EXPENSES, expenses);
-        combinedTermSummary.put(TOTAL_BALANCE, funds.subtract(combinedTermSummary.get(TOTAL_TEACHING_COST).add(expenses)));
+        combinedTermSummary.put(TOTAL_BALANCE, funds.subtract(combinedTermSummary.get(TOTAL_TEACHING_COST)));
 
         return termTotals;
     }
