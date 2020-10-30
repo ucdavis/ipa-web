@@ -63,7 +63,7 @@ public class SectionGroup extends BaseEntity {
 	}
 
 	@JsonIgnore
-	@OneToMany(mappedBy="sectionGroup", cascade=CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="sectionGroup", orphanRemoval = true)
 	public List<TeachingAssignment> getTeachingAssignments() {
 		return teachingAssignments;
 	}
