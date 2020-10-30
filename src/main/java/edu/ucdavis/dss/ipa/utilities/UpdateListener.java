@@ -89,7 +89,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         auditLogEntry.setUserName(userDisplayName);
                         auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
                         auditLogEntry.setYear(Integer.parseInt(year));
-                        auditLogEntry.setModule(module);
+                        auditLogEntry.setModule(ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity));
                         auditLogEntry.setTransactionId(transactionId);
                         session.save(auditLogEntry);
                         session.close();

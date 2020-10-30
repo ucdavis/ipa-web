@@ -136,7 +136,7 @@ public final class ActivityLogFormatter {
         }
     }
 
-    // Get user friendly module that originated change.
+    // Get DB friendly module that originated change.
     // Ex. "courseViewController" becomes "Courses"
     public static String getFormattedModule(String moduleNameRaw){
         switch (moduleNameRaw) {
@@ -150,6 +150,30 @@ public final class ActivityLogFormatter {
                 return moduleNameRaw;
         }
     }
+
+    // Get user friendly module that originated change.
+    // Ex. "courseViewController" becomes "Courses"
+    public static String getModuleDisplayName(String moduleNameRaw, Object obj){
+        switch (moduleNameRaw) {
+            case "courseViewController":
+                return "Courses";
+            case "budgetViewController":
+                if(obj instanceof SectionGroupCost){
+                    SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+                    return "Budget - Schedule Costs - " + sectionGroupCost.getBudgetScenario().getName();
+                } else if(obj instanceof SectionGroupCostInstructor){
+                    SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+                    return "Budget - Schedule Costs - " + sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getName();
+                } else{
+                    return "Budget";
+                }
+            case "assignmentViewTeachingAssignmentController":
+                return "Assign Instructors";
+            default:
+                return moduleNameRaw;
+        }
+    }
+
 
     // Get user friendly description of record.
     public static String getFormattedEntityDescription(Object obj){
@@ -197,15 +221,15 @@ public final class ActivityLogFormatter {
                 return "Category Cost:";
             case "SectionGroupCost":
                 SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
-                return "Schedule Cost: " + sectionGroupCost.getSubjectCode() +
+                return sectionGroupCost.getSubjectCode() +
                         " " + sectionGroupCost.getCourseNumber() +
                         " - " + sectionGroupCost.getSequencePattern();
             case "SectionGroupCostInstructor":
                 SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
                 if(sectionGroupCostInstructor.getInstructor() != null){
-                    return "Schedule Cost Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName();
+                    return "Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName();
                 } else {
-                    return "Schedule Cost Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription();
+                    return "Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription();
                 }
             default:
                 return simpleName;
@@ -341,6 +365,8 @@ public final class ActivityLogFormatter {
                 return "readers";
             case "instructorType":
                 return "instructor type";
+            case "originalInstructor":
+                return "regular instructor";
             default:
                 return prop;
         }
