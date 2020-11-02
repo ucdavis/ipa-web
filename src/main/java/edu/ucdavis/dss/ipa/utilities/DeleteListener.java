@@ -38,7 +38,7 @@ public class DeleteListener implements PostCommitDeleteEventListener {
                 Object entity = postDeleteEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
                 if(ActivityLogFormatter.isAudited(moduleRaw, entityName)){
-                    String module = ActivityLogFormatter.getFormattedModule(moduleRaw);
+                    String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
                     String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
                     String userDisplayName = authorizer.getUserDisplayName();
 
@@ -63,7 +63,7 @@ public class DeleteListener implements PostCommitDeleteEventListener {
                     auditLogEntry.setUserName(userDisplayName);
                     auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
                     auditLogEntry.setYear(Integer.parseInt(year));
-                    auditLogEntry.setModule(ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity));
+                    auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw));
                     auditLogEntry.setTransactionId(transactionId);
                     session.save(auditLogEntry);
                     session.close();

@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 
+import javax.sound.sampled.Line;
 import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,8 @@ public final class ActivityLogFormatter {
         HashMap<String, Boolean> budgetViewLineItem = new HashMap<>();
         budgetViewLineItem.put("amount", true);
         budgetViewLineItem.put("documentNumber", true);
+        budgetViewLineItem.put("description", true);
+        budgetViewLineItem.put("notes", true);
         budgetView.put("LineItem", budgetViewLineItem);
 
         // Fields to audit in budget view for instructorCost
@@ -164,7 +167,12 @@ public final class ActivityLogFormatter {
                 } else if(obj instanceof SectionGroupCostInstructor){
                     SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
                     return "Budget - Schedule Costs - " + sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getName();
-                } else{
+                } else if (obj instanceof LineItem){
+                    LineItem lineItem = (LineItem) obj;
+                    return "Budget - Funds - " + lineItem.getBudgetScenario().getName();
+                } else if (obj instanceof InstructorCost || obj instanceof InstructorTypeCost){
+                    return "Budget - Instructor List";
+                } else {
                     return "Budget";
                 }
             case "assignmentViewTeachingAssignmentController":
@@ -193,8 +201,7 @@ public final class ActivityLogFormatter {
             case "LineItem":
                 LineItem lineItem = (LineItem) obj;
                 return "Fund: " + lineItem.getLineItemCategory().getDescription() +
-                        " - " + lineItem.getDescription() + " on " +
-                        "Scenario: " + lineItem.getBudgetScenario().getName();
+                        " - " + lineItem.getDescription();
             case "TeachingAssignment":
                 TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
                 Course teachingAssignmentCourse = teachingAssignment.getSectionGroup().getCourse();
@@ -226,10 +233,17 @@ public final class ActivityLogFormatter {
                         " - " + sectionGroupCost.getSequencePattern();
             case "SectionGroupCostInstructor":
                 SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
+                SectionGroupCost sgc = sectionGroupCostInstructor.getSectionGroupCost();
+                String scheduleCostDescription = sgc.getSubjectCode() +
+                        " " + sgc.getCourseNumber() +
+                        " - " + sgc.getSequencePattern();
                 if(sectionGroupCostInstructor.getInstructor() != null){
-                    return "Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName();
+                    return "Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName()
+                         + " on Schedule Cost: " + scheduleCostDescription;
+
                 } else {
-                    return "Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription();
+                    return "Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription()
+                        + " on Schedule Cost: " + scheduleCostDescription;
                 }
             default:
                 return simpleName;
@@ -312,7 +326,7 @@ public final class ActivityLogFormatter {
             return Term.getAcademicYear(sectionGroup.getTermCode());
         } else if(obj instanceof LineItem){
             LineItem lineItem = (LineItem) obj;
-            return String.valueOf(lineItem.getBudgetScenario().getBudget().getSchedule().getYear());
+            return lineItem.getBudgetScenario().getBudget().getSchedule().getYear() + "-" + (lineItem.getBudgetScenario().getBudget().getSchedule().getYear()+1);
         } else if(obj instanceof TeachingAssignment){
             TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
             return Term.getAcademicYear(teachingAssignment.getTermCode());
