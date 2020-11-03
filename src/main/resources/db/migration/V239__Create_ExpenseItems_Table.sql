@@ -16,9 +16,13 @@ CREATE TABLE `ExpenseItemCategories` (
   `Description` varchar(50) NOT NULL
 );
 
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Additional Funds From Deans Office');
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Buyout Lecturer Replacement Funds');
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Class Cancelled - Funds no longer needed');
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('TA Range Adjustment Funds');
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Work-Life Balance Funds');
-INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Other Funds');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('TA Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Reader Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Associate Instructor Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Continuing Lecturer Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Emeriti Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Instructor Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Ladder Faculty Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Lecturer SOE Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Unit 18 Pre-Six Lecturer Cost');
+INSERT INTO `ExpenseItemCategories` (`Description`) VALUES ('Visiting Professor Cost');
