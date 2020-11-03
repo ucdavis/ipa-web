@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ExpenseItemCategories")
+@Table(name = "ExpenseItemTypes")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ExpenseItemCategory {
     private long id;

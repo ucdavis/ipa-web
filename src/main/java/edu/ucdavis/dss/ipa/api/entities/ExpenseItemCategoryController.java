@@ -16,9 +16,9 @@ public class ExpenseItemCategoryController {
     @Inject ExpenseItemCategoryService expenseItemCategoryService;
     @Inject Authorizer authorizer;
 
-    @RequestMapping(value = "/api/expenseItemCategories", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/api/expenseItemTypes", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
-    public List<ExpenseItemCategory> getExpenseItemCategories() {
+    public List<ExpenseItemCategory> getExpenseItemTypes() {
         authorizer.isAuthorized();
 
         return expenseItemCategoryService.findAll();

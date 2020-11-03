@@ -78,7 +78,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<ReasonCategory> reasonCategories = reasonCategoryService.findAll();
         List<LineItem> lineItems = lineItemService.findByBudgetId(budget.getId());
         List<ExpenseItem> expenseItems = expenseItemService.findByBudgetId(budget.getId());
-        List<ExpenseItemCategory> expenseItemCategories = expenseItemCategoryService.findAll();
+        List<ExpenseItemCategory> expenseItemTypes = expenseItemCategoryService.findAll();
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
@@ -120,7 +120,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 sectionGroupCostInstructors,
                 reasonCategories,
                 expenseItems,
-                expenseItemCategories,
+                expenseItemTypes,
                 lineItems,
                 lineItemComments,
                 budget,

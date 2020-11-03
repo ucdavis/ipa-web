@@ -12,7 +12,7 @@ public class BudgetView {
     List<SectionGroupCost> sectionGroupCosts;
     List<ReasonCategory> reasonCategories;
     List<ExpenseItem> expenseItems;
-    List<ExpenseItemCategory> expenseItemCategories;
+    List<ExpenseItemCategory> expenseItemTypes;
     List<LineItem> lineItems;
     Budget budget;
     List<LineItemCategory> lineItemCategories;
@@ -41,7 +41,7 @@ public class BudgetView {
         List<SectionGroupCostInstructor> sectionGroupCostInstructors,
         List<ReasonCategory> reasonCategories,
         List<ExpenseItem> expenseItems,
-        List<ExpenseItemCategory> expenseItemCategories,
+        List<ExpenseItemCategory> expenseItemTypes,
         List<LineItem> lineItems,
         List<LineItemComment> lineItemComments,
         Budget budget,
@@ -66,7 +66,7 @@ public class BudgetView {
         setBudgetScenarios(budgetScenarios);
         setSectionGroupCosts(sectionGroupCosts);
         setExpenseItems(expenseItems);
-        setExpenseItemCategories(expenseItemCategories);
+        setExpenseItemTypes(expenseItemTypes);
         setLineItems(lineItems);
         setBudget(budget);
         setLineItemCategories(lineItemCategories);
@@ -129,12 +129,12 @@ public class BudgetView {
         this.expenseItems = expenseItems;
     }
 
-    public List<ExpenseItemCategory> getExpenseItemCategories() {
-        return expenseItemCategories;
+    public List<ExpenseItemCategory> getExpenseItemTypes() {
+        return expenseItemTypes;
     }
 
-    public void setExpenseItemCategories(List<ExpenseItemCategory> expenseItemCategories) {
-        this.expenseItemCategories = expenseItemCategories;
+    public void setExpenseItemTypes(List<ExpenseItemCategory> expenseItemTypes) {
+        this.expenseItemTypes = expenseItemTypes;
     }
 
     public Budget getBudget() {
