@@ -9,7 +9,7 @@ drop table if exists Courses;
 drop table if exists CourseComments;
 drop table if exists Courses_has_Tags;
 drop table if exists ExpenseItems;
-drop table if exists ExpenseItemCategories;
+drop table if exists ExpenseItemTypes;
 drop table if exists InstructorCosts;
 drop table if exists InstructorNotes;
 drop table if exists InstructorSupportCallResponses;
