@@ -92,6 +92,12 @@ public final class ActivityLogFormatter {
 
         temp.put("budgetViewController", budgetView);
 
+
+        HashMap<String, HashMap<String, Boolean>> sectionGroupCostController = new HashMap<String, HashMap<String, Boolean>>();
+        HashMap<String, Boolean> sectionGroupCostControllerSectionGroupCost = new HashMap<>();
+        sectionGroupCostController.put("SectionGroupCost", sectionGroupCostControllerSectionGroupCost);
+        temp.put("sectionGroupCostController", sectionGroupCostController);
+
         auditProps = temp;
     }
 
@@ -149,6 +155,8 @@ public final class ActivityLogFormatter {
                 return "Budget";
             case "assignmentViewTeachingAssignmentController":
                 return "Assign Instructors";
+            case "sectionGroupCostController":
+                return "Budget";
             default:
                 return moduleNameRaw;
         }
@@ -177,6 +185,13 @@ public final class ActivityLogFormatter {
                 }
             case "assignmentViewTeachingAssignmentController":
                 return "Assign Instructors";
+            case "sectionGroupCostController":
+                if(obj instanceof SectionGroupCost){
+                    SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
+                    return "Budget - Course List - " + sectionGroupCost.getBudgetScenario().getName();
+                } else{
+                    return "Budget - Course List";
+                }
             default:
                 return moduleNameRaw;
         }
@@ -228,7 +243,7 @@ public final class ActivityLogFormatter {
                 return "Category Cost:";
             case "SectionGroupCost":
                 SectionGroupCost sectionGroupCost = (SectionGroupCost) obj;
-                return sectionGroupCost.getSubjectCode() +
+                return "Schedule Cost: " + sectionGroupCost.getSubjectCode() +
                         " " + sectionGroupCost.getCourseNumber() +
                         " - " + sectionGroupCost.getSequencePattern();
             case "SectionGroupCostInstructor":
@@ -410,7 +425,7 @@ public final class ActivityLogFormatter {
     }
 
     // Check field level audit
-    public static Boolean isAudited(String module, String entity, String field){
+    public static Boolean isFieldAudited(String module, String entity, String field){
         if(auditProps.containsKey(module) && auditProps.get(module).containsKey(entity) && auditProps.get(module).get(entity).containsKey(field)){
             return auditProps.get(module).get(entity).get(field);
         }
@@ -418,12 +433,25 @@ public final class ActivityLogFormatter {
     }
 
     // Check entity level audit
-    public static Boolean isAudited(String module, String entity){
-        if(auditProps.containsKey(module) && auditProps.get(module).containsKey(entity)){
+    // We want to make sure the endpoint is actually for the entity in question
+    // Otherwise, even if configured skip it.
+    public static Boolean isAudited(String module, String entity, String endpoint){
+
+        if(endpoint.toLowerCase().contains(entity.toLowerCase()) && auditProps.containsKey(module) && auditProps.get(module).containsKey(entity)){
+            return true;
+        } else if (entity.equals("BudgetScenario") && endpoint.equals("budgetRequest")) { // Exception for budget requests endpoint
             return true;
         }
         return false;
     }
 
+    public static String getEndpoint(String uri){
+        String endpoint = uri.substring(uri.lastIndexOf('/') + 1);
+        if(endpoint.matches("\\d+")){
+            endpoint = uri.substring(0, uri.lastIndexOf('/'));
+            endpoint = endpoint.substring(endpoint.lastIndexOf('/') + 1);
+        }
+        return endpoint;
+    }
 
 }

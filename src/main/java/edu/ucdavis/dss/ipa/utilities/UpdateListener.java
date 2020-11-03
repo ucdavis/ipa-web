@@ -11,6 +11,7 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
 
 import java.util.UUID;
@@ -36,11 +37,13 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
                                 RequestAttributes.SCOPE_REQUEST);
+                String uri = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI();
+                String endpoint = ActivityLogFormatter.getEndpoint(uri);
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postUpdateEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
                 System.err.println(moduleRaw + " " + entityName);
-                if (ActivityLogFormatter.isAudited(moduleRaw, entityName)) {
+                if (ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)) {
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
                     String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
 
@@ -53,7 +56,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                     UUID transactionId = UUID.randomUUID();
                     for (int i : postUpdateEvent.getDirtyProperties()) {
                         StringBuilder sb = new StringBuilder();
-                        if (!ActivityLogFormatter.isAudited(moduleRaw, entityName, props[i])) {
+                        if (!ActivityLogFormatter.isFieldAudited(moduleRaw, entityName, props[i])) {
                             continue;
                         }
                         String year = ActivityLogFormatter.getYear(entity);
