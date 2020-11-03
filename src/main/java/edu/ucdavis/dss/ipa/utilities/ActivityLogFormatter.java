@@ -44,6 +44,7 @@ public final class ActivityLogFormatter {
 
         // Fields to audit in budget view for budgetScenario
         HashMap<String, Boolean> budgetViewBudgetScenario = new HashMap<String, Boolean>();
+        budgetViewBudgetScenario.put("name", true);
         budgetView.put("BudgetScenario", budgetViewBudgetScenario);
 
         // Fields to audit in budget view for lineItem

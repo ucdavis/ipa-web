@@ -37,12 +37,13 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
                                 RequestAttributes.SCOPE_REQUEST);
+
                 String uri = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI();
                 String endpoint = ActivityLogFormatter.getEndpoint(uri);
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postUpdateEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
-                System.err.println(moduleRaw + " " + entityName);
+
                 if (ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)) {
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
                     String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);

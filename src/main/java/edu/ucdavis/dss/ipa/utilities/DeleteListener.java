@@ -30,18 +30,17 @@ public class DeleteListener implements PostCommitDeleteEventListener {
     public void onPostDelete(PostDeleteEvent postDeleteEvent) {
         try {
             // Web request
-
             if (RequestContextHolder.getRequestAttributes() != null) {
                 HandlerMethod handler = (HandlerMethod) RequestContextHolder.currentRequestAttributes()
                         .getAttribute("org.springframework.web.servlet.HandlerMapping.bestMatchingHandler",
                                 RequestAttributes.SCOPE_REQUEST);
+
                 String uri = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getRequestURI();
                 String endpoint = ActivityLogFormatter.getEndpoint(uri);
-                System.err.println("ENDPOINT: " + endpoint);
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postDeleteEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
-                System.err.println(moduleRaw + " " + entityName);
+
                 if(ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)){
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
                     String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
