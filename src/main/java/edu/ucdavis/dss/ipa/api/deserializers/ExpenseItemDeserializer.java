@@ -32,10 +32,10 @@ public class ExpenseItemDeserializer extends JsonDeserializer<Object> {
             expenseItem.setBudgetScenario(budgetScenario);
         }
 
-        if (node.has("expenseItemCategoryId")) {
-            ExpenseItemCategory expenseItemCategory = new ExpenseItemCategory();
-            expenseItemCategory.setId(node.get("expenseItemCategoryId").longValue());
-            expenseItem.setExpenseItemCategory(expenseItemCategory);
+        if (node.has("expenseItemTypeId")) {
+            ExpenseItemType expenseItemType = new ExpenseItemType();
+            expenseItemType.setId(node.get("expenseItemTypeId").longValue());
+            expenseItem.setExpenseItemType(expenseItemType);
         }
 
         if (node.has("description")) {

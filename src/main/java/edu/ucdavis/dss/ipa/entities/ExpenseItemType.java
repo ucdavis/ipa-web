@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ExpenseItemTypes")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class ExpenseItemCategory {
+public class ExpenseItemType {
     private long id;
     private String description;
 

@@ -45,7 +45,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
 
         expenseItem = new ExpenseItem();
         expenseItem.setBudgetScenario(expenseItemDTO.getBudgetScenario());
-        expenseItem.setExpenseItemCategory(expenseItemDTO.getExpenseItemCategory());
+        expenseItem.setExpenseItemType(expenseItemDTO.getExpenseItemType());
         expenseItem.setAmount(expenseItemDTO.getAmount());
         expenseItem.setDescription(expenseItemDTO.getDescription());
         expenseItem.setTermCode(expenseItemDTO.getTermCode());
@@ -67,7 +67,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
 
         originalExpenseItem.setDescription(expenseItem.getDescription());
         originalExpenseItem.setAmount(expenseItem.getAmount());
-        originalExpenseItem.setExpenseItemCategory(expenseItem.getExpenseItemCategory());
+        originalExpenseItem.setExpenseItemType(expenseItem.getExpenseItemType());
         originalExpenseItem.setTermCode(expenseItem.getTermCode());
 
         return this.expenseItemRepository.save(originalExpenseItem);
@@ -81,7 +81,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
 
         expenseItem.setAmount(originalExpenseItem.getAmount());
         expenseItem.setDescription(originalExpenseItem.getDescription());
-        expenseItem.setExpenseItemCategory(originalExpenseItem.getExpenseItemCategory());
+        expenseItem.setExpenseItemType(originalExpenseItem.getExpenseItemType());
         expenseItem.setTermCode(originalExpenseItem.getTermCode());
 
         return this.expenseItemRepository.save(expenseItem);

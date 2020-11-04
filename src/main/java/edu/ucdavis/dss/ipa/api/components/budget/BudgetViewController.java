@@ -43,7 +43,7 @@ public class BudgetViewController {
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject InstructorTypeService instructorTypeService;
     @Inject ExpenseItemService expenseItemService;
-    @Inject ExpenseItemCategoryService expenseItemCategoryService;
+    @Inject ExpenseItemTypeService expenseItemTypeService;
 
     @Value("${IPA_URL_API}")
     String ipaUrlApi;
@@ -565,7 +565,7 @@ public class BudgetViewController {
                                          HttpServletResponse httpResponse) {
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-        ExpenseItemCategory expenseItemCategory = expenseItemCategoryService.findById(expenseItemDTO.getExpenseItemCategory().getId());
+        ExpenseItemType expenseItemType = expenseItemTypeService.findById(expenseItemDTO.getExpenseItemType().getId());
 
         if (budgetScenario == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
@@ -578,7 +578,7 @@ public class BudgetViewController {
 
         // Build lineItem
         expenseItemDTO.setBudgetScenario(budgetScenario);
-        expenseItemDTO.setExpenseItemCategory(expenseItemCategory);
+        expenseItemDTO.setExpenseItemType(expenseItemType);
         ExpenseItem expenseItem = expenseItemService.findOrCreate(expenseItemDTO);
 
         return expenseItem;
@@ -594,18 +594,18 @@ public class BudgetViewController {
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         ExpenseItem expenseItem = expenseItemService.findById(expenseItemDTO.getId());
 
-        if (budgetScenario == null || expenseItem == null || expenseItem.getExpenseItemCategory() == null) {
+        if (budgetScenario == null || expenseItem == null || expenseItem.getExpenseItemType() == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
-        ExpenseItemCategory expenseItemCategory = expenseItemCategoryService.findById(expenseItemDTO.getExpenseItemCategory().getId());
+        ExpenseItemType expenseItemType = expenseItemTypeService.findById(expenseItemDTO.getExpenseItemType().getId());
 
-        if (expenseItemCategory == null) {
+        if (expenseItemType == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         } else {
-            expenseItemDTO.setExpenseItemCategory(expenseItemCategory);
+            expenseItemDTO.setExpenseItemType(expenseItemType);
         }
 
         // Authorization check

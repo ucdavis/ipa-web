@@ -213,7 +213,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                             budgetScenarioExcelView.getWorkgroup().getName(),
                             scenarioName,
                             Term.getRegistrarName(expenseItem.getTermCode()),
-                            expenseItem.getExpenseItemCategoryDescription(),
+                            expenseItem.getExpenseItemTypeDescription(),
                             expenseItem.getDescription(),
                             expenseItem.getAmount());
                     expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);

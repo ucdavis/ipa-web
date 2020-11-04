@@ -19,7 +19,7 @@ public class ExpenseItem {
     private BudgetScenario budgetScenario;
     private BigDecimal amount = new BigDecimal(0);
     private String description;
-    private ExpenseItemCategory expenseItemCategory;
+    private ExpenseItemType expenseItemType;
     private String termCode;
 
     @Id
@@ -73,32 +73,32 @@ public class ExpenseItem {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ExpenseItemCategoryId", nullable = false)
+    @JoinColumn(name = "ExpenseItemTypeId", nullable = false)
     @NotNull
     @JsonIgnore
-    public ExpenseItemCategory getExpenseItemCategory() {
-        return expenseItemCategory;
+    public ExpenseItemType getExpenseItemType() {
+        return expenseItemType;
     }
 
-    public void setExpenseItemCategory(ExpenseItemCategory expenseItemCategory) {
-        this.expenseItemCategory = expenseItemCategory;
+    public void setExpenseItemType(ExpenseItemType expenseItemType) {
+        this.expenseItemType = expenseItemType;
     }
 
-    @JsonProperty("expenseItemCategoryId")
+    @JsonProperty("expenseItemTypeId")
     @Transient
-    public long getExpenseItemCategoryId() {
-        if(expenseItemCategory != null) {
-            return expenseItemCategory.getId();
+    public long getExpenseItemTypeId() {
+        if(expenseItemType != null) {
+            return expenseItemType.getId();
         } else {
             return 0;
         }
     }
 
-    @JsonProperty("categoryDescription")
+    @JsonProperty("typeDescription")
     @Transient
-    public String getExpenseItemCategoryDescription() {
-        if(expenseItemCategory != null) {
-            return expenseItemCategory.getDescription();
+    public String getExpenseItemTypeDescription() {
+        if(expenseItemType != null) {
+            return expenseItemType.getDescription();
         } else {
             return "";
         }
