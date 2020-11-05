@@ -1,8 +1,6 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ExpenseItemDeserializer;
 
@@ -17,7 +15,7 @@ import java.math.BigDecimal;
 public class ExpenseItem {
     private long id;
     private BudgetScenario budgetScenario;
-    private BigDecimal amount = new BigDecimal(0);
+    private BigDecimal amount = BigDecimal.ZERO;
     private String description;
     private ExpenseItemType expenseItemType;
     private String termCode;
@@ -39,7 +37,9 @@ public class ExpenseItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BudgetScenarioId", nullable = false)
     @NotNull
-    @JsonIgnore
+    @JsonProperty("budgetScenarioId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     public BudgetScenario getBudgetScenario() {
         return budgetScenario;
     }
@@ -108,41 +108,9 @@ public class ExpenseItem {
     @Transient
     public String getTermDescription() {
         if(termCode != null) {
-            String shortTermCode = termCode.substring(4,6);
-            switch (shortTermCode){
-                case "05":
-                    return "Summer Session 1";
-                case "06":
-                    return "Summer Special Session";
-                case "07":
-                    return "Summer Session 2";
-                case "08":
-                    return "Summer Quarter";
-                case "09":
-                    return "Fall Semester";
-                case "10":
-                    return "Fall Quarter";
-                case "01":
-                    return "Winter Quarter";
-                case "02":
-                    return "Spring Semester";
-                case "03":
-                    return "Spring Quarter";
-                default:
-                    return "";
-            }
+            return Term.getRegistrarName(termCode);
         } else {
             return "";
-        }
-    }
-
-    @JsonProperty("budgetScenarioId")
-    @Transient
-    public long getBudgetScenarioId(){
-        if(budgetScenario != null){
-            return budgetScenario.getId();
-        } else {
-            return 0;
         }
     }
 }
