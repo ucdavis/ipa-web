@@ -1,5 +1,30 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.REPLACEMENT_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.SCH_GRAD;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.SCH_UNDERGRAD;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_BALANCE;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_FUNDS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TOTAL_TEACHING_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNASSIGNED_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNITS_OFFERED;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
+
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
@@ -24,8 +49,6 @@ import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
-
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 
 public class BudgetExcelView extends AbstractXlsxView {
     private List<BudgetScenarioExcelView> budgetScenarioExcelViews;
@@ -65,7 +88,6 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Subject Code",
            "Course Number",
            "Title",
-           "Tags",
            "Units High",
            "Units Low",
            "Sequence",
@@ -87,9 +109,6 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         Sheet fundsSheet = workbook.createSheet("Funds");
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
-
-        Sheet expensesSheet = workbook.createSheet("Other Costs");
-        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
@@ -131,14 +150,13 @@ public class BudgetExcelView extends AbstractXlsxView {
                     instructorCost += getBudgetCalculationService().calculateSectionGroupInstructorCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, sectionGroupCostInstructor).floatValue();
                 }
 
-                SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
-                    budgetScenarioExcelView.getWorkgroup().getId(),
-                    sectionGroupCost.getCourseNumber(),
-                    sectionGroupCost.getSequencePattern(),
-                    sectionGroupCost.getTermCode(),
-                    sectionGroupCost.getSubjectCode());
-
                 if(isLiveData){
+                    SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
+                            budgetScenarioExcelView.getWorkgroup().getId(),
+                            sectionGroupCost.getCourseNumber(),
+                            sectionGroupCost.getSequencePattern(),
+                            sectionGroupCost.getTermCode(),
+                            sectionGroupCost.getSubjectCode());
                     if(sectionGroup != null){
                         for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
                             if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
@@ -153,10 +171,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                     }
                 }
 
-                List<String> courseTags = new ArrayList<>();
-                if (sectionGroup != null) {
-                    courseTags = sectionGroup.getCourse().getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
-                }
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
@@ -167,7 +181,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 sectionGroupCost.getSubjectCode(),
                                 sectionGroupCost.getCourseNumber(),
                                 sectionGroupCost.getTitle(),
-                                String.join(", ", courseTags),
                                 sectionGroupCost.getUnitsHigh(),
                                 sectionGroupCost.getUnitsLow(),
                                 sectionGroupCost.getSequencePattern(),
@@ -209,23 +222,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                         lineItem.getDocumentNumber(),
                         lineItem.getAmount());
                 fundsSheet = ExcelHelper.writeRowToSheet(fundsSheet, cellValues);
-            }
-
-            // Create Expenses sheet
-            List<String> termCodes = budgetScenarioExcelView.getTermCodes();
-            for(ExpenseItem expenseItem : budgetScenarioExcelView.getBudgetScenario().getExpenseItems()){
-
-                if(termCodes.contains(expenseItem.getTermCode())){
-                    List<Object> cellValues = Arrays.asList(
-                            budgetScenarioExcelView.getWorkgroup().getName(),
-                            scenarioName,
-                            Term.getRegistrarName(expenseItem.getTermCode()),
-                            expenseItem.getExpenseItemTypeDescription(),
-                            expenseItem.getDescription(),
-                            expenseItem.getAmount());
-                    expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
-                }
-
             }
 
             // Creating Instructor Salaries sheet
@@ -344,7 +340,6 @@ public class BudgetExcelView extends AbstractXlsxView {
             "Visiting Professor",
             "Unassigned",
             "Replacement Cost",
-            "Other Cost",
             "",
             "Total Teaching Costs",
             "Funds Cost",
@@ -442,9 +437,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                     break;
                 case "Funds Cost":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_FUNDS));
-                    break;
-                case "Other Cost":
-                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_EXPENSES));
                     break;
                 case "Balance":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE).compareTo(BigDecimal.ZERO) == 0 ? "" : budgetScenarioExcelView.termTotals.get(termCode).get(TOTAL_BALANCE));

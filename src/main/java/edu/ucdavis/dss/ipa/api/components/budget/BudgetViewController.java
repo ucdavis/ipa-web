@@ -42,8 +42,6 @@ public class BudgetViewController {
     @Inject InstructorService instructorService;
     @Inject TeachingAssignmentService teachingAssignmentService;
     @Inject InstructorTypeService instructorTypeService;
-    @Inject ExpenseItemService expenseItemService;
-    @Inject ExpenseItemTypeService expenseItemTypeService;
 
     @Value("${IPA_URL_API}")
     String ipaUrlApi;
@@ -120,8 +118,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios/{budgetScenarioId}/budgetRequest", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public BudgetScenarioView createBudgetRequestScenario(@PathVariable long budgetId,
-                                                          @PathVariable long budgetScenarioId,
-                                                          HttpServletResponse httpResponse) {
+                                                           @PathVariable long budgetScenarioId,
+                                                           HttpServletResponse httpResponse) {
 
         Budget budget = budgetService.findById(budgetId);
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
@@ -143,7 +141,7 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Long deleteBudgetScenario(@PathVariable long budgetScenarioId,
-                                     HttpServletResponse httpResponse) {
+                                               HttpServletResponse httpResponse) {
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
@@ -164,8 +162,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public LineItem createLineItem(@PathVariable long budgetScenarioId,
-                                   @RequestBody LineItem lineItemDTO,
-                                   HttpServletResponse httpResponse) {
+                                               @RequestBody LineItem lineItemDTO,
+                                               HttpServletResponse httpResponse) {
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
         LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategoryId());
@@ -195,8 +193,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/instructorTypeCosts", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public InstructorTypeCost createInstructorTypeCost(@PathVariable long budgetId,
-                                                       @RequestBody InstructorTypeCost newInstructorTypeCost,
-                                                       HttpServletResponse httpResponse) {
+                                                   @RequestBody InstructorTypeCost newInstructorTypeCost,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
         InstructorType instructorType = null;
@@ -224,7 +222,7 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}", method = RequestMethod.DELETE, produces="application/json")
     @ResponseBody
     public Long deleteLineItem(@PathVariable long lineItemId,
-                               HttpServletResponse httpResponse) {
+                                     HttpServletResponse httpResponse) {
         // Ensure valid params
         LineItem lineItem = lineItemService.findById(lineItemId);
 
@@ -274,8 +272,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/instructorTypeCosts/{instructorTypeId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public InstructorTypeCost updateInstructorTypeCost(@PathVariable long instructorTypeId,
-                                                       @RequestBody InstructorTypeCost newInstructorTypeCost,
-                                                       HttpServletResponse httpResponse) {
+                                                   @RequestBody InstructorTypeCost newInstructorTypeCost,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         InstructorTypeCost originalInstructorTypeCost = instructorTypeCostService.findById(instructorTypeId);
 
@@ -316,8 +314,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public Budget updateBudget(@PathVariable long budgetId,
-                               @RequestBody Budget budgetDTO,
-                               HttpServletResponse httpResponse) {
+                                   @RequestBody Budget budgetDTO,
+                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         Budget budget = budgetService.findById(budgetId);
 
@@ -336,8 +334,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public BudgetScenario updateBudgetScenario(@PathVariable long budgetScenarioId,
-                                               @RequestBody BudgetScenario newBudgetScenario,
-                                               HttpServletResponse httpResponse) {
+                               @RequestBody BudgetScenario newBudgetScenario,
+                               HttpServletResponse httpResponse) {
         // Ensure valid params
         BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
 
@@ -359,8 +357,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/instructorCosts/{instructorCostId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public InstructorCost updateInstructorCost(@PathVariable long instructorCostId,
-                                               @RequestBody InstructorCost instructorCostDTO,
-                                               HttpServletResponse httpResponse) {
+                               @RequestBody InstructorCost instructorCostDTO,
+                               HttpServletResponse httpResponse) {
         // Ensure valid params
         InstructorCost originalInstructorCost = instructorCostService.findById(instructorCostId);
 
@@ -411,8 +409,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public SectionGroupCost updateSectionGroupCost(@PathVariable long sectionGroupCostId,
-                                                   @RequestBody SectionGroupCost sectionGroupCostDTO,
-                                                   HttpServletResponse httpResponse) {
+                               @RequestBody SectionGroupCost sectionGroupCostDTO,
+                               HttpServletResponse httpResponse) {
         // Ensure valid params
         SectionGroupCost originalSectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
 
@@ -431,8 +429,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostComments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public SectionGroupCostComment createSectionGroupCostComment(@PathVariable long sectionGroupCostId,
-                                                                 @RequestBody SectionGroupCostComment sectionGroupCostCommentDTO,
-                                                                 HttpServletResponse httpResponse) {
+                                   @RequestBody SectionGroupCostComment sectionGroupCostCommentDTO,
+                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostId);
         User user = userService.getOneByLoginId(sectionGroupCostCommentDTO.getUser().getLoginId());
@@ -461,8 +459,8 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/lineItems/{lineItemId}/lineItemComments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
     public LineItemComment createLineItemComment(@PathVariable long lineItemId,
-                                                 @RequestBody LineItemComment lineItemCommentDTO,
-                                                 HttpServletResponse httpResponse) {
+                                                                 @RequestBody LineItemComment lineItemCommentDTO,
+                                                                 HttpServletResponse httpResponse) {
         // Ensure valid params
         LineItem lineItem = lineItemService.findById(lineItemId);
         User user = userService.getOneByLoginId(lineItemCommentDTO.getUser().getLoginId());
@@ -516,9 +514,9 @@ public class BudgetViewController {
     @RequestMapping(value = "/api/budgetView/sectionGroupCosts/{sectionGroupCostId}/sectionGroupCostInstructors/{sectionGroupCostInstructorId}", method = RequestMethod.PUT, produces="application/json")
     @ResponseBody
     public SectionGroupCostInstructor updateSectionGroupCost(@PathVariable long sectionGroupCostId,
-                                                             @PathVariable long sectionGroupCostInstructorId,
-                                                             @RequestBody SectionGroupCostInstructor sectionGroupCostInstructor,
-                                                             HttpServletResponse httpResponse) {
+                                                   @PathVariable long sectionGroupCostInstructorId,
+                                                   @RequestBody SectionGroupCostInstructor sectionGroupCostInstructor,
+                                                   HttpServletResponse httpResponse) {
         // Ensure valid params
         SectionGroupCostInstructor originalSectionGroupCostInstructor = sectionGroupCostInstructorService.findById(sectionGroupCostInstructorId);
 
@@ -556,125 +554,5 @@ public class BudgetViewController {
         sectionGroupCostInstructorService.delete(sectionGroupCostInstructorId);
 
         return sectionGroupCostInstructorId;
-    }
-
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems", method = RequestMethod.POST, produces="application/json")
-    @ResponseBody
-    public ExpenseItem createExpenseItem(@PathVariable long budgetScenarioId,
-                                         @RequestBody ExpenseItem expenseItemDTO,
-                                         HttpServletResponse httpResponse) {
-        // Ensure valid params
-        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-        ExpenseItemType expenseItemType = expenseItemTypeService.findById(expenseItemDTO.getExpenseItemType().getId());
-
-        if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        // Authorization check
-        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
-        // Build lineItem
-        expenseItemDTO.setBudgetScenario(budgetScenario);
-        expenseItemDTO.setExpenseItemType(expenseItemType);
-        ExpenseItem expenseItem = expenseItemService.findOrCreate(expenseItemDTO);
-
-        return expenseItem;
-    }
-
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems/{expenseItemId}", method = RequestMethod.PUT, produces="application/json")
-    @ResponseBody
-    public ExpenseItem updateExpenseItem(@PathVariable long budgetScenarioId,
-                                         @PathVariable long expenseItemId,
-                                         @RequestBody ExpenseItem expenseItemDTO,
-                                         HttpServletResponse httpResponse) {
-        // Ensure valid params
-        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-        ExpenseItem expenseItem = expenseItemService.findById(expenseItemDTO.getId());
-
-        if (budgetScenario == null || expenseItem == null || expenseItem.getExpenseItemType() == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        ExpenseItemType expenseItemType = expenseItemTypeService.findById(expenseItemDTO.getExpenseItemType().getId());
-
-        if (expenseItemType == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        } else {
-            expenseItemDTO.setExpenseItemType(expenseItemType);
-        }
-
-        // Authorization check
-        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
-        return expenseItemService.update(expenseItemDTO);
-    }
-
-    @RequestMapping(value = "/api/budgetView/expenseItems/{expenseItemId}", method = RequestMethod.DELETE, produces="application/json")
-    @ResponseBody
-    public Long deleteExpenseItem(@PathVariable long expenseItemId,
-                                  HttpServletResponse httpResponse) {
-        // Ensure valid params
-        ExpenseItem expenseItem = expenseItemService.findById(expenseItemId);
-
-        if (expenseItem == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        // Authorization check
-        Long workGroupId = expenseItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
-        expenseItemService.deleteById(expenseItemId);
-
-        return expenseItemId;
-    }
-
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems", method = RequestMethod.PUT, produces="application/json")
-    @ResponseBody
-    public List<Long> deleteExpenseItems(@PathVariable long budgetScenarioId,
-                                         @RequestBody List<Long> expenseItemIds,
-                                         HttpServletResponse httpResponse) {
-        // Ensure valid params
-        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-
-        if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        // Authorization check
-        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-
-        expenseItemService.deleteMany(expenseItemIds);
-
-        return expenseItemIds;
-    }
-
-    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/expenseItems", method = RequestMethod.GET, produces="application/json")
-    @ResponseBody
-    public List<ExpenseItem> getExpenseItems(@PathVariable long budgetScenarioId,
-                                             HttpServletResponse httpResponse) {
-        // Ensure valid params
-        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
-
-        if (budgetScenario == null) {
-            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
-            return null;
-        }
-
-        // Authorization check
-        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
-        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
-        List<ExpenseItem> expenseItems = expenseItemService.findByBudgetScenarioId(budgetScenarioId);
-
-        return expenseItems;
     }
 }

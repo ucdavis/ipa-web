@@ -1,6 +1,34 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
-import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.ASSOCIATE_INSTRUCTOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.CONTINUING_LECTURER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.COURSE_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.EMERITI_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.GRAD_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.INSTRUCTOR_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LADDER_FACULTY_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LECTURER_SOE_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.LOWER_DIV_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.READER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.REPLACEMENT_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.TA_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNASSIGNED_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UNIT18_LECTURER_COUNT;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_OFFERINGS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.UPPER_DIV_SEATS;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COST;
+import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.VISITING_PROFESSOR_COUNT;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.ADDITIONAL_DEANS_OFFICE;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.CLASS_CANCELLED;
 import static edu.ucdavis.dss.ipa.entities.enums.FundType.DEANS_OFFICE;
@@ -93,21 +121,12 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(report, Arrays.asList("TAs", previousTotals.get(TA_COST), previousTotals.get(TA_COUNT), "", "TAs", currentTotals.get(TA_COST), currentTotals.get(TA_COUNT), "", currentTotals.get(TA_COST).subtract(previousTotals.get(TA_COST)), currentTotals.get(TA_COUNT).subtract(previousTotals.get(TA_COUNT)), getPercentChange(previousTotals.get(TA_COST), currentTotals.get(TA_COST)), getPercentChange(previousTotals.get(TA_COUNT), currentTotals.get(TA_COUNT))));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Readers", previousTotals.get(READER_COST), previousTotals.get(READER_COUNT), "", "Readers", currentTotals.get(READER_COST), currentTotals.get(READER_COUNT), "", currentTotals.get(READER_COST).subtract(previousTotals.get(READER_COST)), currentTotals.get(READER_COUNT).subtract(previousTotals.get(READER_COUNT)), getPercentChange(previousTotals.get(READER_COST), currentTotals.get(READER_COST)), getPercentChange(previousTotals.get(READER_COUNT), currentTotals.get(READER_COUNT))));
 
-
             BigDecimal previousSupportCost = previousTotals.get(TA_COST).add(previousTotals.get(READER_COST));
             BigDecimal previousSupportCount = previousTotals.get(TA_COUNT).add(previousTotals.get(READER_COUNT));
             BigDecimal currentSupportCost = currentTotals.get(TA_COST).add(currentTotals.get(READER_COST));
             BigDecimal currentSupportCount = currentTotals.get(TA_COUNT).add(currentTotals.get(READER_COUNT));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Total", previousSupportCost, previousSupportCount, "", "Total", currentSupportCost, currentSupportCount, "", currentSupportCost.subtract(previousSupportCost), currentSupportCount.subtract(previousSupportCount), getPercentChange(previousSupportCost, currentSupportCost), getPercentChange(previousSupportCount, currentSupportCount)));
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
-
-            // Other Costs
-            ExcelHelper.writeRowToSheet(report, Arrays
-                    .asList("", "Amount", "", "",
-                            "", "Amount", "", "", "Cost", "% Change", "",
-                            ""));
-
-            ExcelHelper.writeRowToSheet(report, Arrays.asList("Other Costs", previousTotals.get(TOTAL_EXPENSES), "", "", "Other Costs", currentTotals.get(TOTAL_EXPENSES), "", "", currentTotals.get(TOTAL_EXPENSES).subtract(previousTotals.get(TOTAL_EXPENSES)), getPercentChange(previousTotals.get(TOTAL_EXPENSES), currentTotals.get(TOTAL_EXPENSES))));
 
             ExcelHelper.writeRowToSheet(report, Arrays.asList(""));
             ExcelHelper.writeRowToSheet(report, Arrays.asList("Total Teaching Costs", getTotalTeachingCost(previousTotals), "", "", "Total Teaching Costs", getTotalTeachingCost(currentTotals), "", "", getTotalTeachingCost(currentTotals).subtract(getTotalTeachingCost(previousTotals))));
@@ -154,7 +173,7 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
     }
 
     private BigDecimal getTotalTeachingCost(Map<BudgetSummary, BigDecimal> termTotals) {
-        return termTotals.get(REPLACEMENT_COST).add( termTotals.get(TA_COST).add(termTotals.get(READER_COST).add(termTotals.get(TOTAL_EXPENSES))));
+        return termTotals.get(REPLACEMENT_COST).add(termTotals.get(TA_COST).add(termTotals.get(READER_COST)));
     }
 
     private BigDecimal getTotalOfferings(Map<BudgetSummary, BigDecimal> termTotals) {
