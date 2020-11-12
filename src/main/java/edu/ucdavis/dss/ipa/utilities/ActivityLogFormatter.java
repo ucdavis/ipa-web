@@ -455,4 +455,36 @@ public final class ActivityLogFormatter {
         return endpoint;
     }
 
+    public static String getFormattedUpdateAction(Object entity, String propName, Object oldValue, Object newValue){
+        StringBuilder sb = new StringBuilder();
+        String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
+        String oldVal = ActivityLogFormatter.getFormattedPropValue(propName, oldValue);
+        String newVal = ActivityLogFormatter.getFormattedPropValue(propName, newValue);
+        String formattedPropName = ActivityLogFormatter.getFormattedPropName(propName);
+        if(entity instanceof SectionGroupCost && propName.equals("disabled")){ // Exceptions to usual update wording
+            if(newVal.equals("false")){
+                sb.append("Added ");
+            } else {
+                sb.append("Removed ");
+            }
+            sb.append("**" + entityDescription + "**");
+        } else { // Generic update methodology
+            if (oldVal == null) {
+                sb.append("Set ");
+                sb.append("**" + entityDescription + "**");
+                sb.append(" **" + formattedPropName + "** to **" + newVal + "**");
+            } else if(newValue == null){
+                sb.append("Cleared ");
+                sb.append("**" + entityDescription + "**");
+                sb.append(" **" + formattedPropName + "**");
+            } else {
+                sb.append("Changed ");
+                sb.append("**" + entityDescription + "**");
+                sb.append(" **" + formattedPropName + "** from **" + oldVal + "** to **" + newVal + "**");
+
+            }
+        }
+        return sb.toString();
+    }
+
 }

@@ -46,7 +46,6 @@ public class UpdateListener implements PostCommitUpdateEventListener {
 
                 if (ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)) {
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
-                    String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
 
                     String[] props =
                             postUpdateEvent.getPersister().getEntityMetamodel().getPropertyNames();
@@ -68,23 +67,9 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         if (termCode.length() > 0) {
                             sb.append(", **" + termCode + "**");
                         }
-
-                        String initialValue = ActivityLogFormatter.getFormattedPropValue(props[i], oldState[i]);
-                        String newValue = ActivityLogFormatter.getFormattedPropValue(props[i], state[i]);
-                        if (initialValue == null) {
-                            sb.append("\nSet ");
-                            sb.append("**" + entityDescription + "**");
-                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** to **" + newValue + "**");
-                        } else if(newValue == null){
-                            sb.append("\nCleared ");
-                            sb.append("**" + entityDescription + "**");
-                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "**");
-                        } else {
-                            sb.append("\nChanged ");
-                            sb.append("**" + entityDescription + "**");
-                            sb.append(" **" + ActivityLogFormatter.getFormattedPropName( props[i]) + "** from **" + initialValue + "** to **" + newValue + "**");
-
-                        }
+                        sb.append("\n");
+                        
+                        sb.append(ActivityLogFormatter.getFormattedUpdateAction(entity, props[i], oldState[i], state[i]));
 
                         Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
                         AuditLog auditLogEntry = new AuditLog();
