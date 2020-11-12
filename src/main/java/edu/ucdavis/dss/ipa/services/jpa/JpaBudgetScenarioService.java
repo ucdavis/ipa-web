@@ -3,18 +3,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorCostService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeCostService;
-import edu.ucdavis.dss.ipa.services.LineItemCategoryService;
-import edu.ucdavis.dss.ipa.services.LineItemCommentService;
-import edu.ucdavis.dss.ipa.services.LineItemService;
-import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostCommentService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostInstructorService;
+import edu.ucdavis.dss.ipa.services.*;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.stereotype.Service;
@@ -43,6 +33,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
     @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
     @Inject LineItemCommentService lineItemCommentService;
+    @Inject ExpenseItemService expenseItemService;
 
     @Override
     @Transactional
@@ -161,6 +152,9 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             lineItems.addAll(lineItemService.duplicateFunds(budgetScenario, originalBudgetScenario));
             budgetScenario.setLineItems(lineItems);
         }
+        List<ExpenseItem> expenseItems = budgetScenario.getExpenseItems();
+        expenseItems.addAll(expenseItemService.duplicateExpenses(budgetScenario, originalBudgetScenario));
+        budgetScenario.setExpenseItems(expenseItems);
 
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
@@ -211,6 +205,9 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
             lineItemList.add(newLineItem);
         }
         budgetRequestScenario.setLineItems(lineItemList);
+        List<ExpenseItem> expenseItems = budgetRequestScenario.getExpenseItems();
+        expenseItems.addAll(expenseItemService.duplicateExpenses(budgetRequestScenario, originalScenario));
+        budgetRequestScenario.setExpenseItems(expenseItems);
 
         instructorCostService.snapshotInstructorCosts(budgetRequestScenario, originalScenario);
         instructorTypeCostService.snapshotInstructorTypeCosts(budgetRequestScenario, originalScenario);

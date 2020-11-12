@@ -10,6 +10,7 @@ public class BudgetScenarioView {
     BudgetScenario budgetScenario;
     List<SectionGroupCost> sectionGroupCosts;
     List<LineItem> lineItems;
+    List<ExpenseItem> expenseItems;
     List<SectionGroupCostComment> sectionGroupCostComments;
     List<SectionGroupCostInstructor> sectionGroupCostInstructors;
     List<LineItemComment> lineItemComments;
@@ -22,12 +23,14 @@ public class BudgetScenarioView {
         List<SectionGroupCostComment> sectionGroupCostComments,
         List<SectionGroupCostInstructor> sectionGroupCostInstructors,
         List<LineItem> lineItems,
+        List<ExpenseItem> expenseItems,
         List<LineItemComment> lineItemComments,
         List<InstructorCost> instructorCosts,
         List<InstructorTypeCost> instructorTypeCosts) {
         setBudgetScenario(budgetScenario);
         setSectionGroupCosts(sectionGroupCosts);
         setLineItems(lineItems);
+        setExpenseItems(expenseItems);
         setSectionGroupCostComments(sectionGroupCostComments);
         setSectionGroupCostInstructors(sectionGroupCostInstructors);
         setLineItemComments(lineItemComments);
@@ -57,6 +60,14 @@ public class BudgetScenarioView {
 
     public void setLineItems(List<LineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    public List<ExpenseItem> getExpenseItems() {
+        return expenseItems;
+    }
+
+    public void setExpenseItems(List<ExpenseItem> expenseItems) {
+        this.expenseItems = expenseItems;
     }
 
     public List<SectionGroupCostComment> getSectionGroupCostComments() {
