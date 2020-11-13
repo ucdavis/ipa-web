@@ -55,25 +55,21 @@ public class UpdateListener implements PostCommitUpdateEventListener {
 
                     UUID transactionId = UUID.randomUUID();
                     for (int i : postUpdateEvent.getDirtyProperties()) {
-                        StringBuilder sb = new StringBuilder();
                         if (!ActivityLogFormatter.isFieldAudited(moduleRaw, entityName, props[i])) {
                             continue;
                         }
+                        String message = ActivityLogFormatter.getFormattedUpdateAction(
+                                module,
+                                entity,
+                                props[i],
+                                oldState[i],
+                                state[i],
+                                userDisplayName);
                         String year = ActivityLogFormatter.getYear(entity);
-                        String years = ActivityLogFormatter.getYears(entity);
-                        sb.append("**" + userDisplayName + "**");
-                        sb.append(" in **" + module + "** - **" + years + "**");
-                        String termCode = ActivityLogFormatter.getTermCode(entity);
-                        if (termCode.length() > 0) {
-                            sb.append(", **" + termCode + "**");
-                        }
-                        sb.append("\n");
-                        
-                        sb.append(ActivityLogFormatter.getFormattedUpdateAction(entity, props[i], oldState[i], state[i]));
 
                         Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
                         AuditLog auditLogEntry = new AuditLog();
-                        auditLogEntry.setMessage(sb.toString());
+                        auditLogEntry.setMessage(message);
                         auditLogEntry.setLoginId(authorizer.getLoginId());
                         auditLogEntry.setUserName(userDisplayName);
                         auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));

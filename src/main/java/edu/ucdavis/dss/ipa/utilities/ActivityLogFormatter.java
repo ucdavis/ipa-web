@@ -455,12 +455,30 @@ public final class ActivityLogFormatter {
         return endpoint;
     }
 
-    public static String getFormattedUpdateAction(Object entity, String propName, Object oldValue, Object newValue){
+    public static String getFormattedUpdateAction(String module, Object entity, String propName, Object oldValue, Object newValue, String userDisplayName){
         StringBuilder sb = new StringBuilder();
         String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
         String oldVal = ActivityLogFormatter.getFormattedPropValue(propName, oldValue);
         String newVal = ActivityLogFormatter.getFormattedPropValue(propName, newValue);
         String formattedPropName = ActivityLogFormatter.getFormattedPropName(propName);
+        String year = ActivityLogFormatter.getYear(entity);
+        String years = ActivityLogFormatter.getYears(entity);
+
+        // Exception for ta cost and reader cost
+        // Since unlike other categories they are tracked on the budget scenario instead
+        // of the category cost table
+        if(entity instanceof Budget && (propName.equals("taCost") || propName.equals("readerCost"))){
+            module += " - Instructor List";
+        }
+
+        sb.append("**" + userDisplayName + "**");
+        sb.append(" in **" + module + "** - **" + years + "**");
+        String termCode = ActivityLogFormatter.getTermCode(entity);
+        if (termCode.length() > 0) {
+            sb.append(", **" + termCode + "**");
+        }
+        sb.append("\n");
+
         if(entity instanceof SectionGroupCost && propName.equals("disabled")){ // Exceptions to usual update wording
             if(newVal.equals("false")){
                 sb.append("Added ");
