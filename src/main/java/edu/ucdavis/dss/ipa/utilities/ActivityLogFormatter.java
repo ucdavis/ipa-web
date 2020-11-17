@@ -2,6 +2,9 @@ package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 
 import javax.sound.sampled.Line;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
@@ -99,6 +102,16 @@ public final class ActivityLogFormatter {
         sectionGroupCostController.put("SectionGroupCost", sectionGroupCostControllerSectionGroupCost);
         temp.put("sectionGroupCostController", sectionGroupCostController);
 
+        HashMap<String, HashMap<String, Boolean>> schedulingViewController = new HashMap<String, HashMap<String, Boolean>>();
+        HashMap<String, Boolean> schedulingViewControllerActivity = new HashMap<>();
+        schedulingViewControllerActivity.put("location", true);
+        schedulingViewControllerActivity.put("frequency", true);
+        schedulingViewControllerActivity.put("startTime", true);
+        schedulingViewControllerActivity.put("endTime", true);
+        schedulingViewControllerActivity.put("dayIndicator", true);
+        schedulingViewController.put("Activity", schedulingViewControllerActivity);
+        temp.put("schedulingViewController", schedulingViewController);
+
         auditProps = temp;
     }
 
@@ -141,6 +154,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof SectionGroupCostInstructor){
             SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
             return sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof Activity){
+            Activity activity = (Activity) obj;
+            return activity.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -158,6 +174,8 @@ public final class ActivityLogFormatter {
                 return "Assign Instructors";
             case "sectionGroupCostController":
                 return "Budget";
+            case "schedulingViewController":
+                return "Scheduling";
             default:
                 return moduleNameRaw;
         }
@@ -193,6 +211,8 @@ public final class ActivityLogFormatter {
                 } else{
                     return "Budget - Course List";
                 }
+            case "schedulingViewController":
+                return "Scheduling";
             default:
                 return moduleNameRaw;
         }
@@ -261,6 +281,13 @@ public final class ActivityLogFormatter {
                     return "Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription()
                         + " on Schedule Cost: " + scheduleCostDescription;
                 }
+            case "Activity":
+                Activity activity = (Activity) obj;
+                Course activityCourse  = activity.getSectionGroup().getCourse();
+                return "Section " + activityCourse.getSubjectCode() + " " +
+                        activityCourse.getCourseNumber() + " - " +
+                        activityCourse.getSequencePattern() +
+                        ", Activity: " + activity.getActivityTypeCodeDescription();
             default:
                 return simpleName;
         }
@@ -284,6 +311,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof SectionGroupCostInstructor) {
             SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
             return Term.getRegistrarName(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
+        } else if (obj instanceof Activity){
+            Activity activity = (Activity) obj;
+            return Term.getRegistrarName(activity.getSectionGroup().getTermCode());
         } else {
             return "";
         }
@@ -324,6 +354,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof SectionGroupCostInstructor){
             SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
             return Term.getYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
+        } else if (obj instanceof Activity){
+            Activity activity = (Activity) obj;
+            return String.valueOf(activity.getSectionGroup().getCourse().getYear());
         } else {
             return "0";
         }
@@ -364,6 +397,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof SectionGroupCostInstructor){
             SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
             return Term.getAcademicYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
+        } else if (obj instanceof Activity){
+            Activity activity = (Activity) obj;
+            return Term.getAcademicYear(activity.getSectionGroup().getTermCode());
         } else {
             return "";
         }
@@ -397,6 +433,14 @@ public final class ActivityLogFormatter {
                 return "instructor type";
             case "originalInstructor":
                 return "regular instructor";
+            case "frequency":
+                return "Repeats every";
+            case "dayIndicator":
+                return "days";
+            case "startTime":
+                return "start time";
+            case "endTime":
+                return "end time";
             default:
                 return prop;
         }
@@ -408,7 +452,7 @@ public final class ActivityLogFormatter {
         if(obj instanceof Instructor){
             Instructor instructor = (Instructor) obj;
             return instructor.getFullName();
-        } else if (propName == "termCode"){
+        } else if (propName.equals("termCode")){
             return Term.getRegistrarName(obj.toString());
         } else if (obj instanceof ReasonCategory){
             ReasonCategory reasonCategory = (ReasonCategory) obj;
@@ -416,6 +460,17 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof InstructorType){
             InstructorType instructorType = (InstructorType) obj;
             return instructorType.getDescription();
+        } else if(obj instanceof Location){
+            Location location = (Location) obj;
+            return location.getDescription();
+        } else if (propName.equals("frequency")){
+            return obj.toString() + " week(s)";
+        } else if (propName.equals("dayIndicator")){
+            return Activity.getDayIndicatorDescription(obj.toString());
+        } else if (obj instanceof Time){
+            Time time = (Time) obj;
+            DateFormat format = new SimpleDateFormat( "h:mm a" );
+            return format.format( time.getTime() );
         } else {
             if(obj != null){
                 return obj.toString();
@@ -442,13 +497,15 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("BudgetScenario") && endpoint.equals("budgetRequest")) { // Exception for budget requests endpoint
             return true;
+        } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
+            return true;
         }
         return false;
     }
 
     public static String getEndpoint(String uri){
         String endpoint = uri.substring(uri.lastIndexOf('/') + 1);
-        if(endpoint.matches("\\d+")){
+        if(endpoint.matches("\\d+") || endpoint.length() <= 1){
             endpoint = uri.substring(0, uri.lastIndexOf('/'));
             endpoint = endpoint.substring(endpoint.lastIndexOf('/') + 1);
         }
