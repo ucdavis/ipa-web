@@ -47,26 +47,19 @@ public class InsertListener implements PostCommitInsertEventListener
 
                 if(ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)){
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
-                    String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
                     String userDisplayName = authorizer.getUserDisplayName();
+                    String year = ActivityLogFormatter.getYear(entity);
 
                     UUID transactionId = UUID.randomUUID();
-                    StringBuilder sb = new StringBuilder();
-                    String year = ActivityLogFormatter.getYear(entity);
-                    String years = ActivityLogFormatter.getYears(entity);
-                    sb.append("**" + userDisplayName + "**");
-                    sb.append(" in **" + module + "** - **" + years + "**");
-                    String termCode = ActivityLogFormatter.getTermCode(entity);
-                    if(termCode.length() > 0){
-                        sb.append(", **" + termCode + "**");
-                    }
-
-                    sb.append("\nCreated ");
-                    sb.append("**" + entityDescription + "**");
+                    String message = ActivityLogFormatter.getFormattedInsertAction(
+                        module,
+                        entity,
+                        userDisplayName
+                    );
 
                     Session session = postInsertEvent.getPersister().getFactory().openTemporarySession();
                     AuditLog auditLogEntry = new AuditLog();
-                    auditLogEntry.setMessage(sb.toString());
+                    auditLogEntry.setMessage(message);
                     auditLogEntry.setLoginId(authorizer.getLoginId());
                     auditLogEntry.setUserName(userDisplayName);
                     auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));

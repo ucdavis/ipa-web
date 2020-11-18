@@ -270,16 +270,14 @@ public final class ActivityLogFormatter {
             case "SectionGroupCostInstructor":
                 SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) obj;
                 SectionGroupCost sgc = sectionGroupCostInstructor.getSectionGroupCost();
-                String scheduleCostDescription = sgc.getSubjectCode() +
+                String scheduleCostDescription = "Schedule Cost: " +
+                        sgc.getSubjectCode() +
                         " " + sgc.getCourseNumber() +
                         " - " + sgc.getSequencePattern();
                 if(sectionGroupCostInstructor.getInstructor() != null){
-                    return "Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName()
-                         + " on Schedule Cost: " + scheduleCostDescription;
-
+                    return scheduleCostDescription + ", Instructor: " + sectionGroupCostInstructor.getInstructor().getFullName();
                 } else {
-                    return "Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription()
-                        + " on Schedule Cost: " + scheduleCostDescription;
+                    return scheduleCostDescription + ", Instructor: " + sectionGroupCostInstructor.getInstructorTypeDescription();
                 }
             case "Activity":
                 Activity activity = (Activity) obj;
@@ -518,7 +516,6 @@ public final class ActivityLogFormatter {
         String oldVal = ActivityLogFormatter.getFormattedPropValue(propName, oldValue);
         String newVal = ActivityLogFormatter.getFormattedPropValue(propName, newValue);
         String formattedPropName = ActivityLogFormatter.getFormattedPropName(propName);
-        String year = ActivityLogFormatter.getYear(entity);
         String years = ActivityLogFormatter.getYears(entity);
 
         // Exception for ta cost and reader cost
@@ -559,6 +556,32 @@ public final class ActivityLogFormatter {
 
             }
         }
+        return sb.toString();
+    }
+
+    public static String getFormattedInsertAction(String module, Object entity, String userDisplayName) {
+        StringBuilder sb = new StringBuilder();
+        String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
+        String years = ActivityLogFormatter.getYears(entity);
+        sb.append("**" + userDisplayName + "**");
+        sb.append(" in **" + module + "** - **" + years + "**");
+        String termCode = ActivityLogFormatter.getTermCode(entity);
+        if(termCode.length() > 0){
+            sb.append(", **" + termCode + "**");
+        }
+
+        if(entity instanceof SectionGroupCostInstructor){
+            SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) entity;
+            if(sectionGroupCostInstructor.getTeachingAssignmentId() != null){
+                sb.append("\nSet ");
+                sb.append("**" + entityDescription + "**");
+                sb.append(" **cost** to **" + sectionGroupCostInstructor.getCost() + "**");
+                return sb.toString();
+            }
+        }
+        sb.append("\nCreated ");
+        sb.append("**" + entityDescription + "**");
+
         return sb.toString();
     }
 
