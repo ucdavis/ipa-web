@@ -156,7 +156,11 @@ public final class ActivityLogFormatter {
             return sectionGroupCostInstructor.getSectionGroupCost().getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
         } else if (obj instanceof Activity){
             Activity activity = (Activity) obj;
-            return activity.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            if(activity.getSectionGroup() != null){
+                return activity.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            } else {
+                return activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            }
         } else {
             return 0;
         }
@@ -281,11 +285,20 @@ public final class ActivityLogFormatter {
                 }
             case "Activity":
                 Activity activity = (Activity) obj;
-                Course activityCourse  = activity.getSectionGroup().getCourse();
-                return "Section " + activityCourse.getSubjectCode() + " " +
-                        activityCourse.getCourseNumber() + " - " +
-                        activityCourse.getSequencePattern() +
-                        ", Activity: " + activity.getActivityTypeCodeDescription();
+                if(activity.getSectionGroup() != null){
+                    Course activityCourse  = activity.getSectionGroup().getCourse();
+                    return "Section " + activityCourse.getSubjectCode() + " " +
+                            activityCourse.getCourseNumber() + " - " +
+                            activityCourse.getSequencePattern() +
+                            ", Activity: " + activity.getActivityTypeCodeDescription();
+                } else {
+                    Course activityCourse  = activity.getSection().getSectionGroup().getCourse();
+                    return "Section " + activityCourse.getSubjectCode() + " " +
+                            activityCourse.getCourseNumber() + " - " +
+                            activityCourse.getSequencePattern() +
+                            ", Activity: " + activity.getActivityTypeCodeDescription();
+                }
+
             default:
                 return simpleName;
         }
@@ -311,7 +324,11 @@ public final class ActivityLogFormatter {
             return Term.getRegistrarName(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
         } else if (obj instanceof Activity){
             Activity activity = (Activity) obj;
-            return Term.getRegistrarName(activity.getSectionGroup().getTermCode());
+            if(activity.getSectionGroup() != null){
+                return Term.getRegistrarName(activity.getSectionGroup().getTermCode());
+            } else {
+                return Term.getRegistrarName(activity.getSection().getSectionGroup().getTermCode());
+            }
         } else {
             return "";
         }
@@ -354,7 +371,12 @@ public final class ActivityLogFormatter {
             return Term.getYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
         } else if (obj instanceof Activity){
             Activity activity = (Activity) obj;
-            return String.valueOf(activity.getSectionGroup().getCourse().getYear());
+            if(activity.getSectionGroup() != null){
+                return String.valueOf(activity.getSectionGroup().getCourse().getYear());
+            } else {
+                return String.valueOf(activity.getSection().getSectionGroup().getCourse().getYear());
+            }
+
         } else {
             return "0";
         }
@@ -397,7 +419,12 @@ public final class ActivityLogFormatter {
             return Term.getAcademicYear(sectionGroupCostInstructor.getSectionGroupCost().getTermCode());
         } else if (obj instanceof Activity){
             Activity activity = (Activity) obj;
-            return Term.getAcademicYear(activity.getSectionGroup().getTermCode());
+            if(activity.getSectionGroup() != null){
+                return Term.getAcademicYear(activity.getSectionGroup().getTermCode());
+            } else {
+                return Term.getAcademicYear(activity.getSection().getSectionGroup().getTermCode());
+            }
+
         } else {
             return "";
         }
