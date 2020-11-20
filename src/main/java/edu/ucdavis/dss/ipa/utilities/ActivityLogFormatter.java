@@ -94,6 +94,13 @@ public final class ActivityLogFormatter {
         budgetViewSectionGroupCostInstructor.put("instructorType", true);
         budgetView.put("SectionGroupCostInstructor", budgetViewSectionGroupCostInstructor);
 
+        HashMap<String, Boolean> budgetViewExpenseItem = new HashMap<>();
+        budgetViewExpenseItem.put("amount", true);
+        budgetViewExpenseItem.put("description", true);
+        budgetViewExpenseItem.put("termCode", true);
+        budgetViewExpenseItem.put("expenseItemType", true);
+        budgetView.put("ExpenseItem", budgetViewExpenseItem);
+
         temp.put("budgetViewController", budgetView);
 
 
@@ -161,6 +168,9 @@ public final class ActivityLogFormatter {
             } else {
                 return activity.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
             }
+        } else if (obj instanceof ExpenseItem) {
+            ExpenseItem expenseItem = (ExpenseItem) obj;
+            return expenseItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -203,6 +213,8 @@ public final class ActivityLogFormatter {
                     return "Budget - Funds - " + lineItem.getBudgetScenario().getName();
                 } else if (obj instanceof InstructorCost || obj instanceof InstructorTypeCost){
                     return "Budget - Instructor List";
+                } else if (obj instanceof ExpenseItem) {
+                    return "Budget - Other Costs";
                 } else {
                     return "Budget";
                 }
@@ -298,7 +310,9 @@ public final class ActivityLogFormatter {
                             activityCourse.getSequencePattern() +
                             ", Activity: " + activity.getActivityTypeCodeDescription();
                 }
-
+            case "ExpenseItem":
+                ExpenseItem expenseItem = (ExpenseItem) obj;
+                return expenseItem.getExpenseItemTypeDescription() + " - " + expenseItem.getDescription();
             default:
                 return simpleName;
         }
@@ -329,7 +343,10 @@ public final class ActivityLogFormatter {
             } else {
                 return Term.getRegistrarName(activity.getSection().getSectionGroup().getTermCode());
             }
-        } else {
+        } else if (obj instanceof ExpenseItem){
+            ExpenseItem expenseItem = (ExpenseItem) obj;
+            return Term.getRegistrarName(expenseItem.getTermCode());
+        } {
             return "";
         }
     }
@@ -377,6 +394,9 @@ public final class ActivityLogFormatter {
                 return String.valueOf(activity.getSection().getSectionGroup().getCourse().getYear());
             }
 
+        } else if (obj instanceof ExpenseItem) {
+            ExpenseItem expenseItem = (ExpenseItem) obj;
+            return String.valueOf(expenseItem.getBudgetScenario().getBudget().getSchedule().getYear());
         } else {
             return "0";
         }
@@ -425,6 +445,10 @@ public final class ActivityLogFormatter {
                 return Term.getAcademicYear(activity.getSection().getSectionGroup().getTermCode());
             }
 
+        } else if (obj instanceof ExpenseItem){
+            ExpenseItem expenseItem = (ExpenseItem) obj;
+            long expenseItemYear = expenseItem.getBudgetScenario().getBudget().getSchedule().getYear();
+            return expenseItemYear + "-" + (expenseItemYear+1);
         } else {
             return "";
         }
@@ -466,6 +490,8 @@ public final class ActivityLogFormatter {
                 return "start time";
             case "endTime":
                 return "end time";
+            case "expenseItemType":
+                return "type";
             default:
                 return prop;
         }
@@ -496,6 +522,9 @@ public final class ActivityLogFormatter {
             Time time = (Time) obj;
             DateFormat format = new SimpleDateFormat( "h:mm a" );
             return format.format( time.getTime() );
+        } else if (obj instanceof ExpenseItemType) {
+            ExpenseItemType expenseItemType = (ExpenseItemType) obj;
+            return expenseItemType.getDescription();
         } else {
             if(obj != null){
                 return obj.toString();
