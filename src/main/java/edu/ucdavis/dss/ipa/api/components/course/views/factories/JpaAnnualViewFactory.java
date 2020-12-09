@@ -42,7 +42,6 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
 		} else {
 			courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
 		}
-		System.err.println("Course view");
 		return new CourseView(courses, sectionGroups, sections, workgroup.getTags(), terms, auditLogs);
 	}
 

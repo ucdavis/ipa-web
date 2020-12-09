@@ -126,10 +126,7 @@ public class AssignmentViewTeachingAssignmentController {
             sectionGroup.setShowTheStaff(false);
             sectionGroupService.save(sectionGroup);
         }
-        System.err.println("Before save section group is " + teachingAssignment.getSectionGroup().getId());
-        TeachingAssignment temp =  teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
-        System.err.println("After save section group is " + temp.getSectionGroup().getId());
-        return temp;
+        return  teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
     }
 
     @RequestMapping(value = "/api/assignmentView/teachingAssignments/{teachingAssignmentId}", method = RequestMethod.PUT, produces="application/json")

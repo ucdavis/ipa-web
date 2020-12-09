@@ -281,7 +281,6 @@ public class CourseViewController {
 
 		Workgroup workgroup = schedule.getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
-		System.err.println("Mass add tags");
 		courseService.massAddTagsToCourses(massAssignTags.getTagIdsToAdd(), massAssignTags.getTagIdsToRemove(), massAssignTags.getCourseIds());
 	}
 
