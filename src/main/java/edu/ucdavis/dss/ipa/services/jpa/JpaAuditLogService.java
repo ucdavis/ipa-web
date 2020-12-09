@@ -32,4 +32,11 @@ public class JpaAuditLogService implements AuditLogService {
                                                                          String module) {
         return this.auditLogRepository.findByWorkgroupIdAndModuleOrderByCreatedAtDesc(workgroupId, module);
     }
+
+    @Override
+    public List<AuditLog> findByWorkgroupIdAndYearAndModuleOrderByCreatedAtDesc(long workgroupId,
+                                                                         long year,
+                                                                         String module) {
+        return this.auditLogRepository.findByWorkgroupIdAndYearAndModuleOrderByCreatedAtDesc(workgroupId, year, module);
+    }
 }

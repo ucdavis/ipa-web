@@ -22,4 +22,6 @@ public interface AuditLogRepository extends CrudRepository<AuditLog, Long>  {
             @Param("module") String module);
 
     List<AuditLog> findByWorkgroupIdAndModuleOrderByCreatedAtDesc(long workgroupId, String module);
+
+    List<AuditLog> findByWorkgroupIdAndYearAndModuleOrderByCreatedAtDesc(long workgroupId, long year, String module);
 }

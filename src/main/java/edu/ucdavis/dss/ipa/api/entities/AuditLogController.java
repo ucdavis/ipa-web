@@ -42,4 +42,24 @@ public class AuditLogController {
         return auditLogService
             .findByWorkgroupIdAndModuleOrderByCreatedAtDesc(workgroupId, moduleName);
     }
+
+    @RequestMapping(value = "/api/workgroups/{workgroupId}/years/{year}/modules/{moduleName}/auditLogs", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public List<AuditLog> getAuditLogsByYear(@PathVariable long workgroupId,
+                                       @PathVariable long year,
+                                       @PathVariable String moduleName,
+                                       HttpServletResponse httpResponse) {
+
+        Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+        if (workgroup == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
+
+        return auditLogService
+            .findByWorkgroupIdAndYearAndModuleOrderByCreatedAtDesc(workgroupId, year, moduleName);
+    }
 }
