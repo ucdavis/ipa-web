@@ -87,7 +87,6 @@ public class BudgetView {
         setTags(tags);
         setWorkgroup(workgroup);
         setUserWorkgroupsScenarios(userWorkgroupsScenarios);
-        setAuditLogs(auditLogs);
     }
 
     public Workgroup getWorkgroup() {
