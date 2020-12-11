@@ -11,22 +11,19 @@ public class CourseView {
 	private List<Section> sections = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<>();
 	private List<Term> terms = new ArrayList<>();
-	private List<AuditLog> auditLogs = new ArrayList<>();
 
 	public CourseView(
 			List<Course> courses,
 			List<SectionGroup> sectionGroups,
 			List<Section> sections,
 			List<Tag> tags,
-			List<Term> terms,
-			List<AuditLog> auditLogs) {
+			List<Term> terms) {
 
 		setCourses(courses);
 		setSectionGroups(sectionGroups);
 		setSections(sections);
 		setTags(tags);
 		setTerms(terms);
-		setAuditLogs(auditLogs);
 	}
 
 	public List<Course> getCourses() {
@@ -63,13 +60,5 @@ public class CourseView {
 
 	public void setTerms(List<Term> terms) {
 		this.terms = terms;
-	}
-
-	public List<AuditLog> getAuditLogs() {
-		return auditLogs;
-	}
-
-	public void setAuditLogs(List<AuditLog> auditLogs) {
-		this.auditLogs = auditLogs;
 	}
 }

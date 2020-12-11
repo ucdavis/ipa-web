@@ -26,7 +26,6 @@ public class AssignmentView {
     List<InstructorType> instructorTypes = new ArrayList<>();
     List<UserRole> userRoles = new ArrayList<>();
     Set<User> users = new HashSet<>();
-    List<AuditLog> auditLogs = new ArrayList<>();
 
     public AssignmentView(List<Course> courses, List<SectionGroup> sectionGroups,
                           List<TeachingAssignment> teachingAssignments,
@@ -45,8 +44,7 @@ public class AssignmentView {
                           List<StudentSupportPreference> studentSupportPreferences,
                           List<InstructorType> instructorTypes,
                           List<UserRole> userRoles,
-                          Set<User> users,
-                          List<AuditLog> auditLogs) {
+                          Set<User> users) {
 
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -67,7 +65,6 @@ public class AssignmentView {
         setInstructorTypes(instructorTypes);
         setUserRoles(userRoles);
         setUsers(users);
-        setAuditLogs(auditLogs);
     }
 
     public List<Course> getCourses() {
@@ -222,8 +219,4 @@ public class AssignmentView {
     public void setUsers(Set<User> users) {
         this.users = users;
     }
-
-    public List<AuditLog> getAuditLogs() { return auditLogs; }
-
-    public void setAuditLogs(List<AuditLog> auditLogs) { this.auditLogs = auditLogs; }
 }

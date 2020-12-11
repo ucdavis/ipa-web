@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.api.components.assignment.views.factories;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentExcelView;
 import edu.ucdavis.dss.ipa.api.components.assignment.views.AssignmentView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.enums.AuditLogModule;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
@@ -26,7 +25,6 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject StudentSupportPreferenceService studentSupportPreferenceService;
 	@Inject InstructorTypeService instructorTypeService;
 	@Inject UserService userService;
-	@Inject AuditLogService auditLogService;
 
 	@Override
 	public AssignmentView createAssignmentView(long workgroupId, long year, long userId, long instructorId) {
@@ -53,14 +51,12 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		Set<User> activeUsers = new HashSet<>(userService.findAllByWorkgroup(workgroup));
 		Set<User> assignedUsers = new HashSet<>(userService.findAllByTeachingAssignments(schedule.getTeachingAssignments()));
 
-		List<AuditLog> auditLogs = auditLogService.findByWorkgroupIdAndModule(workgroupId, AuditLogModule.ASSIGN_INSTRUCTORS.getDescription());
-
 		return new AssignmentView(
 				courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
 				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
-				instructorTypes, userRoles, activeUsers, auditLogs
+				instructorTypes, userRoles, activeUsers
 		);
 	}
 

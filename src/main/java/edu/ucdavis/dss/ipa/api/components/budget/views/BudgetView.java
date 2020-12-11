@@ -33,7 +33,6 @@ public class BudgetView {
     List<UserRole> userRoles;
     List<Tag> tags;
     Map<String, List<BudgetScenario>> userWorkgroupsScenarios;
-    List<AuditLog> auditLogs;
 
     public BudgetView(
         List<BudgetScenario> budgetScenarios,
@@ -61,8 +60,7 @@ public class BudgetView {
         List<UserRole> userRoles,
         List<Tag> tags,
         Workgroup workgroup,
-        Map<String, List<BudgetScenario>> userWorkgroupsScenarios,
-        List<AuditLog> auditLogs) {
+        Map<String, List<BudgetScenario>> userWorkgroupsScenarios) {
         setSectionGroups(sectionGroups);
         setSections(sections);
         setBudgetScenarios(budgetScenarios);
@@ -300,8 +298,4 @@ public class BudgetView {
     public void setReasonCategories(List<ReasonCategory> reasonCategories) {
         this.reasonCategories = reasonCategories;
     }
-
-    public List<AuditLog> getAuditLogs() { return auditLogs; }
-
-    public void setAuditLogs(List<AuditLog> auditLogs) { this.auditLogs = auditLogs; }
 }

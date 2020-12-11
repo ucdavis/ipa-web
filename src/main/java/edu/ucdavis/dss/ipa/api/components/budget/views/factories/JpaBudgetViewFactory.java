@@ -9,7 +9,6 @@ import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetScenarioView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetView;
 import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.entities.enums.AuditLogModule;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
@@ -60,7 +59,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject ReasonCategoryService reasonCategoryService;
     @Inject ExpenseItemService expenseItemService;
     @Inject ExpenseItemTypeService expenseItemTypeService;
-    @Inject AuditLogService auditLogService;
 
     @Override
     public BudgetView createBudgetView(long workgroupId, long year, Budget budget) {
@@ -115,8 +113,6 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         users.addAll(lineItemUsers);
         users.addAll(teachingAssignmentUsers);
 
-        List<AuditLog> auditLogs = auditLogService.findByWorkgroupIdAndModule(workgroupId, AuditLogModule.BUDGET.getDescription());
-
         BudgetView budgetView = new BudgetView(
                 budgetScenarios,
                 sectionGroupCosts,
@@ -143,8 +139,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 userRoles,
                 tags,
                 workgroup,
-                userWorkgroupsScenarios,
-                auditLogs);
+                userWorkgroupsScenarios);
 
         return budgetView;
     }
