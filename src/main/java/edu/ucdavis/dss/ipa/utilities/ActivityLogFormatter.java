@@ -119,6 +119,11 @@ public final class ActivityLogFormatter {
         schedulingViewController.put("Activity", schedulingViewControllerActivity);
         temp.put("schedulingViewController", schedulingViewController);
 
+        HashMap<String, HashMap<String, Boolean>> instructionalAssignmentsController = new HashMap<>();
+        HashMap<String, Boolean> instructionalAssignmentsControllerSupportAssignments = new HashMap<>();
+        instructionalAssignmentsController.put("SupportAssignment", instructionalAssignmentsControllerSupportAssignments);
+        temp.put("instructionalSupportAssignmentsController", instructionalAssignmentsController);
+
         auditProps = temp;
     }
 
@@ -171,6 +176,13 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem) {
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return expenseItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            } else {
+                return supportAssignment.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            }
         } else {
             return 0;
         }
@@ -190,6 +202,8 @@ public final class ActivityLogFormatter {
                 return "Budget";
             case "schedulingViewController":
                 return "Scheduling";
+            case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
             default:
                 return moduleNameRaw;
         }
@@ -229,6 +243,8 @@ public final class ActivityLogFormatter {
                 }
             case "schedulingViewController":
                 return "Scheduling";
+            case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
             default:
                 return moduleNameRaw;
         }
@@ -313,6 +329,21 @@ public final class ActivityLogFormatter {
             case "ExpenseItem":
                 ExpenseItem expenseItem = (ExpenseItem) obj;
                 return expenseItem.getExpenseItemTypeDescription() + " - " + expenseItem.getDescription();
+            case "SupportAssignment":
+                SupportAssignment supportAssignment = (SupportAssignment) obj;
+                if(supportAssignment.getSectionGroup() != null){
+                    Course supportAssignmentCourse  = supportAssignment.getSectionGroup().getCourse();
+                    return "Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                            supportAssignmentCourse.getCourseNumber() + " - " +
+                            supportAssignmentCourse.getSequencePattern() +
+                            ", Support Assignment: " + supportAssignment.getSupportStaff().getFullName();
+                } else {
+                    Course supportAssignmentCourse  = supportAssignment.getSection().getSectionGroup().getCourse();
+                    return "Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                            supportAssignmentCourse.getCourseNumber() + " - " +
+                            supportAssignmentCourse.getSequencePattern() +
+                            ", Support Assignment: " + supportAssignment.getSupportStaff().getFullName();
+                }
             default:
                 return simpleName;
         }
@@ -346,7 +377,14 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem){
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return Term.getRegistrarName(expenseItem.getTermCode());
-        } {
+        } else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return Term.getRegistrarName(supportAssignment.getSectionGroup().getTermCode());
+            } else {
+                return Term.getRegistrarName(supportAssignment.getSection().getSectionGroup().getTermCode());
+            }
+        }{
             return "";
         }
     }
@@ -397,7 +435,15 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem) {
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return String.valueOf(expenseItem.getBudgetScenario().getBudget().getSchedule().getYear());
-        } else {
+        } else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return String.valueOf(supportAssignment.getSectionGroup().getCourse().getYear());
+            } else {
+                return String.valueOf(supportAssignment.getSection().getSectionGroup().getCourse().getYear());
+            }
+
+        }else {
             return "0";
         }
     }
@@ -444,11 +490,17 @@ public final class ActivityLogFormatter {
             } else {
                 return Term.getAcademicYear(activity.getSection().getSectionGroup().getTermCode());
             }
-
         } else if (obj instanceof ExpenseItem){
             ExpenseItem expenseItem = (ExpenseItem) obj;
             long expenseItemYear = expenseItem.getBudgetScenario().getBudget().getSchedule().getYear();
             return expenseItemYear + "-" + (expenseItemYear+1);
+        }  else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return Term.getAcademicYear(supportAssignment.getSectionGroup().getTermCode());
+            } else {
+                return Term.getAcademicYear(supportAssignment.getSection().getSectionGroup().getTermCode());
+            }
         } else {
             return "";
         }
@@ -550,6 +602,8 @@ public final class ActivityLogFormatter {
         if(endpoint.toLowerCase().contains(entity.toLowerCase()) && auditProps.containsKey(module) && auditProps.get(module).containsKey(entity)){
             return true;
         } else if (entity.equals("BudgetScenario") && endpoint.equals("budgetRequest")) { // Exception for budget requests endpoint
+            return true;
+        } else if(entity.equals("SupportAssignment") && endpoint.equals("supportStaff")){ // Exception for support Assingments
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
