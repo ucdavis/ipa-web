@@ -11,8 +11,6 @@ public interface AuditLogRepository extends CrudRepository<AuditLog, Long>  {
 
     List<AuditLog> findByWorkgroupId(long workgroupId);
 
-    List<AuditLog> findByWorkgroupIdAndModule(long workgroupId, String module);
-
     List<AuditLog> findByWorkgroupIdAndModuleOrderByCreatedAtDesc(long workgroupId, String module);
 
     List<AuditLog> findByWorkgroupIdAndYearAndModuleOrderByCreatedAtDesc(long workgroupId, long year, String module);
