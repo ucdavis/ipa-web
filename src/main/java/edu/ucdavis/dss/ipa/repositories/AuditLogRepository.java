@@ -8,18 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface AuditLogRepository extends CrudRepository<AuditLog, Long>  {
-    @Query( " SELECT DISTINCT al" +
-            " FROM AuditLog al" +
-            " WHERE al.workgroup.id = :workgroupId ")
-    List<AuditLog> findByWorkgroupId(@Param("workgroupId") long workgroupId);
 
-    @Query( " SELECT DISTINCT al" +
-            " FROM AuditLog al" +
-            " WHERE al.workgroup.id = :workgroupId " +
-            " AND al.module = :module")
-    List<AuditLog> findByWorkgroupIdAndModule(
-            @Param("workgroupId") long workgroupId,
-            @Param("module") String module);
+    List<AuditLog> findByWorkgroupId(long workgroupId);
+
+    List<AuditLog> findByWorkgroupIdAndModule(long workgroupId, String module);
 
     List<AuditLog> findByWorkgroupIdAndModuleOrderByCreatedAtDesc(long workgroupId, String module);
 
