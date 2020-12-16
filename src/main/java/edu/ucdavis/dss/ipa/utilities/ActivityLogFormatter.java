@@ -31,6 +31,8 @@ public final class ActivityLogFormatter {
         HashMap<String, Boolean> courseViewSectionGroup = new HashMap<String, Boolean>();
         courseViewSectionGroup.put("termCode", true);
         courseViewSectionGroup.put("plannedSeats", true);
+        courseViewSectionGroup.put("readerAppointments", true);
+        courseViewSectionGroup.put("teachingAssistantAppointments", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
         temp.put("courseViewController", courseView);
 
@@ -120,9 +122,22 @@ public final class ActivityLogFormatter {
         temp.put("schedulingViewController", schedulingViewController);
 
         HashMap<String, HashMap<String, Boolean>> instructionalAssignmentsController = new HashMap<>();
+
         HashMap<String, Boolean> instructionalAssignmentsControllerSupportAssignments = new HashMap<>();
         instructionalAssignmentsController.put("SupportAssignment", instructionalAssignmentsControllerSupportAssignments);
+
+        HashMap<String, Boolean> instructionalAssignmentsControllerSupportAppointments = new HashMap<>();
+        instructionalAssignmentsControllerSupportAppointments.put("percentage", true);
+        instructionalAssignmentsController.put("SupportAppointment", instructionalAssignmentsControllerSupportAppointments);
+
         temp.put("instructionalSupportAssignmentsController", instructionalAssignmentsController);
+
+        HashMap<String, HashMap<String, Boolean>> instructionalSupportCallsController = new HashMap<>();
+        HashMap<String, Boolean> instructionalSupportCallsControllerSchedule = new HashMap<>();
+        instructionalSupportCallsControllerSchedule.put("supportStaffSupportCallReviewOpen", true);
+        instructionalSupportCallsControllerSchedule.put("instructorSupportCallReviewOpen", true);
+        instructionalSupportCallsController.put("Schedule", instructionalSupportCallsControllerSchedule);
+        temp.put("instructionalSupportCallsController", instructionalSupportCallsController);
 
         auditProps = temp;
     }
@@ -183,6 +198,12 @@ public final class ActivityLogFormatter {
             } else {
                 return supportAssignment.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
             }
+        } else if (obj instanceof SupportAppointment){
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return supportAppointment.getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return schedule.getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -203,6 +224,8 @@ public final class ActivityLogFormatter {
             case "schedulingViewController":
                 return "Scheduling";
             case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
+            case "instructionalSupportCallsController":
                 return "Support Staff Assignments";
             default:
                 return moduleNameRaw;
@@ -244,6 +267,8 @@ public final class ActivityLogFormatter {
             case "schedulingViewController":
                 return "Scheduling";
             case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
+            case "instructionalSupportCallsController":
                 return "Support Staff Assignments";
             default:
                 return moduleNameRaw;
@@ -331,19 +356,32 @@ public final class ActivityLogFormatter {
                 return expenseItem.getExpenseItemTypeDescription() + " - " + expenseItem.getDescription();
             case "SupportAssignment":
                 SupportAssignment supportAssignment = (SupportAssignment) obj;
-                if(supportAssignment.getSectionGroup() != null){
+                String assignmentType = supportAssignment.getAppointmentType();
+                if(assignmentType.equals("teachingAssistant")){
+                    assignmentType = "Teaching Assistant";
+                } else if (assignmentType.equals("reader")) {
+                    assignmentType = "Reader";
+                }
+                if (supportAssignment.getSectionGroup() != null){
                     Course supportAssignmentCourse  = supportAssignment.getSectionGroup().getCourse();
-                    return "Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                    return assignmentType + " Assignment: " + supportAssignment.getSupportStaff().getFullName() +
+                            " on Section " + supportAssignmentCourse.getSubjectCode() + " " +
                             supportAssignmentCourse.getCourseNumber() + " - " +
-                            supportAssignmentCourse.getSequencePattern() +
-                            ", Support Assignment: " + supportAssignment.getSupportStaff().getFullName();
+                            supportAssignmentCourse.getSequencePattern();
+
                 } else {
                     Course supportAssignmentCourse  = supportAssignment.getSection().getSectionGroup().getCourse();
-                    return "Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                    return assignmentType + " Assignment: " + supportAssignment.getSupportStaff().getFullName() +
+                            " on Section " + supportAssignmentCourse.getSubjectCode() + " " +
                             supportAssignmentCourse.getCourseNumber() + " - " +
-                            supportAssignmentCourse.getSequencePattern() +
-                            ", Support Assignment: " + supportAssignment.getSupportStaff().getFullName();
+                            supportAssignmentCourse.getSequencePattern();
                 }
+            case "SupportAppointment":
+                SupportAppointment supportAppointment = (SupportAppointment) obj;
+                return "Staff: " + supportAppointment.getSupportStaff().getFullName();
+            case "Schedule":
+                Schedule schedule = (Schedule) obj;
+                return "Schedule: " + schedule.getWorkgroup().getName();
             default:
                 return simpleName;
         }
@@ -384,7 +422,10 @@ public final class ActivityLogFormatter {
             } else {
                 return Term.getRegistrarName(supportAssignment.getSection().getSectionGroup().getTermCode());
             }
-        }{
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return Term.getRegistrarName(supportAppointment.getTermCode());
+        } else {
             return "";
         }
     }
@@ -443,7 +484,13 @@ public final class ActivityLogFormatter {
                 return String.valueOf(supportAssignment.getSection().getSectionGroup().getCourse().getYear());
             }
 
-        }else {
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return String.valueOf(supportAppointment.getSchedule().getYear());
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return String.valueOf(schedule.getYear());
+        } else {
             return "0";
         }
     }
@@ -501,6 +548,12 @@ public final class ActivityLogFormatter {
             } else {
                 return Term.getAcademicYear(supportAssignment.getSection().getSectionGroup().getTermCode());
             }
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return Term.getAcademicYear(supportAppointment.getTermCode());
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return schedule.getYear() + "-" + (schedule.getYear()+1);
         } else {
             return "";
         }
@@ -544,6 +597,12 @@ public final class ActivityLogFormatter {
                 return "end time";
             case "expenseItemType":
                 return "type";
+            case "readerAppointments":
+                return "Readers";
+            case "teachingAssistantAppointments":
+                return "TAs";
+            case "supportStaffSupportCallReviewOpen":
+                return "Student Review";
             default:
                 return prop;
         }
@@ -603,7 +662,11 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("BudgetScenario") && endpoint.equals("budgetRequest")) { // Exception for budget requests endpoint
             return true;
-        } else if(entity.equals("SupportAssignment") && endpoint.equals("supportStaff")){ // Exception for support Assingments
+        } else if(entity.equals("SupportAssignment") && endpoint.equals("supportStaff")){ // Exception for support Assignments
+            return true;
+        } else if (entity.equals("SupportAppointment") && endpoint.equals("schedules")) { // Exception for support Appointments
+            return true;
+        } else if (entity.equals("Schedule") && (endpoint.equals("toggleSupportStaffSupportCallReview") || endpoint.equals("toggleInstructorSupportCallReview"))){
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
@@ -638,18 +701,52 @@ public final class ActivityLogFormatter {
         sb.append("**" + userDisplayName + "**");
         sb.append(" in **" + module + "** - **" + years + "**");
         String termCode = ActivityLogFormatter.getTermCode(entity);
+
+        if(entity instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))){ // Term code is stored in field as part of blob
+            if(oldVal.length() == newVal.length()){
+                for(int i = 0; i< oldVal.length(); i++){
+                    if(oldVal.charAt(i) != newVal.charAt(i)){
+                        String term = String.valueOf(i + 1);
+
+                        // Zero pad if necessary
+                        if (term.length() == 1) {
+                            term = "0" + term;
+                        }
+                        termCode = Term.getRegistrarName(term);
+                    }
+                }
+            }
+        }
+
         if (termCode.length() > 0) {
             sb.append(", **" + termCode + "**");
         }
         sb.append("\n");
 
-        if(entity instanceof SectionGroupCost && propName.equals("disabled")){ // Exceptions to usual update wording
-            if(newVal.equals("false")){
+        if(entity instanceof SectionGroupCost && propName.equals("disabled")) { // Exceptions to usual update wording
+            if (newVal.equals("false")) {
                 sb.append("Added ");
             } else {
                 sb.append("Removed ");
             }
             sb.append("**" + entityDescription + "**");
+        } else if (entity instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))){
+            if(oldVal.length() == newVal.length()){
+                for(int i = 0; i< oldVal.length(); i++){
+                    if(oldVal.charAt(i) != newVal.charAt(i)){
+                        if(newVal.charAt(i) == '1'){
+                            sb.append("Opened ");
+                        } else {
+                            sb.append("Closed ");
+                        }
+                        if(propName.equals("supportStaffSupportCallReviewOpen")){
+                            sb.append("Student Review");
+                        } else {
+                            sb.append("Instructor Review");
+                        }
+                    }
+                }
+            }
         } else { // Generic update methodology
             if (oldVal == null) {
                 sb.append("Set ");
