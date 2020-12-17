@@ -139,6 +139,11 @@ public final class ActivityLogFormatter {
         instructionalSupportCallsController.put("Schedule", instructionalSupportCallsControllerSchedule);
         temp.put("instructionalSupportCallsController", instructionalSupportCallsController);
 
+        HashMap<String, HashMap<String, Boolean>> teachingCallStatusViewController =  new HashMap<>();
+        HashMap<String, Boolean> teachingCallStatusViewControllerTeachingCallReceipt = new HashMap<>();
+        teachingCallStatusViewController.put("TeachingCallReceipt", teachingCallStatusViewControllerTeachingCallReceipt);
+        temp.put("teachingCallStatusViewController", teachingCallStatusViewController);
+
         auditProps = temp;
     }
 
@@ -204,6 +209,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Schedule){
             Schedule schedule = (Schedule) obj;
             return schedule.getWorkgroup().getId();
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return teachingCallReceipt.getWorkgroupId();
         } else {
             return 0;
         }
@@ -227,6 +235,8 @@ public final class ActivityLogFormatter {
                 return "Support Staff Assignments";
             case "instructionalSupportCallsController":
                 return "Support Staff Assignments";
+            case "teachingCallStatusViewController":
+                return "Teaching Calls";
             default:
                 return moduleNameRaw;
         }
@@ -270,6 +280,8 @@ public final class ActivityLogFormatter {
                 return "Support Staff Assignments";
             case "instructionalSupportCallsController":
                 return "Support Staff Assignments";
+            case "teachingCallStatusViewController":
+                return "Teaching Calls";
             default:
                 return moduleNameRaw;
         }
@@ -382,6 +394,9 @@ public final class ActivityLogFormatter {
             case "Schedule":
                 Schedule schedule = (Schedule) obj;
                 return "Schedule: " + schedule.getWorkgroup().getName();
+            case "TeachingCallReceipt":
+                TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+                return "Teaching Call: " + teachingCallReceipt.getInstructor().getFullName();
             default:
                 return simpleName;
         }
@@ -490,6 +505,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Schedule){
             Schedule schedule = (Schedule) obj;
             return String.valueOf(schedule.getYear());
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return String.valueOf(teachingCallReceipt.getAcademicYear());
         } else {
             return "0";
         }
@@ -554,7 +572,10 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof Schedule){
             Schedule schedule = (Schedule) obj;
             return schedule.getYear() + "-" + (schedule.getYear()+1);
-        } else {
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return teachingCallReceipt.getAcademicYear() + "-" + (teachingCallReceipt.getAcademicYear()+1);
+        }else {
             return "";
         }
     }
