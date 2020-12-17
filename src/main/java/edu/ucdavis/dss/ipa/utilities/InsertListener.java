@@ -64,7 +64,7 @@ public class InsertListener implements PostCommitInsertEventListener
                     auditLogEntry.setUserName(userDisplayName);
                     auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
                     auditLogEntry.setYear(Integer.parseInt(year));
-                    auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw));
+                    auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity));
                     auditLogEntry.setTransactionId(transactionId);
                     session.save(auditLogEntry);
                     session.close();

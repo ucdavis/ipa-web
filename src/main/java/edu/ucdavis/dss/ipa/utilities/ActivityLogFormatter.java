@@ -34,6 +34,9 @@ public final class ActivityLogFormatter {
         courseViewSectionGroup.put("readerAppointments", true);
         courseViewSectionGroup.put("teachingAssistantAppointments", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
+
+        HashMap<String, Boolean> courseViewTeachingAssignment = new HashMap<String, Boolean>();
+        courseView.put("TeachingAssignment", courseViewTeachingAssignment);
         temp.put("courseViewController", courseView);
 
         // Assignment view entities to be audited.
@@ -220,10 +223,14 @@ public final class ActivityLogFormatter {
 
     // Get DB friendly module that originated change.
     // Ex. "courseViewController" becomes "Courses"
-    public static String getFormattedModule(String moduleNameRaw){
+    public static String getFormattedModule(String moduleNameRaw, Object obj){
         switch (moduleNameRaw) {
             case "courseViewController":
-                return "Courses";
+                if(obj instanceof TeachingAssignment){
+                    return "Assign Instructors";
+                } else {
+                    return "Courses";
+                }
             case "budgetViewController":
                 return "Budget";
             case "assignmentViewTeachingAssignmentController":
@@ -691,6 +698,8 @@ public final class ActivityLogFormatter {
         } else if (entity.equals("Schedule") && (endpoint.equals("toggleSupportStaffSupportCallReview") || endpoint.equals("toggleInstructorSupportCallReview"))){
             return true;
         } else if (entity.equals("TeachingCallReceipt") && (endpoint.equals("addInstructors") || endpoint.equals("contactInstructors"))){
+            return true;
+        } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
