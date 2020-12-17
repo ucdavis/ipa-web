@@ -141,6 +141,7 @@ public final class ActivityLogFormatter {
 
         HashMap<String, HashMap<String, Boolean>> teachingCallStatusViewController =  new HashMap<>();
         HashMap<String, Boolean> teachingCallStatusViewControllerTeachingCallReceipt = new HashMap<>();
+        teachingCallStatusViewControllerTeachingCallReceipt.put("nextContactAt", true);
         teachingCallStatusViewController.put("TeachingCallReceipt", teachingCallStatusViewControllerTeachingCallReceipt);
         temp.put("teachingCallStatusViewController", teachingCallStatusViewController);
 
@@ -689,6 +690,8 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("Schedule") && (endpoint.equals("toggleSupportStaffSupportCallReview") || endpoint.equals("toggleInstructorSupportCallReview"))){
             return true;
+        } else if (entity.equals("TeachingCallReceipt") && (endpoint.equals("addInstructors") || endpoint.equals("contactInstructors"))){
+            return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
         }
@@ -768,6 +771,11 @@ public final class ActivityLogFormatter {
                     }
                 }
             }
+        } else if (entity instanceof TeachingCallReceipt && propName.equals("nextContactAt")){
+            sb.append("Scheduled teaching call follow up for ");
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) entity;
+            sb.append(teachingCallReceipt.getInstructor().getFullName());
+            sb.append(" on " + newVal);
         } else { // Generic update methodology
             if (oldVal == null) {
                 sb.append("Set ");
