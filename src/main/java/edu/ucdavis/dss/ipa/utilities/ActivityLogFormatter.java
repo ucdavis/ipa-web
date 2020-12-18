@@ -1,13 +1,10 @@
 package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 
-import javax.sound.sampled.Line;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.temporal.Temporal;
 import java.util.HashMap;
-import java.util.List;
 
 public final class ActivityLogFormatter {
     private static final HashMap<String, HashMap<String, HashMap<String, Boolean>>> auditProps;
@@ -93,12 +90,14 @@ public final class ActivityLogFormatter {
         budgetViewSectionGroupCost.put("disabled", true);
         budgetView.put("SectionGroupCost", budgetViewSectionGroupCost);
 
+        // Fields to audit in budget view for Section Group Cost Instructor
         HashMap<String, Boolean> budgetViewSectionGroupCostInstructor = new HashMap<>();
         budgetViewSectionGroupCostInstructor.put("cost", true);
         budgetViewSectionGroupCostInstructor.put("instructor", true);
         budgetViewSectionGroupCostInstructor.put("instructorType", true);
         budgetView.put("SectionGroupCostInstructor", budgetViewSectionGroupCostInstructor);
 
+        // Fields to audit in budget view for Expense Items
         HashMap<String, Boolean> budgetViewExpenseItem = new HashMap<>();
         budgetViewExpenseItem.put("amount", true);
         budgetViewExpenseItem.put("description", true);
@@ -108,12 +107,13 @@ public final class ActivityLogFormatter {
 
         temp.put("budgetViewController", budgetView);
 
-
+        // Fields to audit for the Section Group Cost Controller
         HashMap<String, HashMap<String, Boolean>> sectionGroupCostController = new HashMap<String, HashMap<String, Boolean>>();
         HashMap<String, Boolean> sectionGroupCostControllerSectionGroupCost = new HashMap<>();
         sectionGroupCostController.put("SectionGroupCost", sectionGroupCostControllerSectionGroupCost);
         temp.put("sectionGroupCostController", sectionGroupCostController);
 
+        // Fields to audit in the scheduling view for Activities
         HashMap<String, HashMap<String, Boolean>> schedulingViewController = new HashMap<String, HashMap<String, Boolean>>();
         HashMap<String, Boolean> schedulingViewControllerActivity = new HashMap<>();
         schedulingViewControllerActivity.put("location", true);
@@ -124,11 +124,10 @@ public final class ActivityLogFormatter {
         schedulingViewController.put("Activity", schedulingViewControllerActivity);
         temp.put("schedulingViewController", schedulingViewController);
 
+        // Fields to audit for TA's and Readers
         HashMap<String, HashMap<String, Boolean>> instructionalAssignmentsController = new HashMap<>();
-
         HashMap<String, Boolean> instructionalAssignmentsControllerSupportAssignments = new HashMap<>();
         instructionalAssignmentsController.put("SupportAssignment", instructionalAssignmentsControllerSupportAssignments);
-
         HashMap<String, Boolean> instructionalAssignmentsControllerSupportAppointments = new HashMap<>();
         instructionalAssignmentsControllerSupportAppointments.put("percentage", true);
         instructionalAssignmentsController.put("SupportAppointment", instructionalAssignmentsControllerSupportAppointments);
@@ -707,6 +706,7 @@ public final class ActivityLogFormatter {
         return false;
     }
 
+    // Get name of endpoint
     public static String getEndpoint(String uri){
         String endpoint = uri.substring(uri.lastIndexOf('/') + 1);
         if(endpoint.matches("\\d+") || endpoint.length() <= 1){
@@ -716,6 +716,7 @@ public final class ActivityLogFormatter {
         return endpoint;
     }
 
+    // Get message that will display to user for updates
     public static String getFormattedUpdateAction(String module, Object entity, String propName, Object oldValue, Object newValue, String userDisplayName){
         StringBuilder sb = new StringBuilder();
         String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
@@ -804,6 +805,7 @@ public final class ActivityLogFormatter {
         return sb.toString();
     }
 
+    // Get message that will display to the user for inserts
     public static String getFormattedInsertAction(String module, Object entity, String userDisplayName) {
         StringBuilder sb = new StringBuilder();
         String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
