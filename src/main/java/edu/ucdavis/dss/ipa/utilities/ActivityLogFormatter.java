@@ -139,6 +139,11 @@ public final class ActivityLogFormatter {
         instructionalSupportCallsControllerSchedule.put("supportStaffSupportCallReviewOpen", true);
         instructionalSupportCallsControllerSchedule.put("instructorSupportCallReviewOpen", true);
         instructionalSupportCallsController.put("Schedule", instructionalSupportCallsControllerSchedule);
+
+        HashMap<String, Boolean> instructionalSupportCallsControllerInstructorSupportCallResponse = new HashMap<>();
+        instructionalSupportCallsControllerInstructorSupportCallResponse.put("nextContactAt", true);
+        instructionalSupportCallsController.put("InstructorSupportCallResponse", instructionalSupportCallsControllerInstructorSupportCallResponse);
+
         temp.put("instructionalSupportCallsController", instructionalSupportCallsController);
 
         HashMap<String, HashMap<String, Boolean>> teachingCallStatusViewController =  new HashMap<>();
@@ -215,6 +220,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof TeachingCallReceipt){
             TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
             return teachingCallReceipt.getWorkgroupId();
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return instructorSupportCallResponse.getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -404,6 +412,10 @@ public final class ActivityLogFormatter {
             case "TeachingCallReceipt":
                 TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
                 return "Teaching Call: " + teachingCallReceipt.getInstructor().getFullName();
+
+            case "InstructorSupportCallResponse":
+                InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+                return "Instructor Support Call: " + instructorSupportCallResponse.getInstructor().getFullName();
             default:
                 return simpleName;
         }
@@ -447,6 +459,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof SupportAppointment) {
             SupportAppointment supportAppointment = (SupportAppointment) obj;
             return Term.getRegistrarName(supportAppointment.getTermCode());
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return Term.getRegistrarName(instructorSupportCallResponse.getTermCode());
         } else {
             return "";
         }
@@ -515,6 +530,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof TeachingCallReceipt){
             TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
             return String.valueOf(teachingCallReceipt.getAcademicYear());
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return String.valueOf(instructorSupportCallResponse.getSchedule().getYear());
         } else {
             return "0";
         }
@@ -582,7 +600,10 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof TeachingCallReceipt){
             TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
             return teachingCallReceipt.getAcademicYear() + "-" + (teachingCallReceipt.getAcademicYear()+1);
-        }else {
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return instructorSupportCallResponse.getSchedule().getYear() + "-" + (instructorSupportCallResponse.getSchedule().getYear()+1);
+        } else {
             return "";
         }
     }
@@ -696,7 +717,7 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("Schedule") && (endpoint.equals("toggleSupportStaffSupportCallReview") || endpoint.equals("toggleInstructorSupportCallReview"))){
             return true;
-        } else if (entity.equals("TeachingCallReceipt") && (endpoint.equals("addInstructors") || endpoint.equals("contactInstructors"))){
+        } else if ((entity.equals("InstructorSupportCallResponse") || entity.equals("TeachingCallReceipt")) && (endpoint.equals("addInstructors") || endpoint.equals("contactInstructors"))){
             return true;
         } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
             return true;
@@ -782,10 +803,15 @@ public final class ActivityLogFormatter {
                 }
             }
         } else if (entity instanceof TeachingCallReceipt && propName.equals("nextContactAt")){
-            sb.append("Scheduled teaching call follow up for ");
+            sb.append("Scheduled support staff call follow up for **");
             TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) entity;
             sb.append(teachingCallReceipt.getInstructor().getFullName());
-            sb.append(" on " + newVal);
+            sb.append("** on **" + newVal + "**");
+        } else if (entity instanceof InstructorSupportCallResponse && propName.equals("nextContactAt")){
+            sb.append("Scheduled instructor support call follow up for **");
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) entity;
+            sb.append(instructorSupportCallResponse.getInstructor().getFullName());
+            sb.append("** on **" + newVal + "**");
         } else { // Generic update methodology
             if (oldVal == null) {
                 sb.append("Set ");
