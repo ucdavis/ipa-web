@@ -43,7 +43,6 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                 String moduleRaw = handler.getBean().toString();
                 Object entity = postUpdateEvent.getEntity();
                 String entityName = entity.getClass().getSimpleName();
-
                 if (ActivityLogFormatter.isAudited(moduleRaw, entityName, endpoint)) {
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
 
@@ -74,7 +73,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         auditLogEntry.setUserName(userDisplayName);
                         auditLogEntry.setWorkgroup(workgroupService.findOneById(ActivityLogFormatter.getWorkgroupId(entity)));
                         auditLogEntry.setYear(Integer.parseInt(year));
-                        auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity));
+                        auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity, props[i]));
                         auditLogEntry.setTransactionId(transactionId);
                         session.save(auditLogEntry);
                         session.close();

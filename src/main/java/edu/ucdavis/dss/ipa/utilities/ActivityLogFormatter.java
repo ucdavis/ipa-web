@@ -266,6 +266,16 @@ public final class ActivityLogFormatter {
         }
     }
 
+    // Get DB friendly module that originated change for updates
+    // Updates may take the specific field into account
+    public static String getFormattedModule(String moduleNameRaw, Object obj, String propName){
+        if(obj instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
+            return "Support Staff Assignments";
+        } else {
+            return ActivityLogFormatter.getFormattedModule(moduleNameRaw, obj);
+        }
+    }
+
     // Get user friendly module that originated change.
     // Ex. "courseViewController" becomes "Courses"
     public static String getModuleDisplayName(String moduleNameRaw, Object obj){
@@ -772,8 +782,10 @@ public final class ActivityLogFormatter {
         // Exception for ta cost and reader cost
         // Since unlike other categories they are tracked on the budget scenario instead
         // of the category cost table
-        if(entity instanceof Budget && (propName.equals("taCost") || propName.equals("readerCost"))){
+        if(entity instanceof Budget && (propName.equals("taCost") || propName.equals("readerCost"))) {
             module += " - Instructor List";
+        } else if(entity instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
+            module = "Support Staff Assignments";
         }
 
         sb.append("**" + userDisplayName + "**");
