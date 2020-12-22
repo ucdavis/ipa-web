@@ -258,7 +258,7 @@ public final class ActivityLogFormatter {
             case "instructionalSupportAssignmentsController":
                 return "Support Staff Assignments";
             case "instructionalSupportCallsController":
-                return "Support Staff Assignments";
+                return "Support Calls";
             case "teachingCallStatusViewController":
                 return "Teaching Calls";
             default:
@@ -313,7 +313,7 @@ public final class ActivityLogFormatter {
             case "instructionalSupportAssignmentsController":
                 return "Support Staff Assignments";
             case "instructionalSupportCallsController":
-                return "Support Staff Assignments";
+                return "Support Calls";
             case "teachingCallStatusViewController":
                 return "Teaching Calls";
             default:
