@@ -271,6 +271,8 @@ public final class ActivityLogFormatter {
     public static String getFormattedModule(String moduleNameRaw, Object obj, String propName){
         if(obj instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
             return "Support Staff Assignments";
+        } else if (obj instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))) {
+            return "Support Staff Assignments";
         } else {
             return ActivityLogFormatter.getFormattedModule(moduleNameRaw, obj);
         }
@@ -786,9 +788,11 @@ public final class ActivityLogFormatter {
             module += " - Instructor List";
         } else if(entity instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
             module = "Support Staff Assignments";
+        } else if (entity instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))) {
+            module = "Support Staff Assignments";
         }
 
-        sb.append("**" + userDisplayName + "**");
+            sb.append("**" + userDisplayName + "**");
         sb.append(" in **" + module + "** - **" + years + "**");
         String termCode = ActivityLogFormatter.getTermCode(entity);
 
@@ -838,7 +842,9 @@ public final class ActivityLogFormatter {
                 }
             }
         } else if (entity instanceof TeachingCallReceipt && propName.equals("nextContactAt")){
-            sb.append("Scheduled support staff call follow up for **");
+            sb.append("Scheduled teaching" +
+                    "" +
+                    " call follow up for **");
             TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) entity;
             sb.append(teachingCallReceipt.getInstructor().getFullName());
             sb.append("** on **" + newVal + "**");
