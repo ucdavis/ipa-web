@@ -1,13 +1,10 @@
 package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.*;
 
-import javax.sound.sampled.Line;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.temporal.Temporal;
 import java.util.HashMap;
-import java.util.List;
 
 public final class ActivityLogFormatter {
     private static final HashMap<String, HashMap<String, HashMap<String, Boolean>>> auditProps;
@@ -31,7 +28,12 @@ public final class ActivityLogFormatter {
         HashMap<String, Boolean> courseViewSectionGroup = new HashMap<String, Boolean>();
         courseViewSectionGroup.put("termCode", true);
         courseViewSectionGroup.put("plannedSeats", true);
+        courseViewSectionGroup.put("readerAppointments", true);
+        courseViewSectionGroup.put("teachingAssistantAppointments", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
+
+        HashMap<String, Boolean> courseViewTeachingAssignment = new HashMap<String, Boolean>();
+        courseView.put("TeachingAssignment", courseViewTeachingAssignment);
         temp.put("courseViewController", courseView);
 
         // Assignment view entities to be audited.
@@ -88,12 +90,14 @@ public final class ActivityLogFormatter {
         budgetViewSectionGroupCost.put("disabled", true);
         budgetView.put("SectionGroupCost", budgetViewSectionGroupCost);
 
+        // Fields to audit in budget view for Section Group Cost Instructor
         HashMap<String, Boolean> budgetViewSectionGroupCostInstructor = new HashMap<>();
         budgetViewSectionGroupCostInstructor.put("cost", true);
         budgetViewSectionGroupCostInstructor.put("instructor", true);
         budgetViewSectionGroupCostInstructor.put("instructorType", true);
         budgetView.put("SectionGroupCostInstructor", budgetViewSectionGroupCostInstructor);
 
+        // Fields to audit in budget view for Expense Items
         HashMap<String, Boolean> budgetViewExpenseItem = new HashMap<>();
         budgetViewExpenseItem.put("amount", true);
         budgetViewExpenseItem.put("description", true);
@@ -103,12 +107,13 @@ public final class ActivityLogFormatter {
 
         temp.put("budgetViewController", budgetView);
 
-
+        // Fields to audit for the Section Group Cost Controller
         HashMap<String, HashMap<String, Boolean>> sectionGroupCostController = new HashMap<String, HashMap<String, Boolean>>();
         HashMap<String, Boolean> sectionGroupCostControllerSectionGroupCost = new HashMap<>();
         sectionGroupCostController.put("SectionGroupCost", sectionGroupCostControllerSectionGroupCost);
         temp.put("sectionGroupCostController", sectionGroupCostController);
 
+        // Fields to audit in the scheduling view for Activities
         HashMap<String, HashMap<String, Boolean>> schedulingViewController = new HashMap<String, HashMap<String, Boolean>>();
         HashMap<String, Boolean> schedulingViewControllerActivity = new HashMap<>();
         schedulingViewControllerActivity.put("location", true);
@@ -118,6 +123,40 @@ public final class ActivityLogFormatter {
         schedulingViewControllerActivity.put("dayIndicator", true);
         schedulingViewController.put("Activity", schedulingViewControllerActivity);
         temp.put("schedulingViewController", schedulingViewController);
+
+        // Fields to audit for TA's and Readers
+        HashMap<String, HashMap<String, Boolean>> instructionalAssignmentsController = new HashMap<>();
+        HashMap<String, Boolean> instructionalAssignmentsControllerSupportAssignments = new HashMap<>();
+        instructionalAssignmentsController.put("SupportAssignment", instructionalAssignmentsControllerSupportAssignments);
+        HashMap<String, Boolean> instructionalAssignmentsControllerSupportAppointments = new HashMap<>();
+        instructionalAssignmentsControllerSupportAppointments.put("percentage", true);
+        instructionalAssignmentsController.put("SupportAppointment", instructionalAssignmentsControllerSupportAppointments);
+
+        temp.put("instructionalSupportAssignmentsController", instructionalAssignmentsController);
+
+        HashMap<String, HashMap<String, Boolean>> instructionalSupportCallsController = new HashMap<>();
+        HashMap<String, Boolean> instructionalSupportCallsControllerSchedule = new HashMap<>();
+        instructionalSupportCallsControllerSchedule.put("supportStaffSupportCallReviewOpen", true);
+        instructionalSupportCallsControllerSchedule.put("instructorSupportCallReviewOpen", true);
+        instructionalSupportCallsController.put("Schedule", instructionalSupportCallsControllerSchedule);
+
+        HashMap<String, Boolean> instructionalSupportCallsControllerInstructorSupportCallResponse = new HashMap<>();
+        instructionalSupportCallsControllerInstructorSupportCallResponse.put("nextContactAt", true);
+        instructionalSupportCallsController.put("InstructorSupportCallResponse", instructionalSupportCallsControllerInstructorSupportCallResponse);
+
+        temp.put("instructionalSupportCallsController", instructionalSupportCallsController);
+
+        HashMap<String, Boolean> instructionalSupportCallsControllerStudentSupportCall = new HashMap<>();
+        instructionalSupportCallsControllerStudentSupportCall.put("nextContactAt", true);
+        instructionalSupportCallsController.put("StudentSupportCallResponse", instructionalSupportCallsControllerStudentSupportCall);
+
+        temp.put("instructionalSupportCallsController", instructionalSupportCallsController);
+
+        HashMap<String, HashMap<String, Boolean>> teachingCallStatusViewController =  new HashMap<>();
+        HashMap<String, Boolean> teachingCallStatusViewControllerTeachingCallReceipt = new HashMap<>();
+        teachingCallStatusViewControllerTeachingCallReceipt.put("nextContactAt", true);
+        teachingCallStatusViewController.put("TeachingCallReceipt", teachingCallStatusViewControllerTeachingCallReceipt);
+        temp.put("teachingCallStatusViewController", teachingCallStatusViewController);
 
         auditProps = temp;
     }
@@ -171,6 +210,28 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem) {
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return expenseItem.getBudgetScenario().getBudget().getSchedule().getWorkgroup().getId();
+        } else if(obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return supportAssignment.getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            } else {
+                return supportAssignment.getSection().getSectionGroup().getCourse().getSchedule().getWorkgroup().getId();
+            }
+        } else if (obj instanceof SupportAppointment){
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return supportAppointment.getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return schedule.getWorkgroup().getId();
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return teachingCallReceipt.getWorkgroupId();
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return instructorSupportCallResponse.getSchedule().getWorkgroup().getId();
+        } else if (obj instanceof StudentSupportCallResponse){
+            StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) obj;
+            return studentSupportCallResponse.getSchedule().getWorkgroup().getId();
         } else {
             return 0;
         }
@@ -178,10 +239,14 @@ public final class ActivityLogFormatter {
 
     // Get DB friendly module that originated change.
     // Ex. "courseViewController" becomes "Courses"
-    public static String getFormattedModule(String moduleNameRaw){
+    public static String getFormattedModule(String moduleNameRaw, Object obj){
         switch (moduleNameRaw) {
             case "courseViewController":
-                return "Courses";
+                if(obj instanceof TeachingAssignment){
+                    return "Assign Instructors";
+                } else {
+                    return "Courses";
+                }
             case "budgetViewController":
                 return "Budget";
             case "assignmentViewTeachingAssignmentController":
@@ -190,8 +255,24 @@ public final class ActivityLogFormatter {
                 return "Budget";
             case "schedulingViewController":
                 return "Scheduling";
+            case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
+            case "instructionalSupportCallsController":
+                return "Support Calls";
+            case "teachingCallStatusViewController":
+                return "Teaching Calls";
             default:
                 return moduleNameRaw;
+        }
+    }
+
+    // Get DB friendly module that originated change for updates
+    // Updates may take the specific field into account
+    public static String getFormattedModule(String moduleNameRaw, Object obj, String propName){
+        if(obj instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
+            return "Support Staff Assignments";
+        } else {
+            return ActivityLogFormatter.getFormattedModule(moduleNameRaw, obj);
         }
     }
 
@@ -229,6 +310,12 @@ public final class ActivityLogFormatter {
                 }
             case "schedulingViewController":
                 return "Scheduling";
+            case "instructionalSupportAssignmentsController":
+                return "Support Staff Assignments";
+            case "instructionalSupportCallsController":
+                return "Support Calls";
+            case "teachingCallStatusViewController":
+                return "Teaching Calls";
             default:
                 return moduleNameRaw;
         }
@@ -313,6 +400,44 @@ public final class ActivityLogFormatter {
             case "ExpenseItem":
                 ExpenseItem expenseItem = (ExpenseItem) obj;
                 return expenseItem.getExpenseItemTypeDescription() + " - " + expenseItem.getDescription();
+            case "SupportAssignment":
+                SupportAssignment supportAssignment = (SupportAssignment) obj;
+                String assignmentType = supportAssignment.getAppointmentType();
+                if(assignmentType.equals("teachingAssistant")){
+                    assignmentType = "Teaching Assistant";
+                } else if (assignmentType.equals("reader")) {
+                    assignmentType = "Reader";
+                }
+                if (supportAssignment.getSectionGroup() != null){
+                    Course supportAssignmentCourse  = supportAssignment.getSectionGroup().getCourse();
+                    return assignmentType + " Assignment: " + supportAssignment.getSupportStaff().getFullName() +
+                            " on Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                            supportAssignmentCourse.getCourseNumber() + " - " +
+                            supportAssignmentCourse.getSequencePattern();
+
+                } else {
+                    Course supportAssignmentCourse  = supportAssignment.getSection().getSectionGroup().getCourse();
+                    return assignmentType + " Assignment: " + supportAssignment.getSupportStaff().getFullName() +
+                            " on Section " + supportAssignmentCourse.getSubjectCode() + " " +
+                            supportAssignmentCourse.getCourseNumber() + " - " +
+                            supportAssignmentCourse.getSequencePattern();
+                }
+            case "SupportAppointment":
+                SupportAppointment supportAppointment = (SupportAppointment) obj;
+                return "Staff: " + supportAppointment.getSupportStaff().getFullName();
+            case "Schedule":
+                Schedule schedule = (Schedule) obj;
+                return "Schedule: " + schedule.getWorkgroup().getName();
+            case "TeachingCallReceipt":
+                TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+                return "Teaching Call: " + teachingCallReceipt.getInstructor().getFullName();
+
+            case "InstructorSupportCallResponse":
+                InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+                return "Instructor Support Call: " + instructorSupportCallResponse.getInstructor().getFullName();
+            case "StudentSupportCallResponse":
+                StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) obj;
+                return "Support Staff Support Call: " + studentSupportCallResponse.getSupportStaff().getFullName();
             default:
                 return simpleName;
         }
@@ -346,7 +471,23 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem){
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return Term.getRegistrarName(expenseItem.getTermCode());
-        } {
+        } else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return Term.getRegistrarName(supportAssignment.getSectionGroup().getTermCode());
+            } else {
+                return Term.getRegistrarName(supportAssignment.getSection().getSectionGroup().getTermCode());
+            }
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return Term.getRegistrarName(supportAppointment.getTermCode());
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return Term.getRegistrarName(instructorSupportCallResponse.getTermCode());
+        } else if (obj instanceof StudentSupportCallResponse){
+            StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) obj;
+            return Term.getRegistrarName(studentSupportCallResponse.getTermCode());
+        } else {
             return "";
         }
     }
@@ -397,6 +538,29 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItem) {
             ExpenseItem expenseItem = (ExpenseItem) obj;
             return String.valueOf(expenseItem.getBudgetScenario().getBudget().getSchedule().getYear());
+        } else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return String.valueOf(supportAssignment.getSectionGroup().getCourse().getYear());
+            } else {
+                return String.valueOf(supportAssignment.getSection().getSectionGroup().getCourse().getYear());
+            }
+
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return String.valueOf(supportAppointment.getSchedule().getYear());
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return String.valueOf(schedule.getYear());
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return String.valueOf(teachingCallReceipt.getAcademicYear());
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return String.valueOf(instructorSupportCallResponse.getSchedule().getYear());
+        } else if (obj instanceof StudentSupportCallResponse){
+            StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) obj;
+            return String.valueOf(studentSupportCallResponse.getSchedule().getYear());
         } else {
             return "0";
         }
@@ -444,11 +608,32 @@ public final class ActivityLogFormatter {
             } else {
                 return Term.getAcademicYear(activity.getSection().getSectionGroup().getTermCode());
             }
-
         } else if (obj instanceof ExpenseItem){
             ExpenseItem expenseItem = (ExpenseItem) obj;
             long expenseItemYear = expenseItem.getBudgetScenario().getBudget().getSchedule().getYear();
             return expenseItemYear + "-" + (expenseItemYear+1);
+        }  else if (obj instanceof SupportAssignment){
+            SupportAssignment supportAssignment = (SupportAssignment) obj;
+            if(supportAssignment.getSectionGroup() != null){
+                return Term.getAcademicYear(supportAssignment.getSectionGroup().getTermCode());
+            } else {
+                return Term.getAcademicYear(supportAssignment.getSection().getSectionGroup().getTermCode());
+            }
+        } else if (obj instanceof SupportAppointment) {
+            SupportAppointment supportAppointment = (SupportAppointment) obj;
+            return Term.getAcademicYear(supportAppointment.getTermCode());
+        } else if (obj instanceof Schedule){
+            Schedule schedule = (Schedule) obj;
+            return schedule.getYear() + "-" + (schedule.getYear()+1);
+        } else if (obj instanceof TeachingCallReceipt){
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) obj;
+            return teachingCallReceipt.getAcademicYear() + "-" + (teachingCallReceipt.getAcademicYear()+1);
+        } else if (obj instanceof InstructorSupportCallResponse){
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) obj;
+            return instructorSupportCallResponse.getSchedule().getYear() + "-" + (instructorSupportCallResponse.getSchedule().getYear()+1);
+        } else if (obj instanceof StudentSupportCallResponse){
+            StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) obj;
+            return studentSupportCallResponse.getSchedule().getYear() + "-" + (studentSupportCallResponse.getSchedule().getYear()+1);
         } else {
             return "";
         }
@@ -492,6 +677,12 @@ public final class ActivityLogFormatter {
                 return "end time";
             case "expenseItemType":
                 return "type";
+            case "readerAppointments":
+                return "Readers";
+            case "teachingAssistantAppointments":
+                return "TAs";
+            case "supportStaffSupportCallReviewOpen":
+                return "Student Review";
             default:
                 return prop;
         }
@@ -551,12 +742,25 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("BudgetScenario") && endpoint.equals("budgetRequest")) { // Exception for budget requests endpoint
             return true;
+        } else if(entity.equals("SupportAssignment") && endpoint.equals("supportStaff")){ // Exception for support Assignments
+            return true;
+        } else if (entity.equals("SupportAppointment") && endpoint.equals("schedules")) { // Exception for support Appointments
+            return true;
+        } else if (entity.equals("Schedule") && (endpoint.equals("toggleSupportStaffSupportCallReview") || endpoint.equals("toggleInstructorSupportCallReview"))){
+            return true;
+        } else if ((entity.equals("InstructorSupportCallResponse") || entity.equals("TeachingCallReceipt") || entity.equals("StudentSupportCallResponse")) && (endpoint.equals("addInstructors") || endpoint.equals("contactInstructors"))){
+            return true;
+        } else if (entity.equals("StudentSupportCallResponse" ) && (endpoint.equals("addStudents") || endpoint.equals("contactSupportStaff"))){
+            return true;
+        } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
+            return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
         }
         return false;
     }
 
+    // Get name of endpoint
     public static String getEndpoint(String uri){
         String endpoint = uri.substring(uri.lastIndexOf('/') + 1);
         if(endpoint.matches("\\d+") || endpoint.length() <= 1){
@@ -566,6 +770,7 @@ public final class ActivityLogFormatter {
         return endpoint;
     }
 
+    // Get message that will display to user for updates
     public static String getFormattedUpdateAction(String module, Object entity, String propName, Object oldValue, Object newValue, String userDisplayName){
         StringBuilder sb = new StringBuilder();
         String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
@@ -577,25 +782,76 @@ public final class ActivityLogFormatter {
         // Exception for ta cost and reader cost
         // Since unlike other categories they are tracked on the budget scenario instead
         // of the category cost table
-        if(entity instanceof Budget && (propName.equals("taCost") || propName.equals("readerCost"))){
+        if(entity instanceof Budget && (propName.equals("taCost") || propName.equals("readerCost"))) {
             module += " - Instructor List";
+        } else if(entity instanceof SectionGroup && (propName.equals("teachingAssistantAppointments") || propName.equals("readerAppointments"))){
+            module = "Support Staff Assignments";
         }
 
         sb.append("**" + userDisplayName + "**");
         sb.append(" in **" + module + "** - **" + years + "**");
         String termCode = ActivityLogFormatter.getTermCode(entity);
+
+        if(entity instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))){ // Term code is stored in field as part of blob
+            if(oldVal.length() == newVal.length()){
+                for(int i = 0; i< oldVal.length(); i++){
+                    if(oldVal.charAt(i) != newVal.charAt(i)){
+                        String term = String.valueOf(i + 1);
+
+                        // Zero pad if necessary
+                        if (term.length() == 1) {
+                            term = "0" + term;
+                        }
+                        termCode = Term.getRegistrarName(term);
+                    }
+                }
+            }
+        }
+
         if (termCode.length() > 0) {
             sb.append(", **" + termCode + "**");
         }
         sb.append("\n");
 
-        if(entity instanceof SectionGroupCost && propName.equals("disabled")){ // Exceptions to usual update wording
-            if(newVal.equals("false")){
+        if(entity instanceof SectionGroupCost && propName.equals("disabled")) { // Exceptions to usual update wording
+            if (newVal.equals("false")) {
                 sb.append("Added ");
             } else {
                 sb.append("Removed ");
             }
             sb.append("**" + entityDescription + "**");
+        } else if (entity instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))){
+            if(oldVal.length() == newVal.length()){
+                for(int i = 0; i< oldVal.length(); i++){
+                    if(oldVal.charAt(i) != newVal.charAt(i)){
+                        if(newVal.charAt(i) == '1'){
+                            sb.append("Opened ");
+                        } else {
+                            sb.append("Closed ");
+                        }
+                        if(propName.equals("supportStaffSupportCallReviewOpen")){
+                            sb.append("Student Review");
+                        } else {
+                            sb.append("Instructor Review");
+                        }
+                    }
+                }
+            }
+        } else if (entity instanceof TeachingCallReceipt && propName.equals("nextContactAt")){
+            sb.append("Scheduled support staff call follow up for **");
+            TeachingCallReceipt teachingCallReceipt = (TeachingCallReceipt) entity;
+            sb.append(teachingCallReceipt.getInstructor().getFullName());
+            sb.append("** on **" + newVal + "**");
+        } else if (entity instanceof InstructorSupportCallResponse && propName.equals("nextContactAt")){
+            sb.append("Scheduled instructor support call follow up for **");
+            InstructorSupportCallResponse instructorSupportCallResponse = (InstructorSupportCallResponse) entity;
+            sb.append(instructorSupportCallResponse.getInstructor().getFullName());
+            sb.append("** on **" + newVal + "**");
+        } else if (entity instanceof StudentSupportCallResponse && propName.equals("nextContactAt")){
+            sb.append("Scheduled support staff support call follow up for **");
+            StudentSupportCallResponse studentSupportCallResponse = (StudentSupportCallResponse) entity;
+            sb.append(studentSupportCallResponse.getSupportStaff().getFullName());
+            sb.append("** on **" + newVal + "**");
         } else { // Generic update methodology
             if (oldVal == null) {
                 sb.append("Set ");
@@ -615,6 +871,7 @@ public final class ActivityLogFormatter {
         return sb.toString();
     }
 
+    // Get message that will display to the user for inserts
     public static String getFormattedInsertAction(String module, Object entity, String userDisplayName) {
         StringBuilder sb = new StringBuilder();
         String entityDescription = ActivityLogFormatter.getFormattedEntityDescription(entity);
