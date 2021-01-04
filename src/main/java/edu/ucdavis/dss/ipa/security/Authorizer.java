@@ -61,4 +61,10 @@ public class Authorizer {
 
         throw new AccessDeniedException("User not authorized for workgroup with Id = " + workgroupId);
     };
+
+    public String getLoginId(){
+        return authorization.getLoginId();
+    }
+
+    public String getUserDisplayName() {return authorization.getUserDisplayName();}
 }

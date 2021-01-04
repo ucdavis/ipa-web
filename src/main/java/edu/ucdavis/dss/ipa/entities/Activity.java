@@ -140,10 +140,16 @@ public class Activity extends BaseEntity {
 	@Transient
 	public String getDayIndicatorDescription() {
 
+		return Activity.getDayIndicatorDescription(this.dayIndicator);
+	}
+
+	@Transient
+	public static String getDayIndicatorDescription(String dayIndicator) {
+
 		String description = "";
 
-		for (int i = 0; i < this.dayIndicator.length(); i++) {
-			int intValue = this.dayIndicator.charAt(i) - '0';
+		for (int i = 0; i < dayIndicator.length(); i++) {
+			int intValue = dayIndicator.charAt(i) - '0';
 
 			if (1 == intValue) {
 				switch(i) {
