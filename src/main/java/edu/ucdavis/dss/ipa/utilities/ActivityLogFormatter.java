@@ -897,6 +897,14 @@ public final class ActivityLogFormatter {
                 sb.append(" **cost** to **" + sectionGroupCostInstructor.getCost() + "**");
                 return sb.toString();
             }
+        } else if (entity instanceof SupportAppointment){
+            SupportAppointment supportAppointment = (SupportAppointment) entity;
+            if(supportAppointment.getPercentage() != null){
+                sb.append("\nSet ");
+                sb.append("**" + entityDescription + "**");
+                sb.append(" **percentage** to **" + supportAppointment.getPercentage() + "**");
+                return sb.toString();
+            }
         }
         sb.append("\nCreated ");
         sb.append("**" + entityDescription + "**");
