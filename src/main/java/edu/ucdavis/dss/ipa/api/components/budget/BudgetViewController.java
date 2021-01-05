@@ -12,6 +12,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
@@ -262,6 +263,8 @@ public class BudgetViewController {
         if (lineItemCategory == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
+        } else {
+            lineItemDTO.setLineItemCategory(lineItemCategory);
         }
 
         // Authorization check

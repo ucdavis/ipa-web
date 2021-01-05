@@ -38,6 +38,7 @@ public class AssignmentViewTeachingAssignmentController {
 
         Instructor instructor = null;
         InstructorType instructorType = null;
+        SectionGroup sectionGroup = null;
 
         if (teachingAssignment.getInstructor() != null) {
             instructor = instructorService.getOneById(teachingAssignment.getInstructor().getId());
@@ -45,6 +46,10 @@ public class AssignmentViewTeachingAssignmentController {
 
         if (teachingAssignment.getInstructorType() != null) {
             instructorType = instructorTypeService.findById(teachingAssignment.getInstructorType().getId());
+        }
+
+        if (teachingAssignment.getSectionGroup() != null) {
+            sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
         }
 
         Workgroup workgroup = schedule.getWorkgroup();
@@ -59,7 +64,9 @@ public class AssignmentViewTeachingAssignmentController {
         if (instructor == null && instructorType != null) {
             teachingAssignment.setInstructorType(instructorType);
             teachingAssignment.setSchedule(schedule);
-
+            if(sectionGroup != null){
+                teachingAssignment.setSectionGroup(sectionGroup);
+            }
             return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
         }
 
@@ -92,14 +99,6 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // Handle sectionGroup based preferences
-        // Get sectionGroupId
-        Long sectionGroupId = -1L;
-        SectionGroup sectionGroup = null;
-
-        if (teachingAssignment.getSectionGroup() != null) {
-            sectionGroup = sectionGroupService.getOneById(teachingAssignment.getSectionGroup().getId());
-            sectionGroupId = sectionGroup.getId();
-        }
 
         // If a Teaching Assignment already exists, update it instead.
         TeachingAssignment existingTeachingAssignment = teachingAssignmentService.findByTeachingAssignment(teachingAssignment);
@@ -127,9 +126,7 @@ public class AssignmentViewTeachingAssignmentController {
             sectionGroup.setShowTheStaff(false);
             sectionGroupService.save(sectionGroup);
         }
-
-        return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
-
+        return  teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
     }
 
     @RequestMapping(value = "/api/assignmentView/teachingAssignments/{teachingAssignmentId}", method = RequestMethod.PUT, produces="application/json")

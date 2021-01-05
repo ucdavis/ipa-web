@@ -3,6 +3,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 drop table if exists Activities;
 drop table if exists ActivityLog;
 drop table if exists ActivityLogTag;
+drop table if exists AuditLog;
 drop table if exists BudgetScenarios;
 drop table if exists Budgets;
 drop table if exists Courses;
