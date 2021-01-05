@@ -158,6 +158,11 @@ public final class ActivityLogFormatter {
         teachingCallStatusViewController.put("TeachingCallReceipt", teachingCallStatusViewControllerTeachingCallReceipt);
         temp.put("teachingCallStatusViewController", teachingCallStatusViewController);
 
+        HashMap<String, HashMap<String, Boolean>> assignmentViewController = new HashMap<String, HashMap<String, Boolean>>();
+        HashMap<String, Boolean> assignmentViewControllerTeachingAssignment= new HashMap<>();
+        assignmentViewController.put("TeachingAssignment", assignmentViewControllerTeachingAssignment);
+        temp.put("assignmentViewController", assignmentViewController);
+
         auditProps = temp;
     }
 
@@ -250,6 +255,7 @@ public final class ActivityLogFormatter {
             case "budgetViewController":
                 return "Budget";
             case "assignmentViewTeachingAssignmentController":
+            case "assignmentViewController":
                 return "Assign Instructors";
             case "sectionGroupCostController":
                 return "Budget";
@@ -302,6 +308,7 @@ public final class ActivityLogFormatter {
                     return "Budget";
                 }
             case "assignmentViewTeachingAssignmentController":
+            case "assignmentViewController":
                 return "Assign Instructors";
             case "sectionGroupCostController":
                 if(obj instanceof SectionGroupCost){
@@ -755,6 +762,8 @@ public final class ActivityLogFormatter {
         } else if (entity.equals("StudentSupportCallResponse" ) && (endpoint.equals("addStudents") || endpoint.equals("contactSupportStaff"))){
             return true;
         } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
+            return true;
+        } else if (entity.equals("TeachingAssignment") && endpoint.equals("assignAI")){
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;
