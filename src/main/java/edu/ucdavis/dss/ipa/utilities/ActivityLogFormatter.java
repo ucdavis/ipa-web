@@ -352,17 +352,39 @@ public final class ActivityLogFormatter {
                         " - " + lineItem.getDescription();
             case "TeachingAssignment":
                 TeachingAssignment teachingAssignment = (TeachingAssignment) obj;
-                Course teachingAssignmentCourse = teachingAssignment.getSectionGroup().getCourse();
                 String instructorName = "";
                 if (teachingAssignment.getInstructor() != null){
                     instructorName = teachingAssignment.getInstructor().getFullName();
                 } else {
                     instructorName = teachingAssignment.getInstructorType().getDescription();
                 }
-                return "Assignment: " + instructorName + " on "
-                        + teachingAssignmentCourse.getSubjectCode() + " " +
-                        teachingAssignmentCourse.getCourseNumber() + " - " +
-                        teachingAssignmentCourse.getSequencePattern();
+                if(teachingAssignment.getSectionGroup() != null){
+                    Course teachingAssignmentCourse = teachingAssignment.getSectionGroup().getCourse();
+                    return "Assignment: " + instructorName + " on "
+                            + teachingAssignmentCourse.getSubjectCode() + " " +
+                            teachingAssignmentCourse.getCourseNumber() + " - " +
+                            teachingAssignmentCourse.getSequencePattern();
+                } else {
+                    String teachingAssignmentDisplayName = "Assignment: " + instructorName;
+                    if(teachingAssignment.isBuyout()){
+                        return "Buyout " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isSabbatical()){
+                        return "Sabbatical " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isInResidence()){
+                        return "In Residence " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isWorkLifeBalance()){
+                        return "Work Life Balance " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isLeaveOfAbsence()){
+                        return "Leave of Absence " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isSabbaticalInResidence()){
+                        return "Sabbatical in Residence " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isCourseRelease()){
+                        return "Course Release " +  teachingAssignmentDisplayName;
+                    } else {
+                        return  teachingAssignmentDisplayName;
+                    }
+
+                }
             case "BudgetScenario":
                 BudgetScenario budgetScenario = (BudgetScenario) obj;
                 return "Budget Scenario: " + budgetScenario.getName();
