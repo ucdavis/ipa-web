@@ -42,7 +42,7 @@ public class JpaSectionService implements SectionService {
 	public Section updateSequenceNumber(Long sectionId, String newSequencePattern) {
 		Section section = this.getOneById(sectionId);
 
-		if (newSequencePattern == null || newSequencePattern.length() == 0) {
+		if (newSequencePattern == null || newSequencePattern.length() == 0 || section == null) {
 			return null;
 		}
 
@@ -113,5 +113,11 @@ public class JpaSectionService implements SectionService {
 		}
 
 		return true;
+	}
+
+	@Override
+	@Transactional
+	public void deleteById(long sectionId) {
+		sectionRepository.deleteById(sectionId);
 	}
 }
