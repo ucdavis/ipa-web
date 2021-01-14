@@ -233,15 +233,15 @@ public class CourseViewController {
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseDTO.setSchedule(course.getSchedule());
-		List<Long> sectionIds = new ArrayList<>();
 		if(course.getSequencePattern().length() == 3 && courseDTO.getSequencePattern().length() == 1){
 			for(SectionGroup sectionGroup : course.getSectionGroups()){
 				Long seats = new Long(0);
 				Section lectureSection = new Section();
 				for(Section section : sectionGroup.getSections()){
 					seats += section.getSeats();
-					sectionService.deleteById(section.getId());
+					sectionService.deleteWithCascade(section);
 				}
+
 				lectureSection.setSectionGroup(sectionGroup);
 				lectureSection.setSequenceNumber(courseDTO.getSequencePattern()+"01");
 				lectureSection.setSeats(seats);
@@ -253,7 +253,7 @@ public class CourseViewController {
 				Section lectureSection = new Section();
 				for(Section section : sectionGroup.getSections()){
 					seats += section.getSeats();
-					sectionService.deleteById(section.getId());
+					sectionService.deleteWithCascade(section);
 				}
 				lectureSection.setSectionGroup(sectionGroup);
 				lectureSection.setSequenceNumber(courseDTO.getSequencePattern());

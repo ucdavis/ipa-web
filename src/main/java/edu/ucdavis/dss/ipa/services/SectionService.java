@@ -28,5 +28,5 @@ public interface SectionService {
 
 	boolean hasValidSequenceNumber (Section section);
 
-	void deleteById(long sectionId);
+	void deleteWithCascade(Section section);
 }
