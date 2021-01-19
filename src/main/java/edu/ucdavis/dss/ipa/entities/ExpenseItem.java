@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Table(name = "ExpenseItems")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonDeserialize(using = ExpenseItemDeserializer.class)
-public class ExpenseItem {
+public class ExpenseItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
     private BigDecimal amount = BigDecimal.ZERO;
