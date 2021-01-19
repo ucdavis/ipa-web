@@ -54,11 +54,12 @@ public class BudgetExcelView extends AbstractXlsxView {
         Integer MAX_COLUMN_CHARACTERS = 50;
         Integer minimumNoteColumnWidth = 10;
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");
-        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Department", "Scenario Name", "", "Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
+        budgetSummarySheet = ExcelHelper.setSheetHeader(budgetSummarySheet, Arrays.asList("Year", "Department", "Scenario Name", "", "Fall Quarter", "Winter Quarter", "Spring Quarter", "Total"));
 
         Sheet scheduleCostSheet = workbook.createSheet("Schedule Cost");
 
         scheduleCostSheet = ExcelHelper.setSheetHeader(scheduleCostSheet, Arrays.asList(
+           "Year",
            "Department",
            "Scenario Name",
            "Term",
@@ -86,18 +87,19 @@ public class BudgetExcelView extends AbstractXlsxView {
         ));
 
         Sheet fundsSheet = workbook.createSheet("Funds");
-        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
+        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
         Sheet expensesSheet = workbook.createSheet("Other Costs");
-        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
+        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
-        instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Department", "Instructor", "Type", "Cost"));
+        instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Year", "Department", "Instructor", "Type", "Cost"));
 
         Sheet instructorCategoryCostSheet = workbook.createSheet("Instructor Category Cost");
-        instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Department", "Type", "Cost"));
+        instructorCategoryCostSheet = ExcelHelper.setSheetHeader(instructorCategoryCostSheet, Arrays.asList("Year", "Department", "Type", "Cost"));
 
         for (BudgetScenarioExcelView budgetScenarioExcelView : budgetScenarioExcelViews) {
+            String year = yearToAcademicYear(budgetScenarioExcelView.getBudget().getSchedule().getYear());
             Boolean isLiveData = budgetScenarioExcelView.getBudgetScenario().getFromLiveData();
             Boolean isBudgetRequest = budgetScenarioExcelView.getBudgetScenario().getIsBudgetRequest();
             String scenarioName = budgetScenarioExcelView.getBudgetScenario().getName();
@@ -161,6 +163,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
                         Arrays.asList(
+                                year,
                                 budgetScenarioExcelView.getWorkgroup().getName(),
                                 scenarioName,
                                 Term.getRegistrarName(sectionGroupCost.getTermCode()),
@@ -199,6 +202,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 }
                 minimumNoteColumnWidth = Math.max(minimumNoteColumnWidth, (lineItem.getNotes() == null ? 0 : lineItem.getNotes().length()));
                 List<Object> cellValues = Arrays.asList(
+                        year,
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         scenarioName,
                         lineItem.getLineItemCategory().getDescription(),
@@ -217,6 +221,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
                 if(termCodes.contains(expenseItem.getTermCode())){
                     List<Object> cellValues = Arrays.asList(
+                            year,
                             budgetScenarioExcelView.getWorkgroup().getName(),
                             scenarioName,
                             Term.getRegistrarName(expenseItem.getTermCode()),
@@ -259,6 +264,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 BigDecimal instructorCostValue = instructorCost == null ? null : instructorCost.getCost();
 
                 List<Object> cellValues = Arrays.asList(
+                        year,
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         instructorName,
                         instructorTypeDescription,
@@ -270,6 +276,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
+                            year,
                             budgetScenarioExcelView.getWorkgroup().getName(),
                             "TA",
                             baseTaCost
@@ -278,6 +285,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                     instructorCategoryCostSheet,
                     Arrays.asList(
+                            year,
                             budgetScenarioExcelView.getWorkgroup().getName(),
                             "Reader",
                             baseReaderCost
@@ -305,6 +313,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 instructorCategoryCostSheet = ExcelHelper.writeRowToSheet(
                         instructorCategoryCostSheet,
                         Arrays.asList(
+                                year,
                                 budgetScenarioExcelView.getWorkgroup().getName(),
                                 instructorCategory,
                                 instructorTypeCostMap.get(instructorCategory)
@@ -386,6 +395,7 @@ public class BudgetExcelView extends AbstractXlsxView {
     private List<Object> summaryRowData(String field, BudgetScenarioExcelView budgetScenarioExcelView, List<String> termCodes) {
         List<Object> data = new ArrayList<>();
 
+        data.add(yearToAcademicYear(budgetScenarioExcelView.getBudget().getSchedule().getYear()));
         data.add(budgetScenarioExcelView.getWorkgroup().getName());
         data.add(budgetScenarioExcelView.budgetScenario.getName());
         data.add(field);
@@ -480,5 +490,9 @@ public class BudgetExcelView extends AbstractXlsxView {
         }
 
         return data;
+    }
+
+    private String yearToAcademicYear(long year) {
+        return year + "-" + String.valueOf(year + 1).substring(2,4);
     }
 }
