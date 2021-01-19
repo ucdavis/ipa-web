@@ -17,6 +17,7 @@ public final class ActivityLogFormatter {
 
         // Fields to audit in course view for course
         HashMap<String, Boolean> courseViewCourse = new HashMap<String, Boolean>();
+        courseViewCourse.put("sequencePattern", true);
         courseView.put("Course", courseViewCourse);
 
         // Fields to audit in course view for section
@@ -685,6 +686,8 @@ public final class ActivityLogFormatter {
                 return "TAs";
             case "supportStaffSupportCallReviewOpen":
                 return "Student Review";
+            case "sequencePattern":
+                return "Sequence Pattern";
             default:
                 return prop;
         }
