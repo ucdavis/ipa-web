@@ -263,4 +263,16 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         return sectionGroupCost;
     }
+
+    @Override
+    public List<SectionGroupCost> findBySectionGroupDetails(long workgroupId, long year, String courseNumber, String sequencePattern, String subjectCode) {
+        return this.sectionGroupCostRepository.findBySectionGroupDetails(
+            workgroupId,
+            year,
+            courseNumber,
+            sequencePattern,
+            subjectCode
+        );
+    }
+
 }

@@ -246,6 +246,20 @@ public class CourseViewController {
 				lectureSection.setSequenceNumber(courseDTO.getSequencePattern()+"01");
 				lectureSection.setSeats(seats);
 				sectionService.save(lectureSection);
+				List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
+					workgroup.getId(),
+					course.getYear(),
+					course.getCourseNumber(),
+					course.getSequencePattern(),
+					course.getSubjectCode()
+				);
+				for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
+					if(sectionGroupCost.isLiveData()){
+						sectionGroupCost.setSequencePattern(courseDTO.getSequencePattern());
+						sectionGroupCostService.update(sectionGroupCost);
+					}
+
+				}
 			}
 		} else if(course.getSequencePattern().length() == 1 && courseDTO.getSequencePattern().length() == 3){
 			for(SectionGroup sectionGroup : course.getSectionGroups()){
@@ -259,6 +273,20 @@ public class CourseViewController {
 				lectureSection.setSequenceNumber(courseDTO.getSequencePattern());
 				lectureSection.setSeats(seats);
 				sectionService.save(lectureSection);
+				List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
+						workgroup.getId(),
+						course.getYear(),
+						course.getCourseNumber(),
+						course.getSequencePattern(),
+						course.getSubjectCode()
+				);
+				for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
+					if(sectionGroupCost.isLiveData()){
+						sectionGroupCost.setSequencePattern(courseDTO.getSequencePattern());
+						sectionGroupCostService.update(sectionGroupCost);
+					}
+
+				}
 			}
 		}
 		return courseService.update(courseDTO);
