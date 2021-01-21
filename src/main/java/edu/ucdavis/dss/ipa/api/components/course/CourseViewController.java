@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.Time;
 import java.text.ParseException;
 import java.util.*;
@@ -940,18 +941,14 @@ public class CourseViewController {
 
 	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{termCode}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public Course convertCourseOffering(@RequestBody Section section, @PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String termCode, HttpServletResponse httpResponse) {
+	public List<Object> convertCourseOffering(@RequestBody Section section, @PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String termCode, HttpServletResponse httpResponse) {
 		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-
-		System.err.println("Section seats " + section.getSeats());
-
 		String sequencePattern = section.getSequenceNumber();
 		if(Character.isLetter(sequencePattern.charAt(0)) ){
 			sequencePattern = sequencePattern.substring(0,1);
 		}
-		System.err.println("Sequence pattern is " + sequencePattern);
 
 		Course existingCourse = courseService.getOneById(courseId);
 
@@ -967,19 +964,17 @@ public class CourseViewController {
 
 		Course newCourse = courseService.create(course);
 
-		//System.err.println("new course id " + newCourse.getId());
-		//SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), termCode);
 		SectionGroup sectionGroup = new SectionGroup();
 		sectionGroup.setCourse(newCourse);
 		sectionGroup.setTermCode(termCode);
 		sectionGroup.setPlannedSeats(section.getSeats().intValue());
-		sectionGroupService.save(sectionGroup);
+		SectionGroup newSectionGroup = sectionGroupService.save(sectionGroup);
 
 		section.setSectionGroup(sectionGroup);
 		sectionService.save(section);
 
 		if (newCourse != null) {
-			return newCourse;
+			return Arrays.asList(newCourse, newSectionGroup);
 		} else {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
