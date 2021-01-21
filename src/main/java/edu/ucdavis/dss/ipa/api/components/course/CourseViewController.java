@@ -938,12 +938,20 @@ public class CourseViewController {
 		}
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{sequencePattern}", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{termCode}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public Course convertCourseOffering(@PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String sequencePattern, HttpServletResponse httpResponse) {
+	public Course convertCourseOffering(@RequestBody Section section, @PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String termCode, HttpServletResponse httpResponse) {
 		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		System.err.println("Section seats " + section.getSeats());
+
+		String sequencePattern = section.getSequenceNumber();
+		if(Character.isLetter(sequencePattern.charAt(0)) ){
+			sequencePattern = sequencePattern.substring(0,1);
+		}
+		System.err.println("Sequence pattern is " + sequencePattern);
 
 		Course existingCourse = courseService.getOneById(courseId);
 
@@ -959,6 +967,16 @@ public class CourseViewController {
 
 		Course newCourse = courseService.create(course);
 
+		//System.err.println("new course id " + newCourse.getId());
+		//SectionGroup sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(newCourse.getId(), termCode);
+		SectionGroup sectionGroup = new SectionGroup();
+		sectionGroup.setCourse(newCourse);
+		sectionGroup.setTermCode(termCode);
+		sectionGroup.setPlannedSeats(section.getSeats().intValue());
+		sectionGroupService.save(sectionGroup);
+
+		section.setSectionGroup(sectionGroup);
+		sectionService.save(section);
 
 		if (newCourse != null) {
 			return newCourse;
