@@ -937,4 +937,34 @@ public class CourseViewController {
 			return null;
 		}
 	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{sequencePattern}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Course convertCourseOffering(@PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String sequencePattern, HttpServletResponse httpResponse) {
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+
+		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		Course existingCourse = courseService.getOneById(courseId);
+
+		Course course = new Course();
+		course.setSubjectCode(existingCourse.getSubjectCode());
+		course.setCourseNumber(existingCourse.getCourseNumber());
+		course.setSequencePattern(sequencePattern);
+		course.setTitle(existingCourse.getTitle());
+		course.setEffectiveTermCode(existingCourse.getEffectiveTermCode());
+		course.setSchedule(schedule);
+		// Need to copy tags
+		//course.setTags(existingCourse.getTags());
+
+		Course newCourse = courseService.create(course);
+
+
+		if (newCourse != null) {
+			return newCourse;
+		} else {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+	}
 }
