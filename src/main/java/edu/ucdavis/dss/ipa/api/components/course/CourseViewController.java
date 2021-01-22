@@ -883,16 +883,12 @@ public class CourseViewController {
 		}
 	}
 
-	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{termCode}", method = RequestMethod.POST, produces="application/json")
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{sequencePattern}", method = RequestMethod.POST, produces="application/json")
 	@ResponseBody
-	public List<Object> convertCourseOffering(@RequestBody Section section, @PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String termCode, HttpServletResponse httpResponse) {
+	public List<Object> convertCourseOffering(@PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String sequencePattern, HttpServletResponse httpResponse) {
 		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
 
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
-		String sequencePattern = section.getSequenceNumber();
-		if(Character.isLetter(sequencePattern.charAt(0)) ){
-			sequencePattern = sequencePattern.substring(0,1);
-		}
 
 		Course existingCourse = courseService.getOneById(courseId);
 
@@ -927,16 +923,24 @@ public class CourseViewController {
 			}
 
 		}
+		Long seatCount = new Long(0);
 		for(Section oldSection : sectionGroup.getSections()){
+			seatCount += oldSection.getSeats();
 			sectionService.deleteWithCascade(oldSection);
 		}
 
 
 		sectionGroup.setCourse(newCourse);
-		sectionGroup.setTermCode(termCode);
-		sectionGroup.setPlannedSeats(section.getSeats().intValue());
+		sectionGroup.setPlannedSeats(seatCount.intValue());
 		SectionGroup newSectionGroup = sectionGroupService.save(sectionGroup);
 
+		Section section = new Section();
+		if(sequencePattern.length() > 1){
+			section.setSequenceNumber(sequencePattern);
+		} else {
+			section.setSequenceNumber(sequencePattern+"01");
+		}
+		section.setSeats(seatCount);
 		section.setSectionGroup(sectionGroup);
 		sectionService.save(section);
 
