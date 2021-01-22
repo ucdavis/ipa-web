@@ -234,62 +234,6 @@ public class CourseViewController {
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		courseDTO.setSchedule(course.getSchedule());
-		if(course.getSequencePattern().length() == 3 && courseDTO.getSequencePattern().length() == 1){
-			for(SectionGroup sectionGroup : course.getSectionGroups()){
-				Long seats = new Long(0);
-				Section lectureSection = new Section();
-				for(Section section : sectionGroup.getSections()){
-					seats += section.getSeats();
-					sectionService.deleteWithCascade(section);
-				}
-
-				lectureSection.setSectionGroup(sectionGroup);
-				lectureSection.setSequenceNumber(courseDTO.getSequencePattern()+"01");
-				lectureSection.setSeats(seats);
-				sectionService.save(lectureSection);
-				List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
-					workgroup.getId(),
-					course.getYear(),
-					course.getCourseNumber(),
-					course.getSequencePattern(),
-					course.getSubjectCode()
-				);
-				for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
-					if(sectionGroupCost.isLiveData()){
-						sectionGroupCost.setSequencePattern(courseDTO.getSequencePattern());
-						sectionGroupCostService.update(sectionGroupCost);
-					}
-
-				}
-			}
-		} else if(course.getSequencePattern().length() == 1 && courseDTO.getSequencePattern().length() == 3){
-			for(SectionGroup sectionGroup : course.getSectionGroups()){
-				Long seats = new Long(0);
-				Section lectureSection = new Section();
-				for(Section section : sectionGroup.getSections()){
-					seats += section.getSeats();
-					sectionService.deleteWithCascade(section);
-				}
-				lectureSection.setSectionGroup(sectionGroup);
-				lectureSection.setSequenceNumber(courseDTO.getSequencePattern());
-				lectureSection.setSeats(seats);
-				sectionService.save(lectureSection);
-				List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
-						workgroup.getId(),
-						course.getYear(),
-						course.getCourseNumber(),
-						course.getSequencePattern(),
-						course.getSubjectCode()
-				);
-				for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
-					if(sectionGroupCost.isLiveData()){
-						sectionGroupCost.setSequencePattern(courseDTO.getSequencePattern());
-						sectionGroupCostService.update(sectionGroupCost);
-					}
-
-				}
-			}
-		}
 		return courseService.update(courseDTO);
 	}
 
@@ -959,12 +903,35 @@ public class CourseViewController {
 		course.setTitle(existingCourse.getTitle());
 		course.setEffectiveTermCode(existingCourse.getEffectiveTermCode());
 		course.setSchedule(schedule);
-		// Need to copy tags
+		// Need to copy tags?
 		//course.setTags(existingCourse.getTags());
+		// TODO
+		// do we need Course comments?
+		// TODO copy over other data such as units
 
 		Course newCourse = courseService.create(course);
 
-		SectionGroup sectionGroup = new SectionGroup();
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+		// Update Live Data
+		List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
+				workgroupId,
+				existingCourse.getYear(),
+				existingCourse.getCourseNumber(),
+				existingCourse.getSequencePattern(),
+				existingCourse.getSubjectCode()
+		);
+		for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
+			if(sectionGroupCost.isLiveData()){
+				sectionGroupCost.setSequencePattern(course.getSequencePattern());
+				sectionGroupCostService.update(sectionGroupCost);
+			}
+
+		}
+		for(Section oldSection : sectionGroup.getSections()){
+			sectionService.deleteWithCascade(oldSection);
+		}
+
+
 		sectionGroup.setCourse(newCourse);
 		sectionGroup.setTermCode(termCode);
 		sectionGroup.setPlannedSeats(section.getSeats().intValue());
