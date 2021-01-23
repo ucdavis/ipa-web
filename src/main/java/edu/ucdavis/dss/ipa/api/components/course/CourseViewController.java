@@ -905,7 +905,7 @@ public class CourseViewController {
 		// do we need Course comments?
 		// TODO copy over other data such as units
 
-		Course newCourse = courseService.create(course);
+		Course newCourse = courseService.findOrCreateByCourse(course);
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 		// Update Live Data
