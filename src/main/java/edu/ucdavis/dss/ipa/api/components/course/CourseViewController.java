@@ -899,6 +899,8 @@ public class CourseViewController {
 		course.setTitle(existingCourse.getTitle());
 		course.setEffectiveTermCode(existingCourse.getEffectiveTermCode());
 		course.setSchedule(schedule);
+		course.setUnitsHigh(existingCourse.getUnitsHigh());
+		course.setUnitsLow(existingCourse.getUnitsLow());
 
 		Course newCourse = courseService.findOrCreateByCourse(course);
 
