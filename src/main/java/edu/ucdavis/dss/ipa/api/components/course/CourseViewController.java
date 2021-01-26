@@ -887,7 +887,6 @@ public class CourseViewController {
 	@ResponseBody
 	public List<Object> convertCourseOffering(@PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String sequencePattern, HttpServletResponse httpResponse) {
 		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
-
 		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		Course existingCourse = courseService.getOneById(courseId);
@@ -905,6 +904,15 @@ public class CourseViewController {
 		Course newCourse = courseService.findOrCreateByCourse(course);
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+		// Make sure course doesn't already have an offering
+		for (SectionGroup existingSectionGroup : newCourse.getSectionGroups()){
+			if (existingSectionGroup.getTermCode().equals(sectionGroup.getTermCode())){
+				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+				return null;
+			}
+		}
+
 		// Update Live Data
 		List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
 				workgroupId,
