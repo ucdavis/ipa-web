@@ -31,6 +31,7 @@ public final class ActivityLogFormatter {
         courseViewSectionGroup.put("plannedSeats", true);
         courseViewSectionGroup.put("readerAppointments", true);
         courseViewSectionGroup.put("teachingAssistantAppointments", true);
+        courseViewSectionGroup.put("course", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
 
         HashMap<String, Boolean> courseViewTeachingAssignment = new HashMap<String, Boolean>();
@@ -721,6 +722,9 @@ public final class ActivityLogFormatter {
         } else if (obj instanceof ExpenseItemType) {
             ExpenseItemType expenseItemType = (ExpenseItemType) obj;
             return expenseItemType.getDescription();
+        } else if (obj instanceof Course){
+            Course course = (Course) obj;
+            return course.getSubjectCode() + " " + course.getCourseNumber() + " - " + course.getSequencePattern();
         } else {
             if(obj != null){
                 return obj.toString();
@@ -758,6 +762,8 @@ public final class ActivityLogFormatter {
         } else if (entity.equals("StudentSupportCallResponse" ) && (endpoint.equals("addStudents") || endpoint.equals("contactSupportStaff"))){
             return true;
         } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
+            return true;
+        } else if ((entity.equals("SectionGroup") || entity.equals("Course")) && endpoint.equals("convert")){
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;

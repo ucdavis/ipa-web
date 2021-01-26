@@ -899,11 +899,6 @@ public class CourseViewController {
 		course.setTitle(existingCourse.getTitle());
 		course.setEffectiveTermCode(existingCourse.getEffectiveTermCode());
 		course.setSchedule(schedule);
-		// Need to copy tags?
-		//course.setTags(existingCourse.getTags());
-		// TODO
-		// do we need Course comments?
-		// TODO copy over other data such as units
 
 		Course newCourse = courseService.findOrCreateByCourse(course);
 
