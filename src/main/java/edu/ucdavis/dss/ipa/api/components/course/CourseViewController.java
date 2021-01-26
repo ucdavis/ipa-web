@@ -55,6 +55,7 @@ public class CourseViewController {
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject InstructorService instructorService;
+	@Inject BudgetScenarioService budgetScenarioService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject Authorizer authorizer;
 
@@ -905,29 +906,33 @@ public class CourseViewController {
 
 		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
 
-		// Make sure course doesn't already have an offering
-		for (SectionGroup existingSectionGroup : newCourse.getSectionGroups()){
-			if (existingSectionGroup.getTermCode().equals(sectionGroup.getTermCode())){
-				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-				return null;
+
+		for(BudgetScenario budgetScenario : budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year) ){
+			// Do not update budget requests
+			if(!budgetScenario.getIsBudgetRequest()){
+				System.err.println("Updating from " + sectionGroup.getCourse().getSequencePattern() + " to " + sequencePattern);
+				SectionGroupCost conflictingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+						existingCourse.getSubjectCode(),
+						existingCourse.getCourseNumber(),
+						sequencePattern,
+						budgetScenario.getId(),
+						sectionGroup.getTermCode()
+				);
+				if(conflictingSectionGroupCost != null){
+					System.err.println("Found a conflicting section group cost id " + conflictingSectionGroupCost.getId());
+					sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
+				}
+				SectionGroupCost existingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+						existingCourse.getSubjectCode(),
+						existingCourse.getCourseNumber(),
+						sectionGroup.getCourse().getSequencePattern(),
+						budgetScenario.getId(),
+						sectionGroup.getTermCode()
+				);
+				existingSectionGroupCost.setSequencePattern(sequencePattern);
 			}
 		}
 
-		// Update Live Data
-		List<SectionGroupCost> sectionGroupCosts = sectionGroupCostService.findBySectionGroupDetails(
-				workgroupId,
-				existingCourse.getYear(),
-				existingCourse.getCourseNumber(),
-				existingCourse.getSequencePattern(),
-				existingCourse.getSubjectCode()
-		);
-		for(SectionGroupCost sectionGroupCost : sectionGroupCosts){
-			if(sectionGroupCost.isLiveData()){
-				sectionGroupCost.setSequencePattern(course.getSequencePattern());
-				sectionGroupCostService.update(sectionGroupCost);
-			}
-
-		}
 		Long seatCount = new Long(0);
 		for(Section oldSection : sectionGroup.getSections()){
 			seatCount += oldSection.getSeats();
