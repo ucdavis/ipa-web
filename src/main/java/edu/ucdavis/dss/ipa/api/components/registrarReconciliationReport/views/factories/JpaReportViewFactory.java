@@ -9,6 +9,8 @@ import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.Se
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -42,6 +44,32 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 		// 1) Create diffDtos for sections in IPA, that may or may not have a matching dwSection
 		List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
+
+		// check for entire sections missing in IPA, not just missing details
+
+		// workgroup can have more than one subject code
+		List<String> uniqueSubjectCodes = sections.stream().map(s -> s.getSectionGroup().getCourse().getSubjectCode()).distinct().collect(Collectors.toList());
+
+		List<DwSection> dwSectionsByTermCode = new ArrayList<>();
+
+		// get DW sections for subjectCodes and current term
+		for (String subjectCode : uniqueSubjectCodes) {
+			dwSectionsByTermCode.addAll(dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode));
+		}
+
+		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
+		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(dwSection -> Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0).collect(
+			Collectors.toList());
+
+		// check for non-existent courses in IPA
+		List<String> uniqueDwCourseNumbers = filteredDwSections.stream().map(dwSection -> dwSection.getCourseNumber()).distinct().sorted().collect(Collectors.toList());
+
+		List<String> uniqueIpaCourseNumbers = sections.stream().map(ipaSection -> ipaSection.getSectionGroup().getCourse().getCourseNumber()).distinct().sorted().collect(Collectors.toList());
+
+//		Diff courseNumberDiff = javers.compare(uniqueDwCourseNumbers, uniqueIpaCourseNumbers);
+
+		List<String> missingInIpa = new ArrayList<>(uniqueDwCourseNumbers);
+		missingInIpa.removeAll(uniqueIpaCourseNumbers);
 
 		// Create a string of comma delimited list of section unique keys (i.e. ECS-010-A01) for dw query
 		List<String> uniqueKeys = sections.stream()
