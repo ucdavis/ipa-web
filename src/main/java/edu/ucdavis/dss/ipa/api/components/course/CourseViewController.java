@@ -911,17 +911,6 @@ public class CourseViewController {
 			// Do not update budget requests
 			if(!budgetScenario.getIsBudgetRequest()){
 				System.err.println("Updating from " + sectionGroup.getCourse().getSequencePattern() + " to " + sequencePattern);
-				SectionGroupCost conflictingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
-						existingCourse.getSubjectCode(),
-						existingCourse.getCourseNumber(),
-						sequencePattern,
-						budgetScenario.getId(),
-						sectionGroup.getTermCode()
-				);
-				if(conflictingSectionGroupCost != null){
-					System.err.println("Found a conflicting section group cost id " + conflictingSectionGroupCost.getId());
-					sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
-				}
 				SectionGroupCost existingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
 						existingCourse.getSubjectCode(),
 						existingCourse.getCourseNumber(),
@@ -929,7 +918,21 @@ public class CourseViewController {
 						budgetScenario.getId(),
 						sectionGroup.getTermCode()
 				);
-				existingSectionGroupCost.setSequencePattern(sequencePattern);
+				if(existingSectionGroupCost != null){
+					SectionGroupCost conflictingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+							existingCourse.getSubjectCode(),
+							existingCourse.getCourseNumber(),
+							sequencePattern,
+							budgetScenario.getId(),
+							sectionGroup.getTermCode()
+					);
+					if(conflictingSectionGroupCost != null){
+						System.err.println("Found a conflicting section group cost id " + conflictingSectionGroupCost.getId());
+						sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
+					}
+					existingSectionGroupCost.setSequencePattern(sequencePattern);
+					sectionGroupCostService.update(existingSectionGroupCost);
+				}
 			}
 		}
 
