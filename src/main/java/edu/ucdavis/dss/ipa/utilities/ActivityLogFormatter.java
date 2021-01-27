@@ -34,6 +34,11 @@ public final class ActivityLogFormatter {
         courseViewSectionGroup.put("course", true);
         courseView.put("SectionGroup", courseViewSectionGroup);
 
+        // Fields to audit in course view for sectionGroupCost
+        HashMap<String, Boolean> courseViewSectionGroupCost = new HashMap<String, Boolean>();
+        courseViewSectionGroupCost.put("sequencePattern", true);
+        courseView.put("SectionGroupCost", courseViewSectionGroupCost);
+
         HashMap<String, Boolean> courseViewTeachingAssignment = new HashMap<String, Boolean>();
         courseView.put("TeachingAssignment", courseViewTeachingAssignment);
         temp.put("courseViewController", courseView);
@@ -275,6 +280,8 @@ public final class ActivityLogFormatter {
             return "Support Staff Assignments";
         } else if (obj instanceof Schedule && (propName.equals("supportStaffSupportCallReviewOpen") || propName.equals("instructorSupportCallReviewOpen"))) {
             return "Support Staff Assignments";
+        } else if (obj instanceof SectionGroupCost && propName.equals("sequencePattern")){
+            return "Budget";
         } else {
             return ActivityLogFormatter.getFormattedModule(moduleNameRaw, obj);
         }
@@ -763,7 +770,7 @@ public final class ActivityLogFormatter {
             return true;
         } else if (entity.equals("TeachingAssignment") && endpoint.equals("courses" )){
             return true;
-        } else if ((entity.equals("SectionGroup") || entity.equals("Course")) && endpoint.equals("convert")){
+        } else if ((entity.equals("SectionGroup") || entity.equals("Course") || entity.equals("SectionGroupCost")) && endpoint.equals("convert")){
             return true;
         } else if (entity.endsWith("y") && (entity.toLowerCase().substring(0, entity.length() - 1) + "ies").equals(endpoint) ) {
             return true;

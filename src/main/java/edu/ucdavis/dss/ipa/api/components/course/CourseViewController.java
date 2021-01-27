@@ -910,7 +910,6 @@ public class CourseViewController {
 		for(BudgetScenario budgetScenario : budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year) ){
 			// Do not update budget requests
 			if(!budgetScenario.getIsBudgetRequest()){
-				System.err.println("Updating from " + sectionGroup.getCourse().getSequencePattern() + " to " + sequencePattern);
 				SectionGroupCost existingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
 						existingCourse.getSubjectCode(),
 						existingCourse.getCourseNumber(),
@@ -927,7 +926,6 @@ public class CourseViewController {
 							sectionGroup.getTermCode()
 					);
 					if(conflictingSectionGroupCost != null){
-						System.err.println("Found a conflicting section group cost id " + conflictingSectionGroupCost.getId());
 						sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
 					}
 					existingSectionGroupCost.setSequencePattern(sequencePattern);
