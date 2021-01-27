@@ -1,10 +1,12 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface ActivityRepository extends CrudRepository<Activity, Long> {
@@ -49,4 +51,9 @@ public interface ActivityRepository extends CrudRepository<Activity, Long> {
             @Param("workgroupId") long workgroupId,
             @Param("year") long year,
             @Param("termCode") String termCode);
+
+    @Modifying
+    @Transactional
+    @Query(value="delete from Activity a WHERE a.id = ?1")
+    void deleteById(long activityId);
 }

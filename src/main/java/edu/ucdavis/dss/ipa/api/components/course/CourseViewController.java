@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.Time;
 import java.text.ParseException;
 import java.util.*;
@@ -54,6 +55,7 @@ public class CourseViewController {
 	@Inject TermService termService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject InstructorService instructorService;
+	@Inject BudgetScenarioService budgetScenarioService;
 	@Inject DataWarehouseRepository dwRepository;
 	@Inject Authorizer authorizer;
 
@@ -878,6 +880,89 @@ public class CourseViewController {
 			return annualViewFactory.createAnnualScheduleExcelView(workgroupId, year, showDoNotPrint);
 		} else {
 			httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/api/courseView/workgroups/{workgroupId}/years/{year}/courses/{courseId}/sectionGroups/{sectionGroupId}/convert/{sequencePattern}", method = RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public List<Object> convertCourseOffering(@PathVariable Long workgroupId, @PathVariable Long year, @PathVariable Long courseId, @PathVariable Long sectionGroupId, @PathVariable String sequencePattern, HttpServletResponse httpResponse) {
+		authorizer.hasWorkgroupRole(workgroupId, "academicPlanner");
+		Schedule schedule = this.scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		Course existingCourse = courseService.getOneById(courseId);
+
+		Course course = new Course();
+		course.setSubjectCode(existingCourse.getSubjectCode());
+		course.setCourseNumber(existingCourse.getCourseNumber());
+		course.setSequencePattern(sequencePattern);
+		course.setTitle(existingCourse.getTitle());
+		course.setEffectiveTermCode(existingCourse.getEffectiveTermCode());
+		course.setSchedule(schedule);
+		course.setUnitsHigh(existingCourse.getUnitsHigh());
+		course.setUnitsLow(existingCourse.getUnitsLow());
+
+		Course newCourse = courseService.findOrCreateByCourse(course);
+
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+
+		for(BudgetScenario budgetScenario : budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year) ){
+			// Do not update budget requests
+			if(!budgetScenario.getIsBudgetRequest()){
+				SectionGroupCost existingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+						existingCourse.getSubjectCode(),
+						existingCourse.getCourseNumber(),
+						sectionGroup.getCourse().getSequencePattern(),
+						budgetScenario.getId(),
+						sectionGroup.getTermCode()
+				);
+				if(existingSectionGroupCost != null){
+					SectionGroupCost conflictingSectionGroupCost = sectionGroupCostService.findBySubjectCodeAndCourseNumberAndSequencePatternAndBudgetScenarioIdAndTermCode(
+							existingCourse.getSubjectCode(),
+							existingCourse.getCourseNumber(),
+							sequencePattern,
+							budgetScenario.getId(),
+							sectionGroup.getTermCode()
+					);
+					if(conflictingSectionGroupCost == null){
+						existingSectionGroupCost.setSequencePattern(sequencePattern);
+						existingSectionGroupCost.setDisabled(false);
+						sectionGroupCostService.update(existingSectionGroupCost);
+					} else if (conflictingSectionGroupCost.isDisabled()){
+						sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
+						existingSectionGroupCost.setSequencePattern(sequencePattern);
+						sectionGroupCostService.update(existingSectionGroupCost);
+					}
+				}
+			}
+		}
+
+		Long seatCount = new Long(0);
+		for(Section oldSection : sectionGroup.getSections()){
+			seatCount += oldSection.getSeats();
+			sectionService.deleteWithCascade(oldSection);
+		}
+
+
+		sectionGroup.setCourse(newCourse);
+		sectionGroup.setPlannedSeats(seatCount.intValue());
+		SectionGroup newSectionGroup = sectionGroupService.save(sectionGroup);
+
+		Section section = new Section();
+		if(sequencePattern.length() > 1){
+			section.setSequenceNumber(sequencePattern);
+		} else {
+			section.setSequenceNumber(sequencePattern+"01");
+		}
+		section.setSeats(seatCount);
+		section.setSectionGroup(sectionGroup);
+		sectionService.save(section);
+
+		if (newCourse != null) {
+			return Arrays.asList(newCourse, newSectionGroup);
+		} else {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 			return null;
 		}
 	}

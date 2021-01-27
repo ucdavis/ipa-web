@@ -1,10 +1,12 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.Section;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface SectionRepository extends CrudRepository<Section, Long> {
@@ -53,4 +55,9 @@ public interface SectionRepository extends CrudRepository<Section, Long> {
     List<Section> findVisibleByWorkgroupIdAndYear(
             @Param("workgroupId") long workgroupId,
             @Param("year") long year);
+
+    @Modifying
+    @Transactional
+    @Query(value="delete from Section s WHERE s.id = ?1")
+    void deleteById(long sectionId);
 }

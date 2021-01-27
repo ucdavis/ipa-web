@@ -27,4 +27,6 @@ public interface SectionService {
 	List<Section> findVisibleByWorkgroupIdAndYear(long workgroupId, long year);
 
 	boolean hasValidSequenceNumber (Section section);
+
+	void deleteWithCascade(Section section);
 }

@@ -1,7 +1,9 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.repositories.ActivityRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionRepository;
+import edu.ucdavis.dss.ipa.repositories.SyncActionRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.List;
 public class JpaSectionService implements SectionService {
 
 	@Inject SectionRepository sectionRepository;
+	@Inject SyncActionRepository syncActionRepository;
+	@Inject	ActivityRepository activityRepository;
 
 	@Override
 	public Section save(@Valid Section section) {
@@ -42,7 +46,7 @@ public class JpaSectionService implements SectionService {
 	public Section updateSequenceNumber(Long sectionId, String newSequencePattern) {
 		Section section = this.getOneById(sectionId);
 
-		if (newSequencePattern == null || newSequencePattern.length() == 0) {
+		if (newSequencePattern == null || newSequencePattern.length() == 0 || section == null) {
 			return null;
 		}
 
@@ -113,5 +117,18 @@ public class JpaSectionService implements SectionService {
 		}
 
 		return true;
+	}
+
+	@Override
+	@Transactional
+	public void deleteWithCascade(Section section) {
+		for(SyncAction syncAction : section.getSyncActions()){
+			sectionRepository.deleteById(syncAction.getId());
+		}
+		for(Activity activity : section.getActivities()){
+			System.err.println("Deleting activity " + activity.getId());
+			activityRepository.deleteById(activity.getId());
+		}
+		sectionRepository.deleteById(section.getId());
 	}
 }
