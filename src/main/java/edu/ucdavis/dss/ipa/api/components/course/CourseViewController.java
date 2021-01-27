@@ -925,11 +925,10 @@ public class CourseViewController {
 							budgetScenario.getId(),
 							sectionGroup.getTermCode()
 					);
-					if(conflictingSectionGroupCost != null){
-						sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
+					if(conflictingSectionGroupCost == null){
+						existingSectionGroupCost.setSequencePattern(sequencePattern);
+						sectionGroupCostService.update(existingSectionGroupCost);
 					}
-					existingSectionGroupCost.setSequencePattern(sequencePattern);
-					sectionGroupCostService.update(existingSectionGroupCost);
 				}
 			}
 		}
