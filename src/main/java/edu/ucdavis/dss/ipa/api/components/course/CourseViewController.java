@@ -927,6 +927,11 @@ public class CourseViewController {
 					);
 					if(conflictingSectionGroupCost == null){
 						existingSectionGroupCost.setSequencePattern(sequencePattern);
+						existingSectionGroupCost.setDisabled(false);
+						sectionGroupCostService.update(existingSectionGroupCost);
+					} else if (conflictingSectionGroupCost.isDisabled()){
+						sectionGroupCostService.delete(conflictingSectionGroupCost.getId());
+						existingSectionGroupCost.setSequencePattern(sequencePattern);
 						sectionGroupCostService.update(existingSectionGroupCost);
 					}
 				}
