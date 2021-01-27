@@ -6,11 +6,31 @@ import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.Ac
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SyncAction;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.SyncActionService;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -19,11 +39,6 @@ import org.javers.core.diff.changetype.NewObject;
 import org.javers.core.diff.changetype.ObjectRemoved;
 import org.javers.core.diff.changetype.ValueChange;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class JpaReportViewFactory implements ReportViewFactory {
@@ -58,18 +73,21 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		}
 
 		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
-		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(dwSection -> Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0).collect(
+		List<String> IGNORED_COURSES = Arrays
+			.asList("090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
+				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
+				"291", "292", "293", "294", "295", "296", "297", "298", "299"
+//				"049", "270" // Physics specific
+				);
+		// Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0
+		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(
+			dwSection -> !IGNORED_COURSES
+				.contains(dwSection.getCourseNumber().replaceAll("[a-zA-z]", ""))).collect(
 			Collectors.toList());
 
-		// check for non-existent courses in IPA
-		List<String> uniqueDwCourseNumbers = filteredDwSections.stream().map(dwSection -> dwSection.getCourseNumber()).distinct().sorted().collect(Collectors.toList());
-
-		List<String> uniqueIpaCourseNumbers = sections.stream().map(ipaSection -> ipaSection.getSectionGroup().getCourse().getCourseNumber()).distinct().sorted().collect(Collectors.toList());
+//		List<String> uniqueIpaKeys = sections.stream().map(ipaSection -> ipaSection.getSectionGroup().getCourse().getCourseNumber()).distinct().sorted().collect(Collectors.toList());
 
 //		Diff courseNumberDiff = javers.compare(uniqueDwCourseNumbers, uniqueIpaCourseNumbers);
-
-		List<String> missingInIpa = new ArrayList<>(uniqueDwCourseNumbers);
-		missingInIpa.removeAll(uniqueIpaCourseNumbers);
 
 		// Create a string of comma delimited list of section unique keys (i.e. ECS-010-A01) for dw query
 		List<String> uniqueKeys = sections.stream()
@@ -79,6 +97,23 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				)
 				.collect(Collectors.toList());
 		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
+
+		// check for non-existent courses in IPA
+		List<String> uniqueDwKeys = filteredDwSections.stream().map(
+			dwSection -> dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+				dwSection.getSequenceNumber()).distinct().sorted().collect(Collectors.toList());
+
+		List<String> missingInIpa = new ArrayList<>(uniqueDwKeys);
+		missingInIpa.removeAll(uniqueKeys.stream().sorted().collect(Collectors.toList()));
+
+		List<DwSection> dwSectionsMissingInIpa = filteredDwSections.stream().filter(
+			dwSection -> missingInIpa
+				.contains(dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+					dwSection.getSequenceNumber())).collect(Collectors.toList());
+
+		for (DwSection dwSection : dwSectionsMissingInIpa) {
+			diffView.add(new SectionDiffView(null, getDwSectionDiff(null, dwSection), null, new ArrayList<>()));
+		}
 
 		for (Section section: sections) {
 			SectionDiffDto ipaSectionDiff = getIpaSectionDiff(section);
