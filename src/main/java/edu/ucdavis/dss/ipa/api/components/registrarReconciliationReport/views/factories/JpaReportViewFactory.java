@@ -74,9 +74,10 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
 		List<String> IGNORED_COURSES = Arrays
-			.asList("090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
-				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
-				"291", "292", "293", "294", "295", "296", "297", "298", "299"
+			.asList(
+//				"090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
+//				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
+//				"291", "292", "293", "294", "295", "296", "297", "298", "299"
 //				"049", "270" // Physics specific
 				);
 		// Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0

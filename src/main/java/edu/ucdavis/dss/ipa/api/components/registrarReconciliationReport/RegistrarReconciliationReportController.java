@@ -1,31 +1,67 @@
 package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
+
+import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories.ReportViewFactory;
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.ActivityType;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SyncAction;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.entities.User;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
+import edu.ucdavis.dss.ipa.services.ActivityService;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.SyncActionService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
+import edu.ucdavis.dss.ipa.services.TermService;
+import edu.ucdavis.dss.ipa.services.UserRoleService;
+import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkgroupService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RegistrarReconciliationReportController {
 	@Inject ReportViewFactory reportViewFactory;
+	@Inject CourseService courseService;
+	@Inject DataWarehouseRepository dwRepository;
 	@Inject TermService termService;
 	@Inject SectionService sectionService;
 	@Inject SectionGroupService sectionGroupService;
 	@Inject TeachingAssignmentService teachingAssignmentService;
 	@Inject InstructorService instructorService;
 	@Inject ActivityService activityService;
+	@Inject ScheduleService scheduleService;
 	@Inject SyncActionService syncActionService;
 	@Inject UserService userService;
 	@Inject UserRoleService userRoleService;
+	@Inject WorkgroupService workgroupService;
 	@Inject Authorizer authorizer;
 
 	/**
@@ -361,6 +397,55 @@ public class RegistrarReconciliationReportController {
 
 		return reportViewFactory.createDiffView(section, sectionDto);
 	}
+
+	@RequestMapping(value = "/api/reportView/sectionGroups/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public SectionDiffView createSectionGroup(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode, @RequestBody Course courseDto, HttpServletResponse httpResponse) {
+
+		// query DW for course info?
+//		String sequencePattern = isNumeric(courseDto.getSequenceNumber()) ?
+//			courseDto.getSequenceNumber() : Character.toString(courseDto.getSequenceNumber().charAt(0));
+
+		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+		Course existingCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(courseDto.getSubjectCode(), courseDto.getCourseNumber(), courseDto.getSequencePattern(), schedule.getId());
+
+		SectionGroup sectionGroup = null;
+		Section section = null;
+
+		if (existingCourse != null) {
+			sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(existingCourse.getId(), termCode);
+
+			courseDto.setSectionGroups(Arrays.asList(sectionGroup));
+
+			section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup,
+				courseDto.getSequencePattern());
+		} else {
+			// create course requires querying DW for effective term code?
+            List<DwCourse> dwCourses = dwRepository.searchCourses(courseDto.getSubjectCode() + " " + courseDto.getCourseNumber());
+
+            DwCourse dwCourse = dwCourses.get(0);
+
+            // should confirm that the first result matches?
+            Course newCourse = new Course();
+            newCourse.setSubjectCode(courseDto.getSubjectCode());
+            newCourse.setCourseNumber(courseDto.getCourseNumber());
+            newCourse.setTitle(dwCourse.getTitle());
+            newCourse.setSequencePattern(courseDto.getSequencePattern());
+            newCourse.setEffectiveTermCode(dwCourse.getEffectiveTermCode());
+            newCourse.setUnitsLow(dwCourse.getCreditHoursLow());
+            newCourse.setUnitsHigh(dwCourse.getCreditHoursHigh() > 0.0 ? dwCourse.getCreditHoursHigh() : null);
+            newCourse.setSchedule(schedule);
+
+            Course savedCourse = courseService.create(newCourse);
+
+			sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(savedCourse.getId(), termCode);
+
+			section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, courseDto.getSequencePattern());
+		}
+
+		return reportViewFactory.createDiffView(section, section);
+	};
 
 	@RequestMapping(value = "/api/reportView/syncActions/{syncActionId}", method = RequestMethod.DELETE, produces="application/json")
 	@ResponseBody
