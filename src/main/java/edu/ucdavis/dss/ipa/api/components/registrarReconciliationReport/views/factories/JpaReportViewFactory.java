@@ -60,36 +60,6 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		// 1) Create diffDtos for sections in IPA, that may or may not have a matching dwSection
 		List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, termCode);
 
-		// check for entire sections missing in IPA, not just missing details
-
-		// workgroup can have more than one subject code
-		List<String> uniqueSubjectCodes = sections.stream().map(s -> s.getSectionGroup().getCourse().getSubjectCode()).distinct().collect(Collectors.toList());
-
-		List<DwSection> dwSectionsByTermCode = new ArrayList<>();
-
-		// get DW sections for subjectCodes and current term
-		for (String subjectCode : uniqueSubjectCodes) {
-			dwSectionsByTermCode.addAll(dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode));
-		}
-
-		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
-		List<String> IGNORED_COURSES = Arrays
-			.asList(
-//				"090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
-//				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
-//				"291", "292", "293", "294", "295", "296", "297", "298", "299"
-//				"049", "270" // Physics specific
-				);
-		// Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0
-		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(
-			dwSection -> !IGNORED_COURSES
-				.contains(dwSection.getCourseNumber().replaceAll("[a-zA-z]", ""))).collect(
-			Collectors.toList());
-
-//		List<String> uniqueIpaKeys = sections.stream().map(ipaSection -> ipaSection.getSectionGroup().getCourse().getCourseNumber()).distinct().sorted().collect(Collectors.toList());
-
-//		Diff courseNumberDiff = javers.compare(uniqueDwCourseNumbers, uniqueIpaCourseNumbers);
-
 		// Create a string of comma delimited list of section unique keys (i.e. ECS-010-A01) for dw query
 		List<String> uniqueKeys = sections.stream()
 				.map(section -> section.getSectionGroup().getCourse().getSubjectCode() + "-" +
@@ -98,23 +68,6 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				)
 				.collect(Collectors.toList());
 		List<DwSection> dwSections = dwRepository.getSectionsByTermCodeAndUniqueKeys(termCode, uniqueKeys);
-
-		// check for non-existent courses in IPA
-		List<String> uniqueDwKeys = filteredDwSections.stream().map(
-			dwSection -> dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
-				dwSection.getSequenceNumber()).distinct().sorted().collect(Collectors.toList());
-
-		List<String> missingInIpa = new ArrayList<>(uniqueDwKeys);
-		missingInIpa.removeAll(uniqueKeys.stream().sorted().collect(Collectors.toList()));
-
-		List<DwSection> dwSectionsMissingInIpa = filteredDwSections.stream().filter(
-			dwSection -> missingInIpa
-				.contains(dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
-					dwSection.getSequenceNumber())).collect(Collectors.toList());
-
-		for (DwSection dwSection : dwSectionsMissingInIpa) {
-			diffView.add(new SectionDiffView(null, getDwSectionDiff(null, dwSection), null, new ArrayList<>()));
-		}
 
 		for (Section section: sections) {
 			SectionDiffDto ipaSectionDiff = getIpaSectionDiff(section);
@@ -130,6 +83,48 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				deleteObsoleteSyncActions(section, diff);
 				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions()));
 			}
+		}
+
+		// 1b) look for courses/sectionGroups that exists in Banner but not in IPA
+
+		// workgroup can have more than one subject code
+		List<String> uniqueSubjectCodes = sections.stream().map(s -> s.getSectionGroup().getCourse().getSubjectCode()).distinct().collect(Collectors.toList());
+
+		List<DwSection> dwSectionsByTermCode = new ArrayList<>();
+
+		for (String subjectCode : uniqueSubjectCodes) {
+			dwSectionsByTermCode.addAll(dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode));
+		}
+
+		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
+		List<String> IGNORED_COURSES = Arrays
+			.asList(
+//				"090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
+//				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
+//				"291", "292", "293", "294", "295", "296", "297", "298", "299"
+//				"049", "270" // Physics specific
+				);
+		// Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0
+
+		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(
+			dwSection -> !IGNORED_COURSES
+				.contains(dwSection.getCourseNumber().replaceAll("[a-zA-z]", ""))).collect(
+			Collectors.toList());
+
+		List<String> uniqueDwKeys = filteredDwSections.stream().map(
+			dwSection -> dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+				dwSection.getSequenceNumber()).distinct().sorted().collect(Collectors.toList());
+
+		List<String> uniqueKeysMissingInIpa = new ArrayList<>(uniqueDwKeys);
+		uniqueKeysMissingInIpa.removeAll(uniqueKeys.stream().sorted().collect(Collectors.toList()));
+
+		List<DwSection> dwSectionsMissingInIpa = filteredDwSections.stream().filter(
+			dwSection -> uniqueKeysMissingInIpa
+				.contains(dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+					dwSection.getSequenceNumber())).collect(Collectors.toList());
+
+		for (DwSection dwSection : dwSectionsMissingInIpa) {
+			diffView.add(new SectionDiffView(null, getDwSectionDiff(null, dwSection), null, new ArrayList<>()));
 		}
 
 		// 2) Create diffDtos for dwSections that don't have a matching section, but do have a matching sectionGroup
