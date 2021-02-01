@@ -401,50 +401,83 @@ public class RegistrarReconciliationReportController {
 	@RequestMapping(value = "/api/reportView/sectionGroups/workgroups/{workgroupId}/years/{year}/termCode/{termCode}", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public SectionDiffView createSectionGroup(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String termCode, @RequestBody Course courseDto, HttpServletResponse httpResponse) {
-
-		// query DW for course info?
-//		String sequencePattern = isNumeric(courseDto.getSequenceNumber()) ?
-//			courseDto.getSequenceNumber() : Character.toString(courseDto.getSequenceNumber().charAt(0));
+		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
 		Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
 
 		Course existingCourse = courseService.findBySubjectCodeAndCourseNumberAndSequencePatternAndScheduleId(courseDto.getSubjectCode(), courseDto.getCourseNumber(), courseDto.getSequencePattern(), schedule.getId());
-
-		SectionGroup sectionGroup = null;
-		Section section = null;
+		SectionGroup sectionGroup;
+		Section sectionDto = courseDto.getSectionGroups().get(0).getSections().get(0);
+		Section section;
 
 		if (existingCourse != null) {
 			sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(existingCourse.getId(), termCode);
 
 			courseDto.setSectionGroups(Arrays.asList(sectionGroup));
-
-			section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup,
-				courseDto.getSequencePattern());
 		} else {
-			// create course requires querying DW for effective term code?
-            List<DwCourse> dwCourses = dwRepository.searchCourses(courseDto.getSubjectCode() + " " + courseDto.getCourseNumber());
+			List<DwCourse> dwCourses = dwRepository.searchCourses(courseDto.getSubjectCode() + " " + courseDto.getCourseNumber());
+			DwCourse dwCourse = dwCourses.get(0);
 
-            DwCourse dwCourse = dwCourses.get(0);
+			if (!dwCourse.getSubjectCode().equals(courseDto.getSubjectCode()) && !dwCourse.getCourseNumber().equals(courseDto.getCourseNumber())) {
+				httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+				return null;
+			}
 
-            // should confirm that the first result matches?
-            Course newCourse = new Course();
-            newCourse.setSubjectCode(courseDto.getSubjectCode());
-            newCourse.setCourseNumber(courseDto.getCourseNumber());
-            newCourse.setTitle(dwCourse.getTitle());
-            newCourse.setSequencePattern(courseDto.getSequencePattern());
-            newCourse.setEffectiveTermCode(dwCourse.getEffectiveTermCode());
-            newCourse.setUnitsLow(dwCourse.getCreditHoursLow());
-            newCourse.setUnitsHigh(dwCourse.getCreditHoursHigh() > 0.0 ? dwCourse.getCreditHoursHigh() : null);
-            newCourse.setSchedule(schedule);
+			Course newCourse = new Course();
+			newCourse.setSubjectCode(courseDto.getSubjectCode());
+			newCourse.setCourseNumber(courseDto.getCourseNumber());
+			newCourse.setTitle(dwCourse.getTitle());
+			newCourse.setSequencePattern(courseDto.getSequencePattern());
+			newCourse.setEffectiveTermCode(dwCourse.getEffectiveTermCode());
+			newCourse.setUnitsLow(dwCourse.getCreditHoursLow());
+			newCourse.setUnitsHigh(dwCourse.getCreditHoursHigh());
+			newCourse.setSchedule(schedule);
 
-            Course savedCourse = courseService.create(newCourse);
+			Course savedCourse = courseService.create(newCourse);
 
 			sectionGroup = sectionGroupService.findOrCreateByCourseIdAndTermCode(savedCourse.getId(), termCode);
 
-			section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, courseDto.getSequencePattern());
 		}
 
-		return reportViewFactory.createDiffView(section, section);
+		section = sectionService.findOrCreateBySectionGroupAndSequenceNumber(sectionGroup, sectionDto.getSequenceNumber());
+
+		List<Activity> activities = new ArrayList<>();
+		for (Activity activityDto : sectionDto.getActivities()) {
+			// Make activities
+			Activity activity = new Activity();
+
+			activity.setActivityState(ActivityState.DRAFT);
+			activity.setBannerLocation(activityDto.getBannerLocation());
+			activity.setActivityTypeCode(activityDto.getActivityTypeCode());
+			activity.setDayIndicator(activityDto.getDayIndicator());
+			activity.setStartTime(activityDto.getStartTime());
+			activity.setEndTime(activityDto.getEndTime());
+			activity.setBeginDate(activityDto.getBeginDate());
+			activity.setEndDate(activityDto.getEndDate());
+
+			activity.setSection(section);
+			activity = activityService.saveActivity(activity);
+
+			boolean contains = false;
+
+			for (Activity slotActivity : activities) {
+				if (slotActivity.getId() == activity.getId()) {
+					contains = true;
+				}
+			}
+
+			if (contains == false) {
+				activities.add(activity);
+			}
+		}
+
+		section.setCrn(sectionDto.getCrn());
+		section.setSeats(sectionDto.getSeats());
+		section.setActivities(activities);
+		section = sectionService.save(section);
+
+		return reportViewFactory.createDiffView(section, sectionDto);
 	};
 
 	@RequestMapping(value = "/api/reportView/syncActions/{syncActionId}", method = RequestMethod.DELETE, produces="application/json")
