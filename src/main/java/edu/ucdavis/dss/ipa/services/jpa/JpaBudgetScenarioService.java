@@ -258,7 +258,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         BudgetScenario liveDataScenario = new BudgetScenario();
         liveDataScenario.setName("Live Data");
         liveDataScenario.setBudget(budget);
-        liveDataScenario.setActiveTermsBlob("0000000000");
+        liveDataScenario.setActiveTermsBlob("1010000001");
         liveDataScenario.setFromLiveData(true);
         liveDataScenario = this.budgetScenarioRepository.save(liveDataScenario);
 
