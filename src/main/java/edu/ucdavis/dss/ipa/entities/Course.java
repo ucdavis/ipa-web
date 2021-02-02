@@ -29,7 +29,7 @@ public class Course extends BaseEntity {
 	private List<Tag> tags = new ArrayList<Tag>(0);
 	private String note;
 	private List<CourseComment> courseComments = new ArrayList<>();
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
@@ -208,8 +208,7 @@ public class Course extends BaseEntity {
 	}
 
 	@JsonProperty("courseComments")
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "CourseId")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true)
 	@JsonDeserialize
 	public List<CourseComment> getCourseComments() {
 		return courseComments;
