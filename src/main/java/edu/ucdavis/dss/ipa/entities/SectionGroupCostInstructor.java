@@ -50,7 +50,7 @@ public class SectionGroupCostInstructor extends BaseEntity {
         this.sectionGroupCost = sectionGroupCost;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TeachingAssignmentId")
     @JsonIgnore
     public TeachingAssignment getTeachingAssignment() {

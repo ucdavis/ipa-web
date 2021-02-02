@@ -8,7 +8,6 @@ import edu.ucdavis.dss.ipa.api.deserializers.TeachingAssignmentDeserializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Represents a teaching assignment or teaching preference (an unapproved assignment that may be created by
@@ -283,8 +282,8 @@ public class TeachingAssignment implements Serializable {
 
         return null;
     }
-    @JsonProperty("sectionGroupCostInstructor")
-    @OneToOne(mappedBy="teachingAssignment", fetch = FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval = true)
+
+    @OneToOne(mappedBy="teachingAssignment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     public SectionGroupCostInstructor getSectionGroupCostInstructor() {
         return sectionGroupCostInstructor;

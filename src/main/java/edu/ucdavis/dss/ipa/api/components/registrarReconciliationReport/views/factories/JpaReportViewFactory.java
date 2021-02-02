@@ -242,7 +242,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 		for (Activity activity : section.getSectionGroup().getActivities()) {
 			String subjectCode = activity.getSectionGroup().getCourse().getSubjectCode();
 			String courseNumber = activity.getSectionGroup().getCourse().getCourseNumber();
-			String sequenceNumber = activity.getSectionGroup().getCourse().getSequencePattern();
+			String sequenceNumber = section.getSequenceNumber();
 			char typeCode = activity.getActivityTypeCode().getActivityTypeCode();
 
 			String key = subjectCode + "-" + courseNumber + "-" + sequenceNumber + "-" + typeCode;
