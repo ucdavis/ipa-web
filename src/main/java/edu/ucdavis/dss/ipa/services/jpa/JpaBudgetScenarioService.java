@@ -49,7 +49,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         budgetScenario = new BudgetScenario();
         budgetScenario.setBudget(budget);
         budgetScenario.setName(budgetScenarioName);
-        budgetScenario.setActiveTermsBlob("0000000000");
+        budgetScenario.setActiveTermsBlob("1010000001"); // default to Fall/Winter/Spring
         budgetScenario.setFromLiveData(false);
         budgetScenario = budgetScenarioRepository.save(budgetScenario);
 
