@@ -96,29 +96,14 @@ public class JpaReportViewFactory implements ReportViewFactory {
 			dwSectionsByTermCode.addAll(dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode));
 		}
 
-		// filter out 090-99, 190-199, 290-299, some course numbers have a trailing letters
-		List<String> IGNORED_COURSES = Arrays
-			.asList(
-//				"090", "091", "092", "093", "094", "095", "096", "097", "098", "099", "190",
-//				"191", "192", "193", "194", "195", "196", "197", "198", "199", "290",
-//				"291", "292", "293", "294", "295", "296", "297", "298", "299"
-//				"049", "270" // Physics specific
-				);
-		// Character.valueOf('9').compareTo(dwSection.getCourseNumber().charAt(1)) != 0
-
-		List<DwSection> filteredDwSections = dwSectionsByTermCode.stream().filter(
-			dwSection -> !IGNORED_COURSES
-				.contains(dwSection.getCourseNumber().replaceAll("[a-zA-z]", ""))).collect(
-			Collectors.toList());
-
-		List<String> uniqueDwKeys = filteredDwSections.stream().map(
+		List<String> uniqueDwKeys = dwSectionsByTermCode.stream().map(
 			dwSection -> dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
 				dwSection.getSequenceNumber()).distinct().sorted().collect(Collectors.toList());
 
 		List<String> uniqueKeysMissingInIpa = new ArrayList<>(uniqueDwKeys);
 		uniqueKeysMissingInIpa.removeAll(uniqueKeys.stream().sorted().collect(Collectors.toList()));
 
-		List<DwSection> dwSectionsMissingInIpa = filteredDwSections.stream().filter(
+		List<DwSection> dwSectionsMissingInIpa = dwSectionsByTermCode.stream().filter(
 			dwSection -> uniqueKeysMissingInIpa
 				.contains(dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
 					dwSection.getSequenceNumber())).collect(Collectors.toList());
