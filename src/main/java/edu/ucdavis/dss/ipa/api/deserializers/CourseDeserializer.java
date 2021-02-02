@@ -63,7 +63,8 @@ public class CourseDeserializer extends JsonDeserializer<Object> {
                 schedule.setYear(node.get("schedule").get("year").longValue());
             }
 
-            Workgroup workgroup = mapper.readValue(node.get("schedule").get("workgroup").toString(), Workgroup.class);
+            Workgroup workgroup =
+                mapper.readValue(node.get("schedule").get("workgroup").toString(), Workgroup.class);
 
             schedule.setWorkgroup(workgroup);
             course.setSchedule(schedule);
@@ -86,7 +87,7 @@ public class CourseDeserializer extends JsonDeserializer<Object> {
                     CollectionType collectionType = TypeFactory.defaultInstance()
                         .constructCollectionType(List.class, Section.class);
 
-                    sections = new ObjectMapper().readerFor(collectionType)
+                    sections = mapper.readerFor(collectionType)
                         .readValue(objNode.get("sections"));
                 }
 
