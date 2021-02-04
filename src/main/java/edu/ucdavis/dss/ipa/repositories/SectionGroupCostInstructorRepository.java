@@ -1,7 +1,5 @@
 package edu.ucdavis.dss.ipa.repositories;
 
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
