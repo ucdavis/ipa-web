@@ -6,9 +6,31 @@ import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.Ac
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.InstructorDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffDto;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.Section;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SyncAction;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.*;
+import edu.ucdavis.dss.ipa.services.CourseService;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.SectionService;
+import edu.ucdavis.dss.ipa.services.SyncActionService;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -17,11 +39,6 @@ import org.javers.core.diff.changetype.NewObject;
 import org.javers.core.diff.changetype.ObjectRemoved;
 import org.javers.core.diff.changetype.ValueChange;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class JpaReportViewFactory implements ReportViewFactory {
@@ -66,6 +83,33 @@ public class JpaReportViewFactory implements ReportViewFactory {
 				deleteObsoleteSyncActions(section, diff);
 				diffView.add(new SectionDiffView(ipaSectionDiff, dwSectionDiff, diff.getChanges(), section.getSyncActions()));
 			}
+		}
+
+		// 1b) look for courses/sectionGroups that exists in Banner but not in IPA
+
+		// workgroup can have more than one subject code
+		List<String> uniqueSubjectCodes = sections.stream().map(s -> s.getSectionGroup().getCourse().getSubjectCode()).distinct().collect(Collectors.toList());
+
+		List<DwSection> dwSectionsByTermCode = new ArrayList<>();
+
+		for (String subjectCode : uniqueSubjectCodes) {
+			dwSectionsByTermCode.addAll(dwRepository.getSectionsBySubjectCodeAndTermCode(subjectCode, termCode));
+		}
+
+		List<String> uniqueDwKeys = dwSectionsByTermCode.stream().map(
+			dwSection -> dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+				dwSection.getSequenceNumber()).distinct().sorted().collect(Collectors.toList());
+
+		List<String> uniqueKeysMissingInIpa = new ArrayList<>(uniqueDwKeys);
+		uniqueKeysMissingInIpa.removeAll(uniqueKeys.stream().sorted().collect(Collectors.toList()));
+
+		List<DwSection> dwSectionsMissingInIpa = dwSectionsByTermCode.stream().filter(
+			dwSection -> uniqueKeysMissingInIpa
+				.contains(dwSection.getSubjectCode() + "-" + dwSection.getCourseNumber() + "-" +
+					dwSection.getSequenceNumber())).collect(Collectors.toList());
+
+		for (DwSection dwSection : dwSectionsMissingInIpa) {
+			diffView.add(new SectionDiffView(null, getDwSectionDiff(null, dwSection), null, new ArrayList<>()));
 		}
 
 		// 2) Create diffDtos for dwSections that don't have a matching section, but do have a matching sectionGroup
