@@ -60,7 +60,7 @@ public class DwClient {
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(90 * 1000).build();
 
 		httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-		
+
 		targetHost = new HttpHost(ApiUrl, ApiPort, "https");
 
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
@@ -70,7 +70,7 @@ public class DwClient {
 
 		AuthCache authCache = new BasicAuthCache();
 		BasicScheme basicAuth = new BasicScheme();
-		
+
 		authCache.put(targetHost, basicAuth);
 
 		// Add AuthCache to the execution context
@@ -83,7 +83,7 @@ public class DwClient {
 
 	/**
 	 * Searches all people based on 'query'. May match against multiple fields.
-	 * 
+	 *
 	 * @param query
 	 * @return
 	 * @throws ClientProtocolException
@@ -91,7 +91,7 @@ public class DwClient {
 	 */
 	public List<DwPerson> searchPeople(String query) throws ClientProtocolException, IOException {
 		List<DwPerson> dwPeople = null;
-		
+
 		if (connect() && query != null) {
 			HttpGet httpget = new HttpGet("/people/search?q=" + URLEncoder.encode(query, "UTF-8") + "&token=" + ApiToken);
 
@@ -120,7 +120,7 @@ public class DwClient {
 		} else if (query == null) {
 			log.warn("No query given.");
 		}
-		
+
 		return dwPeople;
 	}
 
@@ -193,7 +193,7 @@ public class DwClient {
 
 					if(contactInfo != null) {
 						if(contactInfo.get("iamId") != null) {
-							dwPerson.setIamId(contactInfo.get("iamId").textValue());
+							dwPerson.setIamId(contactInfo.get("iamId").asText());
 						}
 						if(contactInfo.get("email") != null) {
 							dwPerson.setEmail(contactInfo.get("email").textValue());
