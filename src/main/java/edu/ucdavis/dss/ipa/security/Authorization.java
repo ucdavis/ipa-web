@@ -110,12 +110,11 @@ public class Authorization {
     }
 
     public String getUserDisplayName() {
-
         User user = this.userService.getOneByLoginId(this.loginId);
-        if(user != null){
+        if (user != null && user.getDisplayName() != null) {
             return user.getDisplayName();
-        }else{
-            return "";
+        } else {
+            return user.getFirstName() + " " + user.getLastName();
         }
     }
 }
