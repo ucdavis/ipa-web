@@ -82,6 +82,9 @@ public class JpaSectionService implements SectionService {
 		if (section == null) {
 			section = new Section();
 			section.setSequenceNumber(sequenceNumber);
+			if (sectionGroup.getPlannedSeats() != null) {
+				section.setSeats(sectionGroup.getPlannedSeats().longValue());
+			}
 			section.setSectionGroup(sectionGroup);
 			section = sectionRepository.save(section);
 		}
