@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import edu.ucdavis.dss.ipa.api.deserializers.CourseDeserializer;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 	getterVisibility = JsonAutoDetect.Visibility.NONE,
 	isGetterVisibility = JsonAutoDetect.Visibility.NONE,
 	setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonDeserialize(using = CourseDeserializer.class)
 public class Course extends BaseEntity {
 	private long id;
 	private String title, subjectCode, courseNumber, effectiveTermCode, sequencePattern;
@@ -29,7 +31,7 @@ public class Course extends BaseEntity {
 	private List<Tag> tags = new ArrayList<Tag>(0);
 	private String note;
 	private List<CourseComment> courseComments = new ArrayList<>();
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id", unique = true, nullable = false)
@@ -208,8 +210,7 @@ public class Course extends BaseEntity {
 	}
 
 	@JsonProperty("courseComments")
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "CourseId")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true)
 	@JsonDeserialize
 	public List<CourseComment> getCourseComments() {
 		return courseComments;
