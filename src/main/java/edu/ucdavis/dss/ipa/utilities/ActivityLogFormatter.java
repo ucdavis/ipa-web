@@ -922,7 +922,7 @@ public final class ActivityLogFormatter {
 
         if(entity instanceof SectionGroupCostInstructor){
             SectionGroupCostInstructor sectionGroupCostInstructor = (SectionGroupCostInstructor) entity;
-            if(sectionGroupCostInstructor.getTeachingAssignmentId() != null){
+            if(sectionGroupCostInstructor.getTeachingAssignment() != null){
                 sb.append("\nSet ");
                 sb.append("**" + entityDescription + "**");
                 sb.append(" **cost** to **" + sectionGroupCostInstructor.getCost() + "**");

@@ -302,8 +302,8 @@ public class BudgetCalculationService {
 
     private long calculateSectionGroupInstructorTypeId(
             SectionGroupCostInstructor sectionGroupCostInstructor, Workgroup workgroup) {
-        if(sectionGroupCostInstructor.getInstructorTypeId() != null){
-            return sectionGroupCostInstructor.getInstructorTypeId();
+        if(sectionGroupCostInstructor.getInstructorType() != null){
+            return sectionGroupCostInstructor.getInstructorType().getId();
         } else if (sectionGroupCostInstructor.getInstructor() != null){
             UserRole instructorRole = userService.getOneByLoginId(sectionGroupCostInstructor.getInstructor().getLoginId()).getUserRoles().stream().filter(ur -> (ur.getRole().getId() == 15 && workgroup.getId() == ur.getWorkgroup().getId())).findFirst().orElse(null);
             if (instructorRole != null) {
