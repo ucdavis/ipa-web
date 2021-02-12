@@ -1,13 +1,22 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.InstructorType;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostInstructorRepository;
-import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
+import edu.ucdavis.dss.ipa.services.InstructorService;
+import edu.ucdavis.dss.ipa.services.InstructorTypeService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostInstructorService;
+import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import org.springframework.stereotype.Service;
 
 @Service
 public class JpaSectionGroupCostInstructorService implements SectionGroupCostInstructorService {
@@ -25,7 +34,19 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
     SectionGroupService sectionGroupService;
 
     @Override
-    public SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
+    public SectionGroupCostInstructor findOrCreate(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
+        SectionGroupCostInstructor existingSectionGroupCostInstructor =
+            sectionGroupCostInstructorRepository
+                .findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(
+                    sectionGroupCostInstructorDTO.getInstructor() != null ? sectionGroupCostInstructorDTO.getInstructor().getId() : null,
+                    sectionGroupCostInstructorDTO.getSectionGroupCost() != null ? sectionGroupCostInstructorDTO.getSectionGroupCost().getId() : null,
+                    sectionGroupCostInstructorDTO.getTeachingAssignment() != null ? sectionGroupCostInstructorDTO.getTeachingAssignment().getId() : null
+                );
+
+        if (existingSectionGroupCostInstructor != null) {
+            return existingSectionGroupCostInstructor;
+        }
+
         SectionGroupCostInstructor sectionGroupCostInstructor = new SectionGroupCostInstructor();
 
         SectionGroupCost sectionGroupCost = sectionGroupCostService.findById(sectionGroupCostInstructorDTO.getSectionGroupCost().getId());
