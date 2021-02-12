@@ -3,8 +3,9 @@ package edu.ucdavis.dss.ipa.entities;
 import java.math.BigDecimal;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -41,7 +42,9 @@ public class SectionGroupCostInstructor extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SectionGroupCostId", nullable = false)
     @NotNull
-    @JsonIgnore
+    @JsonProperty("sectionGroupCostId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     public SectionGroupCost getSectionGroupCost() {
         return sectionGroupCost;
     }
@@ -52,7 +55,9 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TeachingAssignmentId")
-    @JsonIgnore
+    @JsonProperty("teachingAssignmentId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     public TeachingAssignment getTeachingAssignment() {
         return teachingAssignment;
     }
@@ -63,7 +68,9 @@ public class SectionGroupCostInstructor extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "InstructorId")
-    @JsonIgnore
+    @JsonProperty("instructorId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     public Instructor getInstructor() {
         return instructor;
     }
@@ -72,9 +79,11 @@ public class SectionGroupCostInstructor extends BaseEntity {
         this.instructor = instructor;
     }
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "InstructorTypeId", nullable = true)
+    @JsonProperty("instructorTypeId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     public InstructorType getInstructorType() {
         return instructorType;
     }
@@ -99,27 +108,6 @@ public class SectionGroupCostInstructor extends BaseEntity {
         this.reason = reason;
     }
 
-
-    @JsonProperty("instructorId")
-    @Transient
-    public long getInsturctorId() {
-        if(instructor != null) {
-            return instructor.getId();
-        } else {
-            return 0;
-        }
-    }
-
-    @JsonProperty("sectionGroupCostId")
-    @Transient
-    public long getSectionGroupCostId() {
-        if(sectionGroupCost != null) {
-            return sectionGroupCost.getId();
-        } else {
-            return 0;
-        }
-    }
-
     @JsonProperty("instructorName")
     @Transient
     public String getInsturctorName() {
@@ -130,16 +118,6 @@ public class SectionGroupCostInstructor extends BaseEntity {
         }
     }
 
-    @JsonProperty("instructorTypeId")
-    @Transient
-    public Long getInstructorTypeId() {
-        if(instructorType != null) {
-            return instructorType.getId();
-        } else {
-            return null;
-        }
-    }
-
     @JsonProperty("instructorTypeDescription")
     @Transient
     public String getInstructorTypeDescription() {
@@ -147,16 +125,6 @@ public class SectionGroupCostInstructor extends BaseEntity {
             return instructorType.getDescription();
         } else {
             return "";
-        }
-    }
-
-    @JsonProperty("teachingAssignmentId")
-    @Transient
-    public Long getTeachingAssignmentId() {
-        if(teachingAssignment != null) {
-            return teachingAssignment.getId();
-        } else {
-            return null;
         }
     }
 }

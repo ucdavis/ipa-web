@@ -511,7 +511,7 @@ public class BudgetViewController {
         List<SectionGroupCostInstructor> instructors = new ArrayList<>();
         for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
             sectionGroupCostInstructor.setSectionGroupCost(sectionGroupCostService.findById(sectionGroupCostId));
-            instructors.add(sectionGroupCostInstructorService.create(sectionGroupCostInstructor));
+            instructors.add(sectionGroupCostInstructorService.findOrCreate(sectionGroupCostInstructor));
         }
         return instructors;
     }

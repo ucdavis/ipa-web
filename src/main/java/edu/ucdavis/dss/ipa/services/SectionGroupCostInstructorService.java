@@ -8,7 +8,7 @@ import java.util.List;
 
 @Validated
 public interface SectionGroupCostInstructorService {
-    SectionGroupCostInstructor create(SectionGroupCostInstructor sectionGroupCostInstructorDTO);
+    SectionGroupCostInstructor findOrCreate(SectionGroupCostInstructor sectionGroupCostInstructorDTO);
 
     SectionGroupCostInstructor findById(long sectionGroupCostInstructorId);
 
