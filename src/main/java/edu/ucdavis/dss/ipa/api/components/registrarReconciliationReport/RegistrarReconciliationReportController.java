@@ -188,7 +188,7 @@ public class RegistrarReconciliationReportController {
 			return null;
 		}
 
-		TeachingAssignment teachingAssignment = teachingAssignmentService.findOneBySectionGroupAndInstructor(sectionGroup, instructorToAssign);
+		TeachingAssignment teachingAssignment = teachingAssignmentService.findOneBySectionGroupAndInstructorAndTermCode(sectionGroup, instructorToAssign, sectionGroup.getTermCode());
 
 		// When an academicCoordinator unapproves a teachingAssignment made by an academicCoordinator, delete instead of updating
 		if (!teachingAssignment.isFromInstructor()) {
