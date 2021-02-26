@@ -20,7 +20,7 @@ public interface TeachingAssignmentService {
 
 	void delete(Long id);
 
-	TeachingAssignment findOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
+	TeachingAssignment findOneBySectionGroupAndInstructorAndTermCode(SectionGroup sectionGroup, Instructor instructor, String termCode);
 
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 

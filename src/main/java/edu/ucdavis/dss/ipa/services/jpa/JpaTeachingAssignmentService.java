@@ -54,8 +54,8 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	}
 
 	@Override
-	public TeachingAssignment findOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor) {
-		return teachingAssignmentRepository.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
+	public TeachingAssignment findOneBySectionGroupAndInstructorAndTermCode(SectionGroup sectionGroup, Instructor instructor, String termCode) {
+		return teachingAssignmentRepository.findOneBySectionGroupAndInstructorAndTermCode(sectionGroup, instructor, termCode);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 
 	@Override
 	public TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor) {
-		TeachingAssignment teachingAssignment = this.findOneBySectionGroupAndInstructor(sectionGroup, instructor);
+		TeachingAssignment teachingAssignment = this.findOneBySectionGroupAndInstructorAndTermCode(sectionGroup, instructor, sectionGroup.getTermCode());
 
 		if (teachingAssignment == null) {
 			teachingAssignment = new TeachingAssignment();
@@ -153,7 +153,7 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 		TeachingAssignment teachingAssignment = null;
 
 		if (teachingAssignmentDTO.getSectionGroup() != null) {
-			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructor(teachingAssignmentDTO.getSectionGroup(), teachingAssignmentDTO.getInstructor());
+			teachingAssignment = teachingAssignmentRepository.findOneBySectionGroupAndInstructorAndTermCode(teachingAssignmentDTO.getSectionGroup(), teachingAssignmentDTO.getInstructor(), teachingAssignmentDTO.getSectionGroup().getTermCode());
 		} else {
 			teachingAssignment = teachingAssignmentRepository.findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsenceAndSabbaticalInResidence(
 				teachingAssignmentDTO.getInstructor().getId(),
