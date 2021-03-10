@@ -380,6 +380,12 @@ public final class ActivityLogFormatter {
                         return "Sabbatical in Residence " +  teachingAssignmentDisplayName;
                     } else if (teachingAssignment.isCourseRelease()){
                         return "Course Release " +  teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isJointAppointment()) {
+                        return "Joint Appointment " + teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isInterdisciplinaryTeaching()) {
+                        return "Interdisciplinary Teaching " + teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isCourseReleaseWlc()) {
+                        return "Course Release - WLC " + teachingAssignmentDisplayName;
                     } else {
                         return  teachingAssignmentDisplayName;
                     }
