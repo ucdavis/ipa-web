@@ -384,8 +384,8 @@ public final class ActivityLogFormatter {
                         return "Joint Appointment " + teachingAssignmentDisplayName;
                     } else if (teachingAssignment.isInterdisciplinaryTeaching()) {
                         return "Interdisciplinary Teaching " + teachingAssignmentDisplayName;
-                    } else if (teachingAssignment.isCourseReleaseWlc()) {
-                        return "Course Release - WLC " + teachingAssignmentDisplayName;
+                    } else if (teachingAssignment.isWorkLoadCredit()) {
+                        return "Work Load Credit " + teachingAssignmentDisplayName;
                     } else {
                         return  teachingAssignmentDisplayName;
                     }

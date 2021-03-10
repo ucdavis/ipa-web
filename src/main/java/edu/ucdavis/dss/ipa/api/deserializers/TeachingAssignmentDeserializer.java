@@ -87,8 +87,8 @@ public class TeachingAssignmentDeserializer extends JsonDeserializer<Object> {
             teachingAssignment.setInterdisciplinaryTeaching(node.get("interdisciplinaryTeaching").booleanValue());
         }
 
-        if (node.has("courseReleaseWlc")) {
-            teachingAssignment.setCourseReleaseWlc(node.get("courseReleaseWlc").booleanValue());
+        if (node.has("workLoadCredit")) {
+            teachingAssignment.setWorkLoadCredit(node.get("workLoadCredit").booleanValue());
         }
 
         if (node.has("courseRelease")) {

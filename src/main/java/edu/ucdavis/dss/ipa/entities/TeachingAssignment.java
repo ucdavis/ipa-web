@@ -27,7 +27,7 @@ public class TeachingAssignment implements Serializable {
     private Schedule schedule;
     private String termCode;
     private int priority;
-    private boolean buyout, courseRelease, sabbatical, inResidence, workLifeBalance, leaveOfAbsence, sabbaticalInResidence, jointAppointment, interdisciplinaryTeaching, courseReleaseWlc;
+    private boolean buyout, courseRelease, sabbatical, inResidence, workLifeBalance, leaveOfAbsence, sabbaticalInResidence, jointAppointment, interdisciplinaryTeaching, workLoadCredit;
     private boolean approved;
     private boolean fromInstructor;
     private String suggestedSubjectCode;
@@ -196,10 +196,10 @@ public class TeachingAssignment implements Serializable {
     }
 
     @JsonProperty
-    public boolean isCourseReleaseWlc() { return courseReleaseWlc; }
+    public boolean isWorkLoadCredit() { return workLoadCredit; }
 
-    public void setCourseReleaseWlc(boolean courseReleaseWlc) {
-        this.courseReleaseWlc = courseReleaseWlc;
+    public void setWorkLoadCredit(boolean workLoadCredit) {
+        this.workLoadCredit = workLoadCredit;
     }
 
     @Transient
@@ -302,7 +302,7 @@ public class TeachingAssignment implements Serializable {
         if (this.isSabbaticalInResidence()) return "Sabbatical In Residence";
         if (this.isJointAppointment()) return "Joint Appointment";
         if (this.isInterdisciplinaryTeaching()) return "Interdisciplinary Teaching";
-        if (this.isCourseReleaseWlc()) return "Course Release - WLC";
+        if (this.isWorkLoadCredit()) return "Work Load Credit";
 
         return null;
     }

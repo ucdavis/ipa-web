@@ -79,7 +79,7 @@ public class AssignmentViewTeachingAssignmentController {
             && teachingAssignment.isSabbaticalInResidence() == false
             && teachingAssignment.isJointAppointment() == false
             && teachingAssignment.isInterdisciplinaryTeaching() == false
-            && teachingAssignment.isCourseReleaseWlc() == false
+            && teachingAssignment.isWorkLoadCredit() == false
             && (teachingAssignment.getSectionGroup() == null || teachingAssignment.getInstructor() == null)) {
             return null;
         }
@@ -94,7 +94,7 @@ public class AssignmentViewTeachingAssignmentController {
                 || teachingAssignment.isSabbatical() == true
                 || teachingAssignment.isJointAppointment() == true
                 || teachingAssignment.isInterdisciplinaryTeaching() == true
-                || teachingAssignment.isCourseReleaseWlc() == true) {
+                || teachingAssignment.isWorkLoadCredit() == true) {
 
             teachingAssignment.setInstructor(instructor);
             teachingAssignment.setSchedule(schedule);
@@ -418,7 +418,7 @@ public class AssignmentViewTeachingAssignmentController {
         }
 
         // Make a single teaching Preference if its a non sectiongroup assignment
-        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance() || teachingAssignment.isLeaveOfAbsence() || teachingAssignment.isSabbaticalInResidence() || teachingAssignment.isJointAppointment() || teachingAssignment.isInterdisciplinaryTeaching() || teachingAssignment.isCourseReleaseWlc()) {
+        if (teachingAssignment.isSabbatical() || teachingAssignment.isCourseRelease() || teachingAssignment.isBuyout() || teachingAssignment.isInResidence() || teachingAssignment.isWorkLifeBalance() || teachingAssignment.isLeaveOfAbsence() || teachingAssignment.isSabbaticalInResidence() || teachingAssignment.isJointAppointment() || teachingAssignment.isInterdisciplinaryTeaching() || teachingAssignment.isWorkLoadCredit()) {
             teachingAssignment.setApproved(false);
             teachingAssignment.setSchedule(schedule);
             teachingAssignment.setInstructor(instructor);
