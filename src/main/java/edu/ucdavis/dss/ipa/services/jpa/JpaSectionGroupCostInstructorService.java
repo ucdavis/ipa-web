@@ -35,18 +35,16 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
     @Override
     public SectionGroupCostInstructor findOrCreate(SectionGroupCostInstructor sectionGroupCostInstructorDTO) {
-        if(sectionGroupCostInstructorDTO.getInstructor() != null){
-            SectionGroupCostInstructor existingSectionGroupCostInstructor =
-                    sectionGroupCostInstructorRepository
-                            .findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(
-                                    sectionGroupCostInstructorDTO.getInstructor().getId(),
-                                    sectionGroupCostInstructorDTO.getSectionGroupCost() != null ? sectionGroupCostInstructorDTO.getSectionGroupCost().getId() : null,
-                                    sectionGroupCostInstructorDTO.getTeachingAssignment() != null ? sectionGroupCostInstructorDTO.getTeachingAssignment().getId() : null
-                            );
+        SectionGroupCostInstructor existingSectionGroupCostInstructor =
+            sectionGroupCostInstructorRepository
+                .findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(
+                    sectionGroupCostInstructorDTO.getInstructor() != null ? sectionGroupCostInstructorDTO.getInstructor().getId() : null,
+                    sectionGroupCostInstructorDTO.getSectionGroupCost() != null ? sectionGroupCostInstructorDTO.getSectionGroupCost().getId() : null,
+                    sectionGroupCostInstructorDTO.getTeachingAssignment() != null ? sectionGroupCostInstructorDTO.getTeachingAssignment().getId() : null
+                );
 
-            if (existingSectionGroupCostInstructor != null) {
-                return existingSectionGroupCostInstructor;
-            }
+        if (existingSectionGroupCostInstructor != null) {
+            return existingSectionGroupCostInstructor;
         }
 
         SectionGroupCostInstructor sectionGroupCostInstructor = new SectionGroupCostInstructor();
