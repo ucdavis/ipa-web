@@ -27,7 +27,7 @@ public class TeachingAssignment implements Serializable {
     private Schedule schedule;
     private String termCode;
     private int priority;
-    private boolean buyout, courseRelease, sabbatical, inResidence, workLifeBalance, leaveOfAbsence, sabbaticalInResidence;
+    private boolean buyout, courseRelease, sabbatical, inResidence, workLifeBalance, leaveOfAbsence, sabbaticalInResidence, jointAppointment, interdisciplinaryTeaching, workLoadCredit;
     private boolean approved;
     private boolean fromInstructor;
     private String suggestedSubjectCode;
@@ -181,6 +181,27 @@ public class TeachingAssignment implements Serializable {
         this.sabbaticalInResidence = sabbaticalInResidence;
     }
 
+    @JsonProperty
+    public boolean isJointAppointment() { return jointAppointment; }
+
+    public void setJointAppointment(boolean jointAppointment) {
+        this.jointAppointment = jointAppointment;
+    }
+
+    @JsonProperty
+    public boolean isInterdisciplinaryTeaching() { return interdisciplinaryTeaching; }
+
+    public void setInterdisciplinaryTeaching(boolean interdisciplinaryTeaching) {
+        this.interdisciplinaryTeaching = interdisciplinaryTeaching;
+    }
+
+    @JsonProperty
+    public boolean isWorkLoadCredit() { return workLoadCredit; }
+
+    public void setWorkLoadCredit(boolean workLoadCredit) {
+        this.workLoadCredit = workLoadCredit;
+    }
+
     @Transient
     @JsonProperty("sectionGroupId")
     public long getSectionGroupIdentification() {
@@ -279,6 +300,9 @@ public class TeachingAssignment implements Serializable {
         if (this.isWorkLifeBalance()) return "Work-life Balance";
         if (this.isLeaveOfAbsence()) return "Leave of Absence";
         if (this.isSabbaticalInResidence()) return "Sabbatical In Residence";
+        if (this.isJointAppointment()) return "Joint Appointment";
+        if (this.isInterdisciplinaryTeaching()) return "Interdisciplinary Teaching";
+        if (this.isWorkLoadCredit()) return "Work Load Credit";
 
         return null;
     }
