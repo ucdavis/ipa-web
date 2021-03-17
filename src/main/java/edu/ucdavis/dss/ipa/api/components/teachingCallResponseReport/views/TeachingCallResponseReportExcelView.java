@@ -366,6 +366,9 @@ public class TeachingCallResponseReportExcelView extends AbstractXlsView {
         if(teachingAssignment.isWorkLifeBalance()) return "Work-life Balance";
         if(teachingAssignment.isLeaveOfAbsence()) return "Leave of Absence";
         if(teachingAssignment.isSabbaticalInResidence()) return "Sabbatical In Residence";
+        if(teachingAssignment.isJointAppointment()) return "Joint Appointment";
+        if(teachingAssignment.isInterdisciplinaryTeaching()) return "Interdisciplinary Teaching";
+        if(teachingAssignment.isWorkLoadCredit()) return "Work Load Credit";
 
         // Check to see if TeachingAssignment is a suggested course
         String suggestedCourseNumber = teachingAssignment.getSuggestedCourseNumber();
