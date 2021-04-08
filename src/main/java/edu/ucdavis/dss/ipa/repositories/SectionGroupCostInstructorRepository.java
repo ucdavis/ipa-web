@@ -46,6 +46,6 @@ public interface SectionGroupCostInstructorRepository extends CrudRepository<Sec
 
     @Transactional
     @Modifying
-    @Query("delete from SectionGroupCostInstructor sgci where sgci.id in ?1")
+    @Query("delete from SectionGroupCostInstructor sgci where sgci.id = ?1")
     void deleteById(Long sectionGroupCostInstructorId);
 }
