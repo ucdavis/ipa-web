@@ -2,6 +2,9 @@ package edu.ucdavis.dss.ipa.api.components.auditLog.views;
 
 import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +35,17 @@ public class AuditLogExcelView extends AbstractXlsxView {
         Sheet worksheet = workbook.createSheet("Audit Log");
         worksheet = ExcelHelper.setSheetHeader(worksheet, Arrays.asList("Date", "Message", "Name"));
 
-        for (AuditLog auditLog : auditLogList) {
-            List<Object> cellValues = Arrays.asList(auditLog.getCreatedAt(), auditLog.getMessage(), auditLog.getUserName());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a");
+
+        for (AuditLog entry : auditLogList) {
+            LocalDateTime createdDateTime =
+                entry.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+            String formattedMessage = entry.getMessage();
+
+            List<Object> cellValues = Arrays
+                .asList(dateFormatter.format(createdDateTime), formattedMessage,
+                    entry.getUserName());
             worksheet = ExcelHelper.writeRowToSheet(worksheet, cellValues);
         }
 
