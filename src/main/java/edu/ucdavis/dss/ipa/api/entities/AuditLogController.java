@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.entities;
 
 import edu.ucdavis.dss.ipa.api.components.auditLog.views.AuditLogExcelView;
-import edu.ucdavis.dss.ipa.api.components.auditLog.views.factories.AuditLogViewFactory;
 import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorizer;
@@ -26,8 +25,6 @@ public class AuditLogController {
     AuditLogService auditLogService;
     @Inject
     WorkgroupService workgroupService;
-    @Inject
-    AuditLogViewFactory auditLogViewFactory;
     @Inject
     Authorizer authorizer;
 
