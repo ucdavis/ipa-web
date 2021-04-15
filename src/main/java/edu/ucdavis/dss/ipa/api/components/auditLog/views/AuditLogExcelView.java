@@ -57,5 +57,4 @@ public class AuditLogExcelView extends AbstractXlsxView {
 
         workbook = ExcelHelper.expandHeaders(workbook);
     }
-
 }
