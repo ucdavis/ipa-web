@@ -33,7 +33,8 @@ public class AuditLogExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"utf-8\"");
         response.setHeader("Content-Disposition", "attachment; filename=\"Audit-Log.xlsx\"");
         Sheet worksheet = workbook.createSheet("Audit Log");
-        worksheet = ExcelHelper.setSheetHeader(worksheet, Arrays.asList("Date", "Message", "Name"));
+        worksheet = ExcelHelper
+            .setSheetHeader(worksheet, Arrays.asList("Date", "Section Details", "Action", "Name"));
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a");
 
@@ -41,10 +42,15 @@ public class AuditLogExcelView extends AbstractXlsxView {
             LocalDateTime createdDateTime =
                 entry.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-            String formattedMessage = entry.getMessage();
+            String[] message = entry.getMessage().replace("*", "").split("\\r?\\n");
+            String sectionDetails = message[0];
+            String action = message[1];
+
+            String formattedSectionDetails =
+                sectionDetails.substring(sectionDetails.indexOf(" - ") + " - ".length());
 
             List<Object> cellValues = Arrays
-                .asList(dateFormatter.format(createdDateTime), formattedMessage,
+                .asList(dateFormatter.format(createdDateTime), formattedSectionDetails, action,
                     entry.getUserName());
             worksheet = ExcelHelper.writeRowToSheet(worksheet, cellValues);
         }
