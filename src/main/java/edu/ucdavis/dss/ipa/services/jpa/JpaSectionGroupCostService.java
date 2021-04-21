@@ -216,7 +216,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
         for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
             if (teachingAssignment.isFromInstructor() && teachingAssignment.isApproved() == false) {
-                // clean up unapproved sectionGroupCostInstructor
+                // clean up instructor costs of unapproved assignments that do not deleted
                 SectionGroupCostInstructor sectionGroupCostInstructor =
                     sectionGroupCostInstructorRepository
                         .findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(
