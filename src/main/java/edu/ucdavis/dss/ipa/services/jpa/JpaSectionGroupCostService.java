@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.InstructorRepository;
 import edu.ucdavis.dss.ipa.repositories.InstructorTypeRepository;
 import edu.ucdavis.dss.ipa.repositories.ReasonCategoryRepository;
+import edu.ucdavis.dss.ipa.repositories.SectionGroupCostInstructorRepository;
 import edu.ucdavis.dss.ipa.repositories.SectionGroupCostRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
     @Inject InstructorRepository instructorRepository;
     @Inject InstructorTypeRepository instructorTypeRepository;
     @Inject ReasonCategoryRepository reasonCategoryRepository;
+    @Inject SectionGroupCostInstructorRepository sectionGroupCostInstructorRepository;
 
     @Override
     public List<SectionGroupCost> findByBudgetId(Long budgetId) {
@@ -213,6 +215,19 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         InstructorType instructorType = null;
 
         for (TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()) {
+            if (teachingAssignment.isFromInstructor() && teachingAssignment.isApproved() == false) {
+                // clean up instructor costs of unapproved assignments that do not deleted
+                SectionGroupCostInstructor sectionGroupCostInstructor =
+                    sectionGroupCostInstructorRepository
+                        .findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(
+                            teachingAssignment.getInstructorIdentification(),
+                            sectionGroupCost.getId(), teachingAssignment.getId());
+
+                if (sectionGroupCostInstructor != null) {
+                    sectionGroupCostInstructorRepository
+                        .deleteById(sectionGroupCostInstructor.getId());
+                }
+            }
             if (teachingAssignment.isApproved() == false) { continue; }
 
             Instructor instructorDTO = teachingAssignment.getInstructor();

@@ -1,6 +1,8 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
+import javax.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +43,9 @@ public interface SectionGroupCostInstructorRepository extends CrudRepository<Sec
     List<SectionGroupCostInstructor> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);
 
     SectionGroupCostInstructor findByInstructorIdAndSectionGroupCostIdAndTeachingAssignmentId(Long instructorId, Long SectionGroupCostId, Long teachingAssignmentId);
+
+    @Transactional
+    @Modifying
+    @Query("delete from SectionGroupCostInstructor sgci where sgci.id = ?1")
+    void deleteById(Long sectionGroupCostInstructorId);
 }
