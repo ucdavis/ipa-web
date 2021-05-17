@@ -111,18 +111,20 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
 
             String cellString = "";
 
-            for (int i = 0; i < sortedSupportPreferences.size(); i++) {
-                StudentSupportPreference preference = sortedSupportPreferences.get(i);
+            if (studentResponse.isSubmitted()) {
+                for (int i = 0; i < sortedSupportPreferences.size(); i++) {
+                    StudentSupportPreference preference = sortedSupportPreferences.get(i);
 
-                cellString += preference.getPriority() + ") "
-                    + preference.getSectionGroup().getCourse().getSubjectCode() + " "
-                    + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
-                    +
-                    (preference.getType().equals("Teaching Assistant") ? "Teaching Assistant" :
-                        "Reader")
-                    + (preference.getComment().equals("") ? "" :
-                    "\n      Comment: " + preference.getComment() + "\n")
-                    + (i < sortedSupportPreferences.size() - 1 ? "\n" : "");
+                    cellString += preference.getPriority() + ") "
+                        + preference.getSectionGroup().getCourse().getSubjectCode() + " "
+                        + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
+                        +
+                        (preference.getType().equals("Teaching Assistant") ? "Teaching Assistant" :
+                            "Reader")
+                        + (preference.getComment().equals("") ? "" :
+                        "\n      Comment: " + preference.getComment() + "\n")
+                        + (i < sortedSupportPreferences.size() - 1 ? "\n" : "");
+                }
             }
 
             rowValues.add(cellString);
