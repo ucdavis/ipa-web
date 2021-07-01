@@ -2,9 +2,11 @@ package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport;
 
 import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.SectionDiffView;
 import edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views.factories.ReportViewFactory;
+import edu.ucdavis.dss.ipa.api.helpers.Utilities;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.ActivityType;
 import edu.ucdavis.dss.ipa.entities.Course;
@@ -35,9 +37,11 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -201,9 +205,9 @@ public class RegistrarReconciliationReportController {
 		return teachingAssignmentService.saveAndAddInstructorType(teachingAssignment);
 	}
 
-	@RequestMapping(value = "/api/reportView/activities/{activityId}", method = RequestMethod.PUT, produces="application/json")
+	@RequestMapping(value = "/api/reportView/activities/{activityId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces="application/json")
 	@ResponseBody
-	public Activity updateActivity(@PathVariable long activityId, @RequestBody Activity activity, HttpServletResponse httpResponse) {
+	public Activity updateActivity(@PathVariable long activityId, @RequestBody JsonNode node, HttpServletResponse httpResponse) {
 		Activity originalActivity = activityService.findOneById(activityId);
 		if (originalActivity == null) {
 			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -213,17 +217,17 @@ public class RegistrarReconciliationReportController {
 		Workgroup workgroup = sectionGroup.getCourse().getSchedule().getWorkgroup();
 		authorizer.hasWorkgroupRole(workgroup.getId(), "academicPlanner");
 
-		if (activity.getDayIndicator() != null) {
-			originalActivity.setDayIndicator(activity.getDayIndicator());
+		if (node.has("dayIndicator")) {
+			originalActivity.setDayIndicator(node.get("dayIndicator").textValue());
 		}
-		if (activity.getStartTime() != null) {
-			originalActivity.setStartTime(activity.getStartTime());
+		if (node.has("startTime")) {
+			originalActivity.setStartTime(Utilities.convertToTime(node.get("startTime").textValue()));
 		}
-		if (activity.getEndTime() != null) {
-			originalActivity.setEndTime(activity.getEndTime());
+		if (node.has("endTime")) {
+			originalActivity.setEndTime(Utilities.convertToTime(node.get("endTime").textValue()));
 		}
-		if (activity.getBannerLocation() != null) {
-			originalActivity.setBannerLocation(activity.getBannerLocation());
+		if (node.has("bannerLocation")) {
+			originalActivity.setBannerLocation(node.get("bannerLocation").textValue());
 		}
 
 		return this.activityService.saveActivity(originalActivity);
