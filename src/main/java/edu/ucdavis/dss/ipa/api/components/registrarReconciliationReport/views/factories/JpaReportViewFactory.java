@@ -280,8 +280,6 @@ public class JpaReportViewFactory implements ReportViewFactory {
 
 		}
 
-		instancesOfKey = new HashMap<String, Long>();
-
 		// Shared activities
 		for (Activity activity : section.getSectionGroup().getActivities()) {
 			String subjectCode = activity.getSectionGroup().getCourse().getSubjectCode();
