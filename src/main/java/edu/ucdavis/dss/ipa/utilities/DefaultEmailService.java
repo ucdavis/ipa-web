@@ -41,6 +41,9 @@ public class DefaultEmailService implements EmailService {
 	@Value("${SMTP_PASSWORD}")
 	String stmpPassword;
 
+	@Value("${SMTP_FROM}")
+	String smtpFrom;
+
 	/**
 	 * Sends email if runningMode is production, else email is suppressed.
 	 * 
@@ -135,7 +138,7 @@ public class DefaultEmailService implements EmailService {
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 			helper.setTo(recipientEmail);
-			helper.setFrom(smtpUserName);
+			helper.setFrom(smtpFrom);
 			helper.setSubject(messageSubject);
 			helper.setText(messageBody, htmlMode);
 
