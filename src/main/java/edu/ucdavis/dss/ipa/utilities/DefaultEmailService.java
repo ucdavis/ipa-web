@@ -36,7 +36,7 @@ public class DefaultEmailService implements EmailService {
 	int smtpPort;
 
 	@Value("${SMTP_USERNAME}")
-	String smtpUserName;
+	String smtpUsername;
 
 	@Value("${SMTP_PASSWORD}")
 	String stmpPassword;
@@ -123,7 +123,7 @@ public class DefaultEmailService implements EmailService {
 
 		sender.setHost(smtpHost);
 		sender.setPort(smtpPort);
-		sender.setUsername(smtpUserName);
+		sender.setUsername(smtpUsername);
 		sender.setPassword(stmpPassword);
 
 		Properties mailProperties = new Properties();
