@@ -35,9 +35,6 @@ ENV IPA_URL_FRONTEND $IPA_URL_FRONTEND
 ARG CAS_URL
 ENV CAS_URL $CAS_URL
 
-ENV TZ=America/Los_Angeles
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 COPY ./rds-ca-2019-root.pem rds-ca-2019-root.pem
 COPY ./rds-ca-2019-us-west-2.pem rds-ca-2019-us-west-2.pem
 RUN keytool -import -noprompt -trustcacerts -alias aws_rds_ca_2019_root -file rds-ca-2019-root.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
