@@ -32,8 +32,17 @@ public class DefaultEmailService implements EmailService {
 	@Value("${SMTP_HOST}")
 	String smtpHost;
 
-	@Value("${SMTP_EMAIL_FROM}")
-	String emailFrom;
+	@Value("${SMTP_PORT}")
+	int smtpPort;
+
+	@Value("${SMTP_USERNAME}")
+	String smtpUsername;
+
+	@Value("${SMTP_PASSWORD}")
+	String stmpPassword;
+
+	@Value("${SMTP_FROM}")
+	String smtpFrom;
 
 	/**
 	 * Sends email if runningMode is production, else email is suppressed.
@@ -113,11 +122,14 @@ public class DefaultEmailService implements EmailService {
 		log.info("To: '" + recipientEmail + "', subject '" + messageSubject + "', body: '" + messageBody + "'");
 
 		sender.setHost(smtpHost);
-		sender.setPort(25);
+		sender.setPort(smtpPort);
+		sender.setUsername(smtpUsername);
+		sender.setPassword(stmpPassword);
 
 		Properties mailProperties = new Properties();
 		mailProperties.setProperty("mail.transport.protocol", "smtp");
-		mailProperties.setProperty("mail.smtp.auth", "false");
+		mailProperties.put("mail.smtp.auth", "true");
+		mailProperties.put("mail.smtp.starttls.enable", "true");
 
 		sender.setJavaMailProperties(mailProperties);
 
@@ -126,7 +138,7 @@ public class DefaultEmailService implements EmailService {
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 			helper.setTo(recipientEmail);
-			helper.setFrom(emailFrom);
+			helper.setFrom(smtpFrom);
 			helper.setSubject(messageSubject);
 			helper.setText(messageBody, htmlMode);
 
