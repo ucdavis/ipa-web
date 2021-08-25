@@ -30,19 +30,19 @@ jobs:
         shell: bash
 
       - name: Copy root pem
-        run: 'echo "$RDS_ROOT_PEM" > rds-ca-2019-root.pem'
+        run: 'echo $RDS_ROOT_PEM >> rds-ca-2019-root.pem'
         shell: bash
         env:
           RDS_ROOT_PEM: ${{secrets.RDS_ROOT_PEM}}
 
       - name: Copy us-west-2 pem
-        run: 'echo "$RDS_US_WEST_2_PEM" > rds-ca-2019-us-west-2.pem'
+        run: 'echo $RDS_US_WEST_2_PEM >> rds-ca-2019-us-west-2.pem'
         shell: bash
         env:
           RDS_US_WEST_2_PEM: ${{secrets.RDS_US_WEST_2_PEM}}
 
       - name: Copy dw cer
-        run: 'echo "$DW_CER" > dw.dss.ucdavis.edu.cer'
+        run: 'echo $DW_CER >> dw.dss.ucdavis.edu.cer'
         shell: bash
         env:
           DW_CER: ${{secrets.DW_CER}}
