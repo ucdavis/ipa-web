@@ -52,7 +52,7 @@ jobs:
         shell: bash
 
       - name: temp
-        run: 'echo rds-ca-2019-root.pem'
+        run: 'cat rds-ca-2019-root.pem'
         shell: bash
 
       - name: Build and redeploy
