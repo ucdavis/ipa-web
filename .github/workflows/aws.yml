@@ -30,4 +30,5 @@ jobs:
         with:
           ecr-registry: ${{ steps.login-ecr.outputs.registry }}
           ecr-repository: 'ipa-web-staging'
+          ecs-cluster: 'legacy'
           ecs-service: 'ipa-web-staging'
