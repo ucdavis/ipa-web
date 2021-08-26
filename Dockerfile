@@ -36,8 +36,11 @@ ARG CAS_URL
 ENV CAS_URL $CAS_URL
 
 
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -o rds-combined-ca-bundle.pem -s
-RUN keytool -import -noprompt -trustcacerts -alias rds-combined-ca-bundle -file rds-combined-ca-bundle.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem -o rds-ca-2019-root.pem -s
+RUN keytool -import -noprompt -trustcacerts -alias rds-ca-2019-root -file rds-ca-2019-root.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-us-west-2.pem -o rds-ca-2019-us-west-2.pem -s
+RUN keytool -import -noprompt -trustcacerts -alias rds-ca-2019-us-west-2. -file rds-ca-2019-us-west-2.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+
 
 ADD ./dw.dss.ucdavis.edu.cer dw.dss.ucdavis.edu.cer
 RUN keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.edu.cer -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
