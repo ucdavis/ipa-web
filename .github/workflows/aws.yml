@@ -21,6 +21,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Copy root pem
+        run: 'echo $RDS_ROOT_PEM | base64 -d > rds-ca-2019-root.pem'
+        shell: bash
+        env:
+          RDS_ROOT_PEM: ${{secrets.RDS_ROOT_PEM}}
+
+      - name: Copy us-west-2 pem
+        run: 'echo $RDS_US_WEST_2_PEM | base64 -d > rds-ca-2019-us-west-2.pem'
+        shell: bash
+        env:
+          RDS_US_WEST_2_PEM: ${{secrets.RDS_US_WEST_2_PEM}}
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1

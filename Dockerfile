@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:8@sha256:75739abc3852736798b0f0f897c98d8f587368e8e6cf9a2580289e3390b6432b
 
 EXPOSE 8080
 
@@ -36,14 +36,11 @@ ARG CAS_URL
 ENV CAS_URL $CAS_URL
 
 
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem -o rds-ca-2019-root.pem -s
-RUN keytool -import -noprompt -trustcacerts -alias rds-ca-2019-root -file rds-ca-2019-root.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-us-west-2.pem -o rds-ca-2019-us-west-2.pem -s
-RUN keytool -import -noprompt -trustcacerts -alias rds-ca-2019-us-west-2. -file rds-ca-2019-us-west-2.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+COPY ./rds-ca-2019-root.pem rds-ca-2019-root.pem
+COPY ./rds-ca-2019-us-west-2.pem rds-ca-2019-us-west-2.pem
+RUN keytool -import -noprompt -trustcacerts -alias aws_rds_ca_2019_root -file rds-ca-2019-root.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+RUN keytool -import -noprompt -trustcacerts -alias aws_rds_ca_us_west_2 -file rds-ca-2019-us-west-2.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
 
-
-ADD ./dw.dss.ucdavis.edu.cer dw.dss.ucdavis.edu.cer
-RUN keytool -import -noprompt -trustcacerts -alias dss_dw -file dw.dss.ucdavis.edu.cer -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
 
 COPY ./gradle gradle
 COPY ./gradlew gradlew
