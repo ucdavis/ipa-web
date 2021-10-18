@@ -130,6 +130,7 @@ public class DefaultEmailService implements EmailService {
 		mailProperties.setProperty("mail.transport.protocol", "smtp");
 		mailProperties.put("mail.smtp.auth", "true");
 		mailProperties.put("mail.smtp.starttls.enable", "true");
+		mailProperties.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
 		sender.setJavaMailProperties(mailProperties);
 
