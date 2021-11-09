@@ -27,6 +27,7 @@ drop table if exists ReasonCategories;
 drop table if exists Roles;
 drop table if exists ScheduleInstructorNotes;
 drop table if exists Schedules;
+drop table if exists SchedulingNotes;
 drop table if exists SectionGroupCostComments;
 drop table if exists SectionGroupCostInstructors;
 drop table if exists SectionGroupCosts;
