@@ -7,6 +7,7 @@ import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.LocationService;
+import edu.ucdavis.dss.ipa.services.SchedulingNoteService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class SchedulingViewController {
 	@Inject SectionService sectionService;
 	@Inject ActivityService activityService;
 	@Inject LocationService locationService;
+	@Inject	SchedulingNoteService schedulingNoteService;
 	@Inject SchedulingViewFactory schedulingViewFactory;
 	@Inject Authorizer authorizer;
 
@@ -103,6 +105,22 @@ public class SchedulingViewController {
 		slotActivity = activityService.saveActivity(slotActivity);
 
 		return slotActivity;
+	}
+
+	@RequestMapping(value = "/api/schedulingView/sectionGroups/{sectionGroupId}/schedulingNotes", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public SchedulingNote createSchedulingNote(@PathVariable Long sectionGroupId, @RequestBody SchedulingNote schedulingNoteDTO, HttpServletResponse httpResponse) {
+		SectionGroup sectionGroup = sectionGroupService.getOneById(sectionGroupId);
+
+		if (sectionGroup == null) {
+			httpResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+			return null;
+		}
+
+		authorizer.hasWorkgroupRole(sectionGroup.getCourse().getSchedule().getWorkgroup().getId(), "academicPlanner");
+
+		schedulingNoteDTO.setSectionGroup(sectionGroup);
+		return schedulingNoteService.create(schedulingNoteDTO);
 	}
 
 	@RequestMapping(value = "/api/schedulingView/sections/{sectionId}/activities/{activityCode}", method = RequestMethod.POST, produces="application/json")

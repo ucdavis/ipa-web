@@ -32,6 +32,7 @@ public class SectionGroup extends BaseEntity {
 	private List<InstructorSupportPreference> instructorSupportPreferences = new ArrayList<InstructorSupportPreference>();
 	private List<TeachingAssignment> teachingAssignments = new ArrayList<TeachingAssignment>();
 	private List<Activity> activities = new ArrayList<Activity>();
+	private List<SchedulingNote> schedulingNotes = new ArrayList<>();
 	private String termCode;
 	private Integer plannedSeats;
 	private Float teachingAssistantAppointments, readerAppointments, unitsVariable;
@@ -196,6 +197,18 @@ public class SectionGroup extends BaseEntity {
 	public Float getUnitsVariable() { return unitsVariable; }
 
 	public void setUnitsVariable(Float unitsVariable) { this.unitsVariable = unitsVariable; }
+
+	@JsonProperty
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "SectionGroupId")
+	public List<SchedulingNote> getSchedulingNotes() {
+		return schedulingNotes;
+	}
+
+	public void setSchedulingNotes(
+		List<SchedulingNote> schedulingNotes) {
+		this.schedulingNotes = schedulingNotes;
+	}
 
 	@Transient
 	@JsonProperty("displayUnits")
