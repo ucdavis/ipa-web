@@ -37,5 +37,4 @@ public class JpaSchedulingNoteService implements SchedulingNoteService {
 
         return schedulingNote;
     }
-
 }
