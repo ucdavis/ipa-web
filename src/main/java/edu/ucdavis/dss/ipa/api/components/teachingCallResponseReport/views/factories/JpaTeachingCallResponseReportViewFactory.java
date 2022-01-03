@@ -2,15 +2,20 @@ package edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.fact
 
 import edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.TeachingCallResponseReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.teachingCallResponseReport.views.TeachingCallResponseReportView;
-import edu.ucdavis.dss.ipa.entities.*;
-import edu.ucdavis.dss.ipa.services.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.View;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
+import edu.ucdavis.dss.ipa.entities.Course;
+import edu.ucdavis.dss.ipa.entities.Instructor;
+import edu.ucdavis.dss.ipa.entities.Schedule;
+import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
+import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
+import edu.ucdavis.dss.ipa.services.ScheduleService;
+import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 @Service
 public class JpaTeachingCallResponseReportViewFactory implements TeachingCallResponseReportViewFactory {
@@ -33,8 +38,7 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
         List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 
-        List<Instructor> instructors = teachingCallReceipts.stream().map(tcr -> tcr.getInstructor()).collect(
-            Collectors.toList());
+        List<Instructor> instructors = teachingCallReceipts.stream().map(tcr -> tcr.getInstructor()).collect(Collectors.toList());
 
         return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
     }
