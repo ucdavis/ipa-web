@@ -10,6 +10,7 @@ import org.springframework.web.servlet.View;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JpaTeachingCallResponseReportViewFactory implements TeachingCallResponseReportViewFactory {
@@ -31,18 +32,9 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
 
         List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
         List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
-        List<Instructor> instructors = new ArrayList<>();
 
-        for (TeachingAssignment teachingAssignment : teachingAssignments) {
-            if (teachingAssignment.getInstructor() != null) {
-                Instructor instructor = teachingAssignment.getInstructor();
-
-                // Only add new instances of the instructor
-                if (instructors.indexOf(instructor) == -1) {
-                    instructors.add(instructor);
-                }
-            }
-        }
+        List<Instructor> instructors = teachingCallReceipts.stream().map(tcr -> tcr.getInstructor()).collect(
+            Collectors.toList());
 
         return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
     }
