@@ -186,4 +186,55 @@ public class ScheduleSummaryReportController {
             return null;
         }
     }
+
+    @RequestMapping(value = "/api/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/generateExcel/courseListings", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> generateExcelCourseListings(@PathVariable long workgroupId, @PathVariable long year,
+                                             HttpServletRequest httpRequest) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/excel/courseListings";
+        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+        return map;
+    }
+
+    /**
+     * Exports a schedule as an Excel .xls file
+     *
+     * @param workgroupId
+     * @param year
+     * @param salt
+     * @param encrypted
+     * @param httpRequest
+     * @return
+     * @throws ParseException
+     */
+    @RequestMapping(value = "/download/scheduleSummaryReportView/workgroups/{workgroupId}/years/{year}/excel/courseListings/{salt}/{encrypted}")
+    public View downloadExcelYearCourseListings(@PathVariable long workgroupId, @PathVariable long year,
+                              @PathVariable String salt, @PathVariable String encrypted,
+                              HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws ParseException {
+        long TIMEOUT = 30L; // In seconds
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
+
+        if (isValidUrl) {
+            return scheduleSummaryViewFactory.createScheduleSummaryReportCourseListingsExcelView(workgroupId, year, null);
+        } else {
+            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return null;
+        }
+    }
 }

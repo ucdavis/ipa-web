@@ -7,4 +7,6 @@ public interface ScheduleSummaryViewFactory {
     ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String termCode, boolean simpleView);
 
     View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode, boolean simpleView);
+
+    View createScheduleSummaryReportCourseListingsExcelView(long workgroupId, long year, String termCode);
 }
