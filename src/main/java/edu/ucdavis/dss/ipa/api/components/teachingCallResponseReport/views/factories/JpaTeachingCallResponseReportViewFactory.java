@@ -13,6 +13,7 @@ import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
@@ -38,8 +39,9 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
         List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 
-        List<Instructor> instructors = teachingAssignments.stream()
-            .map(teachingAssignment -> teachingAssignment.getInstructor())
+        List<Instructor> instructors = Stream.concat(
+                teachingCallReceipts.stream().map(TeachingCallReceipt::getInstructor),
+                teachingAssignments.stream().map(TeachingAssignment::getInstructor))
             .distinct().collect(Collectors.toList());
 
         return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
