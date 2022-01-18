@@ -10,8 +10,9 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DwSection {
-    private String crn, title, subjectCode, courseNumber, sequenceNumber, termCode;
+    private String crn, title, subjectCode, courseNumber, sequenceNumber, sequencePattern, termCode, effectiveTermCode;
     private long maximumEnrollment;
+    private float creditHoursLow, creditHoursHigh;
     private List<DwInstructor> instructors = new ArrayList<>();
     private List<DwActivity> activities = new ArrayList<>();
 
@@ -41,6 +42,14 @@ public class DwSection {
     }
     public void setCourseNumber(String courseNumber) {
         this.courseNumber = courseNumber;
+    }
+
+    public String getSequencePattern() {
+        return sequencePattern;
+    }
+
+    public void setSequencePattern(String sequencePattern) {
+        this.sequencePattern = sequencePattern;
     }
 
     public String getSequenceNumber() {
@@ -74,6 +83,30 @@ public class DwSection {
     }
     public void setTermCode(String termCode) {
         this.termCode = termCode;
+    }
+
+    public String getEffectiveTermCode() {
+        return effectiveTermCode;
+    }
+
+    public void setEffectiveTermCode(String effectiveTermCode) {
+        this.effectiveTermCode = effectiveTermCode;
+    }
+
+    public float getCreditHoursLow() {
+        return creditHoursLow;
+    }
+
+    public void setCreditHoursLow(float creditHoursLow) {
+        this.creditHoursLow = creditHoursLow;
+    }
+
+    public float getCreditHoursHigh() {
+        return creditHoursHigh;
+    }
+
+    public void setCreditHoursHigh(float creditHoursHigh) {
+        this.creditHoursHigh = creditHoursHigh;
     }
 
     /**

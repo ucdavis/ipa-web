@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.dw;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -260,6 +261,45 @@ public class DwClient {
 		}
 
 		return dwCourses;
+	}
+
+		public List<DwSearchResultSection> searchImportCourses(String subjectCode, Long academicYear) throws IOException {
+		List<DwSearchResultSection> dwSearchResultSections = null;
+
+		if (connect() && subjectCode != null) {
+			HttpGet httpget = new HttpGet("/sections/search?"
+				+ "&subjectCode=" + URLEncoder.encode(subjectCode, "UTF-8")
+				+ "&academicYear=" + academicYear
+				+ "&private=true"
+				+ "&token=" + ApiToken);
+
+			CloseableHttpResponse response = httpclient.execute(
+					targetHost, httpget, context);
+
+			StatusLine line = response.getStatusLine();
+			if(line.getStatusCode() != 200) {
+				throw new IllegalStateException("Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /sections/search?q=" + URLEncoder.encode(subjectCode, "UTF-8"));
+			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+			if (arrNode != null) {
+				dwSearchResultSections = mapper.readValue(
+						arrNode.toString(),
+						mapper.getTypeFactory().constructCollectionType(
+								List.class, DwSearchResultSection.class));
+			} else {
+				log.warn("searchImportCourses Response from DW returned null, for criterion = " + subjectCode);
+			}
+
+			response.close();
+		} else if (subjectCode == null) {
+			log.warn("No query given.");
+		}
+
+		return dwSearchResultSections;
 	}
 
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, String sectionUniqueKeys) throws IOException {

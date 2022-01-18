@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("serial")
 @Entity
@@ -56,7 +57,7 @@ public class Course extends BaseEntity {
 		this.sectionGroups = sectionGroups;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="ScheduleId", nullable=false)
 	@JsonIgnore
 	public Schedule getSchedule() {

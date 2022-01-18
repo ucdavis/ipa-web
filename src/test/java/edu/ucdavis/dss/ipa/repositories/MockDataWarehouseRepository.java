@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwPerson;
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.springframework.context.annotation.Profile;
@@ -51,6 +52,10 @@ public class MockDataWarehouseRepository implements DataWarehouseRepository {
 
     @Override
     public List<DwCourse> searchCourses(String query) {
+        return null;
+    }
+    @Override
+    public List<DwSearchResultSection> searchImportCourses(String subjectCode, Long academicYear) {
         return null;
     }
 
