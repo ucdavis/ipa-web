@@ -11,7 +11,12 @@ import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.entities.TeachingCallResponse;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
@@ -41,7 +46,7 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
 
         List<Instructor> instructors = Stream.concat(
                 teachingCallReceipts.stream().map(TeachingCallReceipt::getInstructor),
-                teachingAssignments.stream().map(TeachingAssignment::getInstructor))
+                teachingAssignments.stream().map(TeachingAssignment::getInstructor).filter(Objects::nonNull))
             .distinct().collect(Collectors.toList());
 
         return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
