@@ -38,7 +38,9 @@ public class JpaTeachingCallResponseReportViewFactory implements TeachingCallRes
         List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
         List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 
-        List<Instructor> instructors = teachingCallReceipts.stream().map(tcr -> tcr.getInstructor()).collect(Collectors.toList());
+        List<Instructor> instructors = teachingAssignments.stream()
+            .map(teachingAssignment -> teachingAssignment.getInstructor())
+            .distinct().collect(Collectors.toList());
 
         return new TeachingCallResponseReportView(courses, sectionGroups, teachingAssignments, teachingCallReceipts, teachingCallResponses, instructors, schedule);
     }
