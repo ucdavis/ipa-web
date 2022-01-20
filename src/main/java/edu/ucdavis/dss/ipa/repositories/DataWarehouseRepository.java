@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.repositories;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import java.util.List;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
@@ -34,4 +35,6 @@ public interface DataWarehouseRepository {
 	List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode);
 
 	List<DwCensus> getCensusBySubjectCodeAndTermCode(String subjectCode, String termCode);
+
+	List<DwSearchResultSection> searchSections(String subjectCode, long academicYear);
 }

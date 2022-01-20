@@ -4,6 +4,7 @@ import edu.ucdavis.dss.dw.DwClient;
 import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.dw.dto.DwPerson;
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
@@ -189,6 +190,20 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 			List<DwCensus> dwCensuses = dwClient.getCensusBySubjectCodeAndTermCode(subjectCode, termCode);
 
 			return dwCensuses;
+		} catch (Exception e) {
+			emailService.reportException(e, this.getClass().getName());
+			return null;
+		}
+	}
+
+	@Override
+	public List<DwSearchResultSection> searchSections(String subjectCode, long academicYear) {
+		DwClient dwClient;
+
+		try {
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
+
+			return dwClient.searchSections(subjectCode, academicYear);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
