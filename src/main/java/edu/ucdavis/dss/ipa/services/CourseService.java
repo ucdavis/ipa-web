@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services;
 
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Tag;
@@ -40,6 +41,8 @@ public interface CourseService {
 	List<Course> getAllCourses();
 
 	Course updateUnits(Course course, Float unitsLow, Float unitsHigh);
+
+	Course updateFromDwSearchResultSection(Course course, DwSearchResultSection dwSearchResultSection);
 
 	Course findOrCreateByCourse(Course courseDTO);
 

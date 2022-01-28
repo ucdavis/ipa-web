@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
+import edu.ucdavis.dss.dw.dto.DwSearchResultSection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,14 @@ public class JpaCourseService implements CourseService {
 		course.setUnitsLow(unitsLow);
 		course.setUnitsHigh(unitsHigh);
 
+		return this.courseRepository.save(course);
+	}
+
+	public Course updateFromDwSearchResultSection(Course course, DwSearchResultSection dwSection) {
+		course.setEffectiveTermCode(dwSection.getEffectiveTermCode());
+		course.setTitle(dwSection.getTitle());
+		course.setUnitsLow(dwSection.getCreditHoursLow() == null ? null : Float.valueOf(dwSection.getCreditHoursLow()));
+		course.setUnitsHigh(dwSection.getCreditHoursHigh() == null ? null : Float.valueOf(dwSection.getCreditHoursHigh()));
 		return this.courseRepository.save(course);
 	}
 
