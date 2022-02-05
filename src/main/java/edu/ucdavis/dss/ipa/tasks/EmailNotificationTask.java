@@ -24,7 +24,6 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 @Service
 @Profile({"production", "staging", "development"})
 public class EmailNotificationTask {
-	final long ONE_MINUTE_IN_MILLISECONDS = 60000;
 	private final Logger log = LoggerFactory.getLogger("EmailNotificationTask");
 
 	@Inject WorkgroupService workgroupService;
@@ -34,7 +33,8 @@ public class EmailNotificationTask {
 
 	private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
 
-	@Scheduled( fixedDelay = ONE_MINUTE_IN_MILLISECONDS )
+	// Repeat every minute from 7:00:00am to 10:59:00pm
+	@Scheduled( cron = "0 * 7-22 * * *", zone = "America/Los_Angeles")
 	@Async
 	public void scanForEmailsToSend() {
 		if(runningTask) {
