@@ -211,8 +211,6 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             sectionGroupCost.setUnitsVariable(sectionGroup.getUnitsVariable());
         }
 
-        // unitsLow should never be null.
-        // course was likely copied from IPA schedule and budget was created before course units synced with Banner
         if (sectionGroupCost.getUnitsLow() == null) {
             updateRequired = true;
             sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsLow());
