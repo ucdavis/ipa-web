@@ -211,6 +211,20 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
             sectionGroupCost.setUnitsVariable(sectionGroup.getUnitsVariable());
         }
 
+        if (sectionGroupCost.getUnitsLow() == null) {
+            updateRequired = true;
+            sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsLow());
+            sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
+        }
+
+        if (sectionGroupCost.getUnitsLow() != null && sectionGroup.getCourse().getUnitsLow() != null) {
+            if (Float.compare(sectionGroupCost.getUnitsLow(), sectionGroup.getCourse().getUnitsLow()) != 0) {
+                updateRequired = true;
+                sectionGroupCost.setUnitsLow(sectionGroup.getCourse().getUnitsLow());
+                sectionGroupCost.setUnitsHigh(sectionGroup.getCourse().getUnitsHigh());
+            }
+        }
+
         Instructor instructor = null;
         InstructorType instructorType = null;
 
