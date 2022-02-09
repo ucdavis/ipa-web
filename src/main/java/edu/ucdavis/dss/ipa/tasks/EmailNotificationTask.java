@@ -47,14 +47,19 @@ public class EmailNotificationTask {
 
 		List<Long> workgroupIds = workgroupService.findAllIds();
 
-		for (Long workgroupId : workgroupIds) {
-			teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
-			studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
-			instructorSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
+		try {
+			for (Long workgroupId : workgroupIds) {
+				teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
+				studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
+				instructorSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
+			}
+		} catch (Exception e) {
+			// had SQL Out of Memory Exception that kept task from getting marked finished. ignore and try again.
+			log.debug("Could not complete scanForEmailsToSend()");
+			e.printStackTrace();
+		} finally {
+			runningTask = false;
+			log.debug("scanForEmailsToSend() finished");
 		}
-
-		runningTask = false;
-
-		log.debug("scanForEmailsToSend() finished");
 	}
 }
