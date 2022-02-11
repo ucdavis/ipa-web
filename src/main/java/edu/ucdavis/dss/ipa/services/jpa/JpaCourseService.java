@@ -143,7 +143,6 @@ public class JpaCourseService implements CourseService {
 		}
 
 		course.setTags(tags);
-		course.setNote("1" + course.getNote());
 		return this.courseRepository.save(course);
 	}
 
