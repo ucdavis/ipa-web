@@ -71,7 +71,7 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Units Low",
            "Sequence",
            "Enrollment",
-           "Current Enrollment",
+           "Actual Enrollment",
            "Sections",
            "Instructor(s)",
            "Regular Instructor",
