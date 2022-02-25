@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
+import static edu.ucdavis.dss.ipa.api.helpers.Utilities.round;
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
 
 public class BudgetExcelView extends AbstractXlsxView {
@@ -77,6 +78,8 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Regular Instructor",
            "Reason Category",
            "Additional Comments",
+           "Students per TA (Planned)",
+           "Students per TA (Actual)",
            "TAs",
            "Readers",
            "TA Cost",
@@ -160,6 +163,11 @@ public class BudgetExcelView extends AbstractXlsxView {
                     courseTags = sectionGroup.getCourse().getTags().stream().map(t -> t.getName()).collect(Collectors.toList());
                 }
 
+                Float actualStudentsPerTA = null;
+                if (currentEnrollment != null && sectionGroupCost.getTaCount() != null && sectionGroupCost.getTaCount() != 0) {
+                    actualStudentsPerTA = currentEnrollment / sectionGroupCost.getTaCount();
+                }
+
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
                         scheduleCostSheet,
                         Arrays.asList(
@@ -181,6 +189,8 @@ public class BudgetExcelView extends AbstractXlsxView {
                                 (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
                                 sectionGroupCost.getReasonCategoryDescription(),
                                 sectionGroupCost.getReason(),
+                                round(sectionGroupCost.getEnrollmentPerTA()),
+                                round(actualStudentsPerTA),
                                 sectionGroupCost.getTaCount(),
                                 sectionGroupCost.getReaderCount(),
                                 taCost,

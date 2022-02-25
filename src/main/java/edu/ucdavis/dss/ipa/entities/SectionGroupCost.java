@@ -341,4 +341,13 @@ public class SectionGroupCost extends BaseEntity {
             return 0;
         }
     }
+
+    @Transient
+    public Float getEnrollmentPerTA() {
+        if (this.enrollment != null && this.taCount != null && this.taCount != 0) {
+            return this.enrollment / this.taCount;
+        } else {
+            return null;
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.helpers;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Time;
 
 public class Utilities {
@@ -57,5 +59,17 @@ public class Utilities {
         }
 
         return true;
+    }
+
+    public static Double round(Float number) {
+        return round(number, 2);
+    }
+
+    public static Double round(Float number, Integer places) {
+        if (number != null) {
+            return new BigDecimal(number).setScale(places, RoundingMode.HALF_UP).doubleValue();
+        } else {
+            return null;
+        }
     }
 }
