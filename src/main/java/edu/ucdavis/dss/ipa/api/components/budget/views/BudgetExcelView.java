@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.api.components.budget.views;
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
-import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
@@ -59,6 +58,10 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         Sheet scheduleCostSheet = workbook.createSheet("Schedule Cost");
 
+        /* Can't easily check if the sheet has a course with multiple instructors until the rows are written
+           Opting to start with two and then deleting if not needed */
+        boolean scenarioHasMultipleInstructors = false;
+        final int SECOND_INSTRUCTOR_COLUMN = 16;
         scheduleCostSheet = ExcelHelper.setSheetHeader(scheduleCostSheet, Arrays.asList(
            "Year",
            "Department",
@@ -74,7 +77,10 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Enrollment",
            "Actual Enrollment",
            "Sections",
-           "Instructor(s)",
+           "Instructor",
+           "Instructor Type",
+           "Instructor 2",
+           "Instructor 2 Type",
            "Regular Instructor",
            "Reason Category",
            "Additional Comments",
@@ -121,14 +127,17 @@ public class BudgetExcelView extends AbstractXlsxView {
                         currentEnrollment = budgetScenarioExcelView.getCensusMap().get(sectionGroupCost.getTermCode()).get(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber()).get(sectionGroupCost.getSequencePattern());
                     }
                 }
-                List<String> instructors = new ArrayList<>();
+                List<String> namedInstructors = new ArrayList<>();
+                List<String> namedInstructorTypes = new ArrayList<>();
+                List<String> unnamedInstructors = new ArrayList<>();
                 List<Long> teachingAssingmentIds = new ArrayList<>();
                 List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
                 for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                     if(sectionGroupCostInstructor.getInstructor() != null){
-                        instructors.add(sectionGroupCostInstructor.getInstructor().getFullName());
+                        namedInstructors.add(sectionGroupCostInstructor.getInstructor().getFullName());
+                        namedInstructorTypes.add(sectionGroupCostInstructor.getInstructorType().getDescription());
                     } else if (sectionGroupCostInstructor.getInstructorType() != null) {
-                        instructors.add(sectionGroupCostInstructor.getInstructorType().getDescription());
+                        unnamedInstructors.add(sectionGroupCostInstructor.getInstructorType().getDescription());
                     }
                     if(sectionGroupCostInstructor.getTeachingAssignment() != null) {
                         teachingAssingmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
@@ -148,9 +157,10 @@ public class BudgetExcelView extends AbstractXlsxView {
                         for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
                             if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
                                 if(teachingAssignment.getInstructor() != null){
-                                    instructors.add(teachingAssignment.getInstructor().getFullName());
+                                    namedInstructors.add(teachingAssignment.getInstructor().getFullName());
+                                    namedInstructorTypes.add(teachingAssignment.getInstructorType().getDescription());
                                 } else if (sectionGroupCost.getInstructorType() != null) {
-                                    instructors.add(teachingAssignment.getInstructorType().getDescription());
+                                    unnamedInstructors.add(teachingAssignment.getInstructorType().getDescription());
                                 }
                                 instructorCost += getBudgetCalculationService().calculateTeachingAssignmentCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, teachingAssignment).floatValue();
                             }
@@ -168,37 +178,68 @@ public class BudgetExcelView extends AbstractXlsxView {
                     actualStudentsPerTA = currentEnrollment / sectionGroupCost.getTaCount();
                 }
 
+                List<Object> scheduleCostValues = new ArrayList<>();
+                scheduleCostValues.addAll(Arrays.asList(
+                    year,
+                    budgetScenarioExcelView.getWorkgroup().getName(),
+                    scenarioName,
+                    Term.getRegistrarName(sectionGroupCost.getTermCode()),
+                    sectionGroupCost.getSubjectCode(),
+                    sectionGroupCost.getCourseNumber(),
+                    sectionGroupCost.getTitle(),
+                    String.join(", ", courseTags),
+                    sectionGroupCost.getUnitsHigh(),
+                    sectionGroupCost.getUnitsLow(),
+                    sectionGroupCost.getSequencePattern(),
+                    sectionGroupCost.getEnrollment(),
+                    currentEnrollment,
+                    sectionGroupCost.getSectionCount()));
+
+                if (namedInstructors.size() + unnamedInstructors.size() > 1) { scenarioHasMultipleInstructors = true; }
+
+                // Each instructor has two columns: Name and Type
+                int numberOfInstructorColumns = 2;
+                if (namedInstructors.size() > 0) {
+                    for (int i = 0; i < namedInstructors.size(); i++) {
+                        scheduleCostValues.add(namedInstructors.get(i));
+                        scheduleCostValues.add(namedInstructorTypes.get(i));
+                        numberOfInstructorColumns--;
+                    }
+                }
+
+                if (unnamedInstructors.size() > 0) {
+                    for (int i = 0; i < unnamedInstructors.size(); i++) {
+                        scheduleCostValues.add(unnamedInstructors.get(i));
+                        scheduleCostValues.add("");
+                        numberOfInstructorColumns--;
+                    }
+                }
+
+                for (int i = 0; i < numberOfInstructorColumns; i++) {
+                    scheduleCostValues.add("");
+                    scheduleCostValues.add("");
+                }
+
+                scheduleCostValues.addAll(
+                    Arrays.asList(
+                        (sectionGroupCost.getOriginalInstructor() == null ? "" :
+                            sectionGroupCost.getOriginalInstructor().getFullName()),
+                        sectionGroupCost.getReasonCategoryDescription(),
+                        sectionGroupCost.getReason(),
+                        round(sectionGroupCost.getEnrollmentPerTA()),
+                        round(actualStudentsPerTA),
+                        sectionGroupCost.getTaCount(),
+                        sectionGroupCost.getReaderCount(),
+                        taCost,
+                        readerCost,
+                        supportCost,
+                        instructorCost,
+                        supportCost + instructorCost)
+                );
+
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
-                        scheduleCostSheet,
-                        Arrays.asList(
-                                year,
-                                budgetScenarioExcelView.getWorkgroup().getName(),
-                                scenarioName,
-                                Term.getRegistrarName(sectionGroupCost.getTermCode()),
-                                sectionGroupCost.getSubjectCode(),
-                                sectionGroupCost.getCourseNumber(),
-                                sectionGroupCost.getTitle(),
-                                String.join(", ", courseTags),
-                                sectionGroupCost.getUnitsHigh(),
-                                sectionGroupCost.getUnitsLow(),
-                                sectionGroupCost.getSequencePattern(),
-                                sectionGroupCost.getEnrollment(),
-                                currentEnrollment,
-                                sectionGroupCost.getSectionCount(),
-                                String.join(", ", instructors),
-                                (sectionGroupCost.getOriginalInstructor() == null ? "" : sectionGroupCost.getOriginalInstructor().getFullName()),
-                                sectionGroupCost.getReasonCategoryDescription(),
-                                sectionGroupCost.getReason(),
-                                round(sectionGroupCost.getEnrollmentPerTA()),
-                                round(actualStudentsPerTA),
-                                sectionGroupCost.getTaCount(),
-                                sectionGroupCost.getReaderCount(),
-                                taCost,
-                                readerCost,
-                                supportCost,
-                                instructorCost,
-                                supportCost + instructorCost
-                        )
+                    scheduleCostSheet,
+                    scheduleCostValues
                 );
             }
 
@@ -331,6 +372,13 @@ public class BudgetExcelView extends AbstractXlsxView {
                 );
             }
 
+        }
+
+        // clean up unused instructor columns
+        if (scenarioHasMultipleInstructors == false) {
+            // instructor has two columns, name and type
+            ExcelHelper.deleteColumn(workbook.getSheet("Schedule Cost"), SECOND_INSTRUCTOR_COLUMN);
+            ExcelHelper.deleteColumn(workbook.getSheet("Schedule Cost"), SECOND_INSTRUCTOR_COLUMN);
         }
 
         // Expand columns to length of largest value
