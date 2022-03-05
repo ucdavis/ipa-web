@@ -47,7 +47,8 @@ public class BudgetComparisonExcelView extends AbstractXlsxView {
         throws Exception {
 
         for (List<BudgetScenarioExcelView> budgetScenarioExcelViewPair : budgetComparisonList) {
-            Sheet report = workbook.createSheet(createSafeSheetName(budgetScenarioExcelViewPair.get(0).getWorkgroup().getName()));
+            Sheet report = workbook.createSheet(createSafeSheetName(budgetScenarioExcelViewPair.get(0).getWorkgroup()
+                .getCode()));
 
             BudgetScenarioExcelView previousYear = budgetScenarioExcelViewPair.get(0);
             BudgetScenarioExcelView currentYear = budgetScenarioExcelViewPair.get(1);
