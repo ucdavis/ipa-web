@@ -73,6 +73,22 @@ public class BudgetCalculationService {
 
             Map<BudgetSummary, BigDecimal> currentTermSummary = termTotals.get(sectionGroupCost.getTermCode());
 
+            if (budgetScenario.getFromLiveData() == false && sectionGroupCostInstructors.size() < 1) {
+                currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+
+                currentTermSummary.put(COURSE_COUNT, currentTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(COURSE_COUNT, combinedTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
+            }
+
+            if (budgetScenario.getFromLiveData() == true && sectionGroupCost.getInstructor() == null && sectionGroupCost.getInstructorType() == null) {
+                currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
+
+                currentTermSummary.put(COURSE_COUNT, currentTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
+                combinedTermSummary.put(COURSE_COUNT, combinedTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
+            }
+
             for(SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                 BigDecimal instructorCost = calculateSectionGroupInstructorCost(workgroup, budget, sectionGroupCostInstructor);
                 long instructorTypeId = calculateSectionGroupInstructorTypeId(sectionGroupCostInstructor, workgroup);
@@ -133,17 +149,13 @@ public class BudgetCalculationService {
 
                     currentTermSummary.put(NEW_FACULTY_HIRE_COST, currentTermSummary.get(NEW_FACULTY_HIRE_COST).add(instructorCost));
                     combinedTermSummary.put(NEW_FACULTY_HIRE_COST, combinedTermSummary.get(NEW_FACULTY_HIRE_COST).add(instructorCost));
-                } else {
-                    currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
-                    combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
-
-                    currentTermSummary.put(UNASSIGNED_COST, currentTermSummary.get(UNASSIGNED_COST).add(instructorCost));
-                    combinedTermSummary.put(UNASSIGNED_COST, combinedTermSummary.get(UNASSIGNED_COST).add(instructorCost));
                 }
+
                 currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                 combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                 currentTermSummary.put(TOTAL_TEACHING_COST, currentTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
                 combinedTermSummary.put(TOTAL_TEACHING_COST, combinedTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
+                currentTermSummary.put(COURSE_COUNT, currentTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
                 combinedTermSummary.put(COURSE_COUNT, combinedTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
             }
 
@@ -259,17 +271,13 @@ public class BudgetCalculationService {
 
                         currentTermSummary.put(NEW_FACULTY_HIRE_COST, currentTermSummary.get(NEW_FACULTY_HIRE_COST).add(instructorCost));
                         combinedTermSummary.put(NEW_FACULTY_HIRE_COST, combinedTermSummary.get(NEW_FACULTY_HIRE_COST).add(instructorCost));
-                    } else {
-                        currentTermSummary.put(UNASSIGNED_COUNT, currentTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
-                        combinedTermSummary.put(UNASSIGNED_COUNT, combinedTermSummary.get(UNASSIGNED_COUNT).add(BigDecimal.ONE));
-
-                        currentTermSummary.put(UNASSIGNED_COST, currentTermSummary.get(UNASSIGNED_COST).add(instructorCost));
-                        combinedTermSummary.put(UNASSIGNED_COST, combinedTermSummary.get(UNASSIGNED_COST).add(instructorCost));
                     }
+
                     currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                     combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                     currentTermSummary.put(TOTAL_TEACHING_COST, currentTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
                     combinedTermSummary.put(TOTAL_TEACHING_COST, combinedTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
+                    currentTermSummary.put(COURSE_COUNT, currentTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(COURSE_COUNT, combinedTermSummary.get(COURSE_COUNT).add(BigDecimal.ONE));
                 }
             }
