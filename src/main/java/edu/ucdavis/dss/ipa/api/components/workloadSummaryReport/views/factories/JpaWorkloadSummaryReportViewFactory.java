@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories;
 
+import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadInstructorDTO;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;
@@ -13,6 +14,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
 import edu.ucdavis.dss.ipa.services.InstructorTypeService;
@@ -23,8 +25,10 @@ import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -32,6 +36,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryReportViewFactory {
+    @Inject
+    DataWarehouseRepository dwRepository;
     @Inject
     ScheduleService scheduleService;
     @Inject
@@ -78,8 +84,43 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
         List<Instructor> instructors = new ArrayList<>(instructorSet);
 
+        List<DwCensus> censusList = new ArrayList<>();
+        List<String> subjectCodes =
+            courses.stream().map(c -> c.getSubjectCode()).distinct().collect(Collectors.toList());
+        for (String subjectCode : subjectCodes) {
+            for (String termCode : Term.getTermCodesByYear(year)) {
+                censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(subjectCode, termCode).stream()
+                    .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList()));
+            }
+        }
+
+        Map<String, Map<String, Map<String, Long>>> censusByTermCode = new HashMap<>(new HashMap<>());
+
+        for (DwCensus census : censusList) {
+            String termCode = census.getTermCode();
+            String sequencePattern = census.getSequencePattern();
+            String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
+
+            if (censusByTermCode.get(termCode) == null) {
+                censusByTermCode.put(termCode, new HashMap<>());
+            }
+
+            if (censusByTermCode.get(termCode).get(courseIdentifier) == null) {
+                censusByTermCode.get(termCode).put(courseIdentifier, new HashMap<>());
+            }
+
+            if (censusByTermCode.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
+                censusByTermCode.get(termCode).get(courseIdentifier)
+                    .put(sequencePattern, census.getCurrentEnrolledCount());
+            } else {
+                censusByTermCode.get(termCode).get(courseIdentifier).put(sequencePattern,
+                    censusByTermCode.get(termCode).get(courseIdentifier).get(sequencePattern) +
+                        census.getCurrentEnrolledCount());
+            }
+        }
+
         return new WorkloadSummaryReportView(year, schedule, courses, instructors, instructorTypes, teachingAssignments,
-            scheduleInstructorNotes, sectionGroups, sections);
+            scheduleInstructorNotes, sectionGroups, sections, censusByTermCode);
     }
 
     @Override
@@ -112,32 +153,70 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             if (scheduleAssignments.size() == 0) {
                 workloadInstructors.add(
                     new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName(), null,
-                        null, null, null));
+                        null, null, null, null, null, null, null));
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
+                    String termCode = assignment.getTermCode();
+
+                    String courseDescription = null, offering = null, enrollmentCensus = null, instructorNote = null;
+                    long censusCount = 0;
+                    Float unit = null, studentCreditHour = null;
+
                     String courseType = getCourseType(assignment);
+                    if (assignment.getSectionGroup() != null) {
+                        SectionGroup sectionGroup = assignment.getSectionGroup();
+                        Course course = sectionGroup.getCourse();
+
+                        courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
+                        offering = course.getSequencePattern();
+                        unit = Float.valueOf(sectionGroup.getDisplayUnits());
+
+                        instructorNote = workloadSummaryReportView.getScheduleInstructorNotes().stream()
+                            .filter(n -> n.getInstructor().getId() == assignment.getInstructor().getId())
+                            .map(s -> s.getInstructorComment()).findFirst().orElse("");
+
+                        if (workloadSummaryReportView.getCensusByTermCode().size() > 0) {
+                            String courseKey = course.getSubjectCode() + course.getCourseNumber();
+                            if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey) != null) {
+                                if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey)
+                                    .get(course.getSequencePattern()) != null) {
+                                    censusCount =
+                                        workloadSummaryReportView.getCensusByTermCode().get(termCode).get(
+                                                courseKey)
+                                            .get(course.getSequencePattern());
+                                }
+
+                                studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
+                                enrollmentCensus = censusCount + " / " + sectionGroup.getPlannedSeats();
+                            }
+                        }
+
+                    } else {
+                        courseDescription = assignment.getDescription();
+                    }
 
                     workloadInstructors.add(new WorkloadInstructorDTO(department, instructorTypeDescription,
                         instructor.getLastName() + ", " + instructor.getFirstName(),
-                        Term.getRegistrarName(assignment.getTermCode()), courseType, assignment.getDescription(),
-                        assignment.getSectionGroup().getCourse().getSequencePattern()));
+                        Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
+                        courseDescription,
+                        offering, enrollmentCensus, unit, studentCreditHour, instructorNote));
                 }
             }
-
-
         }
 
         // fill in TBD instructor assignments
-        for (TeachingAssignment teachingAssignment : workloadSummaryReportView.getTeachingAssignment().stream()
+        List<TeachingAssignment> unnamedAssignments = workloadSummaryReportView.getTeachingAssignment().stream()
             .filter(teachingAssignment -> teachingAssignment.getInstructor() == null).collect(
-                Collectors.toList())) {
+                Collectors.toList());
+        for (TeachingAssignment teachingAssignment : unnamedAssignments) {
             workloadInstructors.add(
                 new WorkloadInstructorDTO(department,
                     instructorTypeService.findById(teachingAssignment.getInstructorTypeIdentification())
                         .getDescription(), "TBD",
                     Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
                     teachingAssignment.getDescription(),
-                    teachingAssignment.getSectionGroup().getCourse().getSequencePattern()));
+                    teachingAssignment.getSectionGroup().getCourse().getSequencePattern(),
+                    null, null, null, null));
         }
 
         // write data to excel
@@ -188,5 +267,17 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                 return "Upper";
             }
         }
+    }
+
+    private Float calculateStudentCreditHours(Long students, Course course, SectionGroup sectionGroup) {
+        Float units = 0.0f;
+
+        if (sectionGroup.getUnitsVariable() != null) {
+            units = sectionGroup.getUnitsVariable();
+        } else if (course.getUnitsLow() > 0) {
+            units = course.getUnitsLow();
+        }
+
+        return students * units;
     }
 }

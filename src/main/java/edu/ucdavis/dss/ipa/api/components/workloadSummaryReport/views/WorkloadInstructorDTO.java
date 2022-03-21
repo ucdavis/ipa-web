@@ -1,10 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
 public class WorkloadInstructorDTO {
-    String department, instructorType, name, term, courseType, description, offering;
+    String department, instructorType, name, term, courseType, description, offering, census, instructorNote;
+    Float units, studentCreditHours;
 
     public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
-                                 String description, String offering) {
+                                 String description, String offering, String census, Float units,
+                                 Float studentCreditHours, String instructorNote) {
         this.department = department;
         this.instructorType = instructorType;
         this.name = name;
@@ -12,6 +14,10 @@ public class WorkloadInstructorDTO {
         this.courseType = courseType;
         this.description = description;
         this.offering = offering;
+        this.census = census;
+        this.units = units;
+        this.studentCreditHours = studentCreditHours;
+        this.instructorNote = instructorNote;
     }
 
     public String getDepartment() {
@@ -68,5 +74,37 @@ public class WorkloadInstructorDTO {
 
     public void setOffering(String offering) {
         this.offering = offering;
+    }
+
+    public String getCensus() {
+        return census;
+    }
+
+    public void setCensus(String census) {
+        this.census = census;
+    }
+
+    public String getInstructorNote() {
+        return instructorNote;
+    }
+
+    public void setInstructorNote(String instructorNote) {
+        this.instructorNote = instructorNote;
+    }
+
+    public Float getUnits() {
+        return units;
+    }
+
+    public void setUnits(Float units) {
+        this.units = units;
+    }
+
+    public Float getStudentCreditHours() {
+        return studentCreditHours;
+    }
+
+    public void setStudentCreditHours(Float studentCreditHours) {
+        this.studentCreditHours = studentCreditHours;
     }
 }

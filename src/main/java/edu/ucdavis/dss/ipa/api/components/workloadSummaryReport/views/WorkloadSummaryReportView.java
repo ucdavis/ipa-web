@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import java.util.List;
+import java.util.Map;
 
 public class WorkloadSummaryReportView {
     long year;
@@ -20,6 +21,8 @@ public class WorkloadSummaryReportView {
     List<InstructorType> instructorTypes;
     List<SectionGroup> sectionGroups;
     List<Section> sections;
+    Map<String, Map<String, Map<String, Long>>> censusByTermCode;
+
     public WorkloadSummaryReportView(long year,
                                      Schedule schedule, List<Course> courses,
                                      List<Instructor> instructors,
@@ -27,7 +30,8 @@ public class WorkloadSummaryReportView {
                                      List<TeachingAssignment> teachingAssignment,
                                      List<ScheduleInstructorNote> scheduleInstructorNotes,
                                      List<SectionGroup> sectionGroups,
-                                     List<Section> sections) {
+                                     List<Section> sections,
+                                     Map<String, Map<String, Map<String, Long>>> censusByTermCode) {
         this.year = year;
         this.schedule = schedule;
         this.courses = courses;
@@ -37,6 +41,7 @@ public class WorkloadSummaryReportView {
         this.scheduleInstructorNotes = scheduleInstructorNotes;
         this.sectionGroups = sectionGroups;
         this.sections = sections;
+        this.censusByTermCode = censusByTermCode;
     }
 
     public long getYear() {
@@ -110,5 +115,14 @@ public class WorkloadSummaryReportView {
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public Map<String, Map<String, Map<String, Long>>> getCensusByTermCode() {
+        return censusByTermCode;
+    }
+
+    public void setCensusByTermCode(
+        Map<String, Map<String, Map<String, Long>>> censusByTermCode) {
+        this.censusByTermCode = censusByTermCode;
     }
 }
