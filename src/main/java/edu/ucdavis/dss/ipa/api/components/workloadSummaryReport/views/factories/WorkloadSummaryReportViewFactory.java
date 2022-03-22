@@ -6,5 +6,5 @@ import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSu
 public interface WorkloadSummaryReportViewFactory {
     WorkloadSummaryReportView createWorkloadSummaryReportView(long workgroupId, long year);
 
-    WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workgroupId, long year);
+    WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupId, long year);
 }

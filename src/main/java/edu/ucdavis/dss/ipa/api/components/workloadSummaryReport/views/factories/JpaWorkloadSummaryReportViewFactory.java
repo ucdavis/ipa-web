@@ -124,99 +124,101 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
     }
 
     @Override
-    public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workgroupId, long year) {
-        WorkloadSummaryReportView workloadSummaryReportView = createWorkloadSummaryReportView(workgroupId, year);
-
-        // list every instructor regardless of active assignments
-        // "Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description", "Offering"
-        // instructor has teachingAssignments, filter for current year
-        // for each instructor, print teachingAssignments if exists, else just print year, department, type, name
+    public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupIds, long year) {
         List<WorkloadInstructorDTO> workloadInstructors = new ArrayList<>();
 
-        String department = workloadSummaryReportView.getSchedule().getWorkgroup().getName();
+        for (long workgroupId : workgroupIds) {
+            WorkloadSummaryReportView workloadSummaryReportView = createWorkloadSummaryReportView(workgroupId, year);
 
-        for (Instructor instructor : workloadSummaryReportView.getInstructors()) {
-            Long instructorTypeId =
-                getInstructorTypeId(instructor, workloadSummaryReportView.getTeachingAssignment(), workgroupId);
+            String department = workloadSummaryReportView.getSchedule().getWorkgroup().getName();
 
-            if (instructorTypeId == null) {
-                continue;
-            }
-            // use enum instead?
-            String instructorTypeDescription = instructorTypeService.findById(instructorTypeId).getDescription();
+            for (Instructor instructor : workloadSummaryReportView.getInstructors()) {
+                Long instructorTypeId =
+                    getInstructorTypeId(instructor, workloadSummaryReportView.getTeachingAssignment(), workgroupId);
 
-            List<TeachingAssignment> scheduleAssignments = teachingAssignmentService.findByScheduleIdAndInstructorId(
-                workloadSummaryReportView.getSchedule().getId(), instructor.getId());
+                if (instructorTypeId == null) {
+                    continue;
+                }
+                // use enum instead?
+                String instructorTypeDescription = instructorTypeService.findById(instructorTypeId).getDescription();
 
-            // TODO: add enrollment/units/SCH
+                List<TeachingAssignment> scheduleAssignments =
+                    teachingAssignmentService.findByScheduleIdAndInstructorId(
+                        workloadSummaryReportView.getSchedule().getId(), instructor.getId());
 
-            if (scheduleAssignments.size() == 0) {
-                workloadInstructors.add(
-                    new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName(), null,
-                        null, null, null, null, null, null, null));
-            } else {
-                for (TeachingAssignment assignment : scheduleAssignments) {
-                    String termCode = assignment.getTermCode();
+                // TODO: add Previous Enrollment
 
-                    String courseDescription = null, offering = null, enrollmentCensus = null, instructorNote = null;
-                    long censusCount = 0;
-                    Float unit = null, studentCreditHour = null;
+                if (scheduleAssignments.size() == 0) {
+                    workloadInstructors.add(
+                        new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName(), null,
+                            null, null, null, null, null, null, null, null));
+                } else {
+                    for (TeachingAssignment assignment : scheduleAssignments) {
+                        String termCode = assignment.getTermCode();
 
-                    String courseType = getCourseType(assignment);
-                    if (assignment.getSectionGroup() != null) {
-                        SectionGroup sectionGroup = assignment.getSectionGroup();
-                        Course course = sectionGroup.getCourse();
+                        String courseDescription = null, offering = null, instructorNote =
+                            null, unit = null;
+                        int plannedSeats = 0;
+                        long censusCount = 0;
+                        Float studentCreditHour = null;
 
-                        courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
-                        offering = course.getSequencePattern();
-                        unit = Float.valueOf(sectionGroup.getDisplayUnits());
+                        String courseType = getCourseType(assignment);
+                        if (assignment.getSectionGroup() != null) {
+                            SectionGroup sectionGroup = assignment.getSectionGroup();
+                            Course course = sectionGroup.getCourse();
 
-                        instructorNote = workloadSummaryReportView.getScheduleInstructorNotes().stream()
-                            .filter(n -> n.getInstructor().getId() == assignment.getInstructor().getId())
-                            .map(s -> s.getInstructorComment()).findFirst().orElse("");
+                            courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
+                            offering = course.getSequencePattern();
+                            unit = sectionGroup.getDisplayUnits();
 
-                        if (workloadSummaryReportView.getCensusByTermCode().size() > 0) {
-                            String courseKey = course.getSubjectCode() + course.getCourseNumber();
-                            if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey) != null) {
-                                if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey)
-                                    .get(course.getSequencePattern()) != null) {
-                                    censusCount =
-                                        workloadSummaryReportView.getCensusByTermCode().get(termCode).get(
-                                                courseKey)
-                                            .get(course.getSequencePattern());
+                            instructorNote = workloadSummaryReportView.getScheduleInstructorNotes().stream()
+                                .filter(n -> n.getInstructor().getId() == assignment.getInstructor().getId())
+                                .map(s -> s.getInstructorComment()).findFirst().orElse("");
+
+                            if (workloadSummaryReportView.getCensusByTermCode().size() > 0) {
+                                String courseKey = course.getSubjectCode() + course.getCourseNumber();
+                                if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey) !=
+                                    null) {
+                                    if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey)
+                                        .get(course.getSequencePattern()) != null) {
+                                        censusCount =
+                                            workloadSummaryReportView.getCensusByTermCode().get(termCode).get(
+                                                    courseKey)
+                                                .get(course.getSequencePattern());
+                                    }
+
+                                    studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
+                                    plannedSeats = sectionGroup.getPlannedSeats();
                                 }
-
-                                studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
-                                enrollmentCensus = censusCount + " / " + sectionGroup.getPlannedSeats();
                             }
+
+                        } else {
+                            courseDescription = assignment.getDescription();
                         }
 
-                    } else {
-                        courseDescription = assignment.getDescription();
+                        workloadInstructors.add(new WorkloadInstructorDTO(department, instructorTypeDescription,
+                            instructor.getLastName() + ", " + instructor.getFirstName(),
+                            Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
+                            courseDescription,
+                            offering, censusCount, plannedSeats, unit, studentCreditHour, instructorNote));
                     }
-
-                    workloadInstructors.add(new WorkloadInstructorDTO(department, instructorTypeDescription,
-                        instructor.getLastName() + ", " + instructor.getFirstName(),
-                        Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
-                        courseDescription,
-                        offering, enrollmentCensus, unit, studentCreditHour, instructorNote));
                 }
             }
-        }
 
-        // fill in TBD instructor assignments
-        List<TeachingAssignment> unnamedAssignments = workloadSummaryReportView.getTeachingAssignment().stream()
-            .filter(teachingAssignment -> teachingAssignment.getInstructor() == null).collect(
-                Collectors.toList());
-        for (TeachingAssignment teachingAssignment : unnamedAssignments) {
-            workloadInstructors.add(
-                new WorkloadInstructorDTO(department,
-                    instructorTypeService.findById(teachingAssignment.getInstructorTypeIdentification())
-                        .getDescription(), "TBD",
-                    Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
-                    teachingAssignment.getDescription(),
-                    teachingAssignment.getSectionGroup().getCourse().getSequencePattern(),
-                    null, null, null, null));
+            // fill in TBD instructor assignments
+            List<TeachingAssignment> unnamedAssignments = workloadSummaryReportView.getTeachingAssignment().stream()
+                .filter(teachingAssignment -> teachingAssignment.getInstructor() == null).collect(
+                    Collectors.toList());
+            for (TeachingAssignment teachingAssignment : unnamedAssignments) {
+                workloadInstructors.add(
+                    new WorkloadInstructorDTO(department,
+                        instructorTypeService.findById(teachingAssignment.getInstructorTypeIdentification())
+                            .getDescription(), "TBD",
+                        Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
+                        teachingAssignment.getDescription(),
+                        teachingAssignment.getSectionGroup().getCourse().getSequencePattern(),
+                        null, null, null, null, null));
+            }
         }
 
         // write data to excel
@@ -224,7 +226,6 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             new WorkloadSummaryReportExcelView(workloadInstructors, year);
 
         return workloadSummaryReportExcelView;
-
     }
 
     private Long getInstructorTypeId(Instructor instructor, List<TeachingAssignment> teachingAssignments,
@@ -274,7 +275,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
         if (sectionGroup.getUnitsVariable() != null) {
             units = sectionGroup.getUnitsVariable();
-        } else if (course.getUnitsLow() > 0) {
+        } else if (course.getUnitsLow() != null && course.getUnitsLow() > 0) {
             units = course.getUnitsLow();
         }
 

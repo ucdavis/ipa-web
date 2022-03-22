@@ -1,11 +1,13 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
 public class WorkloadInstructorDTO {
-    String department, instructorType, name, term, courseType, description, offering, census, instructorNote;
-    Float units, studentCreditHours;
+    String department, instructorType, name, term, courseType, description, offering, units, instructorNote;
+    Long census;
+    Integer plannedSeats;
+    Float studentCreditHours;
 
     public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
-                                 String description, String offering, String census, Float units,
+                                 String description, String offering, Long census, Integer plannedSeats, String units,
                                  Float studentCreditHours, String instructorNote) {
         this.department = department;
         this.instructorType = instructorType;
@@ -15,6 +17,7 @@ public class WorkloadInstructorDTO {
         this.description = description;
         this.offering = offering;
         this.census = census;
+        this.plannedSeats = plannedSeats;
         this.units = units;
         this.studentCreditHours = studentCreditHours;
         this.instructorNote = instructorNote;
@@ -76,12 +79,20 @@ public class WorkloadInstructorDTO {
         this.offering = offering;
     }
 
-    public String getCensus() {
+    public Long getCensus() {
         return census;
     }
 
-    public void setCensus(String census) {
+    public void setCensus(Long census) {
         this.census = census;
+    }
+
+    public Integer getPlannedSeats() {
+        return plannedSeats;
+    }
+
+    public void setPlannedSeats(Integer plannedSeats) {
+        this.plannedSeats = plannedSeats;
     }
 
     public String getInstructorNote() {
@@ -92,11 +103,11 @@ public class WorkloadInstructorDTO {
         this.instructorNote = instructorNote;
     }
 
-    public Float getUnits() {
+    public String getUnits() {
         return units;
     }
 
-    public void setUnits(Float units) {
+    public void setUnits(String units) {
         this.units = units;
     }
 

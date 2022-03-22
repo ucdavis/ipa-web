@@ -39,7 +39,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private void buildSheet(Sheet worksheet, WorkloadInstructorDTO workloadInstructor) {
         ExcelHelper.setSheetHeader(worksheet,
             Arrays.asList("Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
-                "Offering", "Enrollment / Seats", "Units", "SCH", "Note"));
+                "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
+                "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
 
         ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
             yearToAcademicYear(this.year),
@@ -51,6 +52,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             workloadInstructor.getDescription(),
             workloadInstructor.getOffering(),
             workloadInstructor.getCensus(),
+            workloadInstructor.getPlannedSeats(),
             workloadInstructor.getUnits(),
             workloadInstructor.getStudentCreditHours(),
             workloadInstructor.getInstructorNote()

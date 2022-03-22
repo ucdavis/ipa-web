@@ -41,10 +41,10 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> generateExcel(@PathVariable long workgroupId,
+    public Map<String, String> generateExcel(@PathVariable long[] workgroupId,
                                              @PathVariable long year,
                                              HttpServletRequest httpRequest) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+//        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url =
             ipaUrlApi + "/download/workloadSummaryReport/" + workgroupId +
@@ -63,7 +63,7 @@ public class WorkloadSummaryReportController {
     }
 
     @RequestMapping(value = "/download/workloadSummaryReport/{workgroupId}/years/{year}/excel/{salt}/{encrypted}")
-    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+    public View downloadExcel(@PathVariable long[] workgroupId, @PathVariable long year,
                               @PathVariable String salt, @PathVariable String encrypted,
                               HttpServletRequest httpRequest, HttpServletResponse httpResponse)
         throws ParseException {
