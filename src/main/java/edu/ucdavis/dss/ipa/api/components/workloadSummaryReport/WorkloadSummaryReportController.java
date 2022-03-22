@@ -6,11 +6,13 @@ import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,15 +41,18 @@ public class WorkloadSummaryReportController {
         return workloadSummaryReportViewFactory.createWorkloadSummaryReportView(workgroupId, year);
     }
 
-    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateExcel", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupIds}/years/{year}/generateExcel", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> generateExcel(@PathVariable long[] workgroupId,
+    public Map<String, String> generateExcel(@PathVariable List<Long> workgroupIds,
                                              @PathVariable long year,
                                              HttpServletRequest httpRequest) {
-//        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        for (long workgroupId : workgroupIds) {
+            authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        }
 
         String url =
-            ipaUrlApi + "/download/workloadSummaryReport/" + workgroupId +
+            ipaUrlApi + "/download/workloadSummaryReport/" + StringUtils.join(workgroupIds, ",") +
                 "/years/" + year + "/excel";
         String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
 
