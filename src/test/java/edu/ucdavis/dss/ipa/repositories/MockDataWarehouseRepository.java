@@ -73,4 +73,7 @@ public class MockDataWarehouseRepository implements DataWarehouseRepository {
     public List<DwCensus> getCensusBySubjectCodeAndTermCode(String subjectCode, String termCode) {
         return null;
     }
+
+    @Override
+    public List<DwCensus> getCensusBySubjectCodeAndCourseNumber(String subjectCode, String courseNumber) { return null; }
 }
