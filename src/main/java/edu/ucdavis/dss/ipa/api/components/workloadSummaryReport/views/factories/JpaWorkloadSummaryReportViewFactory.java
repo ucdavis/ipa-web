@@ -25,6 +25,7 @@ import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -99,22 +100,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             }
         }
 
-        Map<String, Map<String, Long>> censusByTermCode = new HashMap<>(new HashMap<>());
-
-        for (DwCensus census : censusList) {
-            String termCode = census.getTermCode();
-            String courseKey = census.getSubjectCode() + "-" + census.getCourseNumber() + "-" + census.getSequencePattern();
-
-            if (censusByTermCode.get(termCode) == null) {
-                censusByTermCode.put(termCode, new HashMap<>());
-            }
-
-            if (censusByTermCode.get(termCode).get(courseKey) == null) {
-                censusByTermCode.get(termCode).put(courseKey, census.getCurrentEnrolledCount());
-            } else {
-                censusByTermCode.get(termCode).put(courseKey, censusByTermCode.get(termCode).get(courseKey) + census.getCurrentEnrolledCount());
-            }
-        }
+        Map<String, Map<String, Long>> censusByTermCode = generateCensusMap(censusList);
 
         return new WorkloadSummaryReportView(year, schedule, courses, instructors, instructorTypes, teachingAssignments,
             scheduleInstructorNotes, sectionGroups, sections, censusByTermCode);
@@ -143,18 +129,16 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                     teachingAssignmentService.findByScheduleIdAndInstructorId(
                         workloadSummaryReportView.getSchedule().getId(), instructor.getId());
 
-                // TODO: add Previous Enrollment
-
                 if (scheduleAssignments.size() == 0) {
                     workloadInstructors.add(
-                        new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName(), null,
-                            null, null, null, null, null, null, null,null, null));
+                        new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName()));
                 } else {
                     for (TeachingAssignment assignment : scheduleAssignments) {
                         String termCode = assignment.getTermCode();
-                        String previousYearTermCode = String.valueOf(Integer.parseInt(termCode.substring(0, 4)) - 1) + termCode.substring(4, 6);
+                        String previousYearTermCode =
+                            String.valueOf(Integer.parseInt(termCode.substring(0, 4)) - 1) + termCode.substring(4, 6);
 
-                        String courseDescription = null, offering = null, instructorNote =
+                        String courseDescription = null, offering = null, lastOfferedCensus = null, instructorNote =
                             null, unit = null;
                         int plannedSeats = 0;
                         long censusCount = 0;
@@ -175,11 +159,13 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                                 .map(s -> s.getInstructorComment()).findFirst().orElse("");
 
                             if (workloadSummaryReportView.getCensusByTermCode().size() > 0) {
-                                String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" + course.getSequencePattern();
-                                Map<String, Map<String, Long>> censusMap = workloadSummaryReportView.getCensusByTermCode();
+                                String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
+                                    course.getSequencePattern();
+                                Map<String, Map<String, Long>> censusMap =
+                                    workloadSummaryReportView.getCensusByTermCode();
 
                                 if (censusMap.get(termCode).containsKey(courseKey)) {
-                                        censusCount = censusMap.get(termCode).get(courseKey);
+                                    censusCount = censusMap.get(termCode).get(courseKey);
 
                                     studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
                                     plannedSeats = sectionGroup.getPlannedSeats();
@@ -187,6 +173,34 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
                                 if (censusMap.get(previousYearTermCode).containsKey(courseKey)) {
                                     previousYearCensus = censusMap.get(previousYearTermCode).get(courseKey);
+                                }
+
+                                // find last offering term
+                                List<DwCensus> courseCensusList = dwRepository.getCensusBySubjectCodeAndCourseNumber(
+                                        course.getSubjectCode(), course.getCourseNumber()).stream()
+                                    .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(
+                                        Collectors.toList());
+
+                                Map<String, Map<String, Long>> courseCensusMap = generateCensusMap(courseCensusList);
+
+                                List<String> offeredTermCodes = courseCensusMap.keySet().stream().sorted(
+                                    Comparator.naturalOrder()).collect(
+                                    Collectors.toList());
+
+                                String lastOfferedTermCode;
+                                String lastOfferedCourseKey =
+                                    course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
+                                        course.getSequencePattern();
+                                if (offeredTermCodes.size() > 2) {
+                                    lastOfferedTermCode = offeredTermCodes.get(offeredTermCodes.size() - 2);
+
+                                    if (courseCensusMap.get(lastOfferedTermCode).containsKey(lastOfferedCourseKey)) {
+                                        lastOfferedCensus =
+                                            courseCensusMap.get(lastOfferedTermCode).get(lastOfferedCourseKey) + " (" +
+                                                Term.getShortDescription(lastOfferedTermCode) + ")";
+                                    }
+                                } else {
+                                    lastOfferedCensus = "";
                                 }
                             }
 
@@ -197,8 +211,8 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                         workloadInstructors.add(new WorkloadInstructorDTO(department, instructorTypeDescription,
                             instructor.getLastName() + ", " + instructor.getFirstName(),
                             Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
-                            courseDescription,
-                            offering, censusCount, plannedSeats, previousYearCensus, unit, studentCreditHour, instructorNote));
+                            courseDescription, offering, censusCount, plannedSeats, previousYearCensus,
+                            lastOfferedCensus, unit, studentCreditHour, instructorNote));
                     }
                 }
             }
@@ -214,8 +228,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                             .getDescription(), "TBD",
                         Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
                         teachingAssignment.getDescription(),
-                        teachingAssignment.getSectionGroup().getCourse().getSequencePattern(),
-                        null, null, null, null, null, null));
+                        teachingAssignment.getSectionGroup().getCourse().getSequencePattern()));
             }
         }
 
@@ -278,5 +291,25 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         }
 
         return students * units;
+    }
+
+    private Map<String, Map<String, Long>> generateCensusMap(List<DwCensus> censuses) {
+        Map<String, Map<String, Long>> censusMap = new HashMap<>();
+        for (DwCensus census : censuses) {
+            String termCode = census.getTermCode();
+            String courseKey = census.getSubjectCode() + "-" + census.getCourseNumber() + "-" + census.getSequencePattern();
+
+            if (censusMap.get(termCode) == null) {
+                censusMap.put(termCode, new HashMap<>());
+            }
+
+            if (censusMap.get(termCode).get(courseKey) == null) {
+                censusMap.get(termCode).put(courseKey, census.getCurrentEnrolledCount());
+            } else {
+                censusMap.get(termCode).put(courseKey, censusMap.get(termCode).get(courseKey) + census.getCurrentEnrolledCount());
+            }
+        }
+
+        return censusMap;
     }
 }

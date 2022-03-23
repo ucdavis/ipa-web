@@ -213,6 +213,24 @@ public class Term implements Serializable {
 	}
 
 	@Transient
+	static public String getShortDescription(String termCode) {
+		if(termCode == null) throw new IllegalArgumentException("termCode cannot be null");
+
+		String year = getYear(termCode);
+		String term = termCode.length() == 2 ? termCode : termCode.substring(4);
+		int code = Integer.parseInt(term);
+
+		switch(code) {
+			case 1: return "WQ " + year;
+			case 3: return "SQ " + year;
+			case 5: return "SS1 " + year;
+			case 7: return "SS2 " + year;
+			case 10: return "FQ " + year;
+			default: return "Unknown";
+		}
+	}
+
+	@Transient
 	public static String getYear(String termCode) {
 		if(termCode == null) throw new IllegalArgumentException("termCode cannot be null");
 		if(termCode.length() != 6) throw new IllegalArgumentException("Cannot get year if termCode is short");

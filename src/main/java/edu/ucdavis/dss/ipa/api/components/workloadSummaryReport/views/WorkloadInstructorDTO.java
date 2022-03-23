@@ -1,13 +1,14 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
 public class WorkloadInstructorDTO {
-    String department, instructorType, name, term, courseType, description, offering, units, instructorNote;
+    String department, instructorType, name, term, courseType, description, offering, lastOfferedCensus, units, instructorNote;
     Long census, previousYearCensus;
     Integer plannedSeats;
     Float studentCreditHours;
 
     public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
-                                 String description, String offering, Long census, Integer plannedSeats, Long previousYearCensus, String units,
+                                 String description, String offering, Long census, Integer plannedSeats, Long previousYearCensus,
+                                 String lastOfferedCensus, String units,
                                  Float studentCreditHours, String instructorNote) {
         this.department = department;
         this.instructorType = instructorType;
@@ -19,10 +20,30 @@ public class WorkloadInstructorDTO {
         this.census = census;
         this.plannedSeats = plannedSeats;
         this.previousYearCensus = previousYearCensus;
+        this.lastOfferedCensus = lastOfferedCensus;
         this.units = units;
         this.studentCreditHours = studentCreditHours;
         this.instructorNote = instructorNote;
     }
+
+    public WorkloadInstructorDTO(String department, String instructorType, String name) {
+        this.department = department;
+        this.instructorType = instructorType;
+        this.name = name;
+    };
+
+    public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
+                                 String description, String offering) {
+        this.department = department;
+        this.instructorType = instructorType;
+        this.name = name;
+        this.term = term;
+        this.courseType = courseType;
+        this.description = description;
+        this.offering = offering;
+    }
+
+
 
     public String getDepartment() {
         return department;
@@ -80,28 +101,12 @@ public class WorkloadInstructorDTO {
         this.offering = offering;
     }
 
-    public Long getCensus() {
-        return census;
+    public String getUnits() {
+        return units;
     }
 
-    public void setCensus(Long census) {
-        this.census = census;
-    }
-
-    public Integer getPlannedSeats() {
-        return plannedSeats;
-    }
-
-    public void setPlannedSeats(Integer plannedSeats) {
-        this.plannedSeats = plannedSeats;
-    }
-
-    public Long getPreviousYearCensus() {
-        return previousYearCensus;
-    }
-
-    public void setPreviousYearCensus(Long previousYearCensus) {
-        this.previousYearCensus = previousYearCensus;
+    public void setUnits(String units) {
+        this.units = units;
     }
 
     public String getInstructorNote() {
@@ -112,12 +117,36 @@ public class WorkloadInstructorDTO {
         this.instructorNote = instructorNote;
     }
 
-    public String getUnits() {
-        return units;
+    public Long getCensus() {
+        return census;
     }
 
-    public void setUnits(String units) {
-        this.units = units;
+    public void setCensus(Long census) {
+        this.census = census;
+    }
+
+    public Long getPreviousYearCensus() {
+        return previousYearCensus;
+    }
+
+    public void setPreviousYearCensus(Long previousYearCensus) {
+        this.previousYearCensus = previousYearCensus;
+    }
+
+    public String getLastOfferedCensus() {
+        return lastOfferedCensus;
+    }
+
+    public void setLastOfferedCensus(String lastOfferedCensus) {
+        this.lastOfferedCensus = lastOfferedCensus;
+    }
+
+    public Integer getPlannedSeats() {
+        return plannedSeats;
+    }
+
+    public void setPlannedSeats(Integer plannedSeats) {
+        this.plannedSeats = plannedSeats;
     }
 
     public Float getStudentCreditHours() {

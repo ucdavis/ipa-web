@@ -474,4 +474,41 @@ public class DwClient {
 
 		return dwCensuses;
 	}
+
+	public List<DwCensus> getCensusBySubjectCodeAndCourseNumber(String subjectCode, String courseNumber)
+		throws IOException {
+		List<DwCensus> dwCensuses = null;
+
+		if (connect()) {
+			HttpGet httpGet = new HttpGet(
+				"/census?subjectCode=" + subjectCode + "&courseNumber=" + courseNumber + "&token=" + ApiToken);
+
+			CloseableHttpResponse response = httpclient.execute(targetHost, httpGet, context);
+			StatusLine line = response.getStatusLine();
+
+			if (line.getStatusCode() != 200) {
+				throw new IllegalStateException(
+					"Data Warehouse did not return a 200 OK (was " + line.getStatusCode() + "). URL: /terms");
+			}
+
+			HttpEntity entity = response.getEntity();
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrNode = new ObjectMapper().readTree(EntityUtils.toString(entity));
+
+			if (arrNode != null) {
+				dwCensuses = mapper.readValue(
+					arrNode.toString(),
+					mapper.getTypeFactory().constructCollectionType(List.class, DwCensus.class));
+			} else {
+				log.warn("getCensus response from DW returned null");
+			}
+
+			response.close();
+		} else {
+			log.warn("Could not connect to DW");
+		}
+
+		return dwCensuses;
+	}
 }
