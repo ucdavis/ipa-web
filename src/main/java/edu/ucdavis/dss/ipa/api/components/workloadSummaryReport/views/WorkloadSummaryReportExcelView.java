@@ -53,6 +53,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             workloadInstructor.getOffering(),
             workloadInstructor.getCensus(),
             workloadInstructor.getPlannedSeats(),
+            workloadInstructor.getPreviousYearCensus(),
+            "last offered",
             workloadInstructor.getUnits(),
             workloadInstructor.getStudentCreditHours(),
             workloadInstructor.getInstructorNote()

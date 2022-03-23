@@ -2,12 +2,12 @@ package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
 public class WorkloadInstructorDTO {
     String department, instructorType, name, term, courseType, description, offering, units, instructorNote;
-    Long census;
+    Long census, previousYearCensus;
     Integer plannedSeats;
     Float studentCreditHours;
 
     public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
-                                 String description, String offering, Long census, Integer plannedSeats, String units,
+                                 String description, String offering, Long census, Integer plannedSeats, Long previousYearCensus, String units,
                                  Float studentCreditHours, String instructorNote) {
         this.department = department;
         this.instructorType = instructorType;
@@ -18,6 +18,7 @@ public class WorkloadInstructorDTO {
         this.offering = offering;
         this.census = census;
         this.plannedSeats = plannedSeats;
+        this.previousYearCensus = previousYearCensus;
         this.units = units;
         this.studentCreditHours = studentCreditHours;
         this.instructorNote = instructorNote;
@@ -93,6 +94,14 @@ public class WorkloadInstructorDTO {
 
     public void setPlannedSeats(Integer plannedSeats) {
         this.plannedSeats = plannedSeats;
+    }
+
+    public Long getPreviousYearCensus() {
+        return previousYearCensus;
+    }
+
+    public void setPreviousYearCensus(Long previousYearCensus) {
+        this.previousYearCensus = previousYearCensus;
     }
 
     public String getInstructorNote() {

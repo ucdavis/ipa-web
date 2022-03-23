@@ -21,7 +21,7 @@ public class WorkloadSummaryReportView {
     List<InstructorType> instructorTypes;
     List<SectionGroup> sectionGroups;
     List<Section> sections;
-    Map<String, Map<String, Map<String, Long>>> censusByTermCode;
+    Map<String, Map<String, Long>> censusByTermCode;
 
     public WorkloadSummaryReportView(long year,
                                      Schedule schedule, List<Course> courses,
@@ -31,7 +31,7 @@ public class WorkloadSummaryReportView {
                                      List<ScheduleInstructorNote> scheduleInstructorNotes,
                                      List<SectionGroup> sectionGroups,
                                      List<Section> sections,
-                                     Map<String, Map<String, Map<String, Long>>> censusByTermCode) {
+                                     Map<String, Map<String, Long>> censusByTermCode) {
         this.year = year;
         this.schedule = schedule;
         this.courses = courses;
@@ -117,12 +117,12 @@ public class WorkloadSummaryReportView {
         this.sections = sections;
     }
 
-    public Map<String, Map<String, Map<String, Long>>> getCensusByTermCode() {
+    public Map<String, Map<String, Long>> getCensusByTermCode() {
         return censusByTermCode;
     }
 
     public void setCensusByTermCode(
-        Map<String, Map<String, Map<String, Long>>> censusByTermCode) {
+        Map<String, Map<String, Long>> censusByTermCode) {
         this.censusByTermCode = censusByTermCode;
     }
 }

@@ -85,37 +85,34 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         List<Instructor> instructors = new ArrayList<>(instructorSet);
 
         List<DwCensus> censusList = new ArrayList<>();
+        List<String> termCodes = new ArrayList<>();
+
+        termCodes.addAll(Term.getTermCodesByYear(year));
+        termCodes.addAll(Term.getTermCodesByYear(year - 1));
+
         List<String> subjectCodes =
             courses.stream().map(c -> c.getSubjectCode()).distinct().collect(Collectors.toList());
         for (String subjectCode : subjectCodes) {
-            for (String termCode : Term.getTermCodesByYear(year)) {
+            for (String termCode : termCodes) {
                 censusList.addAll(dwRepository.getCensusBySubjectCodeAndTermCode(subjectCode, termCode).stream()
                     .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList()));
             }
         }
 
-        Map<String, Map<String, Map<String, Long>>> censusByTermCode = new HashMap<>(new HashMap<>());
+        Map<String, Map<String, Long>> censusByTermCode = new HashMap<>(new HashMap<>());
 
         for (DwCensus census : censusList) {
             String termCode = census.getTermCode();
-            String sequencePattern = census.getSequencePattern();
-            String courseIdentifier = census.getSubjectCode() + census.getCourseNumber();
+            String courseKey = census.getSubjectCode() + "-" + census.getCourseNumber() + "-" + census.getSequencePattern();
 
             if (censusByTermCode.get(termCode) == null) {
                 censusByTermCode.put(termCode, new HashMap<>());
             }
 
-            if (censusByTermCode.get(termCode).get(courseIdentifier) == null) {
-                censusByTermCode.get(termCode).put(courseIdentifier, new HashMap<>());
-            }
-
-            if (censusByTermCode.get(termCode).get(courseIdentifier).get(sequencePattern) == null) {
-                censusByTermCode.get(termCode).get(courseIdentifier)
-                    .put(sequencePattern, census.getCurrentEnrolledCount());
+            if (censusByTermCode.get(termCode).get(courseKey) == null) {
+                censusByTermCode.get(termCode).put(courseKey, census.getCurrentEnrolledCount());
             } else {
-                censusByTermCode.get(termCode).get(courseIdentifier).put(sequencePattern,
-                    censusByTermCode.get(termCode).get(courseIdentifier).get(sequencePattern) +
-                        census.getCurrentEnrolledCount());
+                censusByTermCode.get(termCode).put(courseKey, censusByTermCode.get(termCode).get(courseKey) + census.getCurrentEnrolledCount());
             }
         }
 
@@ -151,15 +148,17 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                 if (scheduleAssignments.size() == 0) {
                     workloadInstructors.add(
                         new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName(), null,
-                            null, null, null, null, null, null, null, null));
+                            null, null, null, null, null, null, null,null, null));
                 } else {
                     for (TeachingAssignment assignment : scheduleAssignments) {
                         String termCode = assignment.getTermCode();
+                        String previousYearTermCode = String.valueOf(Integer.parseInt(termCode.substring(0, 4)) - 1) + termCode.substring(4, 6);
 
                         String courseDescription = null, offering = null, instructorNote =
                             null, unit = null;
                         int plannedSeats = 0;
                         long censusCount = 0;
+                        long previousYearCensus = 0;
                         Float studentCreditHour = null;
 
                         String courseType = getCourseType(assignment);
@@ -176,19 +175,18 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                                 .map(s -> s.getInstructorComment()).findFirst().orElse("");
 
                             if (workloadSummaryReportView.getCensusByTermCode().size() > 0) {
-                                String courseKey = course.getSubjectCode() + course.getCourseNumber();
-                                if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey) !=
-                                    null) {
-                                    if (workloadSummaryReportView.getCensusByTermCode().get(termCode).get(courseKey)
-                                        .get(course.getSequencePattern()) != null) {
-                                        censusCount =
-                                            workloadSummaryReportView.getCensusByTermCode().get(termCode).get(
-                                                    courseKey)
-                                                .get(course.getSequencePattern());
-                                    }
+                                String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" + course.getSequencePattern();
+                                Map<String, Map<String, Long>> censusMap = workloadSummaryReportView.getCensusByTermCode();
+
+                                if (censusMap.get(termCode).containsKey(courseKey)) {
+                                        censusCount = censusMap.get(termCode).get(courseKey);
 
                                     studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
                                     plannedSeats = sectionGroup.getPlannedSeats();
+                                }
+
+                                if (censusMap.get(previousYearTermCode).containsKey(courseKey)) {
+                                    previousYearCensus = censusMap.get(previousYearTermCode).get(courseKey);
                                 }
                             }
 
@@ -200,7 +198,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                             instructor.getLastName() + ", " + instructor.getFirstName(),
                             Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
                             courseDescription,
-                            offering, censusCount, plannedSeats, unit, studentCreditHour, instructorNote));
+                            offering, censusCount, plannedSeats, previousYearCensus, unit, studentCreditHour, instructorNote));
                     }
                 }
             }
@@ -217,7 +215,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                         Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
                         teachingAssignment.getDescription(),
                         teachingAssignment.getSectionGroup().getCourse().getSequencePattern(),
-                        null, null, null, null, null));
+                        null, null, null, null, null, null));
             }
         }
 
