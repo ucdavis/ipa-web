@@ -21,7 +21,8 @@ public class WorkloadSummaryReportView {
     List<InstructorType> instructorTypes;
     List<SectionGroup> sectionGroups;
     List<Section> sections;
-    Map<String, Map<String, Long>> censusByTermCode;
+    Map<String, Map<String, Long>> termCodeCensus;
+    Map<String, Map<String, Long>> courseCensus;
 
     public WorkloadSummaryReportView(long year,
                                      Schedule schedule, List<Course> courses,
@@ -31,7 +32,8 @@ public class WorkloadSummaryReportView {
                                      List<ScheduleInstructorNote> scheduleInstructorNotes,
                                      List<SectionGroup> sectionGroups,
                                      List<Section> sections,
-                                     Map<String, Map<String, Long>> censusByTermCode) {
+                                     Map<String, Map<String, Long>> termCodeCensus,
+                                     Map<String, Map<String, Long>> courseCensus) {
         this.year = year;
         this.schedule = schedule;
         this.courses = courses;
@@ -41,7 +43,8 @@ public class WorkloadSummaryReportView {
         this.scheduleInstructorNotes = scheduleInstructorNotes;
         this.sectionGroups = sectionGroups;
         this.sections = sections;
-        this.censusByTermCode = censusByTermCode;
+        this.termCodeCensus = termCodeCensus;
+        this.courseCensus = courseCensus;
     }
 
     public long getYear() {
@@ -117,12 +120,20 @@ public class WorkloadSummaryReportView {
         this.sections = sections;
     }
 
-    public Map<String, Map<String, Long>> getCensusByTermCode() {
-        return censusByTermCode;
+    public Map<String, Map<String, Long>> getTermCodeCensus() {
+        return termCodeCensus;
     }
 
-    public void setCensusByTermCode(
-        Map<String, Map<String, Long>> censusByTermCode) {
-        this.censusByTermCode = censusByTermCode;
+    public void setTermCodeCensus(
+        Map<String, Map<String, Long>> termCodeCensus) {
+        this.termCodeCensus = termCodeCensus;
+    }
+
+    public Map<String, Map<String, Long>> getCourseCensus() {
+        return courseCensus;
+    }
+
+    public void setCourseCensus(Map<String, Map<String, Long>> courseCensus) {
+        this.courseCensus = courseCensus;
     }
 }
