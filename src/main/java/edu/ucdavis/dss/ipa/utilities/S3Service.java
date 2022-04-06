@@ -21,7 +21,6 @@ public class S3Service {
         this.s3client = s3client;
     }
 
-    @Async
     public void upload(String filename, byte[] bytes) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType("application/vnd.openxmlformats-officedocumsent.spreadsheetml.sheet");
@@ -30,15 +29,8 @@ public class S3Service {
         ByteArrayInputStream is = new ByteArrayInputStream(bytes);
 
         s3client.putObject(s3Bucket, filename, is, metadata);
-
-//        s3client.putObject(
-//            s3Bucket,
-//            filename,activ
-//            new String(Base64Utils.encode(data))
-//        );
     }
 
-    @Async
     public byte[] download(String filename) {
         S3Object object = s3client.getObject(s3Bucket, filename);
         try {
@@ -47,10 +39,6 @@ public class S3Service {
             e.printStackTrace();
         }
         return null;
-
-//        String s3Object = s3client.getObjectAsString(BUCKET_NAME, filename);
-//        return Base64Utils.decodeFromString(s3Object);
-
     }
 
     public ObjectMetadata getMetadata(String filename) {
