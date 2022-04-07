@@ -11,12 +11,15 @@ import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.dw.dto.DwTerm;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -26,19 +29,16 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.ucdavis.dss.dw.dto.DwPerson;
-
-import javax.inject.Inject;
 
 public class DwClient {
 	private static final Logger log = LoggerFactory.getLogger("edu.ucdavis.dss.dw.DwClient");
@@ -56,10 +56,43 @@ public class DwClient {
 	}
 
 	private boolean connect() {
+		final int MAX_RETRIES = 3;
+
 		// Set the default timeout to be 90 seconds.
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(90 * 1000).build();
+		// retry on IO errors
+		HttpRequestRetryHandler retryHandler = (exception, executionCount, context) -> {
+			if (executionCount > MAX_RETRIES) {
+				return false;
+			} else {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			return executionCount <= MAX_RETRIES;
+		};
+		// retry on server errors
+		ServiceUnavailableRetryStrategy serviceUnavailableStrategy = new ServiceUnavailableRetryStrategy() {
+			int waitPeriod = 100;
+			@Override
+			public boolean retryRequest(HttpResponse response, int executionCount, HttpContext context) {
+				waitPeriod *= 2;
+				return executionCount <= MAX_RETRIES && response.getStatusLine().getStatusCode() >= 500;
+			}
 
-		httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+			@Override
+			public long getRetryInterval() {
+				return waitPeriod;
+			}
+		};
+
+		httpclient = HttpClientBuilder.create()
+			.setDefaultRequestConfig(requestConfig)
+			.setRetryHandler(retryHandler)
+			.setServiceUnavailableRetryStrategy(serviceUnavailableStrategy)
+			.build();
 
 		targetHost = new HttpHost(ApiUrl, ApiPort, "https");
 
