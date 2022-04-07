@@ -50,4 +50,9 @@ public class S3Service {
             return null;
         }
     }
+
+    @Async
+    public void delete(String filename) {
+        s3client.deleteObject(s3Bucket, filename);
+    }
 }

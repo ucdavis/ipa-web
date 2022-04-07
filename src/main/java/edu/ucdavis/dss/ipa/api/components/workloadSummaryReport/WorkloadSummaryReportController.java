@@ -135,31 +135,39 @@ public class WorkloadSummaryReportController {
         String downloadUrl = ipaUrlFrontend + "/summary/" + workgroupId + "/" + year + "?mode=download";
 
         CompletableFuture.supplyAsync(
-                () ->
-                    workloadSummaryReportViewFactory.createWorkloadSummaryReportBytes(workgroupIds, year)
+                () -> {
+                    try {
+                        return workloadSummaryReportViewFactory.createWorkloadSummaryReportBytes(workgroupIds, year);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
             )
             .thenAccept(bytes ->
             {
-                System.out.println("Finished generating file. Uploading to S3");
+                if (bytes == null) {
+                    System.err.println("Unable to fetch workload data. Deleting partial file");
+                    s3Service.delete("Workload_Summary_Report.xlsx");
+                }
 
+                System.out.println("Finished generating file. Uploading to S3");
                 try {
                     s3Service.upload("Workload_Summary_Report.xlsx",
                         bytes.get());
-                    System.out.println("Finished uploading");
+
+                    if (user != null) {
+                    System.out.println("Upload completed, sending email to " + user.getEmail());
+
+                    emailService.send(user.getEmail(), "Your download is ready - " + downloadUrl,
+                        "IPA Workload Summary Report Download", true);
+                }
                 } catch (InterruptedException e) {
                     System.out.println("Upload failed");
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     System.out.println("Upload failed");
                     e.printStackTrace();
-                }
-            })
-            .thenRun(() -> {
-                if (user != null) {
-                    log.info("Upload completed, sending email to " + user.getEmail());
-
-                    emailService.send(user.getEmail(), "Your download is ready - " + downloadUrl,
-                        "IPA Workload Summary Report Download", true);
                 }
             });
 
