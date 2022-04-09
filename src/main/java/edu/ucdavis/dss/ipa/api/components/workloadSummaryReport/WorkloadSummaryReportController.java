@@ -120,6 +120,8 @@ public class WorkloadSummaryReportController {
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateMultiple", method = RequestMethod.GET)
     public ResponseEntity generateMultipleDepartments(@PathVariable long workgroupId,
                                                       @PathVariable long year) {
+        authorizer.isDeansOffice();
+
         // overwrite with empty file to update modified time
         s3Service.upload("Workload_Summary_Report.xlsx", new byte[0]);
 
@@ -127,9 +129,6 @@ public class WorkloadSummaryReportController {
             authorization.getUserRoles().stream().filter(ur -> ur.getRole().getName().equals("academicPlanner")).map(
                 UserRole::getWorkgroupIdentification).mapToLong(Long::longValue).toArray();
 
-        for (long id : workgroupIds) {
-            authorizer.hasWorkgroupRoles(id, "academicPlanner", "reviewer");
-        }
 
         User user = userService.getOneByLoginId(authorization.getRealUserLoginId());
         String downloadUrl = ipaUrlFrontend + "/summary/" + workgroupId + "/" + year + "?mode=download";
@@ -176,7 +175,7 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/downloadMultiple", method = RequestMethod.POST)
     public ResponseEntity downloadMultipleDepartments(@PathVariable long workgroupId, @PathVariable long year) {
-        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+        authorizer.isDeansOffice();
 
         byte[] bytes = s3Service.download("Workload_Summary_Report.xlsx");
         ByteArrayResource resource = new ByteArrayResource(bytes);
