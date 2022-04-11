@@ -115,14 +115,14 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         List<CompletableFuture<List<DwCensus>>> courseCensusFutures = new ArrayList<>();
 
         for (String subjectCode : courseMap.keySet()) {
-            termCodeCensusFutures = termCodes.stream().map(termCode -> CompletableFuture.supplyAsync(
+            termCodeCensusFutures.addAll(termCodes.stream().map(termCode -> CompletableFuture.supplyAsync(
                 () -> dwRepository.getCensusBySubjectCodeAndTermCode(subjectCode, termCode))).collect(
-                Collectors.toList());
+                Collectors.toList()));
 
-            courseCensusFutures = courseMap.get(subjectCode).stream().map(
+            courseCensusFutures.addAll(courseMap.get(subjectCode).stream().map(
                 courseNumber -> CompletableFuture.supplyAsync(
                     () -> dwRepository.getCensusBySubjectCodeAndCourseNumber(subjectCode, courseNumber))).collect(
-                Collectors.toList());
+                Collectors.toList()));
         }
 
         List<DwCensus> termCodeCensus =
