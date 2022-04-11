@@ -121,9 +121,10 @@ public class WorkloadSummaryReportController {
     public ResponseEntity generateMultipleDepartments(@PathVariable long workgroupId,
                                                       @PathVariable long year) {
         authorizer.isDeansOffice();
+        final String fileName = year + "_Workload_Summary_Report.xlsx";
 
         // overwrite with empty file to update modified time
-        s3Service.upload("Workload_Summary_Report.xlsx", new byte[0]);
+        s3Service.upload(fileName, new byte[0]);
 
         long[] workgroupIds =
             authorization.getUserRoles().stream().filter(ur -> ur.getRole().getName().equals("academicPlanner")).map(
@@ -147,13 +148,12 @@ public class WorkloadSummaryReportController {
             {
                 if (bytes == null) {
                     System.err.println("Unable to fetch workload data. Deleting partial file");
-                    s3Service.delete("Workload_Summary_Report.xlsx");
+                    s3Service.delete(fileName);
                 }
 
                 System.out.println("Finished generating file. Uploading to S3");
                 try {
-                    s3Service.upload("Workload_Summary_Report.xlsx",
-                        bytes.get());
+                    s3Service.upload(fileName, bytes.get());
 
                     if (user != null) {
                     System.out.println("Upload completed, sending email to " + user.getEmail());
@@ -177,7 +177,7 @@ public class WorkloadSummaryReportController {
     public ResponseEntity downloadMultipleDepartments(@PathVariable long workgroupId, @PathVariable long year) {
         authorizer.isDeansOffice();
 
-        byte[] bytes = s3Service.download("Workload_Summary_Report.xlsx");
+        byte[] bytes = s3Service.download(year + "_Workload_Summary_Report.xlsx");
         ByteArrayResource resource = new ByteArrayResource(bytes);
 
         return ResponseEntity.ok()
@@ -187,11 +187,11 @@ public class WorkloadSummaryReportController {
             .body(resource);
     }
 
-    @RequestMapping(value = "/api/workloadSummaryReport/download/status", method = RequestMethod.GET, produces = "application/json")
-    public Map<String, Object> getDownloadStatus() {
+    @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/download/status", method = RequestMethod.GET, produces = "application/json")
+    public Map<String, Object> getDownloadStatus(@PathVariable long year) {
         authorizer.isAuthorized();
 
-        ObjectMetadata metadata = s3Service.getMetadata("Workload_Summary_Report.xlsx");
+        ObjectMetadata metadata = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
         if (metadata != null) {
             Map<String, Object> md = new HashMap<>();
             md.put("lastModified", metadata.getLastModified().getTime());

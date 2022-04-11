@@ -46,7 +46,7 @@ public class S3Service {
             ObjectMetadata omd = s3client.getObjectMetadata(s3Bucket, filename);
             return omd;
         } catch (AmazonS3Exception e) {
-            System.err.println(e);
+            // File not found
             return null;
         }
     }
