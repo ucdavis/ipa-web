@@ -195,6 +195,21 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 		}
 	}
 
+	public List<DwCensus> getCensusBySubjectCodeAndCourseNumber(String subjectCode, String courseNumber) {
+		DwClient dwClient;
+
+		try {
+			dwClient = new DwClient(dwUrl, dwToken, dwPort);
+
+			List<DwCensus> dwCensuses = dwClient.getCensusBySubjectCodeAndCourseNumber(subjectCode, courseNumber);
+
+			return dwCensuses;
+		} catch (Exception e) {
+			emailService.reportException(e, this.getClass().getName());
+			return null;
+		}
+	}
+
 	private List<List<String>> splitListIntoChunksOfSize(List<String> arr, int chunkSize) {
 		List<List<String>> chunks = new ArrayList<>();
 		int len = arr.size();

@@ -34,6 +34,12 @@ public class Authorizer {
         }
     }
 
+    public void isDeansOffice() {
+        if (authorization.isAdmin() == false && authorization.getUserRoles().stream().anyMatch(ur -> ur.getRoleToken().equals("deansOffice")) == false) {
+            throw new AccessDeniedException("User not authorized. Dean's Office only.");
+        }
+    }
+
     /**
      * Verifies that the user has the role for the workgroup or is an admin
      * @param workgroupId

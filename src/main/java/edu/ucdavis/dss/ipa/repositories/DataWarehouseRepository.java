@@ -34,4 +34,6 @@ public interface DataWarehouseRepository {
 	List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode);
 
 	List<DwCensus> getCensusBySubjectCodeAndTermCode(String subjectCode, String termCode);
+
+	List<DwCensus> getCensusBySubjectCodeAndCourseNumber(String subjectCode, String courseNumber);
 }
