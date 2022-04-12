@@ -1,15 +1,23 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class WorkloadInstructorDTO {
-    String department, instructorType, name, term, courseType, description, offering, lastOfferedCensus, units, instructorNote;
+    String department, instructorType, name, term, courseType, description, offering, lastOfferedCensus, units,
+        instructorNote;
     Long census, previousYearCensus;
     Integer plannedSeats;
     Float studentCreditHours;
+    long year;
 
-    public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
-                                 String description, String offering, Long census, Integer plannedSeats, Long previousYearCensus,
+    public WorkloadInstructorDTO(long year, String department, String instructorType, String name, String term,
+                                 String courseType,
+                                 String description, String offering, Long census, Integer plannedSeats,
+                                 Long previousYearCensus,
                                  String lastOfferedCensus, String units,
                                  Float studentCreditHours, String instructorNote) {
+        this.year = year;
         this.department = department;
         this.instructorType = instructorType;
         this.name = name;
@@ -26,14 +34,17 @@ public class WorkloadInstructorDTO {
         this.instructorNote = instructorNote;
     }
 
-    public WorkloadInstructorDTO(String department, String instructorType, String name) {
+    public WorkloadInstructorDTO(long year, String department, String instructorType, String name) {
+        this.year = year;
         this.department = department;
         this.instructorType = instructorType;
         this.name = name;
-    };
+    }
 
-    public WorkloadInstructorDTO(String department, String instructorType, String name, String term, String courseType,
+    public WorkloadInstructorDTO(long year, String department, String instructorType, String name, String term,
+                                 String courseType,
                                  String description, String offering) {
+        this.year = year;
         this.department = department;
         this.instructorType = instructorType;
         this.name = name;
@@ -43,7 +54,13 @@ public class WorkloadInstructorDTO {
         this.offering = offering;
     }
 
+    public long getYear() {
+        return year;
+    }
 
+    public void setYear(long year) {
+        this.year = year;
+    }
 
     public String getDepartment() {
         return department;
@@ -155,5 +172,25 @@ public class WorkloadInstructorDTO {
 
     public void setStudentCreditHours(Float studentCreditHours) {
         this.studentCreditHours = studentCreditHours;
+    }
+
+    public List<Object> toList() {
+        return Arrays.asList(
+            this.year + "-" + String.valueOf(this.year + 1).substring(2, 4),
+            this.getDepartment(),
+            this.getInstructorType().toUpperCase(),
+            this.getName(),
+            this.getTerm(),
+            this.getCourseType(),
+            this.getDescription(),
+            this.getOffering(),
+            this.getCensus(),
+            this.getPlannedSeats(),
+            this.getPreviousYearCensus(),
+            this.getLastOfferedCensus(),
+            this.getUnits(),
+            this.getStudentCreditHours(),
+            this.getInstructorNote()
+        );
     }
 }

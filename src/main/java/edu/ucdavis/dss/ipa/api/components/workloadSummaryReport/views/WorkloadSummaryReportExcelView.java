@@ -19,6 +19,19 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         this.year = year;
     }
 
+    public static void buildRawAssignmentsSheet(Workbook wb, List<WorkloadInstructorDTO> workloadInstructorDTOList) {
+        Sheet worksheet = wb.createSheet("Raw Assignments Data");
+
+        ExcelHelper.setSheetHeader(worksheet,
+            Arrays.asList("Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
+                "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
+                "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
+
+        for (WorkloadInstructorDTO workloadInstructor : workloadInstructorDTOList) {
+            ExcelHelper.writeRowToSheet(worksheet, workloadInstructor.toList());
+        }
+    }
+
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
@@ -27,41 +40,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        Sheet worksheet = workbook.createSheet("Raw Assignments Data");
-
-        for (WorkloadInstructorDTO workloadInstructor : workloadInstructorDTOList) {
-            buildSheet(worksheet, workloadInstructor);
-        }
-
+        buildRawAssignmentsSheet(workbook, workloadInstructorDTOList);
         ExcelHelper.expandHeaders(workbook);
-    }
-
-    private void buildSheet(Sheet worksheet, WorkloadInstructorDTO workloadInstructor) {
-        ExcelHelper.setSheetHeader(worksheet,
-            Arrays.asList("Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
-                "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
-                "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
-
-        ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
-            yearToAcademicYear(this.year),
-            workloadInstructor.getDepartment(),
-            workloadInstructor.getInstructorType().toUpperCase(),
-            workloadInstructor.getName(),
-            workloadInstructor.getTerm(),
-            workloadInstructor.getCourseType(),
-            workloadInstructor.getDescription(),
-            workloadInstructor.getOffering(),
-            workloadInstructor.getCensus(),
-            workloadInstructor.getPlannedSeats(),
-            workloadInstructor.getPreviousYearCensus(),
-            workloadInstructor.getLastOfferedCensus(),
-            workloadInstructor.getUnits(),
-            workloadInstructor.getStudentCreditHours(),
-            workloadInstructor.getInstructorNote()
-        ));
-    }
-
-    private String yearToAcademicYear(long year) {
-        return year + "-" + String.valueOf(year + 1).substring(2, 4);
     }
 }

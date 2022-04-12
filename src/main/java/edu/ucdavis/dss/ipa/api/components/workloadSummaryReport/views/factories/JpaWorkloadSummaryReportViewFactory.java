@@ -25,7 +25,6 @@ import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
-import edu.ucdavis.dss.ipa.utilities.S3Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,34 +171,8 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
         System.out.println("Finished gathering data, writing to excel");
 
-        // attempt to email file
-        String filename = year + "Workload Raw Assignments.xlsx";
         XSSFWorkbook workbook = new XSSFWorkbook();
-        Sheet worksheet = workbook.createSheet("Raw Assignments Data");
-        for (WorkloadInstructorDTO workloadInstructor : instructorDTOList) {
-            ExcelHelper.setSheetHeader(worksheet,
-                Arrays.asList("Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
-                    "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
-                    "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
-
-            ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
-                (year + "-" + String.valueOf(year + 1).substring(2, 4)),
-                workloadInstructor.getDepartment(),
-                workloadInstructor.getInstructorType().toUpperCase(),
-                workloadInstructor.getName(),
-                workloadInstructor.getTerm(),
-                workloadInstructor.getCourseType(),
-                workloadInstructor.getDescription(),
-                workloadInstructor.getOffering(),
-                workloadInstructor.getCensus(),
-                workloadInstructor.getPlannedSeats(),
-                workloadInstructor.getPreviousYearCensus(),
-                workloadInstructor.getLastOfferedCensus(),
-                workloadInstructor.getUnits(),
-                workloadInstructor.getStudentCreditHours(),
-                workloadInstructor.getInstructorNote()
-            ));
-        }
+        WorkloadSummaryReportExcelView.buildRawAssignmentsSheet(workbook, instructorDTOList);
         ExcelHelper.expandHeaders(workbook);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -227,7 +200,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             if (instructorTypeId == null) {
                 continue;
             }
-            // use enum instead?
+
             String instructorTypeDescription = instructorTypeService.findById(instructorTypeId).getDescription();
 
             List<TeachingAssignment> scheduleAssignments =
@@ -236,12 +209,12 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
             if (scheduleAssignments.size() == 0) {
                 workloadInstructors.add(
-                    new WorkloadInstructorDTO(department, instructorTypeDescription, instructor.getFullName()));
+                    new WorkloadInstructorDTO(year, department, instructorTypeDescription, instructor.getFullName()));
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
                     String termCode = assignment.getTermCode();
                     String previousYearTermCode =
-                        String.valueOf(Integer.parseInt(termCode.substring(0, 4)) - 1) + termCode.substring(4, 6);
+                        Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
 
                     String courseDescription = null, offering = null, lastOfferedCensus = null, instructorNote =
                         null, unit = null;
@@ -311,7 +284,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                         courseDescription = assignment.getDescription();
                     }
 
-                    workloadInstructors.add(new WorkloadInstructorDTO(department, instructorTypeDescription,
+                    workloadInstructors.add(new WorkloadInstructorDTO(year, department, instructorTypeDescription,
                         instructor.getLastName() + ", " + instructor.getFirstName(),
                         Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
                         courseDescription, offering, censusCount, plannedSeats, previousYearCensus,
@@ -326,7 +299,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                 Collectors.toList());
         for (TeachingAssignment teachingAssignment : unnamedAssignments) {
             workloadInstructors.add(
-                new WorkloadInstructorDTO(department,
+                new WorkloadInstructorDTO(year, department,
                     instructorTypeService.findById(teachingAssignment.getInstructorTypeIdentification())
                         .getDescription(), "TBD",
                     Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),

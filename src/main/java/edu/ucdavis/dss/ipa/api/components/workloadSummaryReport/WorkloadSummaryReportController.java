@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -38,8 +37,6 @@ import org.springframework.web.servlet.View;
 
 @RestController
 public class WorkloadSummaryReportController {
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger("edu.ucdavis.ipa");
-
     @Inject
     WorkloadSummaryReportViewFactory workloadSummaryReportViewFactory;
     @Inject
@@ -147,25 +144,20 @@ public class WorkloadSummaryReportController {
             .thenAccept(bytes ->
             {
                 if (bytes == null) {
-                    System.err.println("Unable to fetch workload data. Deleting partial file");
+                    // Create failed. Clean up partial file.
                     s3Service.delete(fileName);
                 }
 
-                System.out.println("Finished generating file. Uploading to S3");
                 try {
                     s3Service.upload(fileName, bytes.get());
 
                     if (user != null) {
-                    System.out.println("Upload completed, sending email to " + user.getEmail());
-
-                    emailService.send(user.getEmail(), "Your download is ready - " + downloadUrl,
-                        "IPA Workload Summary Report Download", true);
-                }
+                        emailService.send(user.getEmail(), "Your download is ready - " + downloadUrl,
+                            "IPA Workload Summary Report Download", true);
+                    }
                 } catch (InterruptedException e) {
-                    System.out.println("Upload failed");
                     e.printStackTrace();
                 } catch (ExecutionException e) {
-                    System.out.println("Upload failed");
                     e.printStackTrace();
                 }
             });
