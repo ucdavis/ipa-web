@@ -12,14 +12,14 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private long year;
-    private List<WorkloadInstructorDTO> workloadInstructorDTOList;
+    private List<InstructorAssignment> instructorAssignmentList;
 
-    public WorkloadSummaryReportExcelView(List<WorkloadInstructorDTO> workloadInstructorDTOList, long year) {
-        this.workloadInstructorDTOList = workloadInstructorDTOList;
+    public WorkloadSummaryReportExcelView(List<InstructorAssignment> instructorAssignmentList, long year) {
+        this.instructorAssignmentList = instructorAssignmentList;
         this.year = year;
     }
 
-    public static void buildRawAssignmentsSheet(Workbook wb, List<WorkloadInstructorDTO> workloadInstructorDTOList) {
+    public static void buildRawAssignmentsSheet(Workbook wb, List<InstructorAssignment> instructorAssignmentList) {
         Sheet worksheet = wb.createSheet("Raw Assignments Data");
 
         ExcelHelper.setSheetHeader(worksheet,
@@ -27,8 +27,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
 
-        for (WorkloadInstructorDTO workloadInstructor : workloadInstructorDTOList) {
-            ExcelHelper.writeRowToSheet(worksheet, workloadInstructor.toList());
+        for (InstructorAssignment instructorAssignment : instructorAssignmentList) {
+            ExcelHelper.writeRowToSheet(worksheet, instructorAssignment.toList());
         }
     }
 
@@ -40,7 +40,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildRawAssignmentsSheet(workbook, workloadInstructorDTOList);
+        buildRawAssignmentsSheet(workbook, instructorAssignmentList);
         ExcelHelper.expandHeaders(workbook);
     }
 }

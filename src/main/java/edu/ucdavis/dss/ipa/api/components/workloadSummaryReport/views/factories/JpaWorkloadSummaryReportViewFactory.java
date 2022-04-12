@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
-import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadInstructorDTO;
+import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.InstructorAssignment;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;
 import edu.ucdavis.dss.ipa.entities.Course;
@@ -28,7 +28,6 @@ import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,15 +138,15 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
     @Override
     public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupIds, long year) {
-        List<WorkloadInstructorDTO> workloadInstructors = new ArrayList<>();
+        List<InstructorAssignment> instructorAssignments = new ArrayList<>();
 
         for (long workgroupId : workgroupIds) {
-            workloadInstructors.addAll(generateInstructorData(workgroupId, year));
+            instructorAssignments.addAll(generateInstructorData(workgroupId, year));
         }
 
         // write data to excel
         WorkloadSummaryReportExcelView workloadSummaryReportExcelView =
-            new WorkloadSummaryReportExcelView(workloadInstructors, year);
+            new WorkloadSummaryReportExcelView(instructorAssignments, year);
 
         return workloadSummaryReportExcelView;
     }
@@ -158,7 +156,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
     @Transactional
     // needed for Async https://stackoverflow.com/questions/17278385/spring-async-generates-lazyinitializationexceptions
     public CompletableFuture<byte[]> createWorkloadSummaryReportBytes(long[] workgroupIds, long year) {
-        List<WorkloadInstructorDTO> instructorDTOList = new ArrayList<>();
+        List<InstructorAssignment> instructorDTOList = new ArrayList<>();
         System.out.println("Generating workload report for " + workgroupIds.length + " departments");
 
         int count = 0;
@@ -186,8 +184,8 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         return CompletableFuture.completedFuture(bos.toByteArray());
     }
 
-    private List<WorkloadInstructorDTO> generateInstructorData(long workgroupId, long year) {
-        List<WorkloadInstructorDTO> workloadInstructors = new ArrayList<>();
+    private List<InstructorAssignment> generateInstructorData(long workgroupId, long year) {
+        List<InstructorAssignment> instructorAssignments = new ArrayList<>();
 
         WorkloadSummaryReportView workloadSummaryReportView = createWorkloadSummaryReportView(workgroupId, year);
 
@@ -208,8 +206,8 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                     workloadSummaryReportView.getSchedule().getId(), instructor.getId());
 
             if (scheduleAssignments.size() == 0) {
-                workloadInstructors.add(
-                    new WorkloadInstructorDTO(year, department, instructorTypeDescription, instructor.getFullName()));
+                instructorAssignments.add(
+                    new InstructorAssignment(year, department, instructorTypeDescription, instructor.getFullName()));
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
                     String termCode = assignment.getTermCode();
@@ -284,7 +282,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                         courseDescription = assignment.getDescription();
                     }
 
-                    workloadInstructors.add(new WorkloadInstructorDTO(year, department, instructorTypeDescription,
+                    instructorAssignments.add(new InstructorAssignment(year, department, instructorTypeDescription,
                         instructor.getLastName() + ", " + instructor.getFirstName(),
                         Term.getRegistrarName(termCode) + " " + Term.getYear(termCode), courseType,
                         courseDescription, offering, censusCount, plannedSeats, previousYearCensus,
@@ -298,15 +296,15 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             .filter(teachingAssignment -> teachingAssignment.getInstructor() == null).collect(
                 Collectors.toList());
         for (TeachingAssignment teachingAssignment : unnamedAssignments) {
-            workloadInstructors.add(
-                new WorkloadInstructorDTO(year, department,
+            instructorAssignments.add(
+                new InstructorAssignment(year, department,
                     instructorTypeService.findById(teachingAssignment.getInstructorTypeIdentification())
                         .getDescription(), "TBD",
                     Term.getRegistrarName(teachingAssignment.getTermCode()), getCourseType(teachingAssignment),
                     teachingAssignment.getDescription(),
                     teachingAssignment.getSectionGroup().getCourse().getSequencePattern()));
         }
-        return workloadInstructors;
+        return instructorAssignments;
     }
 
     private Long getInstructorTypeId(Instructor instructor, List<TeachingAssignment> teachingAssignments,
