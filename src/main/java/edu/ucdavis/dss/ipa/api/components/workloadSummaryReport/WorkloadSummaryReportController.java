@@ -181,7 +181,7 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/download/status", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> getDownloadStatus(@PathVariable long year) {
-        authorizer.isAuthorized();
+        authorizer.isDeansOffice();
 
         ObjectMetadata metadata = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
         if (metadata != null) {
