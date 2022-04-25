@@ -114,15 +114,12 @@ public class ExcelHelper {
     }
 
     // Credit: https://stackoverflow.com/questions/1180110/apache-poi-xls-column-remove
-
     /**
      * Given a sheet, this method deletes a column from a sheet and moves
      * all the columns to the right of it to the left one cell.
      * <p>
      * Note, this method will not update any formula references.
      *
-     * @param sheet
-     * @param column
      */
     public static void deleteColumn(Sheet sheet, int columnToDelete) {
         int maxColumn = 0;
@@ -157,11 +154,6 @@ public class ExcelHelper {
                 }
             }
         }
-
-        // Adjust the column widths
-        for (int c = 0; c < maxColumn; c++) {
-            sheet.setColumnWidth(c, sheet.getColumnWidth(c + 1));
-        }
     }
 
     /*
@@ -172,7 +164,7 @@ public class ExcelHelper {
         cNew.setCellComment(cOld.getCellComment());
         cNew.setCellStyle(cOld.getCellStyle());
 
-        switch (cNew.getCellTypeEnum()) {
+        switch (cOld.getCellTypeEnum()) {
             case BOOLEAN: {
                 cNew.setCellValue(cOld.getBooleanCellValue());
                 break;
