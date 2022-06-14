@@ -4,8 +4,13 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +22,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
-    private ScheduleSummaryReportView scheduleSummaryReportView;
+    private final ScheduleSummaryReportView scheduleSummaryReportView;
 
     public ScheduleSummaryReportAnnualExcelView(ScheduleSummaryReportView scheduleSummaryReportView) {
         this.scheduleSummaryReportView = scheduleSummaryReportView;
@@ -29,10 +34,12 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
         final long year = scheduleSummaryReportView.getYear();
         String dateOfDownload = new Date().toString();
         String fileName = "Annual Schedule";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
 
         response.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;");
         response.setHeader("Content-Disposition",
-            "attachment; filename=\"" + fileName + "-" + dateOfDownload + ".xlsx\"");
+            "attachment; filename=\"" + fileName + "-" + now.format(formatter) + ".xlsx\"");
 
         Sheet worksheet = workbook.createSheet(year + "-" + String.valueOf(year + 1).substring(2, 4));
 
@@ -45,46 +52,41 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
         List<Object> sectionHeaders = new ArrayList<>();
         List<List<Object>> dataRows = new ArrayList<>();
 
+        int completedTerm = 0;
         for (String shortTermCode : shortTermCodes) {
-            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", "", ""));
+            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", ""));
             sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Cap"));
 
             List<SectionGroup> termSectionGroups =
                 scheduleSummaryReportView.getSectionGroups().stream().filter(sg -> sg.getTermCode().equals(
-                    Term.getTermCodeByYearAndShortTermCode(year, shortTermCode))).collect(Collectors.toList());
+                    Term.getTermCodeByYearAndShortTermCode(year, shortTermCode))).sorted(
+                    Comparator.comparing(sg -> sg.getCourse().getCourseNumber())).collect(Collectors.toList());
 
-            int completedTerm = 0;
             int currentRow = 0;
             for (SectionGroup sectionGroup : termSectionGroups) {
-                List<Object> data = new ArrayList<>(Arrays.asList(
+                List<Object> rowValues = new ArrayList<>(Arrays.asList(
                     sectionGroup.getCourse().getShortDescription(),
                     sectionGroup.getTeachingAssignments().size() > 0 ?
                         sectionGroup.getTeachingAssignments().get(0).getInstructorDisplayName() : null,
-                    sectionGroup.getPlannedSeats(),
-                    sectionGroup.getTermCode()
+                    sectionGroup.getPlannedSeats()
                 ));
 
                 if (completedTerm > 0) {
                     // start another column
                     if (currentRow < dataRows.size()) {
                         // append to existing row
-                        dataRows.get(currentRow).addAll(data);
+                        dataRows.get(currentRow).addAll(rowValues);
                     } else {
-                        List<Object> dataRow = new ArrayList<>();
-
-                        // create new row with fill spaces
-                        int fillSpaces = completedTerm * data.size();
+                        // prepend row with fill spaces
+                        int fillSpaces = completedTerm * rowValues.size();
                         for (int i = 0; i < fillSpaces; i++) {
-                            data.add(0, "");
+                            rowValues.add(0, "");
                         }
 
-                        dataRow.addAll(data);
-                        dataRows.add(dataRow);
+                        dataRows.add(new ArrayList<>(rowValues));
                     }
                 } else {
-                    List<Object> dataRow = new ArrayList<>();
-                    dataRow.addAll(data);
-                    dataRows.add(dataRow);
+                    dataRows.add(new ArrayList<>(rowValues));
                 }
                 currentRow++;
             }
