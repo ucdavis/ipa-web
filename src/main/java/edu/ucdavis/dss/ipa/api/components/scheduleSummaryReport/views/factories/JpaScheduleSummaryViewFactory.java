@@ -11,6 +11,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
