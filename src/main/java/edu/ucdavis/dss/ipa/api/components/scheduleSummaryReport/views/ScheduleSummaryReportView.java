@@ -2,8 +2,10 @@ package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ScheduleSummaryReportView {
@@ -19,6 +21,8 @@ public class ScheduleSummaryReportView {
     String termCode;
     Long year;
     boolean simpleView = false;
+    Map<String, Map<String, Long>> termCodeCensus = new HashMap<>();
+    Map<String, Map<String, Long>> courseCensus = new HashMap<>();
 
     public ScheduleSummaryReportView(List<Course> courses,
                                      List<SectionGroup> sectionGroups,
@@ -31,7 +35,9 @@ public class ScheduleSummaryReportView {
                                      List<SupportAssignment> supportAssignments,
                                      List<SupportStaff> supportStaffList,
                                      List<InstructorType> instructorTypes,
-                                     boolean simpleView) {
+                                     boolean simpleView,
+                                     Map<String, Map<String, Long>> termCodeCensus,
+                                     Map<String, Map<String, Long>> courseCensus) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -44,6 +50,8 @@ public class ScheduleSummaryReportView {
         setSupportStaffList(supportStaffList);
         setInstructorTypes(instructorTypes);
         setSimpleView(simpleView);
+        setTermCodeCensus(termCodeCensus);
+        setCourseCensus(courseCensus);
     }
 
     public List<Course> getCourses() {
@@ -140,5 +148,22 @@ public class ScheduleSummaryReportView {
 
     public void setSimpleView(boolean simpleView) {
         this.simpleView = simpleView;
+    }
+
+    public Map<String, Map<String, Long>> getTermCodeCensus() {
+        return termCodeCensus;
+    }
+
+    public void setTermCodeCensus(
+        Map<String, Map<String, Long>> termCodeCensus) {
+        this.termCodeCensus = termCodeCensus;
+    }
+
+    public Map<String, Map<String, Long>> getCourseCensus() {
+        return courseCensus;
+    }
+
+    public void setCourseCensus(Map<String, Map<String, Long>> courseCensus) {
+        this.courseCensus = courseCensus;
     }
 }

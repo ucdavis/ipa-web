@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
+import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Term;
@@ -47,8 +48,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
         int completedTerm = 0;
         for (ScheduleSummaryReportView scheduleSummaryReportView : scheduleSummaryReportViewList) {
             String shortTermCode = scheduleSummaryReportView.getTermCode();
-            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", "", "", ""));
-            sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Days", "Hours", "Cap"));
+            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", "", "", "", ""));
+            sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Days", "Hours", "Cap", "Prior"));
 
             List<SectionGroup> termSectionGroups = scheduleSummaryReportView.getSectionGroups().stream()
                 .sorted(Comparator.comparing(sg -> sg.getCourse().getCourseNumber())).collect(
@@ -75,13 +76,41 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                 String hours = lectureActivity != null ?
                     lectureActivity.getTimeDescription() : "";
 
+                // prior enrollment?
+                Map<String, Map<String, Long>> courseCensusMap = scheduleSummaryReportView.getCourseCensus();
+
+                List<String> offeredTermCodes = courseCensusMap.keySet().stream().sorted(
+                    Comparator.reverseOrder()).collect(
+                    Collectors.toList());
+
+                Course course = currentSectionGroup.getCourse();
+
+                String lastOfferedTermCode = null;
+                String lastOfferedCensus = null;
+                String lastOfferedCourseKey =
+                    course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
+                        course.getSequencePattern();
+
+                // walk backwards to find last offering
+                for (String termCode : offeredTermCodes) {
+                    Map<String, Long> censusMap = courseCensusMap.get(termCode);
+
+                    if (censusMap.containsKey(lastOfferedCourseKey)) {
+                        lastOfferedCensus = censusMap.get(lastOfferedCourseKey) +
+                            " (" +
+                            Term.getShortDescription(termCode) + ")";
+                        break;
+                    }
+                }
+
                 List<Object> rowValues = new ArrayList<>(Arrays.asList(
                     currentSectionGroup.getCourse().getShortDescription(),
                     currentSectionGroup.getTeachingAssignments().size() > 0 ?
                         currentSectionGroup.getTeachingAssignments().get(0).getInstructorDisplayName() : null,
                     days,
                     hours,
-                    currentSectionGroup.getPlannedSeats()
+                    currentSectionGroup.getPlannedSeats(),
+                    lastOfferedCensus
                 ));
 
                 // add filler if previous course number was different
@@ -122,7 +151,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                     Arrays.asList(
                                         section.getSequenceNumber(),
                                         section.getSupportAssignments().size() > 0 ?
-                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() :
+                                            "",
                                         "",
                                         "",
                                         section.getSeats()
@@ -166,7 +196,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                         currentSectionGroup.getCourseIdentification() + " " +
                                             section.getSequenceNumber(),
                                         section.getSupportAssignments().size() > 0 ?
-                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() :
+                                            "",
                                         section.getSeats()
                                     ));
                                 fillRow(values, "", spaces, 0);
