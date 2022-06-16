@@ -4,7 +4,10 @@ import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSu
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportView;
 import edu.ucdavis.dss.ipa.entities.*;
+import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
@@ -55,8 +58,14 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
 
     @Override
     public View createScheduleSummaryReportAnnualExcelView(long workgroupId, long year) {
-        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, null, false);
-        return new ScheduleSummaryReportAnnualExcelView(scheduleSummaryReportView);
+        List<ScheduleSummaryReportView> scheduleSummaryReportViewList = new ArrayList<>();
+        String[] academicYearTermCodes = {TermDescription.FALL.getTermCode(year), TermDescription.WINTER.getTermCode(year), TermDescription.SPRING.getTermCode(year)};
+
+        for (String termCode : academicYearTermCodes) {
+            scheduleSummaryReportViewList.add(createScheduleSummaryReportView(workgroupId, year, termCode, false));
+        }
+
+        return new ScheduleSummaryReportAnnualExcelView(scheduleSummaryReportViewList);
     }
 
 }

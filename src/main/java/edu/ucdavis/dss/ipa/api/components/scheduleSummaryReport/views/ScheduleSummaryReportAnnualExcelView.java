@@ -1,9 +1,9 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
+import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,16 +20,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
-    private final ScheduleSummaryReportView scheduleSummaryReportView;
+    private final List<ScheduleSummaryReportView> scheduleSummaryReportViewList;
 
-    public ScheduleSummaryReportAnnualExcelView(ScheduleSummaryReportView scheduleSummaryReportView) {
-        this.scheduleSummaryReportView = scheduleSummaryReportView;
+    public ScheduleSummaryReportAnnualExcelView(List<ScheduleSummaryReportView> scheduleSummaryReportViewList) {
+        this.scheduleSummaryReportViewList = scheduleSummaryReportViewList;
     }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
-        final long year = scheduleSummaryReportView.getYear();
+        final long year = scheduleSummaryReportViewList.get(0).getYear();
         String fileName = "Annual Schedule";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         LocalDateTime now = LocalDateTime.now();
@@ -40,32 +40,47 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
 
         Sheet worksheet = workbook.createSheet(year + "-" + String.valueOf(year + 1).substring(2, 4));
 
-        // Only want Fall, Winter, Spring
-        List<String> shortTermCodes =
-            Arrays.asList(TermDescription.FALL.getShortTermCode(), TermDescription.WINTER.getShortTermCode(),
-                TermDescription.SPRING.getShortTermCode());
-
         List<String> termHeaders = new ArrayList<>();
         List<Object> sectionHeaders = new ArrayList<>();
         List<List<Object>> dataRows = new ArrayList<>();
 
         int completedTerm = 0;
-        for (String shortTermCode : shortTermCodes) {
-            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", ""));
-            sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Cap"));
+        for (ScheduleSummaryReportView scheduleSummaryReportView : scheduleSummaryReportViewList) {
+            String shortTermCode = scheduleSummaryReportView.getTermCode();
+            termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", "", "", ""));
+            sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Days", "Hours", "Cap"));
 
-            List<SectionGroup> termSectionGroups =
-                scheduleSummaryReportView.getSectionGroups().stream().filter(sg -> sg.getTermCode().equals(
-                    Term.getTermCodeByYearAndShortTermCode(year, shortTermCode))).sorted(
-                    Comparator.comparing(sg -> sg.getCourse().getCourseNumber())).collect(Collectors.toList());
+            List<SectionGroup> termSectionGroups = scheduleSummaryReportView.getSectionGroups().stream()
+                .sorted(Comparator.comparing(sg -> sg.getCourse().getCourseNumber())).collect(
+                    Collectors.toList());
 
             int currentRow = 0;
             for (int i = 0; i < termSectionGroups.size(); i++) {
                 SectionGroup currentSectionGroup = termSectionGroups.get(i);
+
+                Activity lectureActivity = null;
+                if (currentSectionGroup.getActivities().size() == 1) {
+                    lectureActivity = currentSectionGroup.getActivities().get(0);
+                } else if (currentSectionGroup.getActivities().size() > 0) {
+                    lectureActivity =
+                        currentSectionGroup.getActivities().stream().filter(Activity::isLecture).findFirst()
+                            .orElse(null);
+                } else if (currentSectionGroup.getSections().size() > 0) {
+                    lectureActivity = currentSectionGroup.getSections().get(0).getActivities().stream().filter(
+                        Activity::isLecture).findFirst().orElse(null);
+                }
+
+                String days = lectureActivity != null ?
+                    lectureActivity.getDayIndicatorDescription() : "";
+                String hours = lectureActivity != null ?
+                    lectureActivity.getTimeDescription() : "";
+
                 List<Object> rowValues = new ArrayList<>(Arrays.asList(
                     currentSectionGroup.getCourse().getShortDescription(),
                     currentSectionGroup.getTeachingAssignments().size() > 0 ?
                         currentSectionGroup.getTeachingAssignments().get(0).getInstructorDisplayName() : null,
+                    days,
+                    hours,
                     currentSectionGroup.getPlannedSeats()
                 ));
 
@@ -80,8 +95,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                         if (currentRow < dataRows.size()) {
                             row = dataRows.get(currentRow);
                             fillRow(row, "", spaces);
-                        }
-                         else {
+                        } else {
                             row = new ArrayList<>();
                             fillRow(row, "", spaces * completedTerm);
                             dataRows.add(row);
@@ -109,13 +123,16 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                         section.getSequenceNumber(),
                                         section.getSupportAssignments().size() > 0 ?
                                             section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                        "",
+                                        "",
                                         section.getSeats()
                                     )
                                 );
                                 sectionsAdded++;
                             }
                             currentRow += sectionsAdded;
-                        } else if (currentSectionGroup.getSections().size() > 1 && (currentRow + currentSectionGroup.getSections().size() > dataRows.size())){
+                        } else if (currentSectionGroup.getSections().size() > 1 &&
+                            (currentRow + currentSectionGroup.getSections().size() > dataRows.size())) {
                             int sectionsAdded = 0;
                             for (Section section : currentSectionGroup.getSections()) {
                                 int spaces = completedTerm * rowValues.size();
@@ -124,6 +141,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                     section.getSequenceNumber(),
                                     section.getSupportAssignments().size() > 0 ?
                                         section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                    "",
+                                    "",
                                     section.getSeats()
                                 ));
                                 fillRow(values, "", spaces, 0);
@@ -166,6 +185,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                     section.getSequenceNumber(),
                                     section.getSupportAssignments().size() > 0 ?
                                         section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                    "",
+                                    "",
                                     section.getSeats()
                                 )
                             ));
