@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
+import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
@@ -75,8 +76,16 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     int spaces = rowValues.size();
 
                     if (completedTerm > 0) {
-                        List<Object> row = dataRows.get(currentRow);
-                        fillRow(row, "", spaces);
+                        List<Object> row;
+                        if (currentRow < dataRows.size()) {
+                            row = dataRows.get(currentRow);
+                            fillRow(row, "", spaces);
+                        }
+                         else {
+                            row = new ArrayList<>();
+                            fillRow(row, "", spaces * completedTerm);
+                            dataRows.add(row);
+                        }
                         currentRow++;
                     } else {
                         List<Object> emptyRow = new ArrayList<>();
@@ -90,16 +99,80 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     if (currentRow < dataRows.size()) {
                         // append to existing row
                         dataRows.get(currentRow).addAll(rowValues);
+
+                        if (currentSectionGroup.getSections().size() > 1 &&
+                            (currentRow + currentSectionGroup.getSections().size() < dataRows.size())) {
+                            int sectionsAdded = 0;
+                            for (Section section : currentSectionGroup.getSections()) {
+                                dataRows.get(currentRow + 1 + sectionsAdded).addAll(
+                                    Arrays.asList(
+                                        section.getSequenceNumber(),
+                                        section.getSupportAssignments().size() > 0 ?
+                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                        section.getSeats()
+                                    )
+                                );
+                                sectionsAdded++;
+                            }
+                            currentRow += sectionsAdded;
+                        } else if (currentSectionGroup.getSections().size() > 1 && (currentRow + currentSectionGroup.getSections().size() > dataRows.size())){
+                            int sectionsAdded = 0;
+                            for (Section section : currentSectionGroup.getSections()) {
+                                int spaces = completedTerm * rowValues.size();
+
+                                List<Object> values = new ArrayList<>(Arrays.asList(
+                                    section.getSequenceNumber(),
+                                    section.getSupportAssignments().size() > 0 ?
+                                        section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                    section.getSeats()
+                                ));
+                                fillRow(values, "", spaces, 0);
+                                dataRows.add(values);
+
+                                sectionsAdded++;
+                            }
+                            currentRow += sectionsAdded;
+                        }
                     } else {
-                        // prepend row with fill spaces
+                        // prepend new row with fill spaces
                         int spaces = completedTerm * rowValues.size();
                         fillRow(rowValues, "", spaces, 0);
+                        dataRows.add(rowValues);
 
-                        dataRows.add(new ArrayList<>(rowValues));
+                        // can be removed?
+                        if (currentSectionGroup.getSections().size() > 1) {
+                            for (Section section : currentSectionGroup.getSections()) {
+                                List<Object> values = new ArrayList<>(
+                                    Arrays.asList(
+                                        currentSectionGroup.getCourseIdentification() + " " +
+                                            section.getSequenceNumber(),
+                                        section.getSupportAssignments().size() > 0 ?
+                                            section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                        section.getSeats()
+                                    ));
+                                fillRow(values, "", spaces, 0);
+                                dataRows.add(values);
+                                currentRow++;
+                            }
+                        }
                     }
                 } else {
-                    dataRows.add(new ArrayList<>(rowValues));
+                    dataRows.add(rowValues);
+
+                    if (currentSectionGroup.getSections().size() > 1) {
+                        for (Section section : currentSectionGroup.getSections()) {
+                            dataRows.add(new ArrayList<>(
+                                Arrays.asList(
+                                    section.getSequenceNumber(),
+                                    section.getSupportAssignments().size() > 0 ?
+                                        section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
+                                    section.getSeats()
+                                )
+                            ));
+                        }
+                    }
                 }
+
 
 //                // add blank row if next course number is different
 //                if (i + 1 < termSectionGroups.size() && sectionGroup.getCourse().getCourseNumber()
