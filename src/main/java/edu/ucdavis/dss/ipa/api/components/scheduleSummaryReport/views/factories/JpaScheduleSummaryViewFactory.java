@@ -32,7 +32,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject TermService termService;
     @Inject InstructorTypeService instructorTypeService;
     @Inject InstructorService instructorService;
-    @Inject DataWarehouseRepository dwRepository;
+    @Inject DataWarehouseService dwService;
 
     @Override
     public ScheduleSummaryReportView createScheduleSummaryReportView(long workgroupId, long year, String shortTermCode,
@@ -60,31 +60,8 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
-        // get census data for courses
-        Map<String, HashSet<String>> courseMap = new HashMap<>();
-
-        for (Course c : courses) {
-            if (courseMap.containsKey(c.getSubjectCode()) == false) {
-                courseMap.put(c.getSubjectCode(), new HashSet<String>());
-            }
-
-            courseMap.get(c.getSubjectCode()).add(c.getCourseNumber());
-        }
-        List<DwCensus> courseCensus = new ArrayList<>();
-        List<DwCensus> termCodeCensus = new ArrayList<>();
-
-        for (String subjectCode : courseMap.keySet()) {
-            for (String courseNumber : courseMap.get(subjectCode)) {
-                courseCensus.addAll(
-                    dwRepository.getCensusBySubjectCodeAndCourseNumber(subjectCode, courseNumber).stream()
-                        .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(
-                            Collectors.toList()));
-            }
-        }
-
-
-        Map<String, Map<String, Long>> termCodeCensusMap = generateCensusMap(termCodeCensus);
-        Map<String, Map<String, Long>> courseCensusMap = generateCensusMap(courseCensus);
+        Map<String, Map<String, Long>> termCodeCensusMap = null;
+        Map<String, Map<String, Long>> courseCensusMap = dwService.generateCourseCensusMap(courses);
 
         return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments,
             instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes, simpleView,
@@ -110,27 +87,5 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         }
 
         return new ScheduleSummaryReportAnnualExcelView(scheduleSummaryReportViewList);
-    }
-
-    private Map<String, Map<String, Long>> generateCensusMap(List<DwCensus> censuses) {
-        Map<String, Map<String, Long>> censusMap = new HashMap<>();
-        for (DwCensus census : censuses) {
-            String termCode = census.getTermCode();
-            String courseKey =
-                census.getSubjectCode() + "-" + census.getCourseNumber() + "-" + census.getSequencePattern();
-
-            if (censusMap.get(termCode) == null) {
-                censusMap.put(termCode, new HashMap<>());
-            }
-
-            if (censusMap.get(termCode).get(courseKey) == null) {
-                censusMap.get(termCode).put(courseKey, census.getCurrentEnrolledCount());
-            } else {
-                censusMap.get(termCode)
-                    .put(courseKey, censusMap.get(termCode).get(courseKey) + census.getCurrentEnrolledCount());
-            }
-        }
-
-        return censusMap;
     }
 }
