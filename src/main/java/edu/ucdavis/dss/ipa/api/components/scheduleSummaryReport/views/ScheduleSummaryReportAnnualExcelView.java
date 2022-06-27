@@ -155,7 +155,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                             "",
                                         "",
                                         "",
-                                        section.getSeats()
+                                        section.getSeats(),
+                                        ""
                                     )
                                 );
                                 sectionsAdded++;
@@ -173,7 +174,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                         section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
                                     "",
                                     "",
-                                    section.getSeats()
+                                    section.getSeats(),
+                                    ""
                                 ));
                                 fillRow(values, "", spaces, 0);
                                 dataRows.add(values);
@@ -198,7 +200,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                         section.getSupportAssignments().size() > 0 ?
                                             section.getSupportAssignments().get(0).getSupportStaff().getLastName() :
                                             "",
-                                        section.getSeats()
+                                        section.getSeats(),
+                                        ""
                                     ));
                                 fillRow(values, "", spaces, 0);
                                 dataRows.add(values);
@@ -218,7 +221,8 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                         section.getSupportAssignments().get(0).getSupportStaff().getLastName() : "",
                                     "",
                                     "",
-                                    section.getSeats()
+                                    section.getSeats(),
+                                    ""
                                 )
                             ));
                         }
