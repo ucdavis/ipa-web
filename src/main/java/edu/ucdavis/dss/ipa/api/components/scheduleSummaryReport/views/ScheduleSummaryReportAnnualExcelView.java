@@ -31,7 +31,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
                                       HttpServletResponse response) throws Exception {
         final long year = scheduleSummaryReportViewList.get(0).getYear();
-        String fileName = "Annual Schedule";
+        String fileName = scheduleSummaryReportViewList.get(0).getWorkgroup().getCode() + " Annual Schedule";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
         LocalDateTime now = LocalDateTime.now();
 

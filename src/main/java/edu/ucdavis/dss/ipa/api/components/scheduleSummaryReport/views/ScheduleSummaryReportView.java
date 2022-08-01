@@ -20,6 +20,7 @@ public class ScheduleSummaryReportView {
     List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
+    Workgroup workgroup;
     boolean simpleView = false;
     Map<String, Map<String, Long>> termCodeCensus = new HashMap<>();
     Map<String, Map<String, Long>> courseCensus = new HashMap<>();
@@ -32,6 +33,7 @@ public class ScheduleSummaryReportView {
                                      Set<Instructor> instructors,
                                      String termCode,
                                      Long year,
+                                     Workgroup workgroup,
                                      List<SupportAssignment> supportAssignments,
                                      List<SupportStaff> supportStaffList,
                                      List<InstructorType> instructorTypes,
@@ -46,6 +48,7 @@ public class ScheduleSummaryReportView {
         setInstructors(instructors);
         setTermCode(termCode);
         setYear(year);
+        setWorkgroup(workgroup);
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setInstructorTypes(instructorTypes);
@@ -117,6 +120,10 @@ public class ScheduleSummaryReportView {
     public void setYear(Long year) {
         this.year = year;
     }
+
+    public Workgroup getWorkgroup() { return workgroup; }
+
+    public void setWorkgroup(Workgroup workgroup) { this.workgroup = workgroup; }
 
     public List<SupportAssignment> getSupportAssignments() {
         return supportAssignments;

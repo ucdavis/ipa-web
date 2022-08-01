@@ -64,7 +64,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         Map<String, Map<String, Long>> courseCensusMap = dwService.generateCourseCensusMap(courses);
 
         return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments,
-            instructors, shortTermCode, year, supportAssignments, supportStaffList, instructorTypes, simpleView,
+            instructors, shortTermCode, year, schedule.getWorkgroup(), supportAssignments, supportStaffList, instructorTypes, simpleView,
             termCodeCensusMap, courseCensusMap);
     }
 
