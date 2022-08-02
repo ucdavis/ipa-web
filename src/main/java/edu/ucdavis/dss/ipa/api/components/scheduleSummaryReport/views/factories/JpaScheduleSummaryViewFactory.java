@@ -35,24 +35,18 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
                                                                      boolean simpleView) {
         Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         List<Course> courses = schedule.getCourses();
-        List<SectionGroup> sectionGroups =
-            sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
-        List<Section> sections =
-            sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
-        List<Activity> activities =
-            activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
+        List<SectionGroup> sectionGroups = sectionGroupService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
+        List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
+        List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 
         Set<Instructor> instructors = new HashSet<Instructor>();
-        Set<Instructor> activeInstructors =
-            new HashSet<>(userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId));
-        Set<Instructor> assignedInstructors =
-            new HashSet<>(instructorService.findAssignedByScheduleId(schedule.getId()));
+        Set<Instructor> activeInstructors = new HashSet<>(userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId));
+        Set<Instructor> assignedInstructors = new HashSet<>(instructorService.findAssignedByScheduleId(schedule.getId()));
         instructors.addAll(activeInstructors);
         instructors.addAll(assignedInstructors);
 
-        List<SupportAssignment> supportAssignments =
-            supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), shortTermCode);
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
@@ -65,17 +59,14 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
 
     @Override
     public View createScheduleSummaryReportExcelView(long workgroupId, long year, String termCode, boolean simpleView) {
-        ScheduleSummaryReportView scheduleSummaryReportView =
-            createScheduleSummaryReportView(workgroupId, year, termCode, simpleView);
+        ScheduleSummaryReportView scheduleSummaryReportView = createScheduleSummaryReportView(workgroupId, year, termCode, simpleView);
         return new ScheduleSummaryReportExcelView(scheduleSummaryReportView);
     }
 
     @Override
     public View createScheduleSummaryReportAnnualExcelView(long workgroupId, long year) {
         List<ScheduleSummaryReportView> scheduleSummaryReportViewList = new ArrayList<>();
-        String[] academicYearTermCodes =
-            {TermDescription.FALL.getTermCode(year), TermDescription.WINTER.getTermCode(year),
-                TermDescription.SPRING.getTermCode(year)};
+        String[] academicYearTermCodes = {TermDescription.FALL.getTermCode(year), TermDescription.WINTER.getTermCode(year), TermDescription.SPRING.getTermCode(year)};
 
         for (String termCode : academicYearTermCodes) {
             scheduleSummaryReportViewList.add(createScheduleSummaryReportView(workgroupId, year, termCode, false));
