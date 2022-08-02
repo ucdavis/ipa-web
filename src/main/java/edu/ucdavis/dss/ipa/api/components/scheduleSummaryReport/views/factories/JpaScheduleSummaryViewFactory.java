@@ -1,17 +1,13 @@
 package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.factories;
 
-import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportAnnualExcelView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views.ScheduleSummaryReportView;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
@@ -60,12 +56,11 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<SupportStaff> supportStaffList = supportStaffService.findBySupportAssignments(supportAssignments);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
-        Map<String, Map<String, Long>> termCodeCensusMap = null;
         Map<String, Map<String, Long>> courseCensusMap = dwService.generateCourseCensusMap(courses);
 
         return new ScheduleSummaryReportView(courses, sectionGroups, sections, activities, teachingAssignments,
-            instructors, shortTermCode, year, schedule.getWorkgroup(), supportAssignments, supportStaffList, instructorTypes, simpleView,
-            termCodeCensusMap, courseCensusMap);
+            instructors, shortTermCode, year, schedule.getWorkgroup(), supportAssignments, supportStaffList,
+            instructorTypes, simpleView, courseCensusMap);
     }
 
     @Override

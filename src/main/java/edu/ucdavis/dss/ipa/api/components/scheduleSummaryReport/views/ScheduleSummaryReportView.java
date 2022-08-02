@@ -22,7 +22,6 @@ public class ScheduleSummaryReportView {
     Long year;
     Workgroup workgroup;
     boolean simpleView = false;
-    Map<String, Map<String, Long>> termCodeCensus = new HashMap<>();
     Map<String, Map<String, Long>> courseCensus = new HashMap<>();
 
     public ScheduleSummaryReportView(List<Course> courses,
@@ -38,7 +37,6 @@ public class ScheduleSummaryReportView {
                                      List<SupportStaff> supportStaffList,
                                      List<InstructorType> instructorTypes,
                                      boolean simpleView,
-                                     Map<String, Map<String, Long>> termCodeCensus,
                                      Map<String, Map<String, Long>> courseCensus) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
@@ -53,7 +51,6 @@ public class ScheduleSummaryReportView {
         setSupportStaffList(supportStaffList);
         setInstructorTypes(instructorTypes);
         setSimpleView(simpleView);
-        setTermCodeCensus(termCodeCensus);
         setCourseCensus(courseCensus);
     }
 
@@ -155,15 +152,6 @@ public class ScheduleSummaryReportView {
 
     public void setSimpleView(boolean simpleView) {
         this.simpleView = simpleView;
-    }
-
-    public Map<String, Map<String, Long>> getTermCodeCensus() {
-        return termCodeCensus;
-    }
-
-    public void setTermCodeCensus(
-        Map<String, Map<String, Long>> termCodeCensus) {
-        this.termCodeCensus = termCodeCensus;
     }
 
     public Map<String, Map<String, Long>> getCourseCensus() {
