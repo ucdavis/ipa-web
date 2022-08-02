@@ -20,7 +20,6 @@ public class JpaDataWarehouseService implements DataWarehouseService {
     @Inject DataWarehouseRepository dwRepository;
 
     /**
-     *
      * @param courses
      * @return { "AST": ["AST-001-001": 100], "PHY": [...] }
      */
