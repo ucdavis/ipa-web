@@ -228,26 +228,6 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     }
                 }
 
-//                // add blank row if next course number is different
-//                if (i + 1 < termSectionGroups.size() && sectionGroup.getCourse().getCourseNumber()
-//                    .compareTo(termSectionGroups.get(i + 1).getCourse().getCourseNumber()) != 0) {
-//                    if (completedTerm > 0) {
-//                        // append to existing row
-//                        int fillSpaces = rowValues.size();
-//                        List<Object> nextRow = dataRows.get(currentRow + 1);
-//                        for (int i = 0; i < fillSpaces; i++) {
-//                            nextRow.add("");
-//                        }
-//                        currentRow++;
-//                    } else {
-//                        int fillSpaces = rowValues.size();
-//                        List<Object> emptyRow = new ArrayList<>();
-//                        for (int i = 0; i < fillSpaces; i++) {
-//                            emptyRow.add("");
-//                        }
-//                        dataRows.add(new ArrayList<>(emptyRow));
-//                    }
-//                }
                 currentRow++;
             }
             completedTerm++;
