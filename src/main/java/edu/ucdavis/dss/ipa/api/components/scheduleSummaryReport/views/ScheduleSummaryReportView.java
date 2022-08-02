@@ -2,8 +2,10 @@ package edu.ucdavis.dss.ipa.api.components.scheduleSummaryReport.views;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class ScheduleSummaryReportView {
@@ -18,7 +20,9 @@ public class ScheduleSummaryReportView {
     List<InstructorType> instructorTypes = new ArrayList<>();
     String termCode;
     Long year;
+    Workgroup workgroup;
     boolean simpleView = false;
+    Map<String, Map<String, Long>> courseCensus = new HashMap<>();
 
     public ScheduleSummaryReportView(List<Course> courses,
                                      List<SectionGroup> sectionGroups,
@@ -28,10 +32,12 @@ public class ScheduleSummaryReportView {
                                      Set<Instructor> instructors,
                                      String termCode,
                                      Long year,
+                                     Workgroup workgroup,
                                      List<SupportAssignment> supportAssignments,
                                      List<SupportStaff> supportStaffList,
                                      List<InstructorType> instructorTypes,
-                                     boolean simpleView) {
+                                     boolean simpleView,
+                                     Map<String, Map<String, Long>> courseCensus) {
         setCourses(courses);
         setSectionGroups(sectionGroups);
         setSections(sections);
@@ -40,10 +46,12 @@ public class ScheduleSummaryReportView {
         setInstructors(instructors);
         setTermCode(termCode);
         setYear(year);
+        setWorkgroup(workgroup);
         setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setInstructorTypes(instructorTypes);
         setSimpleView(simpleView);
+        setCourseCensus(courseCensus);
     }
 
     public List<Course> getCourses() {
@@ -110,6 +118,10 @@ public class ScheduleSummaryReportView {
         this.year = year;
     }
 
+    public Workgroup getWorkgroup() { return workgroup; }
+
+    public void setWorkgroup(Workgroup workgroup) { this.workgroup = workgroup; }
+
     public List<SupportAssignment> getSupportAssignments() {
         return supportAssignments;
     }
@@ -140,5 +152,13 @@ public class ScheduleSummaryReportView {
 
     public void setSimpleView(boolean simpleView) {
         this.simpleView = simpleView;
+    }
+
+    public Map<String, Map<String, Long>> getCourseCensus() {
+        return courseCensus;
+    }
+
+    public void setCourseCensus(Map<String, Map<String, Long>> courseCensus) {
+        this.courseCensus = courseCensus;
     }
 }

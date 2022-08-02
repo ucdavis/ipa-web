@@ -8,12 +8,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.ActivityDeserializer;
 import edu.ucdavis.dss.ipa.entities.enums.ActivityState;
 import edu.ucdavis.dss.ipa.entities.validation.ValidActivity;
-
-import javax.persistence.*;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.sql.Time;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("serial")
@@ -97,6 +108,17 @@ public class Activity extends BaseEntity {
 		this.endTime = endTime;
 	}
 
+	@Transient
+	public String getTimeDescription() {
+		if (this.startTime != null && this.endTime != null) {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+			return this.startTime.toLocalTime().format(formatter) + " - " +
+				this.endTime.toLocalTime().format(formatter);
+		} else {
+			return null;
+		}
+	}
+
 	@Basic
 	@Column(name = "category", nullable = true)
 	@JsonProperty
@@ -116,6 +138,14 @@ public class Activity extends BaseEntity {
 		}
 
 		return (this.category == 1);
+	}
+
+	@Transient
+	public boolean isLecture() {
+		return this.activityTypeCode.getActivityTypeCode() == '0' ||
+			this.activityTypeCode.getActivityTypeCode() == 'A' ||
+			this.activityTypeCode.getActivityTypeCode() == 'B' ||
+			this.activityTypeCode.getActivityTypeCode() == 'L';
 	}
 
 	/**
