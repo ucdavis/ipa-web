@@ -142,13 +142,10 @@ public class Activity extends BaseEntity {
 
 	@Transient
 	public boolean isLecture() {
-		if (this.activityTypeCode.getActivityTypeCode() == '0' ||
+		return this.activityTypeCode.getActivityTypeCode() == '0' ||
 			this.activityTypeCode.getActivityTypeCode() == 'A' ||
 			this.activityTypeCode.getActivityTypeCode() == 'B' ||
-			this.activityTypeCode.getActivityTypeCode() == 'L') {
-			return true;
-		}
-		return false;
+			this.activityTypeCode.getActivityTypeCode() == 'L';
 	}
 
 	/**

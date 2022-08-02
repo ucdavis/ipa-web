@@ -25,7 +25,6 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
     @Inject UserRoleService userRoleService;
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject SupportStaffService supportStaffService;
-    @Inject TermService termService;
     @Inject InstructorTypeService instructorTypeService;
     @Inject InstructorService instructorService;
     @Inject DataWarehouseService dwService;
@@ -40,7 +39,7 @@ public class JpaScheduleSummaryViewFactory implements ScheduleSummaryViewFactory
         List<Activity> activities = activityService.findVisibleByWorkgroupIdAndYearAndTermCode(workgroupId, year, shortTermCode);
         List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 
-        Set<Instructor> instructors = new HashSet<Instructor>();
+        Set<Instructor> instructors = new HashSet<>();
         Set<Instructor> activeInstructors = new HashSet<>(userRoleService.getInstructorsByScheduleIdAndWorkgroupId(schedule.getId(), workgroupId));
         Set<Instructor> assignedInstructors = new HashSet<>(instructorService.findAssignedByScheduleId(schedule.getId()));
         instructors.addAll(activeInstructors);

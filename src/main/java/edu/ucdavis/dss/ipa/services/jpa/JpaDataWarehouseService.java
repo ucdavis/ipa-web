@@ -56,9 +56,7 @@ public class JpaDataWarehouseService implements DataWarehouseService {
             String courseKey =
                 census.getSubjectCode() + "-" + census.getCourseNumber() + "-" + census.getSequencePattern();
 
-            if (censusMap.get(termCode) == null) {
-                censusMap.put(termCode, new HashMap<>());
-            }
+            censusMap.computeIfAbsent(termCode, k -> new HashMap<>());
 
             if (censusMap.get(termCode).get(courseKey) == null) {
                 censusMap.get(termCode).put(courseKey, census.getCurrentEnrolledCount());

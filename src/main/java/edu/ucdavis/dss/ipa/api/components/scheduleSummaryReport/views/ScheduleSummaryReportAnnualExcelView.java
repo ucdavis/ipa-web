@@ -85,7 +85,6 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
 
                 Course course = currentSectionGroup.getCourse();
 
-                String lastOfferedTermCode = null;
                 String lastOfferedCensus = null;
                 String lastOfferedCourseKey =
                     course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
@@ -229,7 +228,6 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     }
                 }
 
-
 //                // add blank row if next course number is different
 //                if (i + 1 < termSectionGroups.size() && sectionGroup.getCourse().getCourseNumber()
 //                    .compareTo(termSectionGroups.get(i + 1).getCourse().getCourseNumber()) != 0) {
@@ -265,17 +263,15 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
         ExcelHelper.expandHeaders(workbook);
     }
 
-    private List<Object> fillRow(List<Object> row, Object value, int length) {
+    private void fillRow(List<Object> row, Object value, int length) {
         for (int i = 0; i < length; i++) {
             row.add(value);
         }
-        return row;
     }
 
-    private List<Object> fillRow(List<Object> row, Object value, int length, int start) {
+    private void fillRow(List<Object> row, Object value, int length, int start) {
         for (int i = 0; i < length; i++) {
             row.add(start, value);
         }
-        return row;
     }
 }
