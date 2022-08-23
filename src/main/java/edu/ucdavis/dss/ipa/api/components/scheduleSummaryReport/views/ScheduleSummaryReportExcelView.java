@@ -144,25 +144,35 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                         sectionTAs += displayName;
                     }
                     excelHeader.createCell(col).setCellValue(sectionTAs);
+                    // Set requested TAs
+                    col = 7;
+                    if (sectionGroup.getTeachingAssistantAppointments() != null) {
+                        excelHeader.createCell(col).setCellValue(sectionGroup.getTeachingAssistantAppointments());
+                    }
+                    // Set requested Reader hours
+                    col = 8;
+                    if (sectionGroup.getReaderAppointments() != null) {
+                        excelHeader.createCell(col).setCellValue(sectionGroup.getReaderAppointments());
+                    }
                     for (Activity activity : sectionGroup.getActivities()) {
                         // Set Activity Type Code Description
-                        col = 7;
+                        col = 9;
                         excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
                         // Set Days
-                        col = 8;
+                        col = 10;
                         excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
                         // Set Start
                         if (activity.getStartTime() != null) {
-                            col = 9;
+                            col = 11;
                             excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
                         // Set Start
                         if (activity.getEndTime() != null) {
-                            col = 10;
+                            col = 12;
                             excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
                         if (activity.getLocationDescription() != null) {
-                            col = 11;
+                            col = 13;
                             excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
                         }
                         row++;
@@ -170,23 +180,23 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                     }
                     for (Activity activity : section.getActivities()) {
                         // Set Activity Type Code Description
-                        col = 7;
+                        col = 9;
                         excelHeader.createCell(col).setCellValue(activity.getActivityTypeCodeDescription());
                         // Set Days
-                        col = 8;
+                        col = 10;
                         excelHeader.createCell(col).setCellValue(activity.getDayIndicatorDescription());
                         // Set Start
                         if (activity.getStartTime() != null) {
-                            col = 9;
+                            col = 11;
                             excelHeader.createCell(col).setCellValue(activity.getStartTime().toString());
                         }
                         // Set Start
                         if (activity.getEndTime() != null) {
-                            col = 10;
+                            col = 12;
                             excelHeader.createCell(col).setCellValue(activity.getEndTime().toString());
                         }
                         if (activity.getLocationDescription() != null) {
-                            col = 11;
+                            col = 13;
                             excelHeader.createCell(col).setCellValue(activity.getLocationDescription());
                         }
                         row++;
@@ -211,11 +221,13 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
             excelHeader.createCell(4).setCellValue("CRN");
             excelHeader.createCell(5).setCellValue("Seats");
             excelHeader.createCell(6).setCellValue("Section TAs");
-            excelHeader.createCell(7).setCellValue("Activity");
-            excelHeader.createCell(8).setCellValue("Days");
-            excelHeader.createCell(9).setCellValue("Start");
-            excelHeader.createCell(10).setCellValue("End");
-            excelHeader.createCell(11).setCellValue("Location");
+            excelHeader.createCell(7).setCellValue("TAs requested");
+            excelHeader.createCell(8).setCellValue("Reader hours requested");
+            excelHeader.createCell(9).setCellValue("Activity");
+            excelHeader.createCell(10).setCellValue("Days");
+            excelHeader.createCell(11).setCellValue("Start");
+            excelHeader.createCell(12).setCellValue("End");
+            excelHeader.createCell(13).setCellValue("Location");
         }
     }
 }
