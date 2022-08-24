@@ -119,7 +119,7 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
                         + preference.getSectionGroup().getCourse().getSubjectCode() + " "
                         + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
                         +
-                        (preference.getType().equals("Teaching Assistant") ? "Teaching Assistant" :
+                        (preference.getType().equals("teachingAssistant") ? "Teaching Assistant" :
                             "Reader")
                         + (preference.getComment().equals("") ? "" :
                         "\n      Comment: " + preference.getComment() + "\n")
