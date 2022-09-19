@@ -403,6 +403,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             "",
             "Associate Instructor",
             "Continuing Lecturer",
+            "Continuing Lecturer - Augmentation",
             "Emeriti - Recalled",
             "Instructor",
             "Ladder Faculty",
@@ -481,6 +482,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                     break;
                 case "Continuing Lecturer":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(CONTINUING_LECTURER_COST));
+                    break;
+                case "Continuing Lecturer - Augmentation":
+                    data.add(budgetScenarioExcelView.termTotals.get(termCode).get(CONTINUING_LECTURER_AUGMENTATION_COST));
                     break;
                 case "Emeriti - Recalled":
                     data.add(budgetScenarioExcelView.termTotals.get(termCode).get(EMERITI_COST));
