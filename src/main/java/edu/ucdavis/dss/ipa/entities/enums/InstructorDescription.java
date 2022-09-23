@@ -9,7 +9,8 @@ public enum InstructorDescription {
     LADDER_FACULTY(6),
     INSTRUCTOR(7),
     LECTURER_SOE(8),
-    NEW_FACULTY_HIRE(9);
+    NEW_FACULTY_HIRE(9),
+    CONTINUING_LECTURER_AUGMENTATION(10);
 
     private final long typeId;
 
