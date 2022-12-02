@@ -129,8 +129,8 @@ public class BudgetCalculationService {
                     currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
 
-                    currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
-                    combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
+                    currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
+                    combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
                 } else if (instructorTypeId == LADDER_FACULTY.typeId()){
                     currentTermSummary.put(LADDER_FACULTY_COUNT, currentTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(LADDER_FACULTY_COUNT, combinedTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
