@@ -5,8 +5,10 @@ import edu.ucdavis.dss.ipa.repositories.BudgetRepository;
 import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,8 +178,11 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         } else {
             budgetRequestPrefix = "Initial";
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        budgetRequestScenario.setName(budgetRequestPrefix + " Budget Request - " + simpleDateFormat.format(new Date()));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        Instant timestamp = Instant.now();
+        ZonedDateTime PacificTime = timestamp.atZone(ZoneId.of("America/Los_Angeles"));
+        budgetRequestScenario.setName(budgetRequestPrefix + " Budget Request - " + formatter.format(PacificTime));
 
         budgetRequestScenario.setActiveTermsBlob(originalScenario.getActiveTermsBlob());
         budgetRequestScenario.setFromLiveData(false);
