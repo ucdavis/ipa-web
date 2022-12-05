@@ -142,7 +142,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                     if(sectionGroupCostInstructor.getTeachingAssignment() != null) {
                         teachingAssingmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
                     }
-                    instructorCost += getBudgetCalculationService().calculateSectionGroupInstructorCost(budgetScenarioExcelView.workgroup ,budgetScenarioExcelView.budget, sectionGroupCostInstructor).floatValue();
+                    instructorCost += getBudgetCalculationService().calculateSectionGroupInstructorCost(budgetScenarioExcelView.workgroup, budgetScenarioExcelView.budget, budgetScenarioExcelView.budgetScenario, sectionGroupCostInstructor).floatValue();
                 }
 
                 SectionGroup sectionGroup = getSectionGroupService().findBySectionGroupCostDetails(
