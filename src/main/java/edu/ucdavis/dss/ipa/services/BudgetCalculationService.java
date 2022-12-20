@@ -363,7 +363,14 @@ public class BudgetCalculationService {
             return sectionGroupCostInstructor.getCost();
         }
         if (sectionGroupCostInstructor.getInstructor() != null) {
-            InstructorCost instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
+            InstructorCost instructorCost;
+
+            if (budgetScenario.getIsBudgetRequest()) {
+                instructorCost = instructorCostService.findByInstructorIdAndBudgetScenarioId(sectionGroupCostInstructor.getInstructor().getId(), budgetScenario.getId());
+            } else {
+                instructorCost = instructorCostService.findByInstructorIdAndBudgetId(sectionGroupCostInstructor.getInstructor().getId(), budget.getId());
+            }
+
             if (instructorCost != null && instructorCost.getCost() != null) {
                 return instructorCost.getCost();
             } else {
