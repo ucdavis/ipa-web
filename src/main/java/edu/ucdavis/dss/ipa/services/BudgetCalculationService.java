@@ -387,7 +387,15 @@ public class BudgetCalculationService {
                 }
             }
         } else if (sectionGroupCostInstructor.getInstructorType() != null){
-            InstructorTypeCost instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorType().getId(), budget.getId());
+            InstructorTypeCost instructorTypeCost;
+
+            if (budgetScenario.getIsBudgetRequest()) {
+                instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetScenarioId(sectionGroupCostInstructor.getInstructorType().getId(),
+                    budgetScenario.getId());
+            } else {
+                instructorTypeCost = instructorTypeCostService.findByInstructorTypeIdAndBudgetId(sectionGroupCostInstructor.getInstructorType().getId(), budget.getId());
+            }
+
             if (instructorTypeCost != null && instructorTypeCost.getCost() != null){
                 return new BigDecimal(String.valueOf(instructorTypeCost.getCost()));
             }
