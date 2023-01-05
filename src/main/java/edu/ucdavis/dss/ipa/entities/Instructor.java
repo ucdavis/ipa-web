@@ -100,6 +100,11 @@ public class Instructor implements Serializable {
 	{
 		return this.firstName + " " + this.lastName;
 	}
+
+	@JsonProperty
+	@Transient
+	public String getInvertedName() { return this.lastName + ", " + this.firstName; }
+
 	@Basic
 	@Column(name = "Email", nullable = true, length = 45, unique = true)
 	@JsonProperty("emailAddress")

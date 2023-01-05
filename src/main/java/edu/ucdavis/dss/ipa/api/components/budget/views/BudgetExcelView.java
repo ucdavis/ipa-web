@@ -134,7 +134,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 List<SectionGroupCostInstructor> sectionGroupCostInstructors = sectionGroupCost.getSectionGroupCostInstructors();
                 for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCostInstructors){
                     if(sectionGroupCostInstructor.getInstructor() != null){
-                        namedInstructors.add(sectionGroupCostInstructor.getInstructor().getFullName());
+                        namedInstructors.add(sectionGroupCostInstructor.getInstructor().getInvertedName());
                         namedInstructorTypes.add(sectionGroupCostInstructor.getInstructorType().getDescription());
                     } else if (sectionGroupCostInstructor.getInstructorType() != null) {
                         unnamedInstructors.add(sectionGroupCostInstructor.getInstructorType().getDescription());
@@ -157,7 +157,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                         for(TeachingAssignment teachingAssignment : sectionGroup.getTeachingAssignments()){
                             if(!teachingAssingmentIds.contains(teachingAssignment.getId()) && teachingAssignment.isApproved()){
                                 if(teachingAssignment.getInstructor() != null){
-                                    namedInstructors.add(teachingAssignment.getInstructor().getFullName());
+                                    namedInstructors.add(teachingAssignment.getInstructor().getInvertedName());
                                     namedInstructorTypes.add(teachingAssignment.getInstructorType().getDescription());
                                 } else if (sectionGroupCost.getInstructorType() != null) {
                                     unnamedInstructors.add(teachingAssignment.getInstructorType().getDescription());
@@ -223,7 +223,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 scheduleCostValues.addAll(
                     Arrays.asList(
                         (sectionGroupCost.getOriginalInstructor() == null ? "" :
-                            sectionGroupCost.getOriginalInstructor().getFullName()),
+                            sectionGroupCost.getOriginalInstructor().getInvertedName()),
                         sectionGroupCost.getReasonCategoryDescription(),
                         sectionGroupCost.getReason(),
                         round(sectionGroupCost.getEnrollmentPerTA()),
@@ -289,7 +289,7 @@ public class BudgetExcelView extends AbstractXlsxView {
                 // Get data into correct shape
                 InstructorCost instructorCost = budgetScenarioExcelView.getInstructorCosts().stream().filter(ic -> ic.getInstructor().getId() == instructor.getId()).findFirst().orElse(null);
 
-                String instructorName = instructor.getLastName() + " " + instructor.getFirstName();
+                String instructorName = instructor.getInvertedName();
 
                 // Calculate instructor type.  Make sure to compare with frontend if you need to change.
                 Set<User> users = budgetScenarioExcelView.users;
