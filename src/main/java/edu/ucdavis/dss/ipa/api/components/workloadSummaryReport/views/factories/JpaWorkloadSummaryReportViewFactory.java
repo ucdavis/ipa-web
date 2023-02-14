@@ -78,7 +78,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<ScheduleInstructorNote> scheduleInstructorNotes =
             scheduleInstructorNoteService.findByScheduleId(schedule.getId());
-        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findByScheduleId(schedule.getId());
+        List<TeachingAssignment> teachingAssignments = teachingAssignmentService.findApprovedByWorkgroupIdAndYear(workgroupId, year);
         List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
         Set<Instructor> instructorSet = new HashSet<>();
@@ -201,9 +201,9 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
             String instructorTypeDescription = instructorTypeService.findById(instructorTypeId).getDescription();
 
-            List<TeachingAssignment> scheduleAssignments =
-                teachingAssignmentService.findByScheduleIdAndInstructorId(
-                    workloadSummaryReportView.getSchedule().getId(), instructor.getId());
+            List<TeachingAssignment> scheduleAssignments = workloadSummaryReportView.getTeachingAssignment().stream()
+                    .filter(ta -> ta.getInstructor() != null && ta.getInstructor().getId() == instructor.getId())
+                    .collect(Collectors.toList());
 
             if (scheduleAssignments.size() == 0) {
                 instructorAssignments.add(
