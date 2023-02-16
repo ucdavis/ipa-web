@@ -228,4 +228,14 @@ public class SectionGroup extends BaseEntity {
 			return null;
 		}
 	}
+
+	@Transient
+	public String getDisplayUnits(Boolean isWorkload) {
+		// use 0 for variable courses for Workload/SCH purposes
+		if (isWorkload) {
+			return String.valueOf(0);
+		} else {
+			return getDisplayUnits();
+		}
+	}
 }
