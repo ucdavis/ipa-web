@@ -76,6 +76,10 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
     }
 
     public List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year) {
+        return generateWorkloadAssignments(workgroupId, year, false);
+    }
+
+    public List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, Boolean hasUnassigned) {
         List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
 
         // Gathering phase
@@ -338,87 +342,92 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
             workloadAssignments.add(wa);
         }
 
-        // fill in Unassigned courses?
-        List<SectionGroup> unassignedSectionGroups = sectionGroups.stream().filter(sg -> sg.getTeachingAssignments().stream().filter(ta -> ta.isApproved()).collect(Collectors.toList()).size() == 0).collect(Collectors.toList());
+        // fill in unassigned data for snapshots
+        if (hasUnassigned) {
+            List<SectionGroup> unassignedSectionGroups = sectionGroups.stream().filter(sg ->
+                sg.getTeachingAssignments().stream().filter(ta -> ta.isApproved()).collect(Collectors.toList())
+                    .size() == 0).collect(Collectors.toList());
 
-        for (SectionGroup sectionGroup : unassignedSectionGroups) {
-            Course course = sectionGroup.getCourse();
-            String termCode = sectionGroup.getTermCode();
-                                long censusCount = 0;
-                    long previousYearCensus = 0;
-                    Float studentCreditHour = null;
-                                        String previousYearTermCode =
-                        Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
-                                        String lastOfferedCensus = null;
+            for (SectionGroup sectionGroup : unassignedSectionGroups) {
+                Course course = sectionGroup.getCourse();
+                String termCode = sectionGroup.getTermCode();
+                long censusCount = 0;
+                long previousYearCensus = 0;
+                Float studentCreditHour = null;
+                String previousYearTermCode =
+                    Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
+                String lastOfferedCensus = null;
 
-                                    if (termCodeCensus.size() > 0) {
-                            String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
-                                course.getSequencePattern();
+                if (termCodeCensus.size() > 0) {
+                    String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
+                        course.getSequencePattern();
 
-                            if (courseCensusMap.containsKey(termCode) &&
-                                courseCensusMap.get(termCode).containsKey(courseKey)) {
-                                censusCount = courseCensusMap.get(termCode).get(courseKey);
+                    if (courseCensusMap.containsKey(termCode) &&
+                        courseCensusMap.get(termCode).containsKey(courseKey)) {
+                        censusCount = courseCensusMap.get(termCode).get(courseKey);
 
-                                studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
+                        studentCreditHour = calculateStudentCreditHours(censusCount, course, sectionGroup);
 //                                plannedSeats = sectionGroup.getPlannedSeats();
-                            }
+                    }
 
-                            if (courseCensusMap.containsKey(previousYearTermCode) &&
-                                courseCensusMap.get(previousYearTermCode).containsKey(courseKey)) {
-                                previousYearCensus = courseCensusMap.get(previousYearTermCode).get(courseKey);
-                            }
+                    if (courseCensusMap.containsKey(previousYearTermCode) &&
+                        courseCensusMap.get(previousYearTermCode).containsKey(courseKey)) {
+                        previousYearCensus = courseCensusMap.get(previousYearTermCode).get(courseKey);
+                    }
 
-                            // find last offering term
-                            List<String> offeredTermCodes =
-                                courseCensusMap.keySet().stream().sorted(Comparator.reverseOrder())
-                                    .collect(Collectors.toList());
+                    // find last offering term
+                    List<String> offeredTermCodes =
+                        courseCensusMap.keySet().stream().sorted(Comparator.reverseOrder())
+                            .collect(Collectors.toList());
 
-                            String lastOfferedTermCode = null;
-                            String lastOfferedCourseKey =
-                                course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
-                                    course.getSequencePattern();
-                            if (offeredTermCodes.size() > 2) {
-                                // walk through map to check for course key
-                                for (String offeredTermCode : offeredTermCodes.subList(offeredTermCodes.indexOf(termCode) + 1, offeredTermCodes.size())) {
-                                    if (courseCensusMap.get(offeredTermCode).containsKey(lastOfferedCourseKey) && courseCensusMap.get(offeredTermCode).get(lastOfferedCourseKey) != 0) {
-                                        lastOfferedTermCode = offeredTermCode;
-                                        break;
-                                    }
-                                }
-//                                lastOfferedTermCode = offeredTermCodes.get(offeredTermCodes.size() - 2);
-
-                                if (lastOfferedTermCode != null) {
-                                    lastOfferedCensus =
-                                        courseCensusMap.get(lastOfferedTermCode).get(lastOfferedCourseKey) + " (" +
-                                            Term.getShortDescription(lastOfferedTermCode) + ")";
-                                }
-                            } else {
-                                lastOfferedCensus = "";
+                    String lastOfferedTermCode = null;
+                    String lastOfferedCourseKey =
+                        course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
+                            course.getSequencePattern();
+                    if (offeredTermCodes.size() > 2) {
+                        // walk through map to check for course key
+                        for (String offeredTermCode : offeredTermCodes.subList(offeredTermCodes.indexOf(termCode) + 1,
+                            offeredTermCodes.size())) {
+                            if (courseCensusMap.get(offeredTermCode).containsKey(lastOfferedCourseKey) &&
+                                courseCensusMap.get(offeredTermCode).get(lastOfferedCourseKey) != 0) {
+                                lastOfferedTermCode = offeredTermCode;
+                                break;
                             }
                         }
+//                                lastOfferedTermCode = offeredTermCodes.get(offeredTermCodes.size() - 2);
 
-            WorkloadAssignment wa = new WorkloadAssignment();
-            wa.setYear(year);
-            wa.setDepartment(department);
-            wa.setInstructorType("Unassigned");
-            wa.setName("");
-            wa.setTermCode(sectionGroup.getTermCode());
-            wa.setCourseType(getCourseType(sectionGroup));
-            wa.setDescription(course.getSubjectCode() + " " + course.getCourseNumber());
-            wa.setOffering(course.getSequencePattern());
-            wa.setCensus(censusCount);
-            wa.setPlannedSeats(sectionGroup.getPlannedSeats());
-            wa.setPreviousYearCensus(previousYearCensus);
-            wa.setLastOfferedCensus(lastOfferedCensus);
-            wa.setUnits(sectionGroup.getDisplayUnits(true));
-            workloadAssignments.add(wa);
+                        if (lastOfferedTermCode != null) {
+                            lastOfferedCensus =
+                                courseCensusMap.get(lastOfferedTermCode).get(lastOfferedCourseKey) + " (" +
+                                    Term.getShortDescription(lastOfferedTermCode) + ")";
+                        }
+                    } else {
+                        lastOfferedCensus = "";
+                    }
+                }
+
+                WorkloadAssignment wa = new WorkloadAssignment();
+                wa.setYear(year);
+                wa.setDepartment(department);
+                wa.setInstructorType("Unassigned");
+                wa.setName("");
+                wa.setTermCode(sectionGroup.getTermCode());
+                wa.setCourseType(getCourseType(sectionGroup));
+                wa.setDescription(course.getSubjectCode() + " " + course.getCourseNumber());
+                wa.setOffering(course.getSequencePattern());
+                wa.setCensus(censusCount);
+                wa.setPlannedSeats(sectionGroup.getPlannedSeats());
+                wa.setPreviousYearCensus(previousYearCensus);
+                wa.setLastOfferedCensus(lastOfferedCensus);
+                wa.setUnits(sectionGroup.getDisplayUnits(true));
+                workloadAssignments.add(wa);
+            }
         }
-
         return workloadAssignments;
     }
 
     public List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, WorkloadSnapshot workloadSnapshot) {
-        List<WorkloadAssignment> assignments = generateWorkloadAssignments(workgroupId, year);
+        List<WorkloadAssignment> assignments = generateWorkloadAssignments(workgroupId, year, true);
 
         for (WorkloadAssignment a : assignments) {
             a.setWorkloadSnapshot(workloadSnapshot);

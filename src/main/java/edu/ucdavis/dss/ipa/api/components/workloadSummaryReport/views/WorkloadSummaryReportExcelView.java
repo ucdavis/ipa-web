@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
+import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
 import java.util.List;
@@ -12,14 +13,14 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private long year;
-    private List<InstructorAssignment> instructorAssignmentList;
+    private List<WorkloadAssignment> workloadAssignments;
 
-    public WorkloadSummaryReportExcelView(List<InstructorAssignment> instructorAssignmentList, long year) {
-        this.instructorAssignmentList = instructorAssignmentList;
+    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year) {
+        this.workloadAssignments = workloadAssignments;
         this.year = year;
     }
 
-    public static void buildRawAssignmentsSheet(Workbook wb, List<InstructorAssignment> instructorAssignmentList) {
+    public static void buildRawAssignmentsSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
         Sheet worksheet = wb.createSheet("Raw Assignments Data");
 
         ExcelHelper.setSheetHeader(worksheet,
@@ -27,8 +28,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
 
-        for (InstructorAssignment instructorAssignment : instructorAssignmentList) {
-            ExcelHelper.writeRowToSheet(worksheet, instructorAssignment.toList());
+        for (WorkloadAssignment workloadAssignment : workloadAssignments) {
+            ExcelHelper.writeRowToSheet(worksheet, workloadAssignment.toList());
         }
     }
 
@@ -40,7 +41,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildRawAssignmentsSheet(workbook, instructorAssignmentList);
+        buildRawAssignmentsSheet(workbook, workloadAssignments);
         ExcelHelper.expandHeaders(workbook);
     }
 }

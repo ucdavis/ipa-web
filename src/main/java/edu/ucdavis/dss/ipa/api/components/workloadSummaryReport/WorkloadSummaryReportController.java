@@ -5,10 +5,12 @@ import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSu
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories.WorkloadSummaryReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.UserService;
+import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import edu.ucdavis.dss.ipa.utilities.S3Service;
 import java.text.ParseException;
@@ -40,6 +42,9 @@ public class WorkloadSummaryReportController {
     @Inject
     WorkloadSummaryReportViewFactory workloadSummaryReportViewFactory;
     @Inject
+    WorkloadAssignmentService workloadAssignmentService;
+
+    @Inject
     S3Service s3Service;
     @Inject
     UserService userService;
@@ -58,11 +63,11 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public WorkloadSummaryReportView getWorkloadSummaryReportView(
+    public List<WorkloadAssignment> getWorkloadSummaryReportView(
         @PathVariable long workgroupId, @PathVariable long year) {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
-        return workloadSummaryReportViewFactory.createWorkloadSummaryReportView(workgroupId, year);
+        return workloadAssignmentService.generateWorkloadAssignments(workgroupId, year);
     }
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupIds}/years/{year}/generateExcel", method = RequestMethod.GET)
