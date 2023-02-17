@@ -14,6 +14,7 @@ import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
+import edu.ucdavis.dss.ipa.entities.WorkloadSnapshot;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
@@ -48,6 +49,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryReportViewFactory {
     @Inject
     WorkloadAssignmentService workloadAssignmentService;
+
+    @Inject
+    WorkloadSnapshotService workloadSnapshotService;
+
+    @Override
+    public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workloadSnapshotId) {
+        WorkloadSnapshot snapshot = workloadSnapshotService.findById(workloadSnapshotId);
+
+        // write data to excel
+        WorkloadSummaryReportExcelView workloadSummaryReportExcelView =
+            new WorkloadSummaryReportExcelView(snapshot.getWorkloadAssignments(), snapshot.getYear(), true);
+
+        return workloadSummaryReportExcelView;
+    }
 
     @Override
     public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupIds, long year) {

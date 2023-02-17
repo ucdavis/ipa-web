@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSu
 import java.util.concurrent.CompletableFuture;
 
 public interface WorkloadSummaryReportViewFactory {
+    WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workloadSnapshotId);
     WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupId, long year);
 
     CompletableFuture<byte[]> createWorkloadSummaryReportBytes(long[] workgroupId, long year);

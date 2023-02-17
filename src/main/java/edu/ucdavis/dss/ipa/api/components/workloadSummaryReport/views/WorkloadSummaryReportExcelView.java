@@ -14,10 +14,17 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private long year;
     private List<WorkloadAssignment> workloadAssignments;
+    private Boolean isSnapshot;
 
     public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
+        this.isSnapshot = false;
+    }
+    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, Boolean isSnapshot) {
+        this.workloadAssignments = workloadAssignments;
+        this.year = year;
+        this.isSnapshot = true;
     }
 
     public static void buildRawAssignmentsSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
@@ -37,7 +44,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
 
-        String filename = "attachment; filename=\"" + this.year + " Workload Summary Report.xlsx";
+        String filename = "attachment; filename=\"" + this.year + (this.isSnapshot ? " Workload Snapshot" : " Workload Summary Report") + ".xlsx";
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 

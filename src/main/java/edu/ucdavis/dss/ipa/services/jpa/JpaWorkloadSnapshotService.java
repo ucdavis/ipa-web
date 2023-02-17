@@ -13,7 +13,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,10 @@ public class JpaWorkloadSnapshotService implements WorkloadSnapshotService {
     BudgetScenarioService budgetScenarioService;
     @Inject WorkgroupService workgroupService;
     @Inject WorkloadAssignmentService workloadAssignmentService;
+
+    public WorkloadSnapshot findById(long workloadSnapshotId) {
+        return workloadSnapshotRepository.findById(workloadSnapshotId);
+    }
 
     public List<WorkloadSnapshot> findByWorkgroupIdAndYear(long workgroupId, long year) {
         return workloadSnapshotRepository.findByWorkgroupIdAndYear(workgroupId, year);
