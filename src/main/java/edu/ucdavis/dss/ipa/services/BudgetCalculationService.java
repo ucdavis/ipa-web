@@ -329,7 +329,8 @@ public class BudgetCalculationService {
     }
 
     private static BigDecimal calculateSCH(SectionGroupCost sectionGroupCost) {
-        return new BigDecimal(String.valueOf(sectionGroupCost.getEnrollment())).multiply(calculateUnits(sectionGroupCost));
+        BigDecimal seats = sectionGroupCost.getEnrollment() == null ? BigDecimal.ZERO : new BigDecimal(sectionGroupCost.getEnrollment());
+        return seats.multiply(calculateUnits(sectionGroupCost));
     }
 
     private long calculateSectionGroupInstructorTypeId(
