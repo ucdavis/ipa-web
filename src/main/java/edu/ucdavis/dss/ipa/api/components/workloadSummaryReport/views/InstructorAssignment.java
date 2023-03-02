@@ -37,11 +37,12 @@ public class InstructorAssignment {
         this.instructorNote = instructorNote;
     }
 
-    public InstructorAssignment(long year, String department, String instructorType, String name) {
+    public InstructorAssignment(long year, String department, String instructorType, String name, String instructorNote) {
         this.year = year;
         this.department = department;
         this.instructorType = instructorType;
         this.name = name;
+        this.instructorNote = instructorNote;
     }
 
     public InstructorAssignment(long year, String department, String instructorType, String name, String term,

@@ -205,17 +205,20 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                     .filter(ta -> ta.getInstructor() != null && ta.getInstructor().getId() == instructor.getId())
                     .collect(Collectors.toList());
 
+            String instructorNote = workloadSummaryReportView.getScheduleInstructorNotes().stream()
+                        .filter(note -> note.getInstructor().getId() == instructor.getId())
+                        .map(note -> note.getInstructorComment()).findAny().orElse("");
+
             if (scheduleAssignments.size() == 0) {
                 instructorAssignments.add(
-                    new InstructorAssignment(year, department, instructorTypeDescription, instructor.getFullName()));
+                    new InstructorAssignment(year, department, instructorTypeDescription, instructor.getFullName(), instructorNote));
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
                     String termCode = assignment.getTermCode();
                     String previousYearTermCode =
                         Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
 
-                    String courseDescription = null, offering = null, lastOfferedCensus = null, instructorNote =
-                        null, unit = null;
+                    String courseDescription = null, offering = null, lastOfferedCensus = null, unit = null;
                     Integer plannedSeats = null;
                     long censusCount = 0;
                     long previousYearCensus = 0;
@@ -229,10 +232,6 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
                         courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
                         offering = course.getSequencePattern();
                         unit = sectionGroup.getDisplayUnits();
-
-                        instructorNote = workloadSummaryReportView.getScheduleInstructorNotes().stream()
-                            .filter(n -> n.getInstructor().getId() == assignment.getInstructor().getId())
-                            .map(s -> s.getInstructorComment()).findFirst().orElse("");
 
                         if (workloadSummaryReportView.getTermCodeCensus().size() > 0) {
                             String courseKey = course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
