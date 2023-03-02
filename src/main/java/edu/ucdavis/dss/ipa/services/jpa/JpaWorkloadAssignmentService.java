@@ -162,12 +162,17 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
 
             List<TeachingAssignment> scheduleAssignments = teachingAssignments.stream().filter(ta -> ta.getInstructor() != null && ta.getInstructor().getId() == instructor.getId()).collect(Collectors.toList());
 
+            String instructorNote = scheduleInstructorNotes.stream()
+                .filter(note -> note.getInstructor().getId() == instructor.getId())
+                .map(note -> note.getInstructorComment()).findAny().orElse("");
+
             if (scheduleAssignments.size() == 0) {
                 WorkloadAssignment wa = new WorkloadAssignment();
                 wa.setYear(year);
                 wa.setDepartment(department);
                 wa.setInstructorType(instructorTypeDescription);
                 wa.setName(instructor.getInvertedName());
+                wa.setInstructorNote(instructorNote);
                 workloadAssignments.add(wa);
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
@@ -175,16 +180,11 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                     String previousYearTermCode =
                         Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
 
-                    String courseDescription = null, offering = null, lastOfferedCensus = null, instructorNote = null,
-                        unit = null;
+                    String courseDescription = null, offering = null, lastOfferedCensus = null, unit = null;
                     Integer plannedSeats = null;
                     Long censusCount = null;
                     Long previousYearCensus = null;
                     Float studentCreditHour = null;
-
-                    instructorNote = scheduleInstructorNotes.stream()
-                        .filter(n -> n.getInstructor().getId() == assignment.getInstructor().getId())
-                        .map(s -> s.getInstructorComment()).findFirst().orElse("");
 
                     String courseType = getCourseType(assignment);
                     if (assignment.getSectionGroup() != null) {
