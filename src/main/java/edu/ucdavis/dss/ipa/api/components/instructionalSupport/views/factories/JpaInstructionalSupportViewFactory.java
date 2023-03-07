@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallInstructorFormView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStatusView;
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportCallStudentFormView;
+import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.InstructionalSupportExcelView;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Instructor;
@@ -18,6 +19,7 @@ import edu.ucdavis.dss.ipa.entities.SupportAppointment;
 import edu.ucdavis.dss.ipa.entities.SupportAssignment;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.web.servlet.View;
 
 @Service
 public class JpaInstructionalSupportViewFactory implements InstructionalSupportViewFactory {
@@ -99,6 +102,17 @@ public class JpaInstructionalSupportViewFactory implements InstructionalSupportV
 
         return new InstructionalSupportAssignmentView(sectionGroups, courses, supportAssignments, supportStaffList, assignedSupportStaff,
                 studentSupportPreferences, studentSupportCallResponses, schedule, instructorSupportPreferences, instructorSupportCallResponses, supportAppointments, sections, activities);
+    }
+
+    @Override
+    public View createInstructionalSupportExcelView(long workgroupId, long year, String shortTermCode) {
+        Schedule schedule = scheduleService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
+        String termCode = Term.getTermCodeByYearAndShortTermCode(year, shortTermCode);
+
+        List<SupportAssignment> supportAssignments = supportAssignmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+        List<SupportAppointment> supportAppointments = supportAppointmentService.findByScheduleIdAndTermCode(schedule.getId(), termCode);
+
+        return new InstructionalSupportExcelView(supportAssignments, supportAppointments, schedule, termCode);
     }
 
     @Override
