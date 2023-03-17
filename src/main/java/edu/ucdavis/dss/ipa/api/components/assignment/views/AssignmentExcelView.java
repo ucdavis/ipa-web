@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -126,6 +127,8 @@ public class AssignmentExcelView extends AbstractXlsView {
 
             row++;
         }
+
+        ExcelHelper.expandHeaders(workbook);
     }
 
     private void setExcelHeader(Sheet excelSheet, String firstHeader) {
