@@ -59,6 +59,9 @@ public class AssignmentExcelView extends AbstractXlsView {
             excelHeader.createCell(col).setCellValue(course.getShortDescription());
             col++;
 
+            excelHeader.createCell(col).setCellValue(course.getTitle());
+            col++;
+
             excelHeader.createCell(col).setCellValue(course.getUnitsLow());
             col++;
 
@@ -133,6 +136,9 @@ public class AssignmentExcelView extends AbstractXlsView {
         col++;
 
         if ("Course".equals(firstHeader)) {
+            excelHeader.createCell(col).setCellValue("Title");
+            col++;
+
             excelHeader.createCell(col).setCellValue("Units");
             col++;
 
