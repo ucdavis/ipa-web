@@ -21,4 +21,6 @@ public interface BudgetScenarioService {
     List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
     BudgetScenario createBudgetRequestScenario(long workgroupId, long scenarioId);
+
+    BudgetScenario approveBudgetRequestScenario(long workgroupId, long scenarioId);
 }
