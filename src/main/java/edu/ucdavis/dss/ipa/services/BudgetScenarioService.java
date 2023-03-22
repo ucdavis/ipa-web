@@ -18,6 +18,8 @@ public interface BudgetScenarioService {
 
     BudgetScenario update(BudgetScenario budgetScenario);
 
+    List<BudgetScenario> findByWorkgroupId(long workgroupId);
+
     List<BudgetScenario> findbyWorkgroupIdAndYear(long workgroupId, long year);
 
     BudgetScenario createBudgetRequestScenario(long workgroupId, long scenarioId);
