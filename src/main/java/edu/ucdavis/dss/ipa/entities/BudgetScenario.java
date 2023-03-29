@@ -274,4 +274,9 @@ public class BudgetScenario extends BaseEntity {
     public Date getLastModifiedOn() {
         return updatedAt;
     }
+
+    @Transient
+    public String getDisplayName() {
+        return this.getApproved() ? this.name + " (Approved)" : this.name;
+    }
 }
