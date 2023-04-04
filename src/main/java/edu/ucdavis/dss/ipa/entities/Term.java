@@ -257,4 +257,9 @@ public class Term implements Serializable {
 
 		return baseYear + "-" + String.valueOf(baseYear + 1).substring(2,4);
 	}
+
+	@Transient
+	public static String getAcademicYearFromYear(long year) {
+        return year + "-" + String.valueOf(year + 1).substring(2,4);
+    }
 }
