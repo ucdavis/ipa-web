@@ -179,6 +179,52 @@ public class WorkloadSummaryReportController {
             .body(resource);
     }
 
+    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateHistoricalExcel", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> generateHistoricalExcel(@PathVariable long workgroupId,
+                                             @PathVariable long year,
+                                             HttpServletRequest httpRequest) {
+
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        String url =
+            ipaUrlApi + "/download/workloadSummaryReport/" + workgroupId +
+                "/years/" + year + "/historical/excel";
+        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+
+        return map;
+    }
+
+    @RequestMapping(value = "/download/workloadSummaryReport/{workgroupId}/years/{year}/historical/excel/{salt}/{encrypted}")
+    public View downloadHistoricalExcel(@PathVariable long workgroupId, @PathVariable long year,
+                              @PathVariable String salt, @PathVariable String encrypted,
+                              HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+        throws ParseException {
+        long TIMEOUT = 30L; // In seconds
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
+
+        if (isValidUrl) {
+            return workloadSummaryReportViewFactory
+                .createHistoricalWorkloadExcelView(workgroupId, year);
+        } else {
+            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return null;
+        }
+    }
     @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/download/status", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> getDownloadStatus(@PathVariable long year) {
         authorizer.isDeansOffice();
