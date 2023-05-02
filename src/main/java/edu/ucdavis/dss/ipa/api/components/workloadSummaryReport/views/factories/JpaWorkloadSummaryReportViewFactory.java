@@ -160,7 +160,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
             Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, slotYear);
 
-            // guard against previous years that may not have schedule
+            // skip years without a schedule
             if (schedule != null) {
                 List<InstructorAssignment> instructorAssignments = new ArrayList<>();
 

@@ -182,8 +182,8 @@ public class WorkloadSummaryReportController {
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateHistoricalExcel", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> generateHistoricalExcel(@PathVariable long workgroupId,
-                                             @PathVariable long year,
-                                             HttpServletRequest httpRequest) {
+                                                       @PathVariable long year,
+                                                       HttpServletRequest httpRequest) {
 
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
@@ -205,8 +205,8 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/download/workloadSummaryReport/{workgroupId}/years/{year}/historical/excel/{salt}/{encrypted}")
     public View downloadHistoricalExcel(@PathVariable long workgroupId, @PathVariable long year,
-                              @PathVariable String salt, @PathVariable String encrypted,
-                              HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+                                        @PathVariable String salt, @PathVariable String encrypted,
+                                        HttpServletRequest httpRequest, HttpServletResponse httpResponse)
         throws ParseException {
         long TIMEOUT = 30L; // In seconds
 
@@ -225,6 +225,7 @@ public class WorkloadSummaryReportController {
             return null;
         }
     }
+
     @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/download/status", method = RequestMethod.GET, produces = "application/json")
     public Map<String, Object> getDownloadStatus(@PathVariable long year) {
         authorizer.isDeansOffice();
