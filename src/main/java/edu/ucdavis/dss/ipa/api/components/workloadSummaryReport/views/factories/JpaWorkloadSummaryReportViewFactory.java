@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.InstructorAssignment;
+import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadHistoricalReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;
 import edu.ucdavis.dss.ipa.entities.Course;
@@ -149,6 +150,29 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             new WorkloadSummaryReportExcelView(instructorAssignments, year);
 
         return workloadSummaryReportExcelView;
+    }
+
+    public WorkloadHistoricalReportExcelView createHistoricalWorkloadExcelView(long workgroupId, long year) {
+        Map<Long, List<InstructorAssignment>> instructorAssignmentsMap = new HashMap<>();
+
+        for (long i = 0; i < 5; i++) {
+            long slotYear = year - i;
+
+            Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, slotYear);
+
+            // skip years without a schedule
+            if (schedule != null) {
+                List<InstructorAssignment> instructorAssignments = new ArrayList<>();
+
+                instructorAssignments.addAll(generateInstructorData(workgroupId, slotYear));
+
+                instructorAssignmentsMap.put(slotYear, instructorAssignments);
+            }
+        }
+
+        WorkloadHistoricalReportExcelView workloadHistoricalReportExcelView = new WorkloadHistoricalReportExcelView(instructorAssignmentsMap);
+
+        return workloadHistoricalReportExcelView;
     }
 
     @Override
