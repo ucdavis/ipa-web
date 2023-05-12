@@ -321,23 +321,23 @@ public class StudentSupportCallResponse implements Serializable {
 
         Long startTimeBlock = null;
         Long endTimeBlock = null;
-        List<String> blocks = new ArrayList<String>();
+        List<String> blocks = new ArrayList<>();
 
         switch (dayIndicator) {
             case 'M':
-                blob = blob.substring(0, 14);
+                blob = blob.substring(0, 15);
                 break;
             case 'T':
-                blob = blob.substring(15, 29);
+                blob = blob.substring(15, 30);
                 break;
             case 'W':
-                blob = blob.substring(30, 44);
+                blob = blob.substring(30, 45);
                 break;
             case 'R':
-                blob = blob.substring(45, 59);
+                blob = blob.substring(45, 60);
                 break;
             case 'F':
-                blob = blob.substring(60, 74);
+                blob = blob.substring(60, 75);
                 break;
         }
 
