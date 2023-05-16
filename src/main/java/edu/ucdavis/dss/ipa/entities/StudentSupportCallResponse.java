@@ -110,6 +110,7 @@ public class StudentSupportCallResponse implements Serializable {
         this.lastContactedAt = lastContactedAt;
     }
 
+    @Column(name = "StartDate", insertable = false)
     public Date getStartDate() {
         return startDate;
     }

@@ -308,7 +308,6 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
             studentResponse.setMessage(studentResponseDTO.getMessage());
             studentResponse.setNextContactAt(studentResponseDTO.getNextContactAt());
             studentResponse.setTermCode(studentResponseDTO.getTermCode());
-            studentResponse.setStartDate(studentResponseDTO.getStartDate());
             studentResponse.setDueDate(studentResponseDTO.getDueDate());
 
             studentResponse = this.create(studentResponse);

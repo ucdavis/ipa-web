@@ -13,8 +13,6 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
-import java.sql.Timestamp;
-import java.time.Instant;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -387,7 +385,6 @@ public class InstructionalSupportCallsController {
 
         studentResponseDTO.setSchedule(schedule);
 
-        studentResponseDTO.setStartDate(Timestamp.from(Instant.now()));
         studentResponseDTO.setDueDate(addStudentsDTO.getDueDate());
         studentResponseDTO.setTermCode(addStudentsDTO.getTermCode());
         studentResponseDTO.setMinimumNumberOfPreferences(addStudentsDTO.getMinimumNumberOfPreferences());
