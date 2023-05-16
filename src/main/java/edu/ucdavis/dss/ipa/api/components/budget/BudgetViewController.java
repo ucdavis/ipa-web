@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -292,6 +293,32 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return instructorTypeCostService.update(newInstructorTypeCost);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems/lock", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public List<Long> updateLineItems(@PathVariable long budgetScenarioId,
+                                      @RequestBody List<Long> lineItemIds,
+                                      HttpServletResponse httpResponse) {
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        List<LineItem> lineItems = lineItemIds.stream().map(id -> lineItemService.findById(id)).collect(Collectors.toList());
+
+        lineItems.forEach(lineItem -> lineItem.setLocked(true));
+
+        lineItemService.update(lineItems);
+
+        return lineItemIds;
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
