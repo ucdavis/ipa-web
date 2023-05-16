@@ -10,6 +10,7 @@ import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.*;
 import java.util.stream.Collectors;
+import javax.sound.sampled.Line;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -297,7 +298,7 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems/lock", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public List<Long> updateLineItems(@PathVariable long budgetScenarioId,
+    public List<LineItem> updateLineItems(@PathVariable long budgetScenarioId,
                                       @RequestBody List<Long> lineItemIds,
                                       HttpServletResponse httpResponse) {
         // Ensure valid params
@@ -316,9 +317,7 @@ public class BudgetViewController {
 
         lineItems.forEach(lineItem -> lineItem.setLocked(true));
 
-        lineItemService.update(lineItems);
-
-        return lineItemIds;
+        return lineItemService.update(lineItems);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
