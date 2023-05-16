@@ -26,7 +26,7 @@ public class LineItem extends BaseEntity {
     private String description, notes, documentNumber, accountNumber;
     private LineItemCategory lineItemCategory;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
-    private Boolean hidden = false;
+    private Boolean hidden = false, locked = false;
     private TeachingAssignment teachingAssignment;
 
     @Id
@@ -132,6 +132,12 @@ public class LineItem extends BaseEntity {
     public void setHidden(Boolean hidden) {
         this.hidden = hidden;
     }
+
+    @NotNull
+    @JsonProperty("isLocked")
+    public Boolean getLocked() { return locked; }
+
+    public void setLocked(Boolean locked) { this.locked = locked; }
 
     @JsonProperty("lineItemCategoryId")
     @Transient
