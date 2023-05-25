@@ -111,7 +111,7 @@ public class BudgetExcelView extends AbstractXlsxView {
             String year = yearToAcademicYear(budgetScenarioExcelView.getBudget().getSchedule().getYear());
             Boolean isLiveData = budgetScenarioExcelView.getBudgetScenario().getFromLiveData();
             Boolean isBudgetRequest = budgetScenarioExcelView.getBudgetScenario().getIsBudgetRequest();
-            String scenarioName = budgetScenarioExcelView.getBudgetScenario().getName();
+            String scenarioName = budgetScenarioExcelView.getBudgetScenario().getDisplayName();
             Float baseTaCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getTaCost() : budgetScenarioExcelView.getBudget().getTaCost();
             Float baseReaderCost = isBudgetRequest ? budgetScenarioExcelView.getBudgetScenario().getReaderCost() : budgetScenarioExcelView.getBudget().getReaderCost();
 
@@ -457,7 +457,7 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         data.add(yearToAcademicYear(budgetScenarioExcelView.getBudget().getSchedule().getYear()));
         data.add(budgetScenarioExcelView.getWorkgroup().getName());
-        data.add(budgetScenarioExcelView.budgetScenario.getName());
+        data.add(budgetScenarioExcelView.budgetScenario.getDisplayName());
         data.add(field);
 
         for(String termCode: termCodes){

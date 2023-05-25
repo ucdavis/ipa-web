@@ -32,7 +32,7 @@ public class BudgetScenario extends BaseEntity {
     private List<InstructorCost> instructorCosts = new ArrayList<>();
     private List<InstructorTypeCost> instructorTypeCosts = new ArrayList<>();
     private Boolean fromLiveData;
-    private Boolean isBudgetRequest = false;
+    private Boolean isBudgetRequest = false, isApproved = false;
     private Float taCost, readerCost;
 
     @Id
@@ -237,6 +237,16 @@ public class BudgetScenario extends BaseEntity {
         isBudgetRequest = budgetRequest;
     }
 
+    @Column(name = "IsApproved", nullable = false)
+    @JsonProperty("isApproved")
+    public Boolean getApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
+    }
+
     public Float getTaCost() {
         return taCost;
     }
@@ -263,5 +273,10 @@ public class BudgetScenario extends BaseEntity {
     @Transient
     public Date getLastModifiedOn() {
         return updatedAt;
+    }
+
+    @Transient
+    public String getDisplayName() {
+        return this.getApproved() ? this.name + " (Approved)" : this.name;
     }
 }
