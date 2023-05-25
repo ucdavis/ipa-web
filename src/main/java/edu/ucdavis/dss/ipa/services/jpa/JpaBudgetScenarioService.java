@@ -268,6 +268,13 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         return budgetScenarios;
     }
 
+    @Override
+    public List<BudgetScenario> findByWorkgroupId(long workgroupId) {
+        List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupId(workgroupId);
+
+        return budgetScenarios;
+    }
+
     private BudgetScenario createOrUpdateFromLiveData(long workgroupId, long year) {
         BudgetScenario liveDataScenario = budgetScenarioRepository.findbyWorkgroupIdAndYearAndFromLiveData(workgroupId, year, true);
 
