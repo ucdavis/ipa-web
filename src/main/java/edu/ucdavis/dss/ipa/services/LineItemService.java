@@ -18,6 +18,8 @@ public interface LineItemService {
 
     LineItem update(LineItem lineItem);
 
+    List<LineItem> update(List<LineItem> lineItems);
+
     LineItem createDuplicate(LineItem originalLineItem, BudgetScenario budgetScenario);
 
     void deleteMany(List<Long> lineItemIds);
