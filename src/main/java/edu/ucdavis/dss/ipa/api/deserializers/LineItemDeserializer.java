@@ -26,6 +26,10 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setId(node.get("id").longValue());
         }
 
+        if (node.has("termCode")) {
+            lineItem.setTermCode(node.get("termCode").textValue());
+        }
+
         if (node.has("budgetScenarioId")) {
             BudgetScenario budgetScenario = new BudgetScenario();
             budgetScenario.setId(node.get("budgetScenarioId").longValue());
@@ -36,6 +40,12 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             LineItemCategory lineItemCategory = new LineItemCategory();
             lineItemCategory.setId(node.get("lineItemCategoryId").longValue());
             lineItem.setLineItemCategory(lineItemCategory);
+        }
+
+        if (node.has("lineItemTypeId")) {
+            LineItemType lineItemType = new LineItemType();
+            lineItemType.setId(node.get("lineItemTypeId").longValue());
+            lineItem.setLineItemType(lineItemType);
         }
 
         if (node.has("teachingAssignmentId")) {

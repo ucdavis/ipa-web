@@ -32,6 +32,7 @@ public class BudgetViewController {
     @Inject BudgetScenarioService budgetScenarioService;
     @Inject LineItemService lineItemService;
     @Inject LineItemCategoryService lineItemCategoryService;
+    @Inject LineItemTypeService lineItemTypeService;
     @Inject SectionGroupCostService sectionGroupCostService;
     @Inject SectionGroupCostInstructorService sectionGroupCostInstructorService;
     @Inject InstructorCostService instructorCostService;
@@ -282,12 +283,14 @@ public class BudgetViewController {
         }
 
         LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategory().getId());
+        LineItemType lineItemType = lineItemTypeService.findById(lineItemDTO.getLineItemType().getId());
 
         if (lineItemCategory == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         } else {
             lineItemDTO.setLineItemCategory(lineItemCategory);
+            lineItemDTO.setLineItemType(lineItemType);
         }
 
         // Authorization check

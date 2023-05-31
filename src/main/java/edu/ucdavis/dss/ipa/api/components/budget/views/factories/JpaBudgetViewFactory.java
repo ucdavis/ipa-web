@@ -41,6 +41,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
     @Inject InstructorService instructorService;
     @Inject SectionGroupCostCommentService sectionGroupCostCommentService;
     @Inject LineItemCommentService lineItemCommentService;
+    @Inject LineItemTypeService lineItemTypeService;
     @Inject ScheduleService scheduleService;
     @Inject SupportAssignmentService supportAssignmentService;
     @Inject TeachingAssignmentService teachingAssignmentService;
@@ -80,6 +81,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
         List<ExpenseItem> expenseItems = expenseItemService.findByBudgetId(budget.getId());
         List<ExpenseItemType> expenseItemTypes = expenseItemTypeService.findAll();
         List<LineItemCategory> lineItemCategories = lineItemCategoryService.findAll();
+        List<LineItemType> lineItemTypes = lineItemTypeService.findAll();
         List<Section> sections = sectionService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<Course> courses = courseService.findVisibleByWorkgroupIdAndYear(workgroupId, year);
         List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
@@ -125,6 +127,7 @@ public class JpaBudgetViewFactory implements BudgetViewFactory {
                 lineItemComments,
                 budget,
                 lineItemCategories,
+                lineItemTypes,
                 sectionGroups,
                 sections,
                 instructorCosts,
