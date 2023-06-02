@@ -4,13 +4,20 @@ import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.Instruction
 import edu.ucdavis.dss.ipa.api.components.instructionalSupport.views.factories.InstructionalSupportViewFactory;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
+import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.*;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @RestController
 public class InstructionalSupportAssignmentsController {
@@ -22,6 +29,9 @@ public class InstructionalSupportAssignmentsController {
     @Inject SectionService sectionService;
     @Inject SupportAppointmentService supportAppointmentService;
     @Inject ScheduleService scheduleService;
+
+    @Value("${IPA_URL_API}")
+    String ipaUrlApi;
 
     @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -119,4 +129,47 @@ public class InstructionalSupportAssignmentsController {
         return supportAppointmentService.createOrUpdate(supportAppointment);
     }
 
+    @RequestMapping(value = "/api/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}/generateExcel", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> generateExcel(@PathVariable long workgroupId, @PathVariable long year,
+                                             @PathVariable String shortTermCode, HttpServletRequest httpRequest) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        String url = ipaUrlApi + "/download/instructionalSupportView/workgroups/" + workgroupId + "/years/" + year +
+            "/termCode/" + shortTermCode + "/excel";
+        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        Map<String, String> map = new HashMap<>();
+        map.put("redirect", url + "/" + salt + "/" + UrlEncryptor.encrypt(salt, ipAddress));
+
+        return map;
+    }
+
+    @RequestMapping(value = "/download/instructionalSupportView/workgroups/{workgroupId}/years/{year}/termCode/{shortTermCode}/excel/{salt}/{encrypted}")
+    public View downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
+                              @PathVariable String shortTermCode, @PathVariable String salt,
+                              @PathVariable String encrypted, HttpServletRequest httpRequest,
+                              HttpServletResponse httpResponse) throws ParseException {
+        long TIMEOUT = 30L; // In seconds
+
+        String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = httpRequest.getRemoteAddr();
+        }
+
+        boolean isValidUrl = UrlEncryptor.validate(salt, encrypted, ipAddress, TIMEOUT);
+
+        if (isValidUrl) {
+            return instructionalSupportViewFactory.createInstructionalSupportExcelView(workgroupId, year,
+                shortTermCode);
+        } else {
+            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return null;
+        }
+    }
 }

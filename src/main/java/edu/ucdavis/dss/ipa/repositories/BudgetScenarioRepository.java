@@ -17,6 +17,14 @@ public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario,
         " WHERE bs.budget = b" +
         " AND b.schedule = s" +
         " AND s.workgroup = w" +
+        " AND w.id = :workgroupId")
+    List<BudgetScenario> findbyWorkgroupId(@Param("workgroupId") long workgroupId);
+
+    @Query( " SELECT DISTINCT bs" +
+        " FROM Schedule s, Workgroup w, Budget b, BudgetScenario bs" +
+        " WHERE bs.budget = b" +
+        " AND b.schedule = s" +
+        " AND s.workgroup = w" +
         " AND w.id = :workgroupId" +
         " AND s.year = :year")
     List<BudgetScenario> findbyWorkgroupIdAndYear(@Param("workgroupId") long workgroupId, @Param("year") long year);

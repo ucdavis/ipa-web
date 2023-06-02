@@ -47,7 +47,8 @@ public class JpaAnnualViewFactory implements AnnualViewFactory {
     @Override
     public View createAnnualScheduleExcelView(long workgroupId, long year, Boolean showDoNotPrint) {
     	CourseView courseView = createCourseView(workgroupId, year, showDoNotPrint);
-		return new CourseExcelView(courseView);
+		Workgroup workgroup = workgroupService.findOneById(workgroupId);
+		return new CourseExcelView(courseView, workgroup, year);
     }
 
 	@Override

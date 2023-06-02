@@ -259,6 +259,11 @@ public class Term implements Serializable {
 	}
 
 	@Transient
+	public static String getAcademicYearFromYear(long year) {
+		return year + "-" + String.valueOf(year + 1).substring(2,4);
+	}
+
+	@Transient
 	public static String getFullName(String termCode) {
 		if (termCode == null) {
 			return null;

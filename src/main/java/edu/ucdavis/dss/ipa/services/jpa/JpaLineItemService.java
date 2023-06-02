@@ -72,6 +72,7 @@ public class JpaLineItemService implements LineItemService {
         originalLineItem.setNotes(lineItem.getNotes());
         originalLineItem.setLineItemCategory(lineItem.getLineItemCategory());
         originalLineItem.setHidden(lineItem.getHidden());
+        originalLineItem.setLocked(lineItem.getLocked());
 
         return this.lineItemRepository.save(originalLineItem);
     }
@@ -92,6 +93,16 @@ public class JpaLineItemService implements LineItemService {
         lineItem.setTeachingAssignment(originalLineItem.getTeachingAssignment());
 
         return this.lineItemRepository.save(lineItem);
+    }
+
+    @Transactional
+    @Override
+    public List<LineItem> update(List<LineItem> lineItems) {
+        List<LineItem> results = new ArrayList<>();
+        for (LineItem lineItem : lineItems) {
+            results.add(this.update(lineItem));
+        }
+        return results;
     }
 
     @Transactional

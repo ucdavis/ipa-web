@@ -8,6 +8,7 @@ import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Tag;
 import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
+import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -57,6 +58,9 @@ public class AssignmentExcelView extends AbstractXlsView {
             int col = 0;
 
             excelHeader.createCell(col).setCellValue(course.getShortDescription());
+            col++;
+
+            excelHeader.createCell(col).setCellValue(course.getTitle());
             col++;
 
             excelHeader.createCell(col).setCellValue(course.getUnitsLow());
@@ -123,6 +127,8 @@ public class AssignmentExcelView extends AbstractXlsView {
 
             row++;
         }
+
+        ExcelHelper.expandHeaders(workbook);
     }
 
     private void setExcelHeader(Sheet excelSheet, String firstHeader) {
@@ -133,6 +139,9 @@ public class AssignmentExcelView extends AbstractXlsView {
         col++;
 
         if ("Course".equals(firstHeader)) {
+            excelHeader.createCell(col).setCellValue("Title");
+            col++;
+
             excelHeader.createCell(col).setCellValue("Units");
             col++;
 

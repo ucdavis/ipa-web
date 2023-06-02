@@ -69,6 +69,10 @@ public class LineItemDeserializer extends JsonDeserializer<Object> {
             lineItem.setAccountNumber(node.get("accountNumber").textValue());
         }
 
+        if (node.has("isLocked")) {
+            lineItem.setLocked(node.get("isLocked").booleanValue());
+        }
+
         return lineItem;
     }
 }

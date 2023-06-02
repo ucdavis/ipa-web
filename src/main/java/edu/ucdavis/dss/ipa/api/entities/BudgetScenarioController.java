@@ -11,6 +11,7 @@ import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +49,23 @@ public class BudgetScenarioController {
     List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
 
     return budgetScenarios;
+  }
+
+  @RequestMapping(value = "/api/workgroups/{workgroupId}/budgetScenarios", method = RequestMethod.GET, produces="application/json")
+  @ResponseBody
+  public List<Long> getAllBudgetScenarios(@PathVariable long workgroupId,
+                                          HttpServletResponse httpResponse) {
+    Workgroup workgroup = workgroupService.findOneById(workgroupId);
+
+    if (workgroup == null) {
+      httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+      return null;
+    }
+
+    authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "reviewer");
+    List<BudgetScenario> budgetScenarios = budgetScenarioService.findByWorkgroupId(workgroupId);
+
+    return budgetScenarios.stream().map(s -> s.getBudget().getSchedule().getYear()).distinct().collect(Collectors.toList());
   }
 
   /**

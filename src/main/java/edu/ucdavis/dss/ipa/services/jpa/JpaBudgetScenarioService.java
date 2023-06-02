@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -221,6 +222,27 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     @Override
+    public BudgetScenario approveBudgetRequestScenario(long workgroupId, long scenarioId) {
+        BudgetScenario approvedScenario = budgetScenarioRepository.findById(scenarioId);
+
+        // only one budget request should be approved at a time
+        List<BudgetScenario> budgetRequestScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId,
+            approvedScenario.getBudget().getSchedule().getYear());
+
+        List<BudgetScenario> existingApprovedScenarios =
+            budgetRequestScenarios.stream().filter(scenario -> scenario.getApproved() == true)
+                .collect(Collectors.toList());
+
+        for (BudgetScenario scenario : existingApprovedScenarios) {
+            scenario.setApproved(false);
+            budgetScenarioRepository.save(scenario);
+        }
+
+        approvedScenario.setApproved(true);
+        return budgetScenarioRepository.save(approvedScenario);
+    }
+
+    @Override
     public BudgetScenario update(BudgetScenario budgetScenario) {
         return budgetScenarioRepository.save(budgetScenario);
     }
@@ -242,6 +264,13 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
         if (budgetAlreadyExisted == false) {
             budgetScenarios.add(liveDataScenario);
         }
+
+        return budgetScenarios;
+    }
+
+    @Override
+    public List<BudgetScenario> findByWorkgroupId(long workgroupId) {
+        List<BudgetScenario> budgetScenarios = budgetScenarioRepository.findbyWorkgroupId(workgroupId);
 
         return budgetScenarios;
     }

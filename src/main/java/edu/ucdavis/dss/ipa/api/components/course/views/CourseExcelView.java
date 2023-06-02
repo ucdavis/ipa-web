@@ -19,16 +19,20 @@ import java.util.stream.Collectors;
  */
 public class CourseExcelView extends AbstractXlsView {
     private CourseView courseViewDTO = null;
+    private Workgroup workgroup;
+    private long year;
 
-    public CourseExcelView(CourseView courseViewDTO) {
+    public CourseExcelView(CourseView courseViewDTO, Workgroup workgroup, long year) {
         this.courseViewDTO = courseViewDTO;
+        this.workgroup = workgroup;
+        this.year = year;
     }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // Set filename
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
-        response.setHeader("Content-Disposition", "attachment; filename=\"ScheduleData.xls\"");
+        response.setHeader("Content-Disposition", "attachment; filename=" + Term.getAcademicYearFromYear(year) + " " + workgroup.getName() + " Schedule Data.xls");
 
         // Create sheet
         Sheet sheet = workbook.createSheet("Schedule");

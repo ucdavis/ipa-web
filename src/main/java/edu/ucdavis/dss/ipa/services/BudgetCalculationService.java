@@ -192,27 +192,29 @@ public class BudgetCalculationService {
                     .add(baseTaCost.multiply(taCount))
                     .add(baseReaderCost.multiply(readerCount)));
 
+            BigDecimal sectionGroupSeats = calculateSeats(sectionGroupCost);
+
             if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200) {
                 currentTermSummary.put(GRAD_OFFERINGS, currentTermSummary.get(GRAD_OFFERINGS).add(BigDecimal.ONE));
-                currentTermSummary.put(GRAD_SEATS, currentTermSummary.get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(GRAD_SEATS, currentTermSummary.get(GRAD_SEATS).add(sectionGroupSeats));
 
                 combinedTermSummary.put(GRAD_OFFERINGS, combinedTermSummary.get(GRAD_OFFERINGS).add(BigDecimal.ONE));
-                combinedTermSummary.put(GRAD_SEATS, combinedTermSummary.get(GRAD_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(GRAD_SEATS, combinedTermSummary.get(GRAD_SEATS).add(sectionGroupSeats));
             } else if (Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99) {
                 currentTermSummary.put(UPPER_DIV_OFFERINGS, currentTermSummary.get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                currentTermSummary.put(UPPER_DIV_SEATS, currentTermSummary.get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(UPPER_DIV_SEATS, currentTermSummary.get(UPPER_DIV_SEATS).add(sectionGroupSeats));
 
                 combinedTermSummary.put(UPPER_DIV_OFFERINGS, combinedTermSummary.get(UPPER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                combinedTermSummary.put(UPPER_DIV_SEATS, combinedTermSummary.get(UPPER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(UPPER_DIV_SEATS, combinedTermSummary.get(UPPER_DIV_SEATS).add(sectionGroupSeats));
             } else {
                 currentTermSummary.put(LOWER_DIV_OFFERINGS, currentTermSummary.get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                currentTermSummary.put(LOWER_DIV_SEATS, currentTermSummary.get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                currentTermSummary.put(LOWER_DIV_SEATS, currentTermSummary.get(LOWER_DIV_SEATS).add(sectionGroupSeats));
 
                 combinedTermSummary.put(LOWER_DIV_OFFERINGS, combinedTermSummary.get(LOWER_DIV_OFFERINGS).add(BigDecimal.ONE));
-                combinedTermSummary.put(LOWER_DIV_SEATS, combinedTermSummary.get(LOWER_DIV_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+                combinedTermSummary.put(LOWER_DIV_SEATS, combinedTermSummary.get(LOWER_DIV_SEATS).add(sectionGroupSeats));
             }
-            currentTermSummary.put(TOTAL_SEATS, currentTermSummary.get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
-            combinedTermSummary.put(TOTAL_SEATS, combinedTermSummary.get(TOTAL_SEATS).add(BigDecimal.valueOf(sectionGroupCost.getEnrollment())));
+            currentTermSummary.put(TOTAL_SEATS, currentTermSummary.get(TOTAL_SEATS).add(sectionGroupSeats));
+            combinedTermSummary.put(TOTAL_SEATS, combinedTermSummary.get(TOTAL_SEATS).add(sectionGroupSeats));
         }
 
         if(budgetScenario.getFromLiveData()){
@@ -328,8 +330,16 @@ public class BudgetCalculationService {
         }
     }
 
+    private static BigDecimal calculateSeats(SectionGroupCost sectionGroupCost) {
+        if (sectionGroupCost.getEnrollment() == null) {
+            return BigDecimal.ZERO;
+        } else {
+            return new BigDecimal(sectionGroupCost.getEnrollment());
+        }
+    }
+
     private static BigDecimal calculateSCH(SectionGroupCost sectionGroupCost) {
-        return new BigDecimal(String.valueOf(sectionGroupCost.getEnrollment())).multiply(calculateUnits(sectionGroupCost));
+        return calculateSeats(sectionGroupCost).multiply(calculateUnits(sectionGroupCost));
     }
 
     private long calculateSectionGroupInstructorTypeId(

@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,6 +145,28 @@ public class BudgetViewController {
         WorkloadSnapshot workloadSnapshot = workloadSnapshotService.create(workGroupId, budgetRequestScenario.getId());
 
         return budgetViewFactory.createBudgetScenarioView(budgetRequestScenario);
+    };
+
+    @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios/{budgetScenarioId}/budgetRequest", method = RequestMethod.PUT, produces = "application/json")
+    @ResponseBody
+    public BudgetScenario approveBudgetRequestScenario(@PathVariable long budgetId,
+                                                          @PathVariable long budgetScenarioId,
+                                                          HttpServletResponse httpResponse) {
+        // Action only allowed by Deans Budget Office
+        authorizer.isDeansOffice();
+
+        Budget budget = budgetService.findById(budgetId);
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budget == null || budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        Long workgroupId = budget.getSchedule().getWorkgroup().getId();
+        BudgetScenario approvedScenario = budgetScenarioService.approveBudgetRequestScenario(workgroupId, budgetScenarioId);
+
+        return approvedScenario;
     };
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}", method = RequestMethod.DELETE, produces="application/json")
@@ -299,6 +322,30 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         return instructorTypeCostService.update(newInstructorTypeCost);
+    }
+
+    @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems/lock", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public List<LineItem> updateLineItems(@PathVariable long budgetScenarioId,
+                                      @RequestBody List<Long> lineItemIds,
+                                      HttpServletResponse httpResponse) {
+        // Ensure valid params
+        BudgetScenario budgetScenario = budgetScenarioService.findById(budgetScenarioId);
+
+        if (budgetScenario == null) {
+            httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        // Authorization check
+        Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        List<LineItem> lineItems = lineItemIds.stream().map(id -> lineItemService.findById(id)).collect(Collectors.toList());
+
+        lineItems.forEach(lineItem -> lineItem.setLocked(true));
+
+        return lineItemService.update(lineItems);
     }
 
     @RequestMapping(value = "/api/budgetView/budgetScenarios/{budgetScenarioId}/lineItems", method = RequestMethod.PUT, produces="application/json")
