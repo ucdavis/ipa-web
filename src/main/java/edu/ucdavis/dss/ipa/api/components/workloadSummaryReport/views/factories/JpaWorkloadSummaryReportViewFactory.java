@@ -1,7 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories;
 
 import edu.ucdavis.dss.dw.dto.DwCensus;
-import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.InstructorAssignment;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadHistoricalReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;

@@ -8,11 +8,9 @@ import java.util.concurrent.CompletableFuture;
 public interface WorkloadSummaryReportViewFactory {
     WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workloadSnapshotId);
 
-    WorkloadSummaryReportView createWorkloadSummaryReportView(long workgroupId, long year);
+    WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupId, long year);
 
     WorkloadHistoricalReportExcelView createHistoricalWorkloadExcelView(long workgroupId, long year);
-
-    WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long[] workgroupId, long year);
 
     CompletableFuture<byte[]> createWorkloadSummaryReportBytes(long[] workgroupId, long year);
 }
