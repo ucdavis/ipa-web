@@ -50,6 +50,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryReportViewFactory {
     @Inject
+    ScheduleService scheduleService;
+
+    @Inject
     WorkloadAssignmentService workloadAssignmentService;
 
     @Inject
@@ -82,7 +85,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
     }
 
     public WorkloadHistoricalReportExcelView createHistoricalWorkloadExcelView(long workgroupId, long year) {
-        Map<Long, List<InstructorAssignment>> instructorAssignmentsMap = new HashMap<>();
+        Map<Long, List<WorkloadAssignment>> workloadAssignmentsMap = new HashMap<>();
 
         for (long i = 0; i < 5; i++) {
             long slotYear = year - i;
@@ -91,17 +94,14 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
             // skip years without a schedule
             if (schedule != null) {
-                List<InstructorAssignment> instructorAssignments = new ArrayList<>();
+                List<WorkloadAssignment> workloadAssignments =
+                    new ArrayList<>(workloadAssignmentService.generateWorkloadAssignments(workgroupId, slotYear));
 
-                instructorAssignments.addAll(generateInstructorData(workgroupId, slotYear));
-
-                instructorAssignmentsMap.put(slotYear, instructorAssignments);
+                workloadAssignmentsMap.put(slotYear, workloadAssignments);
             }
         }
 
-        WorkloadHistoricalReportExcelView workloadHistoricalReportExcelView = new WorkloadHistoricalReportExcelView(instructorAssignmentsMap);
-
-        return workloadHistoricalReportExcelView;
+        return new WorkloadHistoricalReportExcelView(workloadAssignmentsMap);
     }
 
     @Override
