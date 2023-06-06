@@ -15,15 +15,17 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private long year;
     private List<WorkloadAssignment> workloadAssignments;
     private Boolean isSnapshot;
+    private String snapshotName;
 
     public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
         this.isSnapshot = false;
     }
-    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, Boolean isSnapshot) {
+    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, String snapshotName, Boolean isSnapshot) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
+        this.snapshotName = snapshotName;
         this.isSnapshot = true;
     }
 
@@ -43,8 +45,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
-
-        String filename = "attachment; filename=\"" + this.year + (this.isSnapshot ? " Workload Snapshot" : " Workload Summary Report") + ".xlsx";
+        String baseName = this.isSnapshot ? "Workload Snapshot - " + this.snapshotName : this.year + " Workload Summary Report";
+        String filename = "attachment; filename=\"" + baseName + ".xlsx";
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
