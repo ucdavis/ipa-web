@@ -1,46 +1,21 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories;
 
-import edu.ucdavis.dss.dw.dto.DwCensus;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadHistoricalReportExcelView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportExcelView;
-import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;
-import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Instructor;
-import edu.ucdavis.dss.ipa.entities.InstructorType;
 import edu.ucdavis.dss.ipa.entities.Schedule;
-import edu.ucdavis.dss.ipa.entities.ScheduleInstructorNote;
-import edu.ucdavis.dss.ipa.entities.Section;
-import edu.ucdavis.dss.ipa.entities.SectionGroup;
-import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
-import edu.ucdavis.dss.ipa.entities.Term;
-import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.entities.WorkloadSnapshot;
-import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.CourseService;
-import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.InstructorTypeService;
-import edu.ucdavis.dss.ipa.services.ScheduleInstructorNoteService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.SectionGroupService;
-import edu.ucdavis.dss.ipa.services.SectionService;
-import edu.ucdavis.dss.ipa.services.TeachingAssignmentService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
 import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -61,11 +36,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
     public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workloadSnapshotId) {
         WorkloadSnapshot snapshot = workloadSnapshotService.findById(workloadSnapshotId);
 
-        // write data to excel
-        WorkloadSummaryReportExcelView workloadSummaryReportExcelView =
-            new WorkloadSummaryReportExcelView(snapshot.getWorkloadAssignments(), snapshot.getYear(), true);
-
-        return workloadSummaryReportExcelView;
+        return new WorkloadSummaryReportExcelView(snapshot.getWorkloadAssignments(), snapshot.getYear(), snapshot.getName(), true);
     }
 
     @Override
@@ -76,11 +47,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
             workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
         }
 
-        // write data to excel
-        WorkloadSummaryReportExcelView workloadSummaryReportExcelView =
-            new WorkloadSummaryReportExcelView(workloadAssignments, year);
-
-        return workloadSummaryReportExcelView;
+        return new WorkloadSummaryReportExcelView(workloadAssignments, year);
     }
 
     public WorkloadHistoricalReportExcelView createHistoricalWorkloadExcelView(long workgroupId, long year) {
