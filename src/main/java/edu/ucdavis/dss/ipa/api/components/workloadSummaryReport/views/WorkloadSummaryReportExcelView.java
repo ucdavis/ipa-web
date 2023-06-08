@@ -3,8 +3,10 @@ package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -50,7 +52,13 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildRawAssignmentsSheet(workbook, workloadAssignments);
+        buildRawAssignmentsSheet(workbook, orderByInstructorTypeAndName(workloadAssignments));
         ExcelHelper.expandHeaders(workbook);
+    }
+
+    private List<WorkloadAssignment> orderByInstructorTypeAndName(List<WorkloadAssignment> workloadAssignments) {
+        return workloadAssignments.stream().sorted(
+                Comparator.comparing(WorkloadAssignment::getInstructorType).thenComparing(WorkloadAssignment::getName))
+            .collect(Collectors.toList());
     }
 }
