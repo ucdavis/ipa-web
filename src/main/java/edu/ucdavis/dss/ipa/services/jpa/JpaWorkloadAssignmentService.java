@@ -423,6 +423,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                 workloadAssignments.add(wa);
             }
         }
+
         return workloadAssignments;
     }
 
@@ -435,6 +436,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
 
         return (List<WorkloadAssignment>) workloadAssignmentRepository.save(assignments);
     }
+
     private String calculateCourseType(Course course) {
         int courseNumbers = Integer.parseInt(course.getCourseNumber().replaceAll("[^\\d.]", ""));
 
