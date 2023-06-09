@@ -79,7 +79,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
         return generateWorkloadAssignments(workgroupId, year, false);
     }
 
-    public List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, Boolean hasUnassigned) {
+    public List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, boolean includeUnassigned) {
         List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
 
         // Gathering phase
@@ -193,7 +193,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
 
                         courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
                         offering = course.getSequencePattern();
-                        unit = sectionGroup.getDisplayUnits(true);
+                        unit = sectionGroup.getDisplayUnits();
                         plannedSeats = sectionGroup.getPlannedSeats();
                         censusCount = 0L;
 
@@ -338,12 +338,12 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
             wa.setPlannedSeats(sectionGroup.getPlannedSeats());
             wa.setPreviousYearCensus(previousYearCensus);
             wa.setLastOfferedCensus(lastOfferedCensus);
-            wa.setUnits(sectionGroup.getDisplayUnits(true));
+            wa.setUnits(sectionGroup.getDisplayUnits());
             workloadAssignments.add(wa);
         }
 
         // fill in unassigned data for snapshots
-        if (hasUnassigned) {
+        if (includeUnassigned) {
             List<SectionGroup> unassignedSectionGroups = sectionGroups.stream().filter(sg ->
                 sg.getTeachingAssignments().stream().filter(ta -> ta.isApproved()).collect(Collectors.toList())
                     .size() == 0).collect(Collectors.toList());
@@ -419,7 +419,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                 wa.setPlannedSeats(sectionGroup.getPlannedSeats());
                 wa.setPreviousYearCensus(previousYearCensus);
                 wa.setLastOfferedCensus(lastOfferedCensus);
-                wa.setUnits(sectionGroup.getDisplayUnits(true));
+                wa.setUnits(sectionGroup.getDisplayUnits());
                 workloadAssignments.add(wa);
             }
         }

@@ -9,6 +9,7 @@ public interface WorkloadAssignmentService {
 
     List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year);
     List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, WorkloadSnapshot workloadSnapshot);
+    List<WorkloadAssignment> generateWorkloadAssignments(long workgroupId, long year, boolean includeUnassigned);
 
     List<WorkloadAssignment> saveAll(List<WorkloadAssignment> workloadAssignments);
 }

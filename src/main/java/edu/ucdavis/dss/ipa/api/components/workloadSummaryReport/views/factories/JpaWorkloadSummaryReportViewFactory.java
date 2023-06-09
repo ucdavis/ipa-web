@@ -44,7 +44,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
         List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
 
         for (long workgroupId : workgroupIds) {
-            workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
+            workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year, true));
         }
 
         return new WorkloadSummaryReportExcelView(workloadAssignments, year);
