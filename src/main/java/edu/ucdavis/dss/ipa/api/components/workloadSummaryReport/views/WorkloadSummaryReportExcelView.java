@@ -3,20 +3,25 @@ package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
-    private long year;
-    private List<WorkloadAssignment> workloadAssignments;
-    private Boolean isSnapshot;
+    private final long year;
+    private final List<WorkloadAssignment> workloadAssignments;
+    private final Boolean isSnapshot;
     private String snapshotName;
 
     public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year) {
@@ -24,7 +29,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         this.year = year;
         this.isSnapshot = false;
     }
-    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, String snapshotName, Boolean isSnapshot) {
+
+    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, String snapshotName,
+                                          Boolean isSnapshot) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
         this.snapshotName = snapshotName;
@@ -44,14 +51,67 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         }
     }
 
+    public void buildReportSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
+        Sheet worksheet = wb.createSheet("Workload Summary Report");
+
+        List<Object> instructorSectionHeaders =
+            Arrays.asList("Instructor", "Term", "Description", "Offering", "Enrollment / Seats",
+                "Previous Enrollments (YoY)",
+                "Previous Enrollment (Last Offered)", "Units", "SCH", "Note");
+
+        List<String> instructorTypes =
+            workloadAssignments.stream().map(WorkloadAssignment::getInstructorType).distinct()
+                .collect(Collectors.toList());
+
+        int instructorSections = 0;
+        for (String instructorType : instructorTypes) {
+            int offset = 0;
+            if (instructorSections != 0) {
+                offset = 1;
+            }
+            Row row = worksheet.createRow(worksheet.getLastRowNum() + offset);
+
+            Cell cell = row.createCell(0);
+            cell.setCellValue(instructorType.toUpperCase());
+            cell.setCellType(CellType.STRING);
+
+            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
+
+            ExcelHelper.writeRowToSheet(worksheet, instructorSectionHeaders);
+
+            List<WorkloadAssignment> assignments =
+                workloadAssignments.stream().filter(wa -> wa.getInstructorType().equals(instructorType)).collect(
+                    Collectors.toList());
+
+            for (WorkloadAssignment assignment : assignments) {
+                ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment));
+            }
+
+            ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
+
+            instructorSections++;
+        }
+
+        // header not on first row, need to offset
+        Row row = worksheet.getRow(worksheet.getFirstRowNum() + 1);
+        Iterator<Cell> cellIterator = row.cellIterator();
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            int columnIndex = cell.getColumnIndex();
+            worksheet.autoSizeColumn(columnIndex);
+        }
+    }
+
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
-        String baseName = this.isSnapshot ? "Workload Snapshot - " + this.snapshotName : this.year + " Workload Summary Report";
+        String baseName =
+            this.isSnapshot ? "Workload Snapshot - " + this.snapshotName : this.year + " Workload Summary Report";
         String filename = "attachment; filename=\"" + baseName + ".xlsx";
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
+        buildReportSheet(workbook, orderByInstructorTypeAndName(workloadAssignments));
         buildRawAssignmentsSheet(workbook, orderByInstructorTypeAndName(workloadAssignments));
         ExcelHelper.expandHeaders(workbook);
     }
@@ -61,4 +121,19 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 Comparator.comparing(WorkloadAssignment::getInstructorType).thenComparing(WorkloadAssignment::getName))
             .collect(Collectors.toList());
     }
+
+    private List<Object> createInstructorRow(WorkloadAssignment assignment) {
+        return Arrays.asList(assignment.getName(), assignment.getTermCode(), assignment.getDescription(),
+            assignment.getOffering(),
+            assignment.getCensus(),
+            assignment.getPlannedSeats(),
+            assignment.getPreviousYearCensus(),
+            assignment.getLastOfferedCensus(),
+            assignment.getUnits(),
+            assignment.getStudentCreditHours(),
+            assignment.getInstructorNote()
+        );
+    }
+
+    ;
 }
