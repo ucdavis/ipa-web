@@ -1,10 +1,12 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +87,44 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
             for (WorkloadAssignment assignment : assignments) {
                 ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment));
+            Map<String, List<WorkloadAssignment>> assignmentsByInstructor = new HashMap<>();
+
+            List<String> instructorNames =
+                assignments.stream().map(WorkloadAssignment::getName).distinct().collect(Collectors.toList());
+
+            for (String name : instructorNames) {
+                if (!assignmentsByInstructor.containsKey(name)) {
+                    assignmentsByInstructor.put(name,
+                        assignments.stream().filter(a -> a.getName().equals(name)).collect(
+                            Collectors.toList()));
+                }
+            }
+
+            for (Map.Entry<String, List<WorkloadAssignment>> entry : assignmentsByInstructor.entrySet()) {
+                List<WorkloadAssignment> instructorAssignments = entry.getValue();
+
+                boolean firstRow = true;
+                for (WorkloadAssignment assignment : instructorAssignments) {
+                    if (assignment.getName().equals("TBD")) {
+                        placeholderTotals.put("instructorCount", placeholderTotals.get("instructorCount") + 1);
+                        placeholderTotals.put("assignments", placeholderTotals.get("assignments") + 1);
+                        placeholderTotals.put("plannedSeats", placeholderTotals.get("plannedSeats") + 1);
+                        placeholderTotals.put("previousEnrollment", placeholderTotals.get("previousEnrollment") + 1);
+                        placeholderTotals.put("units", placeholderTotals.get("units") + 1);
+                        placeholderTotals.put("sch", placeholderTotals.get("sch") + 1);
+                    } else {
+                        assignedTotals.put("instructorCount", assignedTotals.get("instructorCount") + 1);
+                        assignedTotals.put("assignments", assignedTotals.get("assignments") + 1);
+                        assignedTotals.put("plannedSeats", assignedTotals.get("plannedSeats") + 1);
+                        assignedTotals.put("previousEnrollment", assignedTotals.get("previousEnrollment") + 1);
+                        assignedTotals.put("units", assignedTotals.get("units") + 1);
+                        assignedTotals.put("sch", assignedTotals.get("sch") + 1);
+                    }
+
+                    ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, firstRow));
+                    firstRow = false;
+                }
+
             }
 
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
@@ -122,11 +162,17 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             .collect(Collectors.toList());
     }
 
-    private List<Object> createInstructorRow(WorkloadAssignment assignment) {
-        return Arrays.asList(assignment.getName(), assignment.getTermCode(), assignment.getDescription(),
+    private List<Object> createInstructorRow(WorkloadAssignment assignment, boolean firstRow) {
+        String name = firstRow ? assignment.getName() : "";
+        String enrollmentSeats =
+            assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
+
+        return Arrays.asList(
+            name,
+            Term.getFullName(assignment.getTermCode()),
+            assignment.getDescription(),
             assignment.getOffering(),
-            assignment.getCensus(),
-            assignment.getPlannedSeats(),
+            enrollmentSeats,
             assignment.getPreviousYearCensus(),
             assignment.getLastOfferedCensus(),
             assignment.getUnits(),
