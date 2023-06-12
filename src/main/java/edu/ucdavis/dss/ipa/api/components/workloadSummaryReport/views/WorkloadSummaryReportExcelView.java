@@ -24,21 +24,19 @@ import org.springframework.web.servlet.view.document.AbstractXlsxView;
 public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private final long year;
     private final List<WorkloadAssignment> workloadAssignments;
-    private final Boolean isSnapshot;
-    private String snapshotName;
+    private final String snapshotName;
 
     public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
-        this.isSnapshot = false;
+        this.snapshotName = null;
     }
 
-    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year, String snapshotName,
-                                          Boolean isSnapshot) {
+    public WorkloadSummaryReportExcelView(List<WorkloadAssignment> workloadAssignments, long year,
+                                          String snapshotName) {
         this.workloadAssignments = workloadAssignments;
         this.year = year;
         this.snapshotName = snapshotName;
-        this.isSnapshot = true;
     }
 
     public static void buildRawAssignmentsSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
@@ -231,8 +229,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
-        String baseName =
-            this.isSnapshot ? "Workload Snapshot - " + this.snapshotName : this.year + " Workload Summary Report";
+        String baseName = this.snapshotName != null ? "Workload Snapshot - " + this.snapshotName :
+            this.year + " Workload Summary Report";
         String filename = "attachment; filename=\"" + baseName + ".xlsx";
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);

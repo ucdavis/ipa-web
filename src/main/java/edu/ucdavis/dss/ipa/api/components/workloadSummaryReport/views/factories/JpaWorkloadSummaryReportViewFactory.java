@@ -36,7 +36,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
     public WorkloadSummaryReportExcelView createWorkloadSummaryReportExcelView(long workloadSnapshotId) {
         WorkloadSnapshot snapshot = workloadSnapshotService.findById(workloadSnapshotId);
 
-        return new WorkloadSummaryReportExcelView(snapshot.getWorkloadAssignments(), snapshot.getYear(), snapshot.getName(), true);
+        return new WorkloadSummaryReportExcelView(snapshot.getWorkloadAssignments(), snapshot.getYear(), snapshot.getName());
     }
 
     @Override
