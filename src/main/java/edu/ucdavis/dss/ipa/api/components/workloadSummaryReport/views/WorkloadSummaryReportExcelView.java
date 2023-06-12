@@ -199,14 +199,18 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             instructorSections++;
         }
 
-        // Summary Table
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("UNASSIGNED COURSES"));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("Term", "Description", "Offering", "Enrollment / Seats", "Previous Enrollment", "Units",
                 "SCH"));
 
+        for (WorkloadAssignment unassignedAssignment : unassignedAssignments) {
+            ExcelHelper.writeRowToSheet(worksheet, createUnassignedRow(unassignedAssignment));
+        }
+
         ExcelHelper.writeRowToSheet(worksheet, Arrays.asList("Totals"));
 
+        // Summary Table
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("ASSIGNMENT TOTALS"));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("Totals", "Instructor", "Assignments", "Enrollment / Seats", "Previous Enrollment", "Units",
@@ -276,5 +280,18 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         );
     }
 
-    ;
+    private List<Object> createUnassignedRow(WorkloadAssignment assignment) {
+        String enrollmentSeats =
+            assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
+
+        return Arrays.asList(
+            Term.getFullName(assignment.getTermCode()),
+            assignment.getDescription(),
+            assignment.getOffering(),
+            enrollmentSeats,
+            assignment.getPreviousYearCensus(),
+            assignment.getUnits(),
+            assignment.getStudentCreditHours()
+        );
+    }
 }
