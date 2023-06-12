@@ -73,32 +73,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             assignedAssignments.stream().map(WorkloadAssignment::getInstructorType).distinct()
                 .collect(Collectors.toList());
 
-        Map<String, Integer> assignedTotals = new HashMap<>();
-        assignedTotals.put("instructorCount", 0);
-        assignedTotals.put("assignments", 0);
-        assignedTotals.put("census", 0);
-        assignedTotals.put("plannedSeats", 0);
-        assignedTotals.put("previousEnrollment", 0);
-        assignedTotals.put("units", 0);
-        assignedTotals.put("sch", 0);
-
-        Map<String, Integer> unassignedTotals = new HashMap<>();
-        unassignedTotals.put("instructorCount", 0);
-        unassignedTotals.put("assignments", 0);
-        unassignedTotals.put("census", 0);
-        unassignedTotals.put("plannedSeats", 0);
-        unassignedTotals.put("previousEnrollment", 0);
-        unassignedTotals.put("units", 0);
-        unassignedTotals.put("sch", 0);
-
-        Map<String, Integer> placeholderTotals = new HashMap<>();
-        placeholderTotals.put("instructorCount", 0);
-        placeholderTotals.put("assignments", 0);
-        placeholderTotals.put("census", 0);
-        placeholderTotals.put("plannedSeats", 0);
-        placeholderTotals.put("previousEnrollment", 0);
-        placeholderTotals.put("units", 0);
-        placeholderTotals.put("sch", 0);
+        Map<String, Integer> assignedTotals = buildCategoryTotalsMap();
+        Map<String, Integer> unassignedTotals = buildCategoryTotalsMap();
+        Map<String, Integer> placeholderTotals = buildCategoryTotalsMap();
 
         int instructorSections = 0;
         for (String instructorType : instructorTypes) {
@@ -136,7 +113,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             for (Map.Entry<String, List<WorkloadAssignment>> entry : assignmentsByInstructor.entrySet()) {
                 List<WorkloadAssignment> instructorAssignments = entry.getValue();
 
-                boolean firstRow = true;
+                boolean namedRow = true;
                 for (WorkloadAssignment assignment : instructorAssignments) {
                     if (assignment.getName().equals("TBD")) {
                         placeholderTotals.put("instructorCount", placeholderTotals.get("instructorCount") + 1);
@@ -153,7 +130,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                         placeholderTotals.put("sch", placeholderTotals.get("sch") + 1);
                     } else {
                         assignedTotals.put("instructorCount",
-                            assignedTotals.get("instructorCount") + (firstRow ? 1 : 0));
+                            assignedTotals.get("instructorCount") + (namedRow ? 1 : 0));
                         assignedTotals.put("assignments",
                             assignedTotals.get("assignments") + (assignment.getOffering() != null ? 1 : 0));
                         assignedTotals.put("census",
@@ -171,8 +148,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                         assignedTotals.put("sch", assignedTotals.get("sch") + 1);
                     }
 
-                    ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, firstRow));
-                    firstRow = false;
+                    ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, namedRow));
+                    namedRow = false;
                 }
 
             }
@@ -228,8 +205,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             ExcelHelper.writeRowToSheet(worksheet, createUnassignedRow(unassignedAssignment));
         }
 
-        ExcelHelper.writeRowToSheet(worksheet, Arrays.asList("Totals"));
-        ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(""));
+        ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("Totals"));
+        ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
 
         // Summary Table
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("ASSIGNMENT TOTALS"));
@@ -255,7 +232,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 placeholderTotals.get("units"),
                 placeholderTotals.get("sch")));
 
-        ExcelHelper.writeRowToSheet(worksheet, Arrays.asList("Totals"));
+        ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("Totals"));
 
 
         // header not on first row, need to offset
@@ -288,8 +265,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             .collect(Collectors.toList());
     }
 
-    private List<Object> createInstructorRow(WorkloadAssignment assignment, boolean firstRow) {
-        String name = firstRow ? assignment.getName() : "";
+    private List<Object> createInstructorRow(WorkloadAssignment assignment, boolean namedRow) {
+        String name = namedRow ? assignment.getName() : "";
         String enrollmentSeats =
             assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
 
@@ -320,5 +297,17 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             assignment.getUnits(),
             assignment.getStudentCreditHours()
         );
+    }
+
+    private Map<String, Integer> buildCategoryTotalsMap() {
+        Map<String, Integer> categoryTotals = new HashMap<>();
+        categoryTotals.put("instructorCount", 0);
+        categoryTotals.put("assignments", 0);
+        categoryTotals.put("census", 0);
+        categoryTotals.put("plannedSeats", 0);
+        categoryTotals.put("previousEnrollment", 0);
+        categoryTotals.put("units", 0);
+        categoryTotals.put("sch", 0);
+        return categoryTotals;
     }
 }
