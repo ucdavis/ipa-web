@@ -205,10 +205,31 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "SCH"));
 
         for (WorkloadAssignment unassignedAssignment : unassignedAssignments) {
+            int units;
+            try {
+                units = Integer.parseInt(unassignedAssignment.getUnits());
+            } catch (NumberFormatException e) {
+                units = 0;
+            }
+
+            unassignedTotals.put("assignments", unassignedTotals.get("assignments") + 1);
+            unassignedTotals.put("census",
+                unassignedTotals.get("census") + Optional.ofNullable(unassignedAssignment.getCensus())
+                    .map(Long::intValue)
+                    .orElse(0));
+            unassignedTotals.put("plannedSeats",
+                unassignedTotals.get("plannedSeats") + unassignedAssignment.getPlannedSeats());
+            unassignedTotals.put("previousEnrollment", unassignedTotals.get("previousEnrollment") +
+                Optional.ofNullable(unassignedAssignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+            unassignedTotals.put("units",
+                unassignedTotals.get("units") + units);
+            unassignedTotals.put("sch", unassignedTotals.get("sch") + 1);
+
             ExcelHelper.writeRowToSheet(worksheet, createUnassignedRow(unassignedAssignment));
         }
 
         ExcelHelper.writeRowToSheet(worksheet, Arrays.asList("Totals"));
+        ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(""));
 
         // Summary Table
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("ASSIGNMENT TOTALS"));
@@ -221,6 +242,12 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 assignedTotals.get("previousEnrollment"),
                 assignedTotals.get("units"),
                 assignedTotals.get("sch")));
+        ExcelHelper.writeRowToSheet(worksheet,
+            Arrays.asList("Unassigned", 0,
+                unassignedTotals.get("assignments"), unassignedTotals.get("plannedSeats"),
+                unassignedTotals.get("previousEnrollment"),
+                unassignedTotals.get("units"),
+                unassignedTotals.get("sch")));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("TBD Instructors", placeholderTotals.get("instructorCount"),
                 placeholderTotals.get("assignments"), placeholderTotals.get("plannedSeats"),
