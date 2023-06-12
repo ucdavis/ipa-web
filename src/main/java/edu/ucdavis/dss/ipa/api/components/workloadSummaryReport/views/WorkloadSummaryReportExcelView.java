@@ -154,23 +154,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
             }
 
-//            String currentInstructor = null;
-//            boolean firstRow;
-//            for (WorkloadAssignment assignment : assignments) {
-//                if (currentInstructor == null) {
-//                    currentInstructor = assignment.getName();
-//                    firstRow = true;
-//                } else if (!currentInstructor.equals(assignment.getName())) {
-//                    currentInstructor = assignment.getName();
-//                    firstRow = true;
-//                } else {
-//                    firstRow = false;
-//
-//                }
-//
-//                ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, firstRow));
-//            }
-
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
 
             instructorSections++;
