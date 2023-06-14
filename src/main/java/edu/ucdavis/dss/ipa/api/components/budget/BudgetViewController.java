@@ -212,6 +212,7 @@ public class BudgetViewController {
         // Build lineItem
         lineItemDTO.setBudgetScenario(budgetScenario);
         lineItemDTO.setLineItemCategory(lineItemCategory);
+        lineItemDTO.setLineItemType(lineItemTypeService.findById(lineItemDTO.getLineItemType().getId()));
         LineItem lineItem = lineItemService.findOrCreate(lineItemDTO);
 
         return lineItem;
@@ -283,14 +284,16 @@ public class BudgetViewController {
         }
 
         LineItemCategory lineItemCategory = lineItemCategoryService.findById(lineItemDTO.getLineItemCategory().getId());
-        LineItemType lineItemType = lineItemTypeService.findById(lineItemDTO.getLineItemType().getId());
+
+        if (lineItemDTO.getLineItemType() != null) {
+            lineItemDTO.setLineItemType(lineItemTypeService.findById(lineItemDTO.getLineItemType().getId()));
+        }
 
         if (lineItemCategory == null) {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         } else {
             lineItemDTO.setLineItemCategory(lineItemCategory);
-            lineItemDTO.setLineItemType(lineItemType);
         }
 
         // Authorization check
