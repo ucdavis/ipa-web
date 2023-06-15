@@ -216,7 +216,6 @@ public class BudgetViewController {
         // Build lineItem
         lineItemDTO.setBudgetScenario(budgetScenario);
         lineItemDTO.setLineItemCategory(lineItemCategory);
-        lineItemDTO.setLineItemType(lineItemTypeService.findById(lineItemDTO.getLineItemType().getId()));
         LineItem lineItem = lineItemService.findOrCreate(lineItemDTO);
 
         return lineItem;
