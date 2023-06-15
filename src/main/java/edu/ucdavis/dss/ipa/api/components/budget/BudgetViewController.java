@@ -205,6 +205,10 @@ public class BudgetViewController {
             lineItemDTO.setTeachingAssignment(teachingAssignment);
         }
 
+        if (lineItemDTO.getLineItemType() != null) {
+            lineItemDTO.setLineItemType(lineItemTypeService.findById(lineItemDTO.getLineItemType().getId()));
+        }
+
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
