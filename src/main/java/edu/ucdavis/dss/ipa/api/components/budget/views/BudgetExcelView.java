@@ -92,7 +92,8 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Reader Cost",
            "Support Cost",
            "Instructor Cost",
-           "Total Cost"
+           "Total Cost",
+           "Course Type"
         ));
 
         Sheet fundsSheet = workbook.createSheet("Funds");
@@ -234,7 +235,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                         readerCost,
                         supportCost,
                         instructorCost,
-                        supportCost + instructorCost)
+                        supportCost + instructorCost,
+                        getCourseType(sectionGroupCost)
+                    )
                 );
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
@@ -560,5 +563,17 @@ public class BudgetExcelView extends AbstractXlsxView {
 
     private String yearToAcademicYear(long year) {
         return year + "-" + String.valueOf(year + 1).substring(2,4);
+    }
+
+    private String getCourseType(SectionGroupCost sectionGroupCost) {
+        int courseNumbers = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", ""));
+
+        if (courseNumbers < 100) {
+            return "Lower";
+        } else if (courseNumbers >= 200) {
+            return "Grad";
+        } else {
+            return "Upper";
+        }
     }
 }
