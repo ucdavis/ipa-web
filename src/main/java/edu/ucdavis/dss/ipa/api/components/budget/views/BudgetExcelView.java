@@ -96,7 +96,7 @@ public class BudgetExcelView extends AbstractXlsxView {
         ));
 
         Sheet fundsSheet = workbook.createSheet("Funds");
-        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
+        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Category", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
         Sheet expensesSheet = workbook.createSheet("Other Costs");
         expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
@@ -252,10 +252,16 @@ public class BudgetExcelView extends AbstractXlsxView {
                     comments.add(lineItemComment.getComment());
                 }
                 minimumNoteColumnWidth = Math.max(minimumNoteColumnWidth, (lineItem.getNotes() == null ? 0 : lineItem.getNotes().length()));
+
+                String termCode = lineItem.getTermCode() != null ? Term.getRegistrarName(lineItem.getTermCode()) : "";
+                String type = lineItem.getLineItemType() != null ? lineItem.getLineItemType().getDescription() : "";
+
                 List<Object> cellValues = Arrays.asList(
                         year,
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         scenarioName,
+                        termCode,
+                        type,
                         lineItem.getLineItemCategory().getDescription(),
                         lineItem.getDescription(),
                         lineItem.getNotes(),
