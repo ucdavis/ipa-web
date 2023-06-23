@@ -157,6 +157,14 @@ public class BudgetCalculationService {
                     combinedTermSummary.put(NEW_FACULTY_HIRE_COST, combinedTermSummary.get(NEW_FACULTY_HIRE_COST).add(instructorCost));
                 }
 
+                if (isGrad(sectionGroupCost)) {
+                    combinedTermSummary.put(GRAD_COST, combinedTermSummary.get(GRAD_COST).add(instructorCost));
+                } else if (isUpper(sectionGroupCost)) {
+                    combinedTermSummary.put(UPPER_DIV_COST, combinedTermSummary.get(UPPER_DIV_COST).add(instructorCost));
+                } else {
+                    combinedTermSummary.put(LOWER_DIV_COST, combinedTermSummary.get(LOWER_DIV_COST).add(instructorCost));
+                }
+
                 currentTermSummary.put(REPLACEMENT_COST, currentTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                 combinedTermSummary.put(REPLACEMENT_COST, combinedTermSummary.get(REPLACEMENT_COST).add(instructorCost));
                 currentTermSummary.put(TOTAL_TEACHING_COST, currentTermSummary.get(TOTAL_TEACHING_COST).add(instructorCost));
@@ -174,9 +182,20 @@ public class BudgetCalculationService {
             if (isGrad(sectionGroupCost)) {
                 currentTermSummary.put(SCH_GRAD, currentTermSummary.get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
                 combinedTermSummary.put(SCH_GRAD, combinedTermSummary.get(SCH_GRAD).add(calculateSCH(sectionGroupCost)));
+
+                combinedTermSummary.put(GRAD_COST, combinedTermSummary.get(GRAD_COST).add(baseTaCost.multiply(taCount)));
+                combinedTermSummary.put(GRAD_COST, combinedTermSummary.get(GRAD_COST).add(baseReaderCost.multiply(readerCount)));
             } else {
                 currentTermSummary.put(SCH_UNDERGRAD, currentTermSummary.get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
                 combinedTermSummary.put(SCH_UNDERGRAD, combinedTermSummary.get(SCH_UNDERGRAD).add(calculateSCH(sectionGroupCost)));
+
+                if (isUpper(sectionGroupCost)) {
+                    combinedTermSummary.put(UPPER_DIV_COST, combinedTermSummary.get(UPPER_DIV_COST).add(baseTaCost.multiply(taCount)));
+                    combinedTermSummary.put(UPPER_DIV_COST, combinedTermSummary.get(UPPER_DIV_COST).add(baseReaderCost.multiply(readerCount)));
+                } else {
+                    combinedTermSummary.put(LOWER_DIV_COST, combinedTermSummary.get(LOWER_DIV_COST).add(baseTaCost.multiply(taCount)));
+                    combinedTermSummary.put(LOWER_DIV_COST, combinedTermSummary.get(LOWER_DIV_COST).add(baseReaderCost.multiply(readerCount)));
+                }
             }
 
             combinedTermSummary.put(TA_COUNT, combinedTermSummary.get(TA_COUNT).add(taCount));
@@ -319,6 +338,10 @@ public class BudgetCalculationService {
 
     private static boolean isGrad(SectionGroupCost sectionGroupCost) {
         return Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) >= 200;
+    }
+
+    private static boolean isUpper(SectionGroupCost sectionGroupCost) {
+        return Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", "")) > 99;
     }
 
     private static BigDecimal calculateUnits(SectionGroupCost sectionGroupCost) {
@@ -474,6 +497,9 @@ public class BudgetCalculationService {
             new SimpleEntry<>(LOWER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_OFFERINGS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_OFFERINGS, BigDecimal.ZERO),
+            new SimpleEntry<>(LOWER_DIV_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(UPPER_DIV_COST, BigDecimal.ZERO),
+            new SimpleEntry<>(GRAD_COST, BigDecimal.ZERO),
             new SimpleEntry<>(LOWER_DIV_SEATS, BigDecimal.ZERO),
             new SimpleEntry<>(UPPER_DIV_SEATS, BigDecimal.ZERO),
             new SimpleEntry<>(GRAD_SEATS, BigDecimal.ZERO),
