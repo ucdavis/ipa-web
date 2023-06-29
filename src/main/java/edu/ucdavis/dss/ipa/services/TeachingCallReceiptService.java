@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.validation.annotation.Validated;
 
-import edu.ucdavis.dss.ipa.entities.Instructor;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 
 import java.util.List;
@@ -15,7 +14,11 @@ public interface TeachingCallReceiptService {
 
 	TeachingCallReceipt findOneById(Long id);
 
+	TeachingCallReceipt findOneByScheduleIdAndInstructorId(Long scheduleId, Long instructorId);
+
 	TeachingCallReceipt save(@NotNull @Valid TeachingCallReceipt teachingCallReceipt);
+
+	List<TeachingCallReceipt> saveAll(List<TeachingCallReceipt> teachingCallReceipts);
 
 	void sendNotificationsByWorkgroupId(Long workgroupId);
 

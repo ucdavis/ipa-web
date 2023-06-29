@@ -49,6 +49,11 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		return this.teachingCallReceiptRepository.findOne(id);
 	}
 
+	@Override
+	public TeachingCallReceipt findOneByScheduleIdAndInstructorId(Long scheduleId, Long instructorId) {
+		return  this.teachingCallReceiptRepository.findByInstructorIdAndScheduleId(instructorId, scheduleId);
+	}
+
 	/**
 	 * Searches all TeachingCalls with the given workgroupId for e-mails waiting to be sent based on notifiedAt and warnedAt.
 	 * This is the primary method teachingCallReceipts are created.
@@ -266,6 +271,12 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		}
 
 		return receipts;
+	}
+
+	@Transactional
+	@Override
+	public List<TeachingCallReceipt> saveAll(List<TeachingCallReceipt> teachingCallReceipts) {
+		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.save(teachingCallReceipts);
 	}
 
 	private TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId) {

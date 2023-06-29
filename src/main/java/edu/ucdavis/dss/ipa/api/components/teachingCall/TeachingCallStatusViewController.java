@@ -12,6 +12,7 @@ import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.TeachingCallReceipt;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -166,6 +167,34 @@ public class TeachingCallStatusViewController {
         return teachingCallReceipts;
     }
 
+    @RequestMapping(value = "/api/teachingCallView/{workgroupId}/{year}/lock", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public List<TeachingCallReceipt> lockTeachingCalls(@PathVariable long workgroupId, @PathVariable long year, @RequestBody List<Long> instructorIds) {
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        Schedule schedule = scheduleService.findByWorkgroupIdAndYear(workgroupId, year);
+
+        List<TeachingCallReceipt> teachingCallReceipts = instructorIds.stream().map(instructorId -> teachingCallReceiptService.findOneByScheduleIdAndInstructorId(
+            schedule.getId(), instructorId)).collect(
+            Collectors.toList());
+
+        teachingCallReceipts.forEach(teachingCallReceipt -> teachingCallReceipt.setLocked(true));
+
+        teachingCallReceipts = teachingCallReceiptService.saveAll(teachingCallReceipts);
+
+        return teachingCallReceipts;
+    }
+
+    @RequestMapping(value = "/api/teachingCallView/teachingCallReceipts/{teachingCallReceiptId}/unlock", method = RequestMethod.POST, produces="application/json")
+    @ResponseBody
+    public TeachingCallReceipt unlockTeachingCall(@PathVariable long teachingCallReceiptId) {
+        TeachingCallReceipt teachingCallReceipt = teachingCallReceiptService.findOneById(teachingCallReceiptId);
+        Long workgroupId = teachingCallReceipt.getSchedule().getWorkgroup().getId();
+        authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
+
+        teachingCallReceipt.setLocked(false);
+        return teachingCallReceiptService.save(teachingCallReceipt);
+    }
 
     @JsonDeserialize(using = AddInstructorsDTODeserializer.class)
     public class AddInstructorsDTO {

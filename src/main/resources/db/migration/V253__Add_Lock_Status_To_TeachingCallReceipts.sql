@@ -1,0 +1,1 @@
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `Locked` TINYINT(1) NOT NULL DEFAULT 0;

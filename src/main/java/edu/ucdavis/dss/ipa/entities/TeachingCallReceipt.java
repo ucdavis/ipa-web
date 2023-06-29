@@ -22,7 +22,7 @@ public class TeachingCallReceipt implements Serializable {
 	private long id;
 
 	private Instructor instructor;
-	private Boolean isDone = false, showUnavailabilities = true, showSeats = true, hideNonCourseOptions = false;
+	private Boolean isDone = false, showUnavailabilities = true, showSeats = true, hideNonCourseOptions = false, locked = false;
 	private boolean sendEmail;
 	private Date lastContactedAt, nextContactAt, dueDate;
 	private Schedule schedule;
@@ -192,6 +192,14 @@ public class TeachingCallReceipt implements Serializable {
 		} else {
 			return 0;
 		}
+	}
+
+	public Boolean getLocked() {
+		return locked;
+	}
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
 	}
 
 	/**
