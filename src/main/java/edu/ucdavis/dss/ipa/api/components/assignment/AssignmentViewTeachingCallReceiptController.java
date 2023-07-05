@@ -6,6 +6,7 @@ import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.TeachingCallCommentService;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
+import java.util.Date;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class AssignmentViewTeachingCallReceiptController {
         authorizer.hasWorkgroupRoles(workgroup.getId(), "academicPlanner", "instructor");
 
         originalTeachingCallReceipt.setIsDone(teachingCallReceipt.getIsDone());
+        originalTeachingCallReceipt.setUpdatedAt(new Date());
 
         return teachingCallReceiptService.save(originalTeachingCallReceipt);
     }
@@ -46,6 +48,11 @@ public class AssignmentViewTeachingCallReceiptController {
             return null;
         }
 
+        if (teachingCallReceipt.getLocked()) {
+            httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            return null;
+        }
+
         // Authorization check
         Long workGroupId = teachingCallReceipt.getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "instructor");
@@ -58,6 +65,9 @@ public class AssignmentViewTeachingCallReceiptController {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
+
+        teachingCallReceipt.setUpdatedAt(new Date());
+        teachingCallReceiptService.save(teachingCallReceipt);
 
         return teachingCallComment;
     }

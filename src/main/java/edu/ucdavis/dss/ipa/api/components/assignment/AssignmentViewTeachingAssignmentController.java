@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.*;
+import java.util.Date;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class AssignmentViewTeachingAssignmentController {
     @Inject DataWarehouseRepository dwRepository;
     @Inject Authorizer authorizer;
     @Inject InstructorTypeService instructorTypeService;
+    @Inject TeachingCallReceiptService teachingCallReceiptService;
 
     @RequestMapping(value = "/api/assignmentView/schedules/{scheduleId}/teachingAssignments", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
@@ -323,6 +325,11 @@ public class AssignmentViewTeachingAssignmentController {
             }
         }
 
+        // Touch TeachingCallReceipt to track updates
+        TeachingCallReceipt receipt = teachingCallReceiptService.findOneByScheduleIdAndInstructorId(teachingAssignmentDto.getSchedule().getId(), teachingAssignmentDto.getInstructor().getId());
+        receipt.setUpdatedAt(new Date());
+        teachingCallReceiptService.save(receipt);
+
         return teachingAssignmentsToDelete;
     }
 
@@ -461,6 +468,11 @@ public class AssignmentViewTeachingAssignmentController {
             }
         }
 
+        // Touch TeachingCallReceipt to track updates
+        TeachingCallReceipt receipt = teachingCallReceiptService.findOneByScheduleIdAndInstructorId(schedule.getId(), instructor.getId());
+        receipt.setUpdatedAt(new Date());
+        teachingCallReceiptService.save(receipt);
+
         return teachingAssignments;
     }
 
@@ -483,6 +495,11 @@ public class AssignmentViewTeachingAssignmentController {
             httpResponse.setStatus(HttpStatus.NOT_FOUND.value());
             return null;
         }
+
+        // Touch TeachingCallReceipt to track updates
+        TeachingCallReceipt receipt = teachingCallReceiptService.findOneByScheduleIdAndInstructorId(schedule.getId(), teachingAssignments.get(0).getInstructor().getId());
+        receipt.setUpdatedAt(new Date());
+        teachingCallReceiptService.save(receipt);
 
         return sortedTeachingPreferenceIds;
     }
