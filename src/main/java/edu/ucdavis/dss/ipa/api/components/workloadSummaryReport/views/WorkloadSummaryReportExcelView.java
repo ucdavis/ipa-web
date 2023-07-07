@@ -110,6 +110,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
             for (Map.Entry<String, List<WorkloadAssignment>> entry : assignmentsByInstructor.entrySet()) {
                 List<WorkloadAssignment> instructorAssignments = entry.getValue();
+                Map<String, Integer> instructorSubtotals = buildCategoryTotalsMap();
 
                 boolean namedRow = true;
                 for (WorkloadAssignment assignment : instructorAssignments) {
@@ -146,10 +147,29 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                         assignedTotals.put("sch", assignedTotals.get("sch") + 1);
                     }
 
+                        instructorSubtotals.put("assignments", instructorSubtotals.get("assignments") + 1);
+                        instructorSubtotals.put("census",
+                            instructorSubtotals.get("census") + Optional.ofNullable(assignment.getCensus())
+                                .map(Long::intValue)
+                                .orElse(0));
+                        instructorSubtotals.put("plannedSeats",
+                            instructorSubtotals.get("plannedSeats") + Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
+                        instructorSubtotals.put("previousEnrollment", Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+                        instructorSubtotals.put("units",
+                            instructorSubtotals.get("units") + Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
+                        instructorSubtotals.put("sch", instructorSubtotals.get("sch") + 1);
+
                     ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, namedRow));
                     namedRow = false;
                 }
 
+                // instructor subtotal row
+                ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
+                    "", "Totals", instructorSubtotals.get("assignments"), "",
+                    instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
+                    instructorSubtotals.get("plannedSeats"),
+                    instructorSubtotals.get("previousEnrollment"),
+                    instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
             }
 
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
