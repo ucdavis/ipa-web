@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,17 +67,34 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "Previous Enrollments (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note");
 
-
-        List<String> instructorTypes =
-            assignedAssignments.stream().map(WorkloadAssignment::getInstructorType).distinct()
-                .collect(Collectors.toList());
+        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = generateInstructorTypeAssignmentsMap(workloadAssignments);
 
         Map<String, Integer> assignedTotals = buildCategoryTotalsMap();
         Map<String, Integer> unassignedTotals = buildCategoryTotalsMap();
         Map<String, Integer> placeholderTotals = buildCategoryTotalsMap();
 
         int instructorSections = 0;
-        for (String instructorType : instructorTypes) {
+
+        List<String> instructorDisplayOrder = Arrays.asList(
+        "Ladder Faculty",
+        "New Faculty Hire",
+        "Lecturer SOE",
+        "Continuing Lecturer",
+        "Emeriti - Recalled",
+        "Visiting Professor",
+        "Unit 18 Pre-Six Lecturer",
+        "Continuing Lecturer - Augmentation",
+        "Associate Professor",
+        "Instructor");
+
+        for (String instructorType : instructorDisplayOrder) {
+
+            List<WorkloadAssignment> assignments = assignmentsByInstructorType.get(instructorType);
+
+            if (assignments.size() == 0) {
+                continue;
+            }
+
             int offset = 0;
             if (instructorSections != 0) {
                 offset = 1;
@@ -84,21 +102,18 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             Row row = worksheet.createRow(worksheet.getLastRowNum() + offset);
 
             Cell cell = row.createCell(0);
-            cell.setCellValue(instructorType.toUpperCase());
+            cell.setCellValue(instructorType.toUpperCase() );
             cell.setCellType(CellType.STRING);
 
-            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
+//            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
 
             ExcelHelper.writeRowToSheet(worksheet, instructorSectionHeaders);
 
-            List<WorkloadAssignment> assignments =
-                assignedAssignments.stream().filter(wa -> wa.getInstructorType().equals(instructorType)).collect(
-                    Collectors.toList());
 
             Map<String, List<WorkloadAssignment>> assignmentsByInstructor = new HashMap<>();
 
             List<String> instructorNames =
-                assignments.stream().map(WorkloadAssignment::getName).distinct().collect(Collectors.toList());
+                assignments.stream().map(WorkloadAssignment::getName).distinct().sorted().collect(Collectors.toList());
 
             for (String name : instructorNames) {
                 if (!assignmentsByInstructor.containsKey(name)) {
@@ -108,8 +123,11 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 }
             }
 
-            for (Map.Entry<String, List<WorkloadAssignment>> entry : assignmentsByInstructor.entrySet()) {
-                List<WorkloadAssignment> instructorAssignments = entry.getValue();
+            for (String name : instructorNames) {
+                List<WorkloadAssignment> instructorAssignments = assignmentsByInstructor.get(name);
+
+                // TODO: sort assignments by term
+
                 Map<String, Integer> instructorSubtotals = buildCategoryTotalsMap();
 
                 boolean namedRow = true;
@@ -266,6 +284,23 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             .collect(Collectors.toList());
     }
 
+    private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(List<WorkloadAssignment> workloadAssignments) {
+        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = buildInstructorTypesAssignmentsMap();
+
+
+        Set<String> instructorTypes = assignmentsByInstructorType.keySet();
+        workloadAssignments.sort(Comparator.comparing(WorkloadAssignment::getName));
+
+        for (String instructorType : instructorTypes) {
+            List<WorkloadAssignment> instructorTypeAssignments = workloadAssignments.stream().filter(assignment -> instructorType.equals(assignment.getInstructorType())).sorted(Comparator.comparing(WorkloadAssignment::getName)).collect(
+                Collectors.toList());
+
+            assignmentsByInstructorType.put(instructorType, instructorTypeAssignments);
+        }
+
+        return assignmentsByInstructorType;
+    }
+
     private List<Object> createInstructorRow(WorkloadAssignment assignment, boolean namedRow) {
         String name = namedRow ? assignment.getName() : "";
         String enrollmentSeats =
@@ -310,5 +345,21 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         categoryTotals.put("units", 0);
         categoryTotals.put("sch", 0);
         return categoryTotals;
+    }
+
+    private Map<String, List<WorkloadAssignment>> buildInstructorTypesAssignmentsMap() {
+        Map<String, List<WorkloadAssignment>> instructorTypeAssignments = new HashMap<>();
+        instructorTypeAssignments.put("Ladder Faculty", null);
+        instructorTypeAssignments.put("New Faculty Hire", null);
+        instructorTypeAssignments.put("Lecturer SOE", null);
+        instructorTypeAssignments.put("Continuing Lecturer", null);
+        instructorTypeAssignments.put("Emeriti - Recalled", null);
+        instructorTypeAssignments.put("Visiting Professor", null);
+        instructorTypeAssignments.put("Unit 18 Pre-Six Lecturer", null);
+        instructorTypeAssignments.put("Continuing Lecturer - Augmentation", null);
+        instructorTypeAssignments.put("Associate Professor", null);
+        instructorTypeAssignments.put("Instructor", null);
+
+        return instructorTypeAssignments;
     }
 }
