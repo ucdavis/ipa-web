@@ -363,7 +363,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         instructorTypeAssignments.put("Visiting Professor", null);
         instructorTypeAssignments.put("Unit 18 Pre-Six Lecturer", null);
         instructorTypeAssignments.put("Continuing Lecturer - Augmentation", null);
-        instructorTypeAssignments.put("Associate Professor", null);
+        instructorTypeAssignments.put("Associate Instructor", null);
         instructorTypeAssignments.put("Instructor", null);
 
         return instructorTypeAssignments;
