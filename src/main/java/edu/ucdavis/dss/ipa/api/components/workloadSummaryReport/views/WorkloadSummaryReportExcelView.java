@@ -287,13 +287,15 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(List<WorkloadAssignment> workloadAssignments) {
         Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = buildInstructorTypesAssignmentsMap();
 
-
         Set<String> instructorTypes = assignmentsByInstructorType.keySet();
         workloadAssignments.sort(Comparator.comparing(WorkloadAssignment::getName));
 
         for (String instructorType : instructorTypes) {
-            List<WorkloadAssignment> instructorTypeAssignments = workloadAssignments.stream().filter(assignment -> instructorType.equals(assignment.getInstructorType())).sorted(Comparator.comparing(WorkloadAssignment::getName)).collect(
-                Collectors.toList());
+            List<WorkloadAssignment> instructorTypeAssignments =
+                workloadAssignments.stream().filter(assignment -> instructorType.equals(assignment.getInstructorType()))
+                    .sorted(Comparator.comparing(WorkloadAssignment::getName)
+                        .thenComparing(WorkloadAssignment::getTermCode)).collect(
+                        Collectors.toList());
 
             assignmentsByInstructorType.put(instructorType, instructorTypeAssignments);
         }
