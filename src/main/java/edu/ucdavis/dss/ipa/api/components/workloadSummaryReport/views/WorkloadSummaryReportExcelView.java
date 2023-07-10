@@ -127,8 +127,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             for (String name : instructorNames) {
                 List<WorkloadAssignment> instructorAssignments = assignmentsByInstructor.get(name);
 
-                // TODO: sort assignments by term
-
                 Map<String, Integer> instructorSubtotals = buildCategoryTotalsMap();
 
                 boolean namedRow = true;
@@ -160,6 +158,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                                 Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
                         assignedTotals.put("previousEnrollment", assignedTotals.get("previousEnrollment") +
                             Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+                        assignedTotals.put("lastOfferedEnrollment", assignedTotals.get("lastOfferedEnrollment") +
+                            Optional.ofNullable(assignment.getLastOfferedCensus()).map(str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", ""))).orElse(0));
                         assignedTotals.put("units",
                             assignedTotals.get("units") +
                                 Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
@@ -176,6 +176,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                             Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
                     instructorSubtotals.put("previousEnrollment",
                         Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+                    instructorSubtotals.put("lastOfferedEnrollment",
+                        instructorSubtotals.get("lastOfferedEnrollment") +
+                        Optional.ofNullable(assignment.getLastOfferedCensus()).map(str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", ""))).orElse(0));
                     instructorSubtotals.put("units",
                         instructorSubtotals.get("units") +
                             Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
@@ -189,8 +192,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
                     "", "Totals", instructorSubtotals.get("assignments"), "",
                     instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
-                    instructorSubtotals.get("plannedSeats"),
                     instructorSubtotals.get("previousEnrollment"),
+                    instructorSubtotals.get("lastOfferedEnrollment"),
                     instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
             }
 
@@ -337,12 +340,14 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     }
 
     private Map<String, Integer> buildCategoryTotalsMap() {
+        // TODO: switch to enum
         Map<String, Integer> categoryTotals = new HashMap<>();
         categoryTotals.put("instructorCount", 0);
         categoryTotals.put("assignments", 0);
         categoryTotals.put("census", 0);
         categoryTotals.put("plannedSeats", 0);
         categoryTotals.put("previousEnrollment", 0);
+        categoryTotals.put("lastOfferedEnrollment", 0);
         categoryTotals.put("units", 0);
         categoryTotals.put("sch", 0);
         return categoryTotals;
