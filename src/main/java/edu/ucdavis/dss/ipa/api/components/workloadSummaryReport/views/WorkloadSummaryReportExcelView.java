@@ -67,7 +67,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "Previous Enrollments (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note");
 
-        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = generateInstructorTypeAssignmentsMap(workloadAssignments);
+        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType =
+            generateInstructorTypeAssignmentsMap(workloadAssignments);
 
         Map<String, Integer> assignedTotals = buildCategoryTotalsMap();
         Map<String, Integer> unassignedTotals = buildCategoryTotalsMap();
@@ -76,16 +77,16 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         int instructorSections = 0;
 
         List<String> instructorDisplayOrder = Arrays.asList(
-        "Ladder Faculty",
-        "New Faculty Hire",
-        "Lecturer SOE",
-        "Continuing Lecturer",
-        "Emeriti - Recalled",
-        "Visiting Professor",
-        "Unit 18 Pre-Six Lecturer",
-        "Continuing Lecturer - Augmentation",
-        "Associate Professor",
-        "Instructor");
+            "Ladder Faculty",
+            "New Faculty Hire",
+            "Lecturer SOE",
+            "Continuing Lecturer",
+            "Emeriti - Recalled",
+            "Visiting Professor",
+            "Unit 18 Pre-Six Lecturer",
+            "Continuing Lecturer - Augmentation",
+            "Associate Professor",
+            "Instructor");
 
         for (String instructorType : instructorDisplayOrder) {
 
@@ -102,7 +103,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             Row row = worksheet.createRow(worksheet.getLastRowNum() + offset);
 
             Cell cell = row.createCell(0);
-            cell.setCellValue(instructorType.toUpperCase() );
+            cell.setCellValue(instructorType.toUpperCase());
             cell.setCellType(CellType.STRING);
 
 //            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
@@ -165,17 +166,20 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                         assignedTotals.put("sch", assignedTotals.get("sch") + 1);
                     }
 
-                        instructorSubtotals.put("assignments", instructorSubtotals.get("assignments") + 1);
-                        instructorSubtotals.put("census",
-                            instructorSubtotals.get("census") + Optional.ofNullable(assignment.getCensus())
-                                .map(Long::intValue)
-                                .orElse(0));
-                        instructorSubtotals.put("plannedSeats",
-                            instructorSubtotals.get("plannedSeats") + Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
-                        instructorSubtotals.put("previousEnrollment", Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
-                        instructorSubtotals.put("units",
-                            instructorSubtotals.get("units") + Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
-                        instructorSubtotals.put("sch", instructorSubtotals.get("sch") + 1);
+                    instructorSubtotals.put("assignments", instructorSubtotals.get("assignments") + 1);
+                    instructorSubtotals.put("census",
+                        instructorSubtotals.get("census") + Optional.ofNullable(assignment.getCensus())
+                            .map(Long::intValue)
+                            .orElse(0));
+                    instructorSubtotals.put("plannedSeats",
+                        instructorSubtotals.get("plannedSeats") +
+                            Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
+                    instructorSubtotals.put("previousEnrollment",
+                        Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+                    instructorSubtotals.put("units",
+                        instructorSubtotals.get("units") +
+                            Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
+                    instructorSubtotals.put("sch", instructorSubtotals.get("sch") + 1);
 
                     ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, namedRow));
                     namedRow = false;
@@ -273,12 +277,13 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildReportSheet(workbook, workloadAssignments)
+        buildReportSheet(workbook, workloadAssignments);
         buildRawAssignmentsSheet(workbook, workloadAssignments);
         ExcelHelper.expandHeaders(workbook);
     }
 
-    private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(List<WorkloadAssignment> workloadAssignments) {
+    private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(
+        List<WorkloadAssignment> workloadAssignments) {
         Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = buildInstructorTypesAssignmentsMap();
 
         Set<String> instructorTypes = assignmentsByInstructorType.keySet();
