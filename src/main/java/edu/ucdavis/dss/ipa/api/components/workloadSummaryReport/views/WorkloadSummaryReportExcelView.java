@@ -273,15 +273,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"UTF-8\"");
         response.setHeader("Content-Disposition", filename);
 
-        buildReportSheet(workbook, orderByInstructorTypeAndName(workloadAssignments));
-        buildRawAssignmentsSheet(workbook, orderByInstructorTypeAndName(workloadAssignments));
+        buildReportSheet(workbook, workloadAssignments)
+        buildRawAssignmentsSheet(workbook, workloadAssignments);
         ExcelHelper.expandHeaders(workbook);
-    }
-
-    private List<WorkloadAssignment> orderByInstructorTypeAndName(List<WorkloadAssignment> workloadAssignments) {
-        return workloadAssignments.stream().sorted(
-                Comparator.comparing(WorkloadAssignment::getInstructorType).thenComparing(WorkloadAssignment::getName))
-            .collect(Collectors.toList());
     }
 
     private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(List<WorkloadAssignment> workloadAssignments) {
