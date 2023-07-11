@@ -120,8 +120,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                     int slotPlannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
                     int slotUnits = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
                     float slotSCH = Optional.ofNullable(assignment.getStudentCreditHours()).orElse(0f);
-                    Integer slotPreviousEnrollment =
-                        Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0);
+                    long slotPreviousEnrollment =
+                        Optional.ofNullable(assignment.getPreviousYearCensus()).orElse(0L);
                     int slotLastOfferedEnrollment = Optional.ofNullable(assignment.getLastOfferedCensus()).map(
                             str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", "")))
                         .orElse(0);
@@ -129,9 +129,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                     if (assignment.getName().equals("TBD")) {
                         placeholderTotals.put(Total.INSTRUCTOR_COUNT, placeholderTotals.get(Total.INSTRUCTOR_COUNT).intValue() + 1);
                         placeholderTotals.put(Total.ASSIGNMENTS, placeholderTotals.get(Total.ASSIGNMENTS).intValue() + 1);
-                        placeholderTotals.put(Total.CENSUS, placeholderTotals.get(Total.CENSUS).intValue() + slotCensus);
+                        placeholderTotals.put(Total.CENSUS, placeholderTotals.get(Total.CENSUS).longValue() + slotCensus);
                         placeholderTotals.put(Total.PLANNED_SEATS, placeholderTotals.get(Total.PLANNED_SEATS).intValue() + slotPlannedSeats);
-                        placeholderTotals.put(Total.PREVIOUS_ENROLLMENT, placeholderTotals.get(Total.PREVIOUS_ENROLLMENT).intValue() + 1);
+                        placeholderTotals.put(Total.PREVIOUS_ENROLLMENT, placeholderTotals.get(Total.PREVIOUS_ENROLLMENT).longValue() + slotPreviousEnrollment);
                         placeholderTotals.put(Total.UNITS, placeholderTotals.get(Total.UNITS).intValue() + slotUnits);
                         placeholderTotals.put(Total.SCH, placeholderTotals.get(Total.SCH).floatValue() + slotSCH);
                     } else {
@@ -139,18 +139,18 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                             assignedTotals.get(Total.INSTRUCTOR_COUNT).intValue() + (namedRow ? 1 : 0));
                         assignedTotals.put(Total.ASSIGNMENTS,
                             assignedTotals.get(Total.ASSIGNMENTS).intValue() + (assignment.getOffering() != null ? 1 : 0));
-                        assignedTotals.put(Total.CENSUS, assignedTotals.get(Total.CENSUS).intValue() + slotCensus);
+                        assignedTotals.put(Total.CENSUS, assignedTotals.get(Total.CENSUS).longValue() + slotCensus);
                         assignedTotals.put(Total.PLANNED_SEATS, assignedTotals.get(Total.PLANNED_SEATS).intValue() + slotPlannedSeats);
-                        assignedTotals.put(Total.PREVIOUS_ENROLLMENT, assignedTotals.get(Total.PREVIOUS_ENROLLMENT).intValue() +slotPreviousEnrollment);
+                        assignedTotals.put(Total.PREVIOUS_ENROLLMENT, assignedTotals.get(Total.PREVIOUS_ENROLLMENT).longValue() +slotPreviousEnrollment);
                         assignedTotals.put(Total.LAST_OFFERED_ENROLLMENT, assignedTotals.get(Total.LAST_OFFERED_ENROLLMENT).intValue() + slotLastOfferedEnrollment);
                         assignedTotals.put(Total.UNITS, assignedTotals.get(Total.UNITS).intValue() + slotUnits);
                         assignedTotals.put(Total.SCH, assignedTotals.get(Total.SCH).floatValue() + slotSCH);
                     }
 
                     instructorSubtotals.put(Total.ASSIGNMENTS, instructorSubtotals.get(Total.ASSIGNMENTS).intValue() + 1);
-                    instructorSubtotals.put(Total.CENSUS, instructorSubtotals.get(Total.CENSUS).intValue() + slotCensus);
+                    instructorSubtotals.put(Total.CENSUS, instructorSubtotals.get(Total.CENSUS).longValue() + slotCensus);
                     instructorSubtotals.put(Total.PLANNED_SEATS, instructorSubtotals.get(Total.PLANNED_SEATS).intValue() + slotPlannedSeats);
-                    instructorSubtotals.put(Total.PREVIOUS_ENROLLMENT, instructorSubtotals.get(Total.PREVIOUS_ENROLLMENT).intValue() + slotPreviousEnrollment);
+                    instructorSubtotals.put(Total.PREVIOUS_ENROLLMENT, instructorSubtotals.get(Total.PREVIOUS_ENROLLMENT).longValue() + slotPreviousEnrollment);
                     instructorSubtotals.put(Total.LAST_OFFERED_ENROLLMENT, instructorSubtotals.get(Total.LAST_OFFERED_ENROLLMENT).intValue() + slotLastOfferedEnrollment);
                     instructorSubtotals.put(Total.UNITS, instructorSubtotals.get(Total.UNITS).intValue() + slotUnits);
                     instructorSubtotals.put(Total.SCH, instructorSubtotals.get(Total.SCH).floatValue() + slotSCH);
