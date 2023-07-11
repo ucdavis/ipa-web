@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.services;
 
 import static edu.ucdavis.dss.ipa.entities.enums.BudgetSummary.*;
-import static edu.ucdavis.dss.ipa.entities.enums.InstructorDescription.*;
+import static edu.ucdavis.dss.ipa.entities.enums.InstructorType.*;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
@@ -95,61 +95,61 @@ public class BudgetCalculationService {
                 if(sectionGroupCostInstructor.getTeachingAssignment() != null){
                     teachingAssignmentIds.add(sectionGroupCostInstructor.getTeachingAssignment().getId());
                 }
-                if(instructorTypeId == EMERITI.typeId()){
+                if(instructorTypeId == EMERITI.getId()){
                     currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(EMERITI_COST, currentTermSummary.get(EMERITI_COST).add(instructorCost));
                     combinedTermSummary.put(EMERITI_COST, combinedTermSummary.get(EMERITI_COST).add(instructorCost));
-                } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
+                } else if (instructorTypeId == VISITING_PROFESSOR.getId()){
                     currentTermSummary.put(VISITING_PROFESSOR_COUNT, currentTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(VISITING_PROFESSOR_COUNT, combinedTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(VISITING_PROFESSOR_COST, currentTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
                     combinedTermSummary.put(VISITING_PROFESSOR_COST, combinedTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
-                } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
+                } else if (instructorTypeId == ASSOCIATE_INSTRUCTOR.getId()){
                     currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
                     combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
-                } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
+                } else if (instructorTypeId == UNIT18_LECTURER.getId()){
                     currentTermSummary.put(UNIT18_LECTURER_COUNT, currentTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(UNIT18_LECTURER_COUNT, combinedTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(UNIT18_LECTURER_COST, currentTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
                     combinedTermSummary.put(UNIT18_LECTURER_COST, combinedTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
-                } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
+                } else if (instructorTypeId == CONTINUING_LECTURER.getId()){
                     currentTermSummary.put(CONTINUING_LECTURER_COUNT, currentTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(CONTINUING_LECTURER_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
                     combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
-                } else if (instructorTypeId == CONTINUING_LECTURER_AUGMENTATION.typeId()){
+                } else if (instructorTypeId == CONTINUING_LECTURER_AUGMENTATION.getId()){
                     currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
                     combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
-                } else if (instructorTypeId == LADDER_FACULTY.typeId()){
+                } else if (instructorTypeId == LADDER_FACULTY.getId()){
                     currentTermSummary.put(LADDER_FACULTY_COUNT, currentTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(LADDER_FACULTY_COUNT, combinedTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(LADDER_FACULTY_COST, currentTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
                     combinedTermSummary.put(LADDER_FACULTY_COST, combinedTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
-                } else if (instructorTypeId == INSTRUCTOR.typeId()){
+                } else if (instructorTypeId == INSTRUCTOR.getId()){
                     currentTermSummary.put(INSTRUCTOR_COUNT, currentTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(INSTRUCTOR_COUNT, combinedTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(INSTRUCTOR_COST, currentTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
                     combinedTermSummary.put(INSTRUCTOR_COST, combinedTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
-                } else if (instructorTypeId == LECTURER_SOE.typeId()){
+                } else if (instructorTypeId == LECTURER_SOE.getId()){
                     currentTermSummary.put(LECTURER_SOE_COUNT, currentTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(LECTURER_SOE_COUNT, combinedTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
 
                     currentTermSummary.put(LECTURER_SOE_COST, currentTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
                     combinedTermSummary.put(LECTURER_SOE_COST, combinedTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
-                } else if (instructorTypeId == NEW_FACULTY_HIRE.typeId()){
+                } else if (instructorTypeId == NEW_FACULTY_HIRE.getId()){
                     currentTermSummary.put(NEW_FACULTY_HIRE_COUNT, currentTermSummary.get(NEW_FACULTY_HIRE_COUNT).add(BigDecimal.ONE));
                     combinedTermSummary.put(NEW_FACULTY_HIRE_COUNT, combinedTermSummary.get(NEW_FACULTY_HIRE_COUNT).add(BigDecimal.ONE));
 
@@ -225,61 +225,61 @@ public class BudgetCalculationService {
                     BigDecimal instructorCost = calculateTeachingAssignmentCost(workgroup, budget, teachingAssignment);
                     long instructorTypeId = calculateTeachingAssignmentTypeId(teachingAssignment, workgroup);
 
-                    if(instructorTypeId == EMERITI.typeId()){
+                    if(instructorTypeId == EMERITI.getId()){
                         currentTermSummary.put(EMERITI_COUNT, currentTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(EMERITI_COUNT, combinedTermSummary.get(EMERITI_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(EMERITI_COST, currentTermSummary.get(EMERITI_COST).add(instructorCost));
                         combinedTermSummary.put(EMERITI_COST, combinedTermSummary.get(EMERITI_COST).add(instructorCost));
-                    } else if (instructorTypeId == VISITING_PROFESSOR.typeId()){
+                    } else if (instructorTypeId == VISITING_PROFESSOR.getId()){
                         currentTermSummary.put(VISITING_PROFESSOR_COUNT, currentTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(VISITING_PROFESSOR_COUNT, combinedTermSummary.get(VISITING_PROFESSOR_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(VISITING_PROFESSOR_COST, currentTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
                         combinedTermSummary.put(VISITING_PROFESSOR_COST, combinedTermSummary.get(VISITING_PROFESSOR_COST).add(instructorCost));
-                    } else if (instructorTypeId == ASSOCIATE_PROFESSOR.typeId()){
+                    } else if (instructorTypeId == ASSOCIATE_INSTRUCTOR.getId()){
                         currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COUNT, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, currentTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
                         combinedTermSummary.put(ASSOCIATE_INSTRUCTOR_COST, combinedTermSummary.get(ASSOCIATE_INSTRUCTOR_COST).add(instructorCost));
-                    } else if (instructorTypeId == UNIT18_LECTURER.typeId()){
+                    } else if (instructorTypeId == UNIT18_LECTURER.getId()){
                         currentTermSummary.put(UNIT18_LECTURER_COUNT, currentTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(UNIT18_LECTURER_COUNT, combinedTermSummary.get(UNIT18_LECTURER_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(UNIT18_LECTURER_COST, currentTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
                         combinedTermSummary.put(UNIT18_LECTURER_COST, combinedTermSummary.get(UNIT18_LECTURER_COST).add(instructorCost));
-                    } else if (instructorTypeId == CONTINUING_LECTURER.typeId()){
+                    } else if (instructorTypeId == CONTINUING_LECTURER.getId()){
                         currentTermSummary.put(CONTINUING_LECTURER_COUNT, currentTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(CONTINUING_LECTURER_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(CONTINUING_LECTURER_COST, currentTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
                         combinedTermSummary.put(CONTINUING_LECTURER_COST, combinedTermSummary.get(CONTINUING_LECTURER_COST).add(instructorCost));
-                    } else if (instructorTypeId == CONTINUING_LECTURER_AUGMENTATION.typeId()){
+                    } else if (instructorTypeId == CONTINUING_LECTURER_AUGMENTATION.getId()){
                         currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COUNT, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, currentTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
                         combinedTermSummary.put(CONTINUING_LECTURER_AUGMENTATION_COST, combinedTermSummary.get(CONTINUING_LECTURER_AUGMENTATION_COST).add(instructorCost));
-                    } else if (instructorTypeId == LADDER_FACULTY.typeId()){
+                    } else if (instructorTypeId == LADDER_FACULTY.getId()){
                         currentTermSummary.put(LADDER_FACULTY_COUNT, currentTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(LADDER_FACULTY_COUNT, combinedTermSummary.get(LADDER_FACULTY_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(LADDER_FACULTY_COST, currentTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
                         combinedTermSummary.put(LADDER_FACULTY_COST, combinedTermSummary.get(LADDER_FACULTY_COST).add(instructorCost));
-                    } else if (instructorTypeId == INSTRUCTOR.typeId()){
+                    } else if (instructorTypeId == INSTRUCTOR.getId()){
                         currentTermSummary.put(INSTRUCTOR_COUNT, currentTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(INSTRUCTOR_COUNT, combinedTermSummary.get(INSTRUCTOR_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(INSTRUCTOR_COST, currentTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
                         combinedTermSummary.put(INSTRUCTOR_COST, combinedTermSummary.get(INSTRUCTOR_COST).add(instructorCost));
-                    } else if (instructorTypeId == LECTURER_SOE.typeId()){
+                    } else if (instructorTypeId == LECTURER_SOE.getId()){
                         currentTermSummary.put(LECTURER_SOE_COUNT, currentTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(LECTURER_SOE_COUNT, combinedTermSummary.get(LECTURER_SOE_COUNT).add(BigDecimal.ONE));
 
                         currentTermSummary.put(LECTURER_SOE_COST, currentTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
                         combinedTermSummary.put(LECTURER_SOE_COST, combinedTermSummary.get(LECTURER_SOE_COST).add(instructorCost));
-                    } else if (instructorTypeId == NEW_FACULTY_HIRE.typeId()){
+                    } else if (instructorTypeId == NEW_FACULTY_HIRE.getId()){
                         currentTermSummary.put(NEW_FACULTY_HIRE_COUNT, currentTermSummary.get(NEW_FACULTY_HIRE_COUNT).add(BigDecimal.ONE));
                         combinedTermSummary.put(NEW_FACULTY_HIRE_COUNT, combinedTermSummary.get(NEW_FACULTY_HIRE_COUNT).add(BigDecimal.ONE));
 

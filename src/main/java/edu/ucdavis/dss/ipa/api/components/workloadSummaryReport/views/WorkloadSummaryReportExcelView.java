@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
+import edu.ucdavis.dss.ipa.entities.enums.InstructorType;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,12 +55,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     }
 
     public void buildReportSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
-        List<WorkloadAssignment> assignedAssignments =
-            workloadAssignments.stream().filter(a -> !a.getName().isEmpty()).collect(Collectors.toList());
-        List<WorkloadAssignment> unassignedAssignments =
-            workloadAssignments.stream().filter(a -> a.getName().isEmpty()).collect(
-                Collectors.toList());
-
         Sheet worksheet = wb.createSheet("Workload Summary Report");
 
         List<Object> instructorSectionHeaders =
@@ -67,29 +62,28 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "Previous Enrollments (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note");
 
-        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType =
+        Map<InstructorType, List<WorkloadAssignment>> assignmentsByInstructorType =
             generateInstructorTypeAssignmentsMap(workloadAssignments);
 
-        Map<String, Integer> assignedTotals = buildCategoryTotalsMap();
-        Map<String, Integer> unassignedTotals = buildCategoryTotalsMap();
-        Map<String, Integer> placeholderTotals = buildCategoryTotalsMap();
+        Map<String, Number> assignedTotals = buildCategoryTotalsMap();
+        Map<String, Number> unassignedTotals = buildCategoryTotalsMap();
+        Map<String, Number> placeholderTotals = buildCategoryTotalsMap();
 
         int instructorSections = 0;
 
-        List<String> instructorDisplayOrder = Arrays.asList(
-            "Ladder Faculty",
-            "New Faculty Hire",
-            "Lecturer SOE",
-            "Continuing Lecturer",
-            "Emeriti - Recalled",
-            "Visiting Professor",
-            "Unit 18 Pre-Six Lecturer",
-            "Continuing Lecturer - Augmentation",
-            "Associate Professor",
-            "Instructor");
+        List<InstructorType> instructorDisplayOrder = Arrays.asList(
+            InstructorType.LADDER_FACULTY,
+            InstructorType.NEW_FACULTY_HIRE,
+            InstructorType.LECTURER_SOE,
+            InstructorType.CONTINUING_LECTURER,
+            InstructorType.EMERITI,
+            InstructorType.VISITING_PROFESSOR,
+            InstructorType.UNIT18_LECTURER,
+            InstructorType.CONTINUING_LECTURER_AUGMENTATION,
+            InstructorType.ASSOCIATE_INSTRUCTOR,
+            InstructorType.INSTRUCTOR);
 
-        for (String instructorType : instructorDisplayOrder) {
-
+        for (InstructorType instructorType : instructorDisplayOrder) {
             List<WorkloadAssignment> assignments = assignmentsByInstructorType.get(instructorType);
 
             if (assignments.size() == 0) {
@@ -103,7 +97,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             Row row = worksheet.createRow(worksheet.getLastRowNum() + offset);
 
             Cell cell = row.createCell(0);
-            cell.setCellValue(instructorType.toUpperCase());
+            cell.setCellValue(instructorType.getDescription().toUpperCase());
             cell.setCellType(CellType.STRING);
 
 //            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
@@ -127,77 +121,66 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             for (String name : instructorNames) {
                 List<WorkloadAssignment> instructorAssignments = assignmentsByInstructor.get(name);
 
-                Map<String, Integer> instructorSubtotals = buildCategoryTotalsMap();
+                // placeholder named instructor without assignments
+                if (instructorAssignments.stream().anyMatch(assignment -> assignment.getTermCode() == null)) {
+                    ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(instructorAssignments.get(0).getName()));
+                    continue;
+                }
+
+                Map<String, Number> instructorSubtotals = buildCategoryTotalsMap();
 
                 boolean namedRow = true;
                 for (WorkloadAssignment assignment : instructorAssignments) {
+                    long slotCensus = Optional.ofNullable(assignment.getCensus()).orElse(0L);
+                    int slotPlannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
+                    int slotUnits = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
+                    float slotSCH = Optional.ofNullable(assignment.getStudentCreditHours()).orElse(0f);
+                    Integer slotPreviousEnrollment =
+                        Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0);
+                    int slotLastOfferedEnrollment = Optional.ofNullable(assignment.getLastOfferedCensus()).map(
+                            str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", "")))
+                        .orElse(0);
+
                     if (assignment.getName().equals("TBD")) {
-                        placeholderTotals.put("instructorCount", placeholderTotals.get("instructorCount") + 1);
-                        placeholderTotals.put("assignments", placeholderTotals.get("assignments") + 1);
-                        placeholderTotals.put("census",
-                            placeholderTotals.get("census") + Optional.ofNullable(assignment.getCensus())
-                                .map(Long::intValue)
-                                .orElse(0));
-                        placeholderTotals.put("plannedSeats",
-                            placeholderTotals.get("plannedSeats") + assignment.getPlannedSeats());
-                        placeholderTotals.put("previousEnrollment", placeholderTotals.get("previousEnrollment") + 1);
-                        placeholderTotals.put("units",
-                            placeholderTotals.get("units") + Integer.parseInt(assignment.getUnits()));
-                        placeholderTotals.put("sch", placeholderTotals.get("sch") + 1);
+                        placeholderTotals.put("instructorCount", placeholderTotals.get("instructorCount").intValue() + 1);
+                        placeholderTotals.put("assignments", placeholderTotals.get("assignments").intValue() + 1);
+                        placeholderTotals.put("census", placeholderTotals.get("census").intValue() + slotCensus);
+                        placeholderTotals.put("plannedSeats", placeholderTotals.get("plannedSeats").intValue() + slotPlannedSeats);
+                        placeholderTotals.put("previousEnrollment", placeholderTotals.get("previousEnrollment").intValue() + 1);
+                        placeholderTotals.put("units", placeholderTotals.get("units").intValue() + slotUnits);
+                        placeholderTotals.put("sch", placeholderTotals.get("sch").floatValue() + slotSCH);
                     } else {
                         assignedTotals.put("instructorCount",
-                            assignedTotals.get("instructorCount") + (namedRow ? 1 : 0));
+                            assignedTotals.get("instructorCount").intValue() + (namedRow ? 1 : 0));
                         assignedTotals.put("assignments",
-                            assignedTotals.get("assignments") + (assignment.getOffering() != null ? 1 : 0));
-                        assignedTotals.put("census",
-                            assignedTotals.get("census") + Optional.ofNullable(assignment.getCensus())
-                                .map(Long::intValue)
-                                .orElse(0));
-                        assignedTotals.put("plannedSeats",
-                            assignedTotals.get("plannedSeats") +
-                                Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
-                        assignedTotals.put("previousEnrollment", assignedTotals.get("previousEnrollment") +
-                            Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
-                        assignedTotals.put("lastOfferedEnrollment", assignedTotals.get("lastOfferedEnrollment") +
-                            Optional.ofNullable(assignment.getLastOfferedCensus()).map(str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", ""))).orElse(0));
-                        assignedTotals.put("units",
-                            assignedTotals.get("units") +
-                                Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
-                        assignedTotals.put("sch", assignedTotals.get("sch") + 1);
+                            assignedTotals.get("assignments").intValue() + (assignment.getOffering() != null ? 1 : 0));
+                        assignedTotals.put("census", assignedTotals.get("census").intValue() + slotCensus);
+                        assignedTotals.put("plannedSeats", assignedTotals.get("plannedSeats").intValue() + slotPlannedSeats);
+                        assignedTotals.put("previousEnrollment", assignedTotals.get("previousEnrollment").intValue() +slotPreviousEnrollment);
+                        assignedTotals.put("lastOfferedEnrollment", assignedTotals.get("lastOfferedEnrollment").intValue() + slotLastOfferedEnrollment);
+                        assignedTotals.put("units", assignedTotals.get("units").intValue() + slotUnits);
+                        assignedTotals.put("sch", assignedTotals.get("sch").floatValue() + slotSCH);
                     }
 
-                    instructorSubtotals.put("assignments", instructorSubtotals.get("assignments") + 1);
-                    instructorSubtotals.put("census",
-                        instructorSubtotals.get("census") + Optional.ofNullable(assignment.getCensus())
-                            .map(Long::intValue)
-                            .orElse(0));
-                    instructorSubtotals.put("plannedSeats",
-                        instructorSubtotals.get("plannedSeats") +
-                            Optional.ofNullable(assignment.getPlannedSeats()).orElse(0));
-                    instructorSubtotals.put("previousEnrollment",
-                        Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
-                    instructorSubtotals.put("lastOfferedEnrollment",
-                        instructorSubtotals.get("lastOfferedEnrollment") +
-                        Optional.ofNullable(assignment.getLastOfferedCensus()).map(str -> Integer.parseInt(str.substring(0, str.indexOf(' ')).replaceAll("[^0-9]", ""))).orElse(0));
-                    instructorSubtotals.put("units",
-                        instructorSubtotals.get("units") +
-                            Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0));
-                    instructorSubtotals.put("sch", instructorSubtotals.get("sch") + 1);
+                    instructorSubtotals.put("assignments", instructorSubtotals.get("assignments").intValue() + 1);
+                    instructorSubtotals.put("census", instructorSubtotals.get("census").intValue() + slotCensus);
+                    instructorSubtotals.put("plannedSeats", instructorSubtotals.get("plannedSeats").intValue() + slotPlannedSeats);
+                    instructorSubtotals.put("previousEnrollment", Optional.ofNullable(assignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
+                    instructorSubtotals.put("lastOfferedEnrollment", instructorSubtotals.get("lastOfferedEnrollment").intValue() + slotLastOfferedEnrollment);
+                    instructorSubtotals.put("units", instructorSubtotals.get("units").intValue() + slotUnits);
+                    instructorSubtotals.put("sch", instructorSubtotals.get("sch").floatValue() + slotSCH);
 
                     ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, namedRow));
                     namedRow = false;
                 }
 
                 // instructor subtotal row
-                if (instructorAssignments.size() > 1) {
-                    ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
-                        "", "Totals", instructorSubtotals.get("assignments"), "",
-                        instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
-                        instructorSubtotals.get("previousEnrollment"),
-                        instructorSubtotals.get("lastOfferedEnrollment"),
-                        instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
-                }
-
+                ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
+                    "", "Totals", instructorSubtotals.get("assignments"), "",
+                    instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
+                    instructorSubtotals.get("previousEnrollment"),
+                    instructorSubtotals.get("lastOfferedEnrollment"),
+                    instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
             }
 
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
@@ -210,26 +193,24 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             Arrays.asList("Term", "Description", "Offering", "Enrollment / Seats", "Previous Enrollment", "Units",
                 "SCH"));
 
-        for (WorkloadAssignment unassignedAssignment : unassignedAssignments) {
-            int units;
-            try {
-                units = Integer.parseInt(unassignedAssignment.getUnits());
-            } catch (NumberFormatException e) {
-                units = 0;
-            }
+        // Unassigned section
+        List<WorkloadAssignment> unassignedAssignments =
+            workloadAssignments.stream().filter(a -> a.getName().isEmpty()).collect(
+                Collectors.toList());
 
-            unassignedTotals.put("assignments", unassignedTotals.get("assignments") + 1);
-            unassignedTotals.put("census",
-                unassignedTotals.get("census") + Optional.ofNullable(unassignedAssignment.getCensus())
-                    .map(Long::intValue)
-                    .orElse(0));
-            unassignedTotals.put("plannedSeats",
-                unassignedTotals.get("plannedSeats") + unassignedAssignment.getPlannedSeats());
-            unassignedTotals.put("previousEnrollment", unassignedTotals.get("previousEnrollment") +
-                Optional.ofNullable(unassignedAssignment.getPreviousYearCensus()).map(Long::intValue).orElse(0));
-            unassignedTotals.put("units",
-                unassignedTotals.get("units") + units);
-            unassignedTotals.put("sch", unassignedTotals.get("sch") + 1);
+        for (WorkloadAssignment unassignedAssignment : unassignedAssignments) {
+            Long slotCensus = Optional.ofNullable(unassignedAssignment.getCensus()).orElse(0L);
+            Integer slotPlannedSeats = unassignedAssignment.getPlannedSeats();
+            Integer slotUnits = Integer.parseInt(unassignedAssignment.getUnits());
+            Float slotSCH = Optional.ofNullable(unassignedAssignment.getStudentCreditHours()).orElse(0f);
+            Integer slotPreviousEnrollment = Optional.ofNullable(unassignedAssignment.getPreviousYearCensus()).map(Long::intValue).orElse(0);
+
+            unassignedTotals.put("assignments", unassignedTotals.get("assignments").intValue() + 1);
+            unassignedTotals.put("census", unassignedTotals.get("census").intValue() + slotCensus);
+            unassignedTotals.put("plannedSeats", unassignedTotals.get("plannedSeats").intValue() + slotPlannedSeats);
+            unassignedTotals.put("previousEnrollment", unassignedTotals.get("previousEnrollment").intValue() + slotPreviousEnrollment);
+            unassignedTotals.put("units", unassignedTotals.get("units").intValue() + slotUnits);
+            unassignedTotals.put("sch", unassignedTotals.get("sch").floatValue() + slotSCH);
 
             ExcelHelper.writeRowToSheet(worksheet, createUnassignedRow(unassignedAssignment));
         }
@@ -263,7 +244,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("Totals"));
 
-
         // header not on first row, need to offset
         Row row = worksheet.getRow(worksheet.getFirstRowNum() + 1);
         Iterator<Cell> cellIterator = row.cellIterator();
@@ -288,17 +268,19 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         ExcelHelper.expandHeaders(workbook);
     }
 
-    private Map<String, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(
+    private Map<InstructorType, List<WorkloadAssignment>> generateInstructorTypeAssignmentsMap(
         List<WorkloadAssignment> workloadAssignments) {
-        Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = buildInstructorTypesAssignmentsMap();
+        Map<InstructorType, List<WorkloadAssignment>> assignmentsByInstructorType =
+            buildInstructorTypesAssignmentsMap();
 
-        Set<String> instructorTypes = assignmentsByInstructorType.keySet();
+        Set<InstructorType> instructorTypes = assignmentsByInstructorType.keySet();
 
-        for (String instructorType : instructorTypes) {
+        for (InstructorType instructorType : instructorTypes) {
             List<WorkloadAssignment> instructorTypeAssignments =
-                workloadAssignments.stream().filter(assignment -> instructorType.equals(assignment.getInstructorType()))
+                workloadAssignments.stream()
+                    .filter(assignment -> instructorType.getDescription().equals(assignment.getInstructorType()))
                     .sorted(Comparator.comparing(WorkloadAssignment::getName)
-                        .thenComparing(WorkloadAssignment::getTermCode)).collect(
+                        .thenComparing(WorkloadAssignment::getTermCode).thenComparing(WorkloadAssignment::getDescription)).collect(
                         Collectors.toList());
 
             assignmentsByInstructorType.put(instructorType, instructorTypeAssignments);
@@ -311,6 +293,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         String name = namedRow ? assignment.getName() : "";
         String enrollmentSeats =
             assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
+        Integer units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(null);
 
         return Arrays.asList(
             name,
@@ -320,7 +303,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             enrollmentSeats,
             assignment.getPreviousYearCensus(),
             assignment.getLastOfferedCensus(),
-            assignment.getUnits(),
+            units,
             assignment.getStudentCreditHours(),
             assignment.getInstructorNote()
         );
@@ -341,9 +324,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         );
     }
 
-    private Map<String, Integer> buildCategoryTotalsMap() {
+    private Map<String, Number> buildCategoryTotalsMap() {
         // TODO: switch to enum
-        Map<String, Integer> categoryTotals = new HashMap<>();
+        Map<String, Number> categoryTotals = new HashMap<>();
         categoryTotals.put("instructorCount", 0);
         categoryTotals.put("assignments", 0);
         categoryTotals.put("census", 0);
@@ -355,18 +338,19 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         return categoryTotals;
     }
 
-    private Map<String, List<WorkloadAssignment>> buildInstructorTypesAssignmentsMap() {
-        Map<String, List<WorkloadAssignment>> instructorTypeAssignments = new HashMap<>();
-        instructorTypeAssignments.put("Ladder Faculty", null);
-        instructorTypeAssignments.put("New Faculty Hire", null);
-        instructorTypeAssignments.put("Lecturer SOE", null);
-        instructorTypeAssignments.put("Continuing Lecturer", null);
-        instructorTypeAssignments.put("Emeriti - Recalled", null);
-        instructorTypeAssignments.put("Visiting Professor", null);
-        instructorTypeAssignments.put("Unit 18 Pre-Six Lecturer", null);
-        instructorTypeAssignments.put("Continuing Lecturer - Augmentation", null);
-        instructorTypeAssignments.put("Associate Instructor", null);
-        instructorTypeAssignments.put("Instructor", null);
+    private Map<InstructorType, List<WorkloadAssignment>> buildInstructorTypesAssignmentsMap() {
+        Map<InstructorType, List<WorkloadAssignment>> instructorTypeAssignments = new HashMap<>();
+
+        instructorTypeAssignments.put(InstructorType.LADDER_FACULTY, null);
+        instructorTypeAssignments.put(InstructorType.NEW_FACULTY_HIRE, null);
+        instructorTypeAssignments.put(InstructorType.LECTURER_SOE, null);
+        instructorTypeAssignments.put(InstructorType.CONTINUING_LECTURER, null);
+        instructorTypeAssignments.put(InstructorType.EMERITI, null);
+        instructorTypeAssignments.put(InstructorType.VISITING_PROFESSOR, null);
+        instructorTypeAssignments.put(InstructorType.UNIT18_LECTURER, null);
+        instructorTypeAssignments.put(InstructorType.CONTINUING_LECTURER_AUGMENTATION, null);
+        instructorTypeAssignments.put(InstructorType.ASSOCIATE_INSTRUCTOR, null);
+        instructorTypeAssignments.put(InstructorType.INSTRUCTOR, null);
 
         return instructorTypeAssignments;
     }
