@@ -184,8 +184,23 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 placeholderTotals.get(Total.PREVIOUS_ENROLLMENT),
                 placeholderTotals.get(Total.UNITS),
                 placeholderTotals.get(Total.SCH)));
-
-        ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("Totals"));
+        ExcelHelper.writeRowToSheet(worksheet,
+            Arrays.asList("Totals",
+                assignedTotals.get(Total.INSTRUCTOR_COUNT).intValue() +
+                    unassignedTotals.get(Total.INSTRUCTOR_COUNT).intValue() +
+                    placeholderTotals.get(Total.INSTRUCTOR_COUNT).intValue(),
+                assignedTotals.get(Total.ASSIGNMENTS).intValue() + unassignedTotals.get(Total.ASSIGNMENTS).intValue() +
+                    placeholderTotals.get(Total.ASSIGNMENTS).intValue(),
+                assignedTotals.get(Total.PLANNED_SEATS).intValue() +
+                    unassignedTotals.get(Total.PLANNED_SEATS).intValue() +
+                    placeholderTotals.get(Total.PLANNED_SEATS).intValue(),
+                assignedTotals.get(Total.PREVIOUS_ENROLLMENT).intValue() +
+                    unassignedTotals.get(Total.PREVIOUS_ENROLLMENT).intValue() +
+                    placeholderTotals.get(Total.PREVIOUS_ENROLLMENT).intValue(),
+                assignedTotals.get(Total.UNITS).intValue() + unassignedTotals.get(Total.UNITS).intValue() +
+                    placeholderTotals.get(Total.UNITS).intValue(),
+                assignedTotals.get(Total.SCH).floatValue() + unassignedTotals.get(Total.SCH).floatValue() +
+                    placeholderTotals.get(Total.SCH).floatValue()));
 
         // header not on first row, need to offset
         Row row = worksheet.getRow(worksheet.getFirstRowNum() + 1);
