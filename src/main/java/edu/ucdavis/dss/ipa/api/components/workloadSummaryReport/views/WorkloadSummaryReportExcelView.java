@@ -69,8 +69,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         Map<String, Number> unassignedTotals = buildCategoryTotalsMap();
         Map<String, Number> placeholderTotals = buildCategoryTotalsMap();
 
-        int instructorSections = 0;
-
         List<InstructorType> instructorDisplayOrder = Arrays.asList(
             InstructorType.LADDER_FACULTY,
             InstructorType.NEW_FACULTY_HIRE,
@@ -83,6 +81,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             InstructorType.ASSOCIATE_INSTRUCTOR,
             InstructorType.INSTRUCTOR);
 
+        boolean firstInstructorTypeSection = true;
+
         for (InstructorType instructorType : instructorDisplayOrder) {
             List<WorkloadAssignment> assignments = assignmentsByInstructorType.get(instructorType);
 
@@ -90,36 +90,21 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 continue;
             }
 
-            int offset = 0;
-            if (instructorSections != 0) {
-                offset = 1;
-            }
-            Row row = worksheet.createRow(worksheet.getLastRowNum() + offset);
+            Row row = worksheet.createRow(worksheet.getLastRowNum() + (firstInstructorTypeSection ? 0 : 1));
 
             Cell cell = row.createCell(0);
             cell.setCellValue(instructorType.getDescription().toUpperCase());
             cell.setCellType(CellType.STRING);
 
-//            ExcelHelper.setSheetHeader(worksheet, Collections.singletonList(instructorType.toUpperCase()));
-
             ExcelHelper.writeRowToSheet(worksheet, instructorSectionHeaders);
-
-
-            Map<String, List<WorkloadAssignment>> assignmentsByInstructor = new HashMap<>();
 
             List<String> instructorNames =
                 assignments.stream().map(WorkloadAssignment::getName).distinct().sorted().collect(Collectors.toList());
 
             for (String name : instructorNames) {
-                if (!assignmentsByInstructor.containsKey(name)) {
-                    assignmentsByInstructor.put(name,
-                        assignments.stream().filter(a -> a.getName().equals(name)).collect(
-                            Collectors.toList()));
-                }
-            }
-
-            for (String name : instructorNames) {
-                List<WorkloadAssignment> instructorAssignments = assignmentsByInstructor.get(name);
+                List<WorkloadAssignment> instructorAssignments =
+                    assignments.stream().filter(a -> a.getName().equals(name)).collect(
+                        Collectors.toList());
 
                 // placeholder named instructor without assignments
                 if (instructorAssignments.stream().anyMatch(assignment -> assignment.getTermCode() == null)) {
@@ -185,7 +170,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
 
-            instructorSections++;
+            firstInstructorTypeSection = false;
         }
 
         ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList("UNASSIGNED COURSES"));
