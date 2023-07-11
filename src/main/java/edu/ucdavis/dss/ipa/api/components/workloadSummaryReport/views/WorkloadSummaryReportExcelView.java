@@ -213,7 +213,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     }
 
     private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment) {
-        updateTotals(totalsMap, assignment, true, true);
+        updateTotals(totalsMap, assignment, true);
     }
     private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean namedRow) {
         int instructorCount = namedRow ? 1 : 0;
