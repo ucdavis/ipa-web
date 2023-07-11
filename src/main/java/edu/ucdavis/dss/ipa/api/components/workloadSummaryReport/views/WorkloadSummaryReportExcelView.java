@@ -119,9 +119,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                     if (assignment.getName().equals("TBD")) {
                         updateTotals(placeholderTotals, assignment);
                     } else {
-                        boolean incrementAssignmentCount = assignment.getOffering() != null;
-
-                        updateTotals(assignedTotals, assignment, namedRow, incrementAssignmentCount);
+                        updateTotals(assignedTotals, assignment, namedRow);
                     }
 
                     updateTotals(instructorSubtotals, assignment);
@@ -202,9 +200,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment) {
         updateTotals(totalsMap, assignment, true, true);
     }
-    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean incrementInstructor, boolean incrementAssignment) {
-        int instructorCount = incrementInstructor ? 1 : 0;
-        int assignmentCount = incrementAssignment ? 1 : 0;
+    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean namedRow) {
+        int instructorCount = namedRow ? 1 : 0;
+        int assignmentCount = assignment.getOffering() != null ? 1 : 0;
         long census = Optional.ofNullable(assignment.getCensus()).orElse(0L);
         int plannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
         int units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
