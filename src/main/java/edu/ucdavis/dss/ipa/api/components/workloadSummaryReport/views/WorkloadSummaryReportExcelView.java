@@ -290,7 +290,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         Map<String, List<WorkloadAssignment>> assignmentsByInstructorType = buildInstructorTypesAssignmentsMap();
 
         Set<String> instructorTypes = assignmentsByInstructorType.keySet();
-        workloadAssignments.sort(Comparator.comparing(WorkloadAssignment::getName));
 
         for (String instructorType : instructorTypes) {
             List<WorkloadAssignment> instructorTypeAssignments =
