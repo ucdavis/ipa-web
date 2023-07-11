@@ -189,12 +189,15 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 }
 
                 // instructor subtotal row
-                ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
-                    "", "Totals", instructorSubtotals.get("assignments"), "",
-                    instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
-                    instructorSubtotals.get("previousEnrollment"),
-                    instructorSubtotals.get("lastOfferedEnrollment"),
-                    instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
+                if (instructorAssignments.size() > 1) {
+                    ExcelHelper.writeRowToSheet(worksheet, Arrays.asList(
+                        "", "Totals", instructorSubtotals.get("assignments"), "",
+                        instructorSubtotals.get("census") + " / " + instructorSubtotals.get("plannedSeats"),
+                        instructorSubtotals.get("previousEnrollment"),
+                        instructorSubtotals.get("lastOfferedEnrollment"),
+                        instructorSubtotals.get("units"), instructorSubtotals.get("sch")));
+                }
+
             }
 
             ExcelHelper.writeRowToSheet(worksheet, Collections.singletonList(""));
