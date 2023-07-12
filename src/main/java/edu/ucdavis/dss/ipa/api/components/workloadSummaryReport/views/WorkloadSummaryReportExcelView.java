@@ -215,8 +215,8 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
     private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment) {
         updateTotals(totalsMap, assignment, true);
     }
-    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean namedRow) {
-        int instructorCount = namedRow ? 1 : 0;
+    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean firstInstructorRow) {
+        int instructorCount = firstInstructorRow ? 1 : 0;
         int assignmentCount = assignment.getOffering() != null ? 1 : 0;
         long census = Optional.ofNullable(assignment.getCensus()).orElse(0L);
         int plannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
