@@ -117,12 +117,13 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 boolean namedRow = true;
                 for (WorkloadAssignment assignment : instructorAssignments) {
                     if (assignment.getName().equals("TBD")) {
-                        updateTotals(placeholderTotals, assignment);
+                        updateTotals(placeholderTotals, assignment, true, false);
                     } else {
-                        updateTotals(assignedTotals, assignment, namedRow);
+                        updateTotals(assignedTotals, assignment, namedRow, false);
                     }
 
-                    updateTotals(instructorSubtotals, assignment);
+                    // count non-course assignments for instructor sub-totals
+                    updateTotals(instructorSubtotals, assignment, namedRow, true);
 
                     ExcelHelper.writeRowToSheet(worksheet, createInstructorRow(assignment, namedRow));
                     namedRow = false;
@@ -153,7 +154,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 Collectors.toList());
 
         for (WorkloadAssignment unassignedAssignment : unassignedAssignments) {
-            updateTotals(unassignedTotals, unassignedAssignment);
+            updateTotals(unassignedTotals, unassignedAssignment, true, false);
 
             ExcelHelper.writeRowToSheet(worksheet, createUnassignedRow(unassignedAssignment));
         }
@@ -168,19 +169,22 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                 "SCH"));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("Assigned", assignedTotals.get(Total.INSTRUCTOR_COUNT),
-                assignedTotals.get(Total.ASSIGNMENTS), assignedTotals.get(Total.PLANNED_SEATS),
+                assignedTotals.get(Total.ASSIGNMENTS),
+                assignedTotals.get(Total.CENSUS) + " / " + assignedTotals.get(Total.PLANNED_SEATS),
                 assignedTotals.get(Total.PREVIOUS_ENROLLMENT),
                 assignedTotals.get(Total.UNITS),
                 assignedTotals.get(Total.SCH)));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("Unassigned", 0,
-                unassignedTotals.get(Total.ASSIGNMENTS), unassignedTotals.get(Total.PLANNED_SEATS),
+                unassignedTotals.get(Total.ASSIGNMENTS),
+                unassignedTotals.get(Total.CENSUS) + " / " + unassignedTotals.get(Total.PLANNED_SEATS),
                 unassignedTotals.get(Total.PREVIOUS_ENROLLMENT),
                 unassignedTotals.get(Total.UNITS),
                 unassignedTotals.get(Total.SCH)));
         ExcelHelper.writeRowToSheet(worksheet,
             Arrays.asList("TBD Instructors", placeholderTotals.get(Total.INSTRUCTOR_COUNT),
-                placeholderTotals.get(Total.ASSIGNMENTS), placeholderTotals.get(Total.PLANNED_SEATS),
+                placeholderTotals.get(Total.ASSIGNMENTS),
+                placeholderTotals.get(Total.CENSUS) + " / " + placeholderTotals.get(Total.PLANNED_SEATS),
                 placeholderTotals.get(Total.PREVIOUS_ENROLLMENT),
                 placeholderTotals.get(Total.UNITS),
                 placeholderTotals.get(Total.SCH)));
@@ -191,7 +195,10 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
                     placeholderTotals.get(Total.INSTRUCTOR_COUNT).intValue(),
                 assignedTotals.get(Total.ASSIGNMENTS).intValue() + unassignedTotals.get(Total.ASSIGNMENTS).intValue() +
                     placeholderTotals.get(Total.ASSIGNMENTS).intValue(),
-                assignedTotals.get(Total.PLANNED_SEATS).intValue() +
+                assignedTotals.get(Total.CENSUS).intValue() +
+                    unassignedTotals.get(Total.CENSUS).intValue() +
+                    placeholderTotals.get(Total.CENSUS).intValue() + " / " +
+                    assignedTotals.get(Total.PLANNED_SEATS).intValue() +
                     unassignedTotals.get(Total.PLANNED_SEATS).intValue() +
                     placeholderTotals.get(Total.PLANNED_SEATS).intValue(),
                 assignedTotals.get(Total.PREVIOUS_ENROLLMENT).intValue() +
@@ -212,12 +219,9 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         }
     }
 
-    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment) {
-        updateTotals(totalsMap, assignment, true);
-    }
-    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean firstInstructorRow) {
-        int instructorCount = firstInstructorRow ? 1 : 0;
-        int assignmentCount = assignment.getOffering() != null ? 1 : 0;
+    private void updateTotals(Map<Total, Number> totalsMap, WorkloadAssignment assignment, boolean includeInstructor, boolean includeAssignment) {
+        int instructorCount = includeInstructor ? 1 : 0;
+        int assignmentCount = includeAssignment ? 1 : assignment.getOffering() == null ? 0 : 1;
         long census = Optional.ofNullable(assignment.getCensus()).orElse(0L);
         int plannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
         int units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
