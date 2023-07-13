@@ -224,7 +224,15 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         int assignmentCount = includeAssignment ? 1 : assignment.getOffering() == null ? 0 : 1;
         long census = Optional.ofNullable(assignment.getCensus()).orElse(0L);
         int plannedSeats = Optional.ofNullable(assignment.getPlannedSeats()).orElse(0);
-        int units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
+
+        int units;
+        try {
+            units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
+        } catch (NumberFormatException e) {
+            // variable unit courses have "1-4" as value, swallow exception and use 0
+            units = 0;
+        }
+
         float sch = Optional.ofNullable(assignment.getStudentCreditHours()).orElse(0f);
         long previousEnrollment =
             Optional.ofNullable(assignment.getPreviousYearCensus()).orElse(0L);
