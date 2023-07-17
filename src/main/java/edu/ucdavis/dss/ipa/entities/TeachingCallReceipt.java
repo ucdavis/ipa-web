@@ -23,8 +23,8 @@ public class TeachingCallReceipt implements Serializable {
 
 	private Instructor instructor;
 	private Boolean isDone = false, showUnavailabilities = true, showSeats = true, hideNonCourseOptions = false, locked = false;
-	private boolean sendEmail;
-	private Date lastContactedAt, nextContactAt, dueDate, updatedAt;
+	private boolean sendEmail, lockAfterDueDate;
+	private Date lastContactedAt, nextContactAt, dueDate, unlockedAt, updatedAt;
 	private Schedule schedule;
 	private String termsBlob, message;
 	private List<TeachingCallComment> teachingCallComments = new ArrayList<>();
@@ -200,6 +200,22 @@ public class TeachingCallReceipt implements Serializable {
 
 	public void setLocked(Boolean locked) {
 		this.locked = locked;
+	}
+
+	public boolean getLockAfterDueDate() {
+		return lockAfterDueDate;
+	}
+
+	public void setLockAfterDueDate(boolean lockAfterDueDate) {
+		this.lockAfterDueDate = lockAfterDueDate;
+	}
+
+	public Date getUnlockedAt() {
+		return unlockedAt;
+	}
+
+	public void setUnlockedAt(Date unlockedAt) {
+		this.unlockedAt = unlockedAt;
 	}
 
 	public Date getUpdatedAt() {

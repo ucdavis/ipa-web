@@ -27,4 +27,6 @@ public interface TeachingCallReceiptService {
 	List<TeachingCallReceipt> createOrUpdateMany(List<Long> instructorIds, TeachingCallReceipt teachingCallReceipt);
 
 	boolean delete(Long id);
+
+	void lockExpiredReceipts();
 }

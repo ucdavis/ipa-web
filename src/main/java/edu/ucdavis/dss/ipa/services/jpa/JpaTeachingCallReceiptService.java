@@ -2,6 +2,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -262,6 +264,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			teachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
 			teachingCallReceipt.setShowSeats(teachingCallReceiptDTO.getShowSeats());
 			teachingCallReceipt.setHideNonCourseOptions((teachingCallReceiptDTO.getHideNonCourseOptions()));
+			teachingCallReceipt.setLockAfterDueDate((teachingCallReceiptDTO.getLockAfterDueDate()));
 			teachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
 			teachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
 
@@ -288,5 +291,37 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	public boolean delete(Long id) {
 		this.teachingCallReceiptRepository.delete(id);
 		return true;
+	}
+
+	/**
+	 * Apply lock status to teaching calls set to lock after due date or unlocked for more than seven days.
+	 */
+	@Override
+	@Transactional
+	public void lockExpiredReceipts() {
+		LocalDate currentDate = LocalDate.now();
+
+		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrue();
+
+		for (TeachingCallReceipt receipt : expiredReceipts) {
+			LocalDate dueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (currentDate.isAfter(dueDate)) {
+				receipt.setLocked(true);
+				this.teachingCallReceiptRepository.save(receipt);
+			}
+		}
+
+		List<TeachingCallReceipt> unlockedReceipts = this.teachingCallReceiptRepository.findByUnlockedAtNotNull();
+
+		for (TeachingCallReceipt receipt : unlockedReceipts) {
+			LocalDate aWeekAfterDueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
+
+			if (currentDate.isAfter(aWeekAfterDueDate)) {
+				receipt.setLocked(true);
+				receipt.setUpdatedAt(null);
+				this.teachingCallReceiptRepository.save(receipt);
+			}
+		}
 	}
 }

@@ -153,6 +153,7 @@ public class TeachingCallStatusViewController {
         receiptDTO.setShowUnavailabilities(addInstructorsDTO.getShowUnavailabilities());
         receiptDTO.setShowSeats(addInstructorsDTO.getShowSeats());
         receiptDTO.setHideNonCourseOptions(addInstructorsDTO.getHideNonCourseOptions());
+        receiptDTO.setLockAfterDueDate(addInstructorsDTO.getLockAfterDueDate());
 
         if (addInstructorsDTO.getSendEmail() == true) {
             receiptDTO.setMessage(addInstructorsDTO.getMessage());
@@ -201,7 +202,7 @@ public class TeachingCallStatusViewController {
         private List<Long> instructorIds;
         private Date dueDate;
         private String message, termsBlob;
-        private Boolean sendEmail, showUnavailabilities, showSeats, hideNonCourseOptions;
+        private Boolean sendEmail, showUnavailabilities, showSeats, hideNonCourseOptions, lockAfterDueDate;
 
         public List<Long> getInstructorIds() {
             return instructorIds;
@@ -255,6 +256,14 @@ public class TeachingCallStatusViewController {
             this.hideNonCourseOptions = hideNonCourseOptions;
         }
 
+        public Boolean getLockAfterDueDate() {
+            return lockAfterDueDate;
+        }
+
+        public void setLockAfterDueDate(Boolean lockAfterDueDate) {
+            this.lockAfterDueDate = lockAfterDueDate;
+        }
+
         public String getTermsBlob() {
             return termsBlob;
         }
@@ -304,6 +313,10 @@ public class TeachingCallStatusViewController {
 
             if (node.has("hideNonCourseOptions")) {
                 addInstructorsDTO.setHideNonCourseOptions(node.get("hideNonCourseOptions").booleanValue());
+            }
+
+            if (node.has("lockAfterDueDate")) {
+                addInstructorsDTO.setLockAfterDueDate(node.get("lockAfterDueDate").booleanValue());
             }
 
             if (node.has("sendEmail")) {
