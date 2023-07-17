@@ -101,6 +101,7 @@ public class InstructorSupportCallResponse implements Serializable {
         this.termCode = termCode;
     }
 
+    @Column(name = "StartDate", insertable = false)
     public Date getStartDate() {
         return startDate;
     }
