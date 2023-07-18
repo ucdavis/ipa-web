@@ -17,12 +17,11 @@ import org.springframework.stereotype.Service;
 @Profile({"production", "staging", "development"})
 public class UpdateTeachingCallTask {
     private static boolean runningTask = false; /* flag to avoid multiple concurrent tasks */
-    final long SIX_HOURS_IN_MILLISECONDS = 21600000;
     private final Logger log = LoggerFactory.getLogger("UpdateTeachingCallTask");
     @Inject
     TeachingCallReceiptService teachingCallReceiptService;
 
-    @Scheduled(fixedDelay = SIX_HOURS_IN_MILLISECONDS)
+    @Scheduled(cron = "0 0 0 * * *", zone = "America/Los_Angeles")
     public void updateTeachingCallStatus() {
         if (runningTask) {
             return;
