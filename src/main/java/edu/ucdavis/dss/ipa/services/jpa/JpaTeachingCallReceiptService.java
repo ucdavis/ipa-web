@@ -315,9 +315,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		List<TeachingCallReceipt> unlockedReceipts = this.teachingCallReceiptRepository.findByUnlockedAtNotNull();
 
 		for (TeachingCallReceipt receipt : unlockedReceipts) {
-			LocalDate aWeekAfterUnlocked = receipt.getUnlockedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
+			LocalDate oneWeekAfterUnlocked = receipt.getUnlockedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
 
-			if (currentDate.isAfter(aWeekAfterUnlocked)) {
+			if (currentDate.isAfter(oneWeekAfterUnlocked)) {
 				receipt.setLocked(true);
 				receipt.setUnlockedAt(null);
 				this.teachingCallReceiptRepository.save(receipt);
