@@ -306,8 +306,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		for (TeachingCallReceipt receipt : expiredReceipts) {
 			LocalDate dueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-			System.out.println("Due date for receipt id" + receipt.getId() + " / " + dueDate);
-
 			if (currentDate.isAfter(dueDate)) {
 				receipt.setLocked(true);
 				this.teachingCallReceiptRepository.save(receipt);
