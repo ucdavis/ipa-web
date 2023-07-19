@@ -300,7 +300,6 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Transactional
 	public void lockExpiredReceipts() {
 		LocalDate currentDate = LocalDate.now();
-		System.out.println("currentDate: " + currentDate);
 
 		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
 
@@ -322,7 +321,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 			if (currentDate.isAfter(aWeekAfterUnlocked)) {
 				receipt.setLocked(true);
-				receipt.setUpdatedAt(null);
+				receipt.setUnlockedAt(null);
 				this.teachingCallReceiptRepository.save(receipt);
 			}
 		}
