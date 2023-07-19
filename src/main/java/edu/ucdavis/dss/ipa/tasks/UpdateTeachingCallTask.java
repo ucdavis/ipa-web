@@ -28,6 +28,8 @@ public class UpdateTeachingCallTask {
         }
         runningTask = true;
 
+        log.debug("updateTeachingCallStatus() started");
+
         teachingCallReceiptService.lockExpiredReceipts();
 
         runningTask = false;

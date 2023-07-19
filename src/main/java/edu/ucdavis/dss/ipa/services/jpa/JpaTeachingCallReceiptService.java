@@ -300,11 +300,14 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Transactional
 	public void lockExpiredReceipts() {
 		LocalDate currentDate = LocalDate.now();
+		System.out.println("currentDate: " + currentDate);
 
-		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrue();
+		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
 
 		for (TeachingCallReceipt receipt : expiredReceipts) {
 			LocalDate dueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			System.out.println("Due date for receipt id" + receipt.getId() + " / " + dueDate);
 
 			if (currentDate.isAfter(dueDate)) {
 				receipt.setLocked(true);
@@ -315,9 +318,9 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		List<TeachingCallReceipt> unlockedReceipts = this.teachingCallReceiptRepository.findByUnlockedAtNotNull();
 
 		for (TeachingCallReceipt receipt : unlockedReceipts) {
-			LocalDate aWeekAfterDueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
+			LocalDate aWeekAfterUnlocked = receipt.getUnlockedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
 
-			if (currentDate.isAfter(aWeekAfterDueDate)) {
+			if (currentDate.isAfter(aWeekAfterUnlocked)) {
 				receipt.setLocked(true);
 				receipt.setUpdatedAt(null);
 				this.teachingCallReceiptRepository.save(receipt);

@@ -10,7 +10,7 @@ public interface TeachingCallReceiptRepository extends CrudRepository<TeachingCa
 
   TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId);
 
-    List<TeachingCallReceipt> findByLockedFalseAndLockAfterDueDateTrue();
+    List<TeachingCallReceipt> findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
 
     List<TeachingCallReceipt> findByUnlockedAtNotNull();
 }

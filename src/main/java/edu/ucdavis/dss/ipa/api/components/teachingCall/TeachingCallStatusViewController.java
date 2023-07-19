@@ -194,6 +194,7 @@ public class TeachingCallStatusViewController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         teachingCallReceipt.setLocked(false);
+        teachingCallReceipt.setUnlockedAt(new Date());
         return teachingCallReceiptService.save(teachingCallReceipt);
     }
 
