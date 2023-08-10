@@ -301,6 +301,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	public void lockExpiredReceipts() {
 		LocalDate currentDate = LocalDate.now();
 
+		// ignore receipts that were manually unlocked
 		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
 
 		for (TeachingCallReceipt receipt : expiredReceipts) {
@@ -317,6 +318,8 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		for (TeachingCallReceipt receipt : unlockedReceipts) {
 			LocalDate oneWeekAfterUnlocked = receipt.getUnlockedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
 
+			// Lock will reactivate the day after 7 days of being unlocked
+			// e.g. if unlocked on 7/1, it will lock again if current date is 7/9
 			if (currentDate.isAfter(oneWeekAfterUnlocked)) {
 				receipt.setLocked(true);
 				receipt.setUnlockedAt(null);
