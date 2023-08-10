@@ -271,4 +271,12 @@ public class Term implements Serializable {
 
 		return getRegistrarName(termCode)  + " " + getYear(termCode);
 	}
+
+	@Transient
+	public static String getPreviousYearTermCode(String termCode) {
+		if (termCode == null) throw new IllegalArgumentException("termCode cannot be null");
+		if (termCode.length() != 6) throw new IllegalArgumentException("Cannot get previousYearTermCode if termCode is short");
+
+		return Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
+	}
 }

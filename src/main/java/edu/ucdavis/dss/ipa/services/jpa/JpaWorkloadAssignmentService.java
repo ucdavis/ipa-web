@@ -176,11 +176,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                 workloadAssignments.add(wa);
             } else {
                 for (TeachingAssignment assignment : scheduleAssignments) {
-                    String termCode = assignment.getTermCode();
-                    String previousYearTermCode =
-                        Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
-
-                    String courseDescription = null, offering = null, lastOfferedCensus = null, unit = null;
+                    String termCode = null, previousYearTermCode = null, courseDescription = null, offering = null, lastOfferedCensus = null, unit = null;
                     Integer plannedSeats = null;
                     Long censusCount = null;
                     Long previousYearCensus = null;
@@ -191,6 +187,8 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                         SectionGroup sectionGroup = assignment.getSectionGroup();
                         Course course = sectionGroup.getCourse();
 
+                        termCode = sectionGroup.getTermCode();
+                        previousYearTermCode = Term.getPreviousYearTermCode(termCode);
                         courseDescription = course.getSubjectCode() + " " + course.getCourseNumber();
                         offering = course.getSequencePattern();
                         unit = sectionGroup.getDisplayUnits();
@@ -240,6 +238,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                             }
                         }
                     } else {
+                        termCode = assignment.getTermCode();
                         courseDescription = assignment.getDescription();
                     }
 
@@ -272,7 +271,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
         for (TeachingAssignment teachingAssignment : unnamedAssignments) {
             SectionGroup sectionGroup = teachingAssignment.getSectionGroup();
             Course course = sectionGroup.getCourse();
-            String termCode = teachingAssignment.getTermCode();
+            String termCode = sectionGroup.getTermCode();
                     long censusCount = 0;
                     long previousYearCensus = 0;
                     Float studentCreditHour = null;
