@@ -290,6 +290,13 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         String enrollmentSeats =
             assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
         Integer units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(null);
+        long previousYearCensus = 0L;
+        float studentCreditHours = 0f;
+
+        if (assignment.getOffering() != null) {
+            previousYearCensus = assignment.getPreviousYearCensus() != null ? assignment.getPreviousYearCensus() : 0L;
+            studentCreditHours = assignment.getStudentCreditHours() != null ? assignment.getStudentCreditHours() : 0f;
+        }
 
         return Arrays.asList(
             name,
@@ -297,10 +304,10 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
             assignment.getDescription(),
             assignment.getOffering(),
             enrollmentSeats,
-            assignment.getPreviousYearCensus(),
+            previousYearCensus,
             assignment.getLastOfferedCensus(),
             units,
-            assignment.getStudentCreditHours(),
+            studentCreditHours,
             assignment.getInstructorNote()
         );
     }
