@@ -289,7 +289,14 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         String name = namedRow ? assignment.getName() : "";
         String enrollmentSeats =
             assignment.getCensus() != null ? assignment.getCensus() + " / " + assignment.getPlannedSeats() : "";
-        Integer units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(null);
+
+        int units;
+        try {
+            units = Optional.ofNullable(assignment.getUnits()).map(Integer::parseInt).orElse(0);
+        } catch (NumberFormatException e) {
+            // variable unit courses have "1-4" as value, swallow exception and use 0
+            units = 0;
+        }
         long previousYearCensus = 0L;
         float studentCreditHours = 0f;
 
