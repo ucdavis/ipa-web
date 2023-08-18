@@ -416,6 +416,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
                 wa.setOffering(course.getSequencePattern());
                 wa.setCensus(censusCount);
                 wa.setPlannedSeats(sectionGroup.getPlannedSeats());
+                wa.setStudentCreditHours(studentCreditHour);
                 wa.setPreviousYearCensus(previousYearCensus);
                 wa.setLastOfferedCensus(lastOfferedCensus);
                 wa.setUnits(sectionGroup.getDisplayUnits());
