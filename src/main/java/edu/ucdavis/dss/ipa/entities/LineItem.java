@@ -215,7 +215,7 @@ public class LineItem extends BaseEntity {
         if (termCode != null) {
             return Term.getRegistrarName(termCode);
         } else {
-            return "";
+            return "All";
         }
     }
 
