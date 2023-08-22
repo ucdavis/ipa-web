@@ -169,6 +169,16 @@ public class LineItem extends BaseEntity {
         }
     }
 
+    @JsonProperty("lineItemTypeId")
+    @Transient
+    public long getLineItemTypeId() {
+        if(lineItemType != null) {
+            return lineItemType.getId();
+        } else {
+            return 0;
+        }
+    }
+
     @JsonProperty("teachingAssignmentId")
     @Transient
     public Long getTeachingAssignmentIdIfExists() {
