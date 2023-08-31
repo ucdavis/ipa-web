@@ -301,7 +301,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	public void lockExpiredReceipts() {
 		LocalDate currentDate = LocalDate.now();
 
-		// ignore receipts that were manually unlocked
+		// ignore receipts that were unlocked by a user (i.e. UnlockedAt is not null)
 		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
 
 		for (TeachingCallReceipt receipt : expiredReceipts) {
