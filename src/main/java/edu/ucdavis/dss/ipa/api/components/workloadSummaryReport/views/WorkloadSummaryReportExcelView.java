@@ -45,7 +45,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
         Sheet worksheet = wb.createSheet("Raw Assignments Data");
 
         ExcelHelper.setSheetHeader(worksheet,
-            Arrays.asList("Year", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
+            Arrays.asList("Year", "Snapshot", "Department", "Instructor Type", "Name", "Term", "Course Type", "Description",
                 "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
                 "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
 

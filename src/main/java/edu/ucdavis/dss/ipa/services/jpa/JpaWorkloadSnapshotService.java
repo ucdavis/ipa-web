@@ -45,7 +45,7 @@ public class JpaWorkloadSnapshotService implements WorkloadSnapshotService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         Instant timestamp = Instant.now();
         ZonedDateTime PacificTime = timestamp.atZone(ZoneId.of("America/Los_Angeles"));
-        snapshot.setName(String.format(formatter.format(PacificTime)));
+        snapshot.setName(budgetScenario.getName());
 
         snapshot.setBudgetScenario(budgetScenario);
         snapshot.setWorkgroup(workgroup);

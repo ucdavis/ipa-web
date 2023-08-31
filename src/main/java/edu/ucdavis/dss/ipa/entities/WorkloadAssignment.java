@@ -174,12 +174,15 @@ public class WorkloadAssignment extends BaseEntity {
 
     @Transient
     public List<Object> toList() {
+        String snapshotName = this.getWorkloadSnapshot() != null ? this.getWorkloadSnapshot().getName() : "Live Data";
+
         return Arrays.asList(
             this.year == 0 ? "" : this.year + "-" + String.valueOf(this.year + 1).substring(2, 4),
+            snapshotName,
             this.department,
             this.instructorType.toUpperCase(),
             this.name,
-            Term.getFullName(termCode),
+            Term.getFullName(this.termCode),
             this.courseType,
             this.description,
             this.offering,
