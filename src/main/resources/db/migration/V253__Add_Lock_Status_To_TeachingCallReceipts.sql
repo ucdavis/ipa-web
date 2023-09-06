@@ -1,0 +1,4 @@
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `Locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `LockAfterDueDate` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `UnlockedAt` TIMESTAMP NULL;
+ALTER TABLE `TeachingCallReceipts` ADD COLUMN `UpdatedAt` TIMESTAMP NULL;

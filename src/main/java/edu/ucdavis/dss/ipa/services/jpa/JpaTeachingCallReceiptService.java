@@ -2,6 +2,8 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -47,6 +49,11 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	public TeachingCallReceipt findOneById(Long id) {
 		return this.teachingCallReceiptRepository.findOne(id);
+	}
+
+	@Override
+	public TeachingCallReceipt findOneByScheduleIdAndInstructorId(Long scheduleId, Long instructorId) {
+		return  this.teachingCallReceiptRepository.findByInstructorIdAndScheduleId(instructorId, scheduleId);
 	}
 
 	/**
@@ -257,6 +264,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 			teachingCallReceipt.setShowUnavailabilities(teachingCallReceiptDTO.getShowUnavailabilities());
 			teachingCallReceipt.setShowSeats(teachingCallReceiptDTO.getShowSeats());
 			teachingCallReceipt.setHideNonCourseOptions((teachingCallReceiptDTO.getHideNonCourseOptions()));
+			teachingCallReceipt.setLockAfterDueDate((teachingCallReceiptDTO.getLockAfterDueDate()));
 			teachingCallReceipt.setTermsBlob(teachingCallReceiptDTO.getTermsBlob());
 			teachingCallReceipt.setDueDate(teachingCallReceiptDTO.getDueDate());
 
@@ -268,6 +276,12 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 		return receipts;
 	}
 
+	@Transactional
+	@Override
+	public List<TeachingCallReceipt> saveAll(List<TeachingCallReceipt> teachingCallReceipts) {
+		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.save(teachingCallReceipts);
+	}
+
 	private TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId) {
 		return this.teachingCallReceiptRepository.findByInstructorIdAndScheduleId(instructorId, scheduleId);
 	}
@@ -277,5 +291,40 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	public boolean delete(Long id) {
 		this.teachingCallReceiptRepository.delete(id);
 		return true;
+	}
+
+	/**
+	 * Apply lock status to teaching calls set to lock after due date or unlocked for more than seven days.
+	 */
+	@Override
+	@Transactional
+	public void lockExpiredReceipts() {
+		LocalDate currentDate = LocalDate.now();
+
+		// ignore receipts that were unlocked by a user (i.e. UnlockedAt is not null)
+		List<TeachingCallReceipt> expiredReceipts = this.teachingCallReceiptRepository.findByLockedFalseAndLockAfterDueDateTrueAndUnlockedAtNull();
+
+		for (TeachingCallReceipt receipt : expiredReceipts) {
+			LocalDate dueDate = receipt.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+			if (currentDate.isAfter(dueDate)) {
+				receipt.setLocked(true);
+				this.teachingCallReceiptRepository.save(receipt);
+			}
+		}
+
+		List<TeachingCallReceipt> unlockedReceipts = this.teachingCallReceiptRepository.findByUnlockedAtNotNull();
+
+		for (TeachingCallReceipt receipt : unlockedReceipts) {
+			LocalDate oneWeekAfterUnlocked = receipt.getUnlockedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(7);
+
+			// Lock will reactivate the day after 7 days of being unlocked
+			// e.g. if unlocked on 7/1, it will lock again if current date is 7/9
+			if (currentDate.isAfter(oneWeekAfterUnlocked)) {
+				receipt.setLocked(true);
+				receipt.setUnlockedAt(null);
+				this.teachingCallReceiptRepository.save(receipt);
+			}
+		}
 	}
 }
