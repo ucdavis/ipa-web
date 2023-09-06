@@ -23,8 +23,9 @@ public class LineItem extends BaseEntity {
     private long id;
     private BudgetScenario budgetScenario;
     private BigDecimal amount = new BigDecimal(0);
-    private String description, notes, documentNumber, accountNumber;
+    private String description, notes, documentNumber, accountNumber, termCode;
     private LineItemCategory lineItemCategory;
+    private LineItemType lineItemType;
     private List<LineItemComment> lineItemComments = new ArrayList<>();
     private Boolean hidden = false, locked = false;
     private TeachingAssignment teachingAssignment;
@@ -123,6 +124,25 @@ public class LineItem extends BaseEntity {
         this.lineItemComments = lineItemComments;
     }
 
+    public String getTermCode() {
+        return termCode;
+    }
+
+    public void setTermCode(String termCode) {
+        this.termCode = termCode;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LineItemTypeId")
+    @JsonIgnore
+    public LineItemType getLineItemType() {
+        return lineItemType;
+    }
+
+    public void setLineItemType(LineItemType lineItemType) {
+        this.lineItemType = lineItemType;
+    }
+
     @NotNull
     @JsonProperty
     public Boolean getHidden() {
@@ -149,6 +169,16 @@ public class LineItem extends BaseEntity {
         }
     }
 
+    @JsonProperty("lineItemTypeId")
+    @Transient
+    public long getLineItemTypeId() {
+        if(lineItemType != null) {
+            return lineItemType.getId();
+        } else {
+            return 0;
+        }
+    }
+
     @JsonProperty("teachingAssignmentId")
     @Transient
     public Long getTeachingAssignmentIdIfExists() {
@@ -166,6 +196,26 @@ public class LineItem extends BaseEntity {
             return budgetScenario.getId();
         } else {
             return 0;
+        }
+    }
+
+    @JsonProperty("typeDescription")
+    @Transient
+    public String getLineItemTypeDescription() {
+        if (lineItemType != null) {
+            return lineItemType.getDescription();
+        } else {
+            return "";
+        }
+    }
+
+    @JsonProperty("termDescription")
+    @Transient
+    public String getTermDescription() {
+        if (termCode != null) {
+            return Term.getRegistrarName(termCode);
+        } else {
+            return "All";
         }
     }
 

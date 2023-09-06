@@ -92,11 +92,12 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Reader Cost",
            "Support Cost",
            "Instructor Cost",
-           "Total Cost"
+           "Total Cost",
+           "Course Type"
         ));
 
         Sheet fundsSheet = workbook.createSheet("Funds");
-        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Type", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
+        fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Category", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
         Sheet expensesSheet = workbook.createSheet("Other Costs");
         expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
@@ -234,7 +235,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                         readerCost,
                         supportCost,
                         instructorCost,
-                        supportCost + instructorCost)
+                        supportCost + instructorCost,
+                        getCourseType(sectionGroupCost)
+                    )
                 );
 
                 scheduleCostSheet = ExcelHelper.writeRowToSheet(
@@ -252,10 +255,16 @@ public class BudgetExcelView extends AbstractXlsxView {
                     comments.add(lineItemComment.getComment());
                 }
                 minimumNoteColumnWidth = Math.max(minimumNoteColumnWidth, (lineItem.getNotes() == null ? 0 : lineItem.getNotes().length()));
+
+                String termCode = lineItem.getTermCode() != null ? Term.getRegistrarName(lineItem.getTermCode()) : "";
+                String type = lineItem.getLineItemType() != null ? lineItem.getLineItemType().getDescription() : "";
+
                 List<Object> cellValues = Arrays.asList(
                         year,
                         budgetScenarioExcelView.getWorkgroup().getName(),
                         scenarioName,
+                        termCode,
+                        type,
                         lineItem.getLineItemCategory().getDescription(),
                         lineItem.getDescription(),
                         lineItem.getNotes(),
@@ -560,5 +569,17 @@ public class BudgetExcelView extends AbstractXlsxView {
 
     private String yearToAcademicYear(long year) {
         return year + "-" + String.valueOf(year + 1).substring(2,4);
+    }
+
+    private String getCourseType(SectionGroupCost sectionGroupCost) {
+        int courseNumbers = Integer.parseInt(sectionGroupCost.getCourseNumber().replaceAll("[^\\d.]", ""));
+
+        if (courseNumbers < 100) {
+            return "Lower";
+        } else if (courseNumbers >= 200) {
+            return "Grad";
+        } else {
+            return "Upper";
+        }
     }
 }
