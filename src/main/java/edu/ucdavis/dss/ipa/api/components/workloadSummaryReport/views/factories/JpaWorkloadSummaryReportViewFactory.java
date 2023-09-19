@@ -11,10 +11,13 @@ import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -85,6 +88,54 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
             workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
         }
+
+        System.out.println("Finished gathering data, writing to excel");
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        WorkloadSummaryReportExcelView.buildRawAssignmentsSheet(workbook, workloadAssignments);
+        ExcelHelper.expandHeaders(workbook);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            workbook.write(bos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return CompletableFuture.completedFuture(bos.toByteArray());
+    }
+
+    @Override
+    @Transactional
+    public CompletableFuture<byte[]> createWorkloadSummaryReportBytes(Map<Long, List<Long>> departmentSnapshots, long year) {
+        Instant start = Instant.now();
+
+        Set<Map.Entry<Long, List<Long>>> entries = departmentSnapshots.entrySet();
+
+        List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
+        System.out.println("Generating workload report for " + entries.size() + " departments");
+
+        int count = 0;
+        for (Map.Entry<Long, List<Long>> department : entries) {
+            ++count;
+
+            long workgroupId = department.getKey();
+            System.out.println(count + ". Generating for workgroupId: " + workgroupId);
+
+            if (department.getValue().size() == 1) {
+                // only 1 snapshot selected, include live data
+                workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
+            }
+
+
+            for (long snapshotId : department.getValue()) {
+                workloadAssignments.addAll(workloadAssignmentService.findByWorkloadSnapshotId(snapshotId));
+            }
+        }
+
+        Instant end = Instant.now();
+        System.out.println("Finished gathering assignments in " + Duration.between(start, end).toMinutes() + " minutes");
 
         System.out.println("Finished gathering data, writing to excel");
 

@@ -1,22 +1,26 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.WorkloadSummaryReportView;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories.WorkloadSummaryReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
+import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
+import edu.ucdavis.dss.ipa.entities.WorkloadSnapshot;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.security.UrlEncryptor;
 import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
+import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import edu.ucdavis.dss.ipa.utilities.S3Service;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
@@ -31,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,6 +48,8 @@ public class WorkloadSummaryReportController {
     WorkloadSummaryReportViewFactory workloadSummaryReportViewFactory;
     @Inject
     WorkloadAssignmentService workloadAssignmentService;
+    @Inject
+    WorkloadSnapshotService workloadSnapshotService;
 
     @Inject
     S3Service s3Service;
@@ -68,6 +75,52 @@ public class WorkloadSummaryReportController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         return workloadAssignmentService.generateWorkloadAssignments(workgroupId, year);
+    }
+
+    @RequestMapping(value = "/api/years/{year}/workloadSnapshots", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Map<String, List<WorkloadSnapshot>> getWorkloadSnapshotsByYear(@PathVariable long year,
+                                                                          HttpServletResponse httpResponse) {
+        User currentUser = userService.getOneByLoginId(authorization.getLoginId());
+        List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
+        Map<String, List<WorkloadSnapshot>> departmentSnapshots = new HashMap<>();
+
+        for (Workgroup userWorkgroup : userWorkgroups) {
+            List<WorkloadSnapshot> workloadSnapshots =
+                workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year);
+
+            departmentSnapshots.put(userWorkgroup.getName(), workloadSnapshots);
+        }
+
+        return departmentSnapshots;
+    }
+
+    @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/downloadMultiple", method = RequestMethod.POST)
+    public HttpStatus downloadMultipleSnapshots(@PathVariable long year,
+                                                @RequestBody Map<Long, List<Long>> departmentSnapshots,
+                                                HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+        throws ParseException {
+
+        List<WorkloadAssignment> assignments = new ArrayList<>();
+        for (Map.Entry<Long, List<Long>> department : departmentSnapshots.entrySet()) {
+            Long workgroupId = department.getKey();
+            List<Long> snapshotIds = department.getValue();
+
+            if (snapshotIds.size() == 1) {
+                assignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
+                // include Live Data assignments
+            }
+
+            for (Long snapshotId : snapshotIds) {
+                WorkloadSnapshot snapshot = workloadSnapshotService.findById(snapshotId);
+                assignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year, snapshot));
+            }
+            // get snapshot assignments
+//         Long workgroupId = department.k
+//         System.out.println(department);
+        }
+
+        return HttpStatus.OK;
     }
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupIds}/years/{year}/generateExcel", method = RequestMethod.GET)
@@ -119,11 +172,13 @@ public class WorkloadSummaryReportController {
         }
     }
 
-    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateMultiple", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateMultiple", method = RequestMethod.POST)
     public ResponseEntity generateMultipleDepartments(@PathVariable long workgroupId,
-                                                      @PathVariable long year) {
+                                                      @PathVariable long year,
+                                                      @RequestBody Optional<Map<Long, List<Long>>> departmentSnapshots
+                                                      ) {
         authorizer.isDeansOffice();
-        final String fileName = year + "_Workload_Summary_Report.xlsx";
+        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report_TEST") + ".xlsx";
 
         // overwrite with empty file to update modified time
         s3Service.upload(fileName, new byte[0]);
@@ -132,6 +187,18 @@ public class WorkloadSummaryReportController {
             authorization.getUserRoles().stream().filter(ur -> ur.getRole().getName().equals("academicPlanner")).map(
                 UserRole::getWorkgroupIdentification).mapToLong(Long::longValue).toArray();
 
+        // making snapshots for all departments
+//        Instant start = Instant.now();
+//        for (long wid : workgroupIds) {
+//            List<BudgetScenario> scenarios = budgetScenarioService.findbyWorkgroupIdAndYear(wid, year);
+//
+//            int lastIndex = scenarios.size() - 1;
+//            BudgetScenario latestScenario = scenarios.get(lastIndex);
+//
+//            workloadSnapshotService.create(wid, latestScenario.getId());
+//        }
+//        Instant end = Instant.now();
+//        System.out.println("Generated snapshots in " + Duration.between(start, end).toMinutes() + " minutes");
 
         User user = userService.getOneByLoginId(authorization.getRealUserLoginId());
         String downloadUrl = ipaUrlFrontend + "/summary/" + workgroupId + "/" + year + "?mode=download";
@@ -139,7 +206,11 @@ public class WorkloadSummaryReportController {
         CompletableFuture.supplyAsync(
                 () -> {
                     try {
-                        return workloadSummaryReportViewFactory.createWorkloadSummaryReportBytes(workgroupIds, year);
+                        if (departmentSnapshots.isPresent()) {
+                            return workloadSummaryReportViewFactory.createWorkloadSummaryReportBytes(departmentSnapshots.get(), year);
+                        } else {
+                            return workloadSummaryReportViewFactory.createWorkloadSummaryReportBytes(workgroupIds, year);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;
@@ -170,11 +241,18 @@ public class WorkloadSummaryReportController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/downloadMultiple", method = RequestMethod.POST)
-    public ResponseEntity downloadMultipleDepartments(@PathVariable long workgroupId, @PathVariable long year) {
+    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/downloadMultiple/{file}", method = RequestMethod.POST)
+    public ResponseEntity downloadMultipleDepartments(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String file) {
         authorizer.isDeansOffice();
 
-        byte[] bytes = s3Service.download(year + "_Workload_Summary_Report.xlsx");
+        String filename = null;
+        if (file.equals("workloadSummaries")) {
+            filename = year + "_Workload_Summary_Report.xlsx";
+        } else if (file.equals("workloadSnapshots")) {
+            filename = year + "_Workload_Snapshots.xlsx";
+        }
+
+        byte[] bytes = s3Service.download(filename);
         ByteArrayResource resource = new ByteArrayResource(bytes);
 
         return ResponseEntity.ok()
@@ -232,17 +310,30 @@ public class WorkloadSummaryReportController {
     }
 
     @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/download/status", method = RequestMethod.GET, produces = "application/json")
-    public Map<String, Object> getDownloadStatus(@PathVariable long year) {
+    public Map<String, Map<String, Long>> getDownloadStatus(@PathVariable long year) {
         authorizer.isDeansOffice();
 
-        ObjectMetadata metadata = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
-        if (metadata != null) {
-            Map<String, Object> md = new HashMap<>();
-            md.put("lastModified", metadata.getLastModified().getTime());
-            md.put("contentLength", metadata.getContentLength());
+        Map<String, Map<String, Long>> status = new HashMap<>();
 
-            return md;
+        ObjectMetadata workloadSummaries = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
+        ObjectMetadata workloadSnapshots = s3Service.getMetadata(year + "_Workload_Snapshots.xlsx");
+        if (workloadSummaries != null) {
+            Map<String, Long> md = new HashMap<>();
+
+            md.put("lastModified", workloadSummaries.getLastModified().getTime());
+            md.put("contentLength", workloadSummaries.getContentLength());
+
+            status.put("workloadSummaries", md);
         }
-        return null;
+
+        if (workloadSnapshots != null) {
+            Map<String, Long> md = new HashMap<>();
+            md.put("lastModified", workloadSnapshots.getLastModified().getTime());
+            md.put("contentLength", workloadSnapshots.getContentLength());
+
+            status.put("workloadSnapshots", md);
+        }
+
+        return status.isEmpty() ? null : status;
     }
 }

@@ -1,13 +1,16 @@
 package edu.ucdavis.dss.ipa.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "WorkloadSnapshots")
-public class WorkloadSnapshot {
+public class WorkloadSnapshot extends BaseEntity {
     private long id;
     private String name;
     private BudgetScenario budgetScenario;
@@ -58,12 +61,24 @@ public class WorkloadSnapshot {
         this.workgroup = workgroup;
     }
 
+    @JsonProperty("workgroupId")
+    @Transient
+    public Long getWorkgroupIdentification() {
+        return this.workgroup != null ? this.workgroup.getId() : null;
+    }
+
     public long getYear() {
         return year;
     }
 
     public void setYear(long year) {
         this.year = year;
+    }
+
+    @JsonProperty("createdOn")
+    @Transient
+    public Date getCreatedOn() {
+        return createdAt;
     }
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "workloadSnapshot", cascade = {CascadeType.ALL})
