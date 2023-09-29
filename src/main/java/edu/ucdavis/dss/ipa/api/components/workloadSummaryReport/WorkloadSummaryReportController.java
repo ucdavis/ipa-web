@@ -79,7 +79,7 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/years/{year}/workloadSnapshots", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Map<String, Map<String, Object>> getDepartmentsWorkloadSnapshotsByYear(@PathVariable long year,
+    public Map<String, Map<String, Object>> getUserWorkgroupsSnapshots(@PathVariable long year,
                                                                           HttpServletResponse httpResponse) {
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
@@ -99,34 +99,6 @@ public class WorkloadSummaryReportController {
         }
 
         return departmentSnapshots;
-    }
-
-    @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/downloadMultiple", method = RequestMethod.POST)
-    public HttpStatus downloadMultipleSnapshots(@PathVariable long year,
-                                                @RequestBody Map<Long, List<Long>> departmentSnapshots,
-                                                HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-        throws ParseException {
-
-        List<WorkloadAssignment> assignments = new ArrayList<>();
-        for (Map.Entry<Long, List<Long>> department : departmentSnapshots.entrySet()) {
-            Long workgroupId = department.getKey();
-            List<Long> snapshotIds = department.getValue();
-
-            if (snapshotIds.size() == 1) {
-                assignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
-                // include Live Data assignments
-            }
-
-            for (Long snapshotId : snapshotIds) {
-                WorkloadSnapshot snapshot = workloadSnapshotService.findById(snapshotId);
-                assignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year, snapshot));
-            }
-            // get snapshot assignments
-//         Long workgroupId = department.k
-//         System.out.println(department);
-        }
-
-        return HttpStatus.OK;
     }
 
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupIds}/years/{year}/generateExcel", method = RequestMethod.GET)

@@ -9,10 +9,6 @@ import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
 import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
 import org.springframework.stereotype.Service;
@@ -42,22 +38,12 @@ public class JpaWorkloadSnapshotService implements WorkloadSnapshotService {
 
         WorkloadSnapshot snapshot = new WorkloadSnapshot();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        Instant timestamp = Instant.now();
-        ZonedDateTime PacificTime = timestamp.atZone(ZoneId.of("America/Los_Angeles"));
         snapshot.setName(budgetScenario.getName());
-
         snapshot.setBudgetScenario(budgetScenario);
         snapshot.setWorkgroup(workgroup);
         snapshot.setYear(year);
-
         snapshot = workloadSnapshotRepository.save(snapshot);
-
-        // generate workload assignments for workgroup and year
         List<WorkloadAssignment> workloadAssignments = workloadAssignmentService.generateWorkloadAssignments(workgroupId, year, snapshot);
-//        workloadAssignments = workloadAssignmentService.saveAll(workloadAssignments);
-
-        // set snapshot id for assignments
         snapshot.setWorkloadAssignments(workloadAssignments);
 
         return workloadSnapshotRepository.save(snapshot);
