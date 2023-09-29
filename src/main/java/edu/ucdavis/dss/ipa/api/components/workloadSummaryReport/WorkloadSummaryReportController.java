@@ -79,17 +79,23 @@ public class WorkloadSummaryReportController {
 
     @RequestMapping(value = "/api/years/{year}/workloadSnapshots", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Map<String, List<WorkloadSnapshot>> getWorkloadSnapshotsByYear(@PathVariable long year,
+    public Map<String, Map<String, Object>> getDepartmentsWorkloadSnapshotsByYear(@PathVariable long year,
                                                                           HttpServletResponse httpResponse) {
         User currentUser = userService.getOneByLoginId(authorization.getLoginId());
         List<Workgroup> userWorkgroups = currentUser.getWorkgroups();
-        Map<String, List<WorkloadSnapshot>> departmentSnapshots = new HashMap<>();
+        Map<String, Map<String, Object>> departmentSnapshots = new HashMap<>();
 
         for (Workgroup userWorkgroup : userWorkgroups) {
-            List<WorkloadSnapshot> workloadSnapshots =
-                workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year);
+            List<WorkloadSnapshot> workloadSnapshots = new ArrayList<>();
+            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year - 1));
+            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year));
 
-            departmentSnapshots.put(userWorkgroup.getName(), workloadSnapshots);
+            Map<String, Object> department = new HashMap<>();
+            department.put("name", userWorkgroup.getName());
+            department.put("workgroupId", userWorkgroup.getId());
+            department.put("snapshots", workloadSnapshots);
+
+            departmentSnapshots.put(userWorkgroup.getName(), department);
         }
 
         return departmentSnapshots;
@@ -178,7 +184,7 @@ public class WorkloadSummaryReportController {
                                                       @RequestBody Optional<Map<Long, List<Long>>> departmentSnapshots
                                                       ) {
         authorizer.isDeansOffice();
-        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report_TEST") + ".xlsx";
+        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + ".xlsx";
 
         // overwrite with empty file to update modified time
         s3Service.upload(fileName, new byte[0]);
@@ -186,19 +192,6 @@ public class WorkloadSummaryReportController {
         long[] workgroupIds =
             authorization.getUserRoles().stream().filter(ur -> ur.getRole().getName().equals("academicPlanner")).map(
                 UserRole::getWorkgroupIdentification).mapToLong(Long::longValue).toArray();
-
-        // making snapshots for all departments
-//        Instant start = Instant.now();
-//        for (long wid : workgroupIds) {
-//            List<BudgetScenario> scenarios = budgetScenarioService.findbyWorkgroupIdAndYear(wid, year);
-//
-//            int lastIndex = scenarios.size() - 1;
-//            BudgetScenario latestScenario = scenarios.get(lastIndex);
-//
-//            workloadSnapshotService.create(wid, latestScenario.getId());
-//        }
-//        Instant end = Instant.now();
-//        System.out.println("Generated snapshots in " + Duration.between(start, end).toMinutes() + " minutes");
 
         User user = userService.getOneByLoginId(authorization.getRealUserLoginId());
         String downloadUrl = ipaUrlFrontend + "/summary/" + workgroupId + "/" + year + "?mode=download";
