@@ -33,12 +33,8 @@ public class CasEntryPoint implements AuthenticationEntryPoint {
     public String getReturnUrl() { return returnUrl; }
 
     public String getCasLoginUrl() {
-        try {
-            return casLoginUrl + (casLoginUrl.contains("?") ? "&" : "?")
-                    + ServiceProperties.DEFAULT_CAS_SERVICE_PARAMETER + "=" + UriUtils.encode(getReturnUrl(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return casLoginUrl + (casLoginUrl.contains("?") ? "&" : "?")
+                + ServiceProperties.DEFAULT_CAS_SERVICE_PARAMETER + "=" + UriUtils.encode(getReturnUrl(), "UTF-8");
     }
 
     @Override
