@@ -97,7 +97,7 @@ public class JpaSupportAssignmentService implements SupportAssignmentService {
 
     @Override
     public void delete(Long instructionalSupportAssignmentId) {
-        this.supportAssignmentRepository.delete(instructionalSupportAssignmentId);
+        this.supportAssignmentRepository.deleteById(instructionalSupportAssignmentId);
     }
 
     @Override

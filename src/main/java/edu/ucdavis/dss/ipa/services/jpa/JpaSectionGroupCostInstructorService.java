@@ -101,7 +101,7 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
     @Override
     public void delete(long sectionGroupCostInstructorId){
-        this.sectionGroupCostInstructorRepository.delete(sectionGroupCostInstructorId);
+        this.sectionGroupCostInstructorRepository.deleteById(sectionGroupCostInstructorId);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class JpaSyncActionService implements SyncActionService {
 
 	@Override
 	public void delete(Long id) {
-		syncActionRepository.delete(id);
+		syncActionRepository.deleteById(id);
 	}
 
 }

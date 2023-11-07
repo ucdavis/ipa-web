@@ -47,7 +47,7 @@ public class JpaStudentSupportCallResponseService implements StudentSupportCallR
 
     @Override
     public void delete(long studentInstructionalSupportCallResponseId) {
-        studentSupportCallResponseRepository.delete(studentInstructionalSupportCallResponseId);
+        studentSupportCallResponseRepository.deleteById(studentInstructionalSupportCallResponseId);
     }
 
     @Override

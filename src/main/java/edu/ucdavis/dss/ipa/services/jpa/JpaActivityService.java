@@ -66,7 +66,7 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	public void deleteActivityById(Long id) {
-		activityRepository.delete(id);
+		activityRepository.deleteById(id);
 	}
 
 	@Override
