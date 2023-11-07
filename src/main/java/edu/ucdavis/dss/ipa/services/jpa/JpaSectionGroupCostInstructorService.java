@@ -75,7 +75,7 @@ public class JpaSectionGroupCostInstructorService implements SectionGroupCostIns
 
     @Override
     public SectionGroupCostInstructor findById(long sectionGroupCostInstructorId) {
-        return this.sectionGroupCostInstructorRepository.findById(sectionGroupCostInstructorId);
+        return this.sectionGroupCostInstructorRepository.findById(sectionGroupCostInstructorId).orElse(null);
     }
 
     @Override

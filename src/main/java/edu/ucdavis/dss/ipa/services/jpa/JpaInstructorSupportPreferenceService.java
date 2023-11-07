@@ -160,6 +160,6 @@ public class JpaInstructorSupportPreferenceService implements InstructorSupportP
     }
 
     private InstructorSupportPreference findById(long preferenceId) {
-        return this.instructorSupportPreferenceRepository.findById(preferenceId);
+        return this.instructorSupportPreferenceRepository.findById(preferenceId).orElse(null);
     }
 }

@@ -8,9 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SectionRepository extends CrudRepository<Section, Long> {
-
-	Section findById(Long id);
-
     /**
      * Finds sections that do have sections and those sections have the
      * visible flag set to true or Null

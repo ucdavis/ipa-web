@@ -35,7 +35,7 @@ public class JpaInstructorSupportCallResponseService implements InstructorSuppor
 
     @Override
     public InstructorSupportCallResponse findOneById(long instructorInstructionalSupportCallResponseId) {
-        return instructorSupportCallResponseRepository.findById(instructorInstructionalSupportCallResponseId);
+        return instructorSupportCallResponseRepository.findById(instructorInstructionalSupportCallResponseId).orElse(null);
     }
 
     @Override

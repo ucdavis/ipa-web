@@ -33,7 +33,7 @@ public class JpaSectionGroupService implements SectionGroupService {
 	@Transactional
 	//@PreAuthorize("hasAnyRole('admin','academicCoordinator')")
 	public SectionGroup getOneById(Long id) {
-		return sectionGroupRepository.findOne(id);
+		return sectionGroupRepository.findById(id).orElse(null);
 	}
 
 	@Override

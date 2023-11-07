@@ -26,7 +26,7 @@ public class JpaExpenseItemService implements ExpenseItemService {
 
     @Override
     public ExpenseItem findById(Long expenseItemId) {
-        return expenseItemRepository.findById(expenseItemId);
+        return expenseItemRepository.findById(expenseItemId).orElse(null);
     }
 
     @Override

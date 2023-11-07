@@ -10,8 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SectionGroupCostInstructorRepository extends CrudRepository<SectionGroupCostInstructor, Long> {
-    SectionGroupCostInstructor findById(long sectionGroupCostInstructorId);
-
     @Query( " SELECT DISTINCT sgci" +
             " FROM SectionGroupCostInstructor sgci, SectionGroupCost sgc, BudgetScenario bs, Budget b" +
             " WHERE b.id = :budgetId" +

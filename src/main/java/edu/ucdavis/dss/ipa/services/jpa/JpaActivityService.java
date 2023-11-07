@@ -60,7 +60,7 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	public Activity findOneById(Long id) {
-		return this.activityRepository.findOne(id);
+		return this.activityRepository.findById(id).orElse(null);
 	}
 
 	@Override

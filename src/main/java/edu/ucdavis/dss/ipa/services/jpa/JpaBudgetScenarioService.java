@@ -124,7 +124,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     @Transactional
     @Override
     public BudgetScenario createFromExisting(Long workgroupId, Long scenarioId, String name, boolean copyFunds) {
-        BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId);
+        BudgetScenario originalBudgetScenario = budgetScenarioRepository.findById(scenarioId).orElse(null);
 
         if (originalBudgetScenario == null) {
             return null;
@@ -165,7 +165,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
     }
 
     public BudgetScenario createBudgetRequestScenario(long workgroupId, long scenarioId) {
-        BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId);
+        BudgetScenario originalScenario = budgetScenarioRepository.findById(scenarioId).orElse(null);
 
         if (originalScenario == null) { return null; }
 
@@ -223,7 +223,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public BudgetScenario approveBudgetRequestScenario(long workgroupId, long scenarioId) {
-        BudgetScenario approvedScenario = budgetScenarioRepository.findById(scenarioId);
+        BudgetScenario approvedScenario = budgetScenarioRepository.findById(scenarioId).orElse(null);
 
         // only one budget request should be approved at a time
         List<BudgetScenario> budgetRequestScenarios = budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId,
@@ -370,7 +370,7 @@ public class JpaBudgetScenarioService implements BudgetScenarioService {
 
     @Override
     public BudgetScenario findById(long budgetScenarioId) {
-        return budgetScenarioRepository.findById(budgetScenarioId);
+        return budgetScenarioRepository.findById(budgetScenarioId).orElse(null);
     }
 
     @Override
