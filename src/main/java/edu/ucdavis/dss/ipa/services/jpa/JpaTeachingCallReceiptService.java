@@ -279,7 +279,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Transactional
 	@Override
 	public List<TeachingCallReceipt> saveAll(List<TeachingCallReceipt> teachingCallReceipts) {
-		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.save(teachingCallReceipts);
+		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.saveAll(teachingCallReceipts);
 	}
 
 	private TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId) {
