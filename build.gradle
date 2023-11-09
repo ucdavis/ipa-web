@@ -17,9 +17,9 @@ checkstyle {
     configFile file("checkstyle.xml")
 }
 
-jar {
+bootJar {
     archiveBaseName = 'ipa-api'
-    archiveVersion =  '0.1.0'
+    archiveVersion = '0.1.0'
 }
 
 repositories {
