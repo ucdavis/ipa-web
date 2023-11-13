@@ -14,7 +14,7 @@ public class JpaSupportAppointmentService implements SupportAppointmentService {
 
     @Override
     public void delete(Long supportAppointmentId) {
-        this.supportAppointmentRepository.delete(supportAppointmentId);
+        this.supportAppointmentRepository.deleteById(supportAppointmentId);
     }
 
     @Override

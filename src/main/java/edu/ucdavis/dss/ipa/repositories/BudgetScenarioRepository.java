@@ -8,8 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BudgetScenarioRepository extends CrudRepository<BudgetScenario, Long> {
-    BudgetScenario findById(Long id);
-
     BudgetScenario findByBudgetIdAndName(long id, String budgetScenarioName);
 
     @Query( " SELECT DISTINCT bs" +

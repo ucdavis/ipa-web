@@ -33,7 +33,7 @@ public class JpaScheduleService implements ScheduleService {
 
 	@Override
 	public Schedule findById(long id) {
-		return this.scheduleRepository.findOne(id);
+		return this.scheduleRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class JpaScheduleService implements ScheduleService {
 	@Override
 	@Transactional
 	public Workgroup getWorkgroupByScheduleId(Long scheduleId) {
-		Schedule schedule = this.scheduleRepository.findOne(scheduleId);
+		Schedule schedule = this.scheduleRepository.findById(scheduleId).orElse(null);
 		if (schedule != null) {
 			Workgroup d = schedule.getWorkgroup();
 			Hibernate.initialize(d);

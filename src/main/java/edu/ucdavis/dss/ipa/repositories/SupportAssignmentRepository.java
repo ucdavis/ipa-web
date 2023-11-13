@@ -7,6 +7,4 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface SupportAssignmentRepository extends CrudRepository<SupportAssignment, Long> {
-
-    SupportAssignment findById(Long id);
 }

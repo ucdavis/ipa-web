@@ -19,6 +19,6 @@ public class JpaLineItemTypeService implements LineItemTypeService {
 
     @Override
     public LineItemType findById(long lineItemTypeId) {
-        return LineItemTypeRepository.findById(lineItemTypeId);
+        return LineItemTypeRepository.findById(lineItemTypeId).orElse(null);
     }
 }

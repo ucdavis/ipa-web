@@ -22,7 +22,7 @@ public class JpaLineItemCategoryService implements LineItemCategoryService {
 
     @Override
     public LineItemCategory findById(long lineItemCategoryId) {
-        return lineItemCategoryRepository.findById(lineItemCategoryId);
+        return lineItemCategoryRepository.findById(lineItemCategoryId).orElse(null);
     }
 
     @Override

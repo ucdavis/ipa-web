@@ -22,7 +22,7 @@ public class JpaLineItemService implements LineItemService {
 
     @Override
     public LineItem findById(Long lineItemId) {
-        return lineItemRepository.findById(lineItemId);
+        return lineItemRepository.findById(lineItemId).orElse(null);
     }
 
     @Override

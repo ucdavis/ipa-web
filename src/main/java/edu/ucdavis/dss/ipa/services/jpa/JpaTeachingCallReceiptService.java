@@ -48,7 +48,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 
 	@Override
 	public TeachingCallReceipt findOneById(Long id) {
-		return this.teachingCallReceiptRepository.findOne(id);
+		return this.teachingCallReceiptRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -279,7 +279,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Transactional
 	@Override
 	public List<TeachingCallReceipt> saveAll(List<TeachingCallReceipt> teachingCallReceipts) {
-		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.save(teachingCallReceipts);
+		return (List<TeachingCallReceipt>) teachingCallReceiptRepository.saveAll(teachingCallReceipts);
 	}
 
 	private TeachingCallReceipt findByInstructorIdAndScheduleId(Long instructorId, long scheduleId) {
@@ -289,7 +289,7 @@ public class JpaTeachingCallReceiptService implements TeachingCallReceiptService
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		this.teachingCallReceiptRepository.delete(id);
+		this.teachingCallReceiptRepository.deleteById(id);
 		return true;
 	}
 

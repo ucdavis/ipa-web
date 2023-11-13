@@ -21,7 +21,7 @@ public class JpaInstructorTypeService implements InstructorTypeService {
 
     @Override
     public InstructorType findById(Long instructorTypeId) {
-        return instructorTypeRepository.findById(instructorTypeId);
+        return instructorTypeRepository.findById(instructorTypeId).orElse(null);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class JpaUserService implements UserService {
 
 	@Override
 	public User getOneById(Long id) {
-		return this.userRepository.findById(id);
+		return this.userRepository.findById(id).orElse(null);
 	}
 
 	private <E> List<E> toList(Iterable<E> i)

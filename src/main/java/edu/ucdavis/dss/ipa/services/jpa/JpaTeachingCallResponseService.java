@@ -34,12 +34,12 @@ public class JpaTeachingCallResponseService implements TeachingCallResponseServi
 
 	@Override
 	public TeachingCallResponse getOneById(Long id) {
-		return this.teachingCallResponseRepository.findOne(id);
+		return this.teachingCallResponseRepository.findById(id).orElse(null);
 	}
 
 	@Override
 	public void delete(Long id) {
-		this.teachingCallResponseRepository.delete(id);
+		this.teachingCallResponseRepository.deleteById(id);
 	}
 
 	@Override

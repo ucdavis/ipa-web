@@ -54,17 +54,17 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         }
 
         if (originalSectionGroupCost.getInstructorType() != null) {
-            InstructorType instructorType = instructorTypeRepository.findById(originalSectionGroupCost.getInstructorType().getId());
+            InstructorType instructorType = instructorTypeRepository.findById(originalSectionGroupCost.getInstructorType().getId()).orElse(null);
             originalSectionGroupCost.setInstructorType(instructorType);
         }
 
         if (originalSectionGroupCost.getInstructor() != null) {
-            Instructor instructor = instructorRepository.findById(originalSectionGroupCost.getInstructor().getId());
+            Instructor instructor = instructorRepository.findById(originalSectionGroupCost.getInstructor().getId()).orElse(null);
             sectionGroupCost.setInstructor(instructor);
         }
 
         if (originalSectionGroupCost.getReasonCategory() != null) {
-            ReasonCategory reasonCategory = reasonCategoryRepository.findById(originalSectionGroupCost.getReasonCategory().getId());
+            ReasonCategory reasonCategory = reasonCategoryRepository.findById(originalSectionGroupCost.getReasonCategory().getId()).orElse(null);
             sectionGroupCost.setReasonCategory(reasonCategory);
         }
 
@@ -135,7 +135,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
     @Override
     public SectionGroupCost findById(long sectionGroupCostId) {
-        return this.sectionGroupCostRepository.findById(sectionGroupCostId);
+        return this.sectionGroupCostRepository.findById(sectionGroupCostId).orElse(null);
     }
 
     @Override
@@ -158,11 +158,11 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
         originalSectionGroupCost.setReason(sectionGroupCostDTO.getReason());
         originalSectionGroupCost.setDisabled(sectionGroupCostDTO.isDisabled());
 
-        originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()));
-        originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()));
-        originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()));
+        originalSectionGroupCost.setInstructor(instructorRepository.findById(sectionGroupCostDTO.getInstructorIdentification()).orElse(null));
+        originalSectionGroupCost.setOriginalInstructor(instructorRepository.findById(sectionGroupCostDTO.getOriginalInstructorIdentification()).orElse(null));
+        originalSectionGroupCost.setInstructorType(instructorTypeRepository.findById(sectionGroupCostDTO.getInstructorType().getId()).orElse(null));
         if(sectionGroupCostDTO.getReasonCategory() != null){
-            originalSectionGroupCost.setReasonCategory(reasonCategoryRepository.findById(sectionGroupCostDTO.getReasonCategory().getId()));
+            originalSectionGroupCost.setReasonCategory(reasonCategoryRepository.findById(sectionGroupCostDTO.getReasonCategory().getId()).orElse(null));
         }
         return this.save(originalSectionGroupCost);
     }
@@ -183,7 +183,7 @@ public class JpaSectionGroupCostService implements SectionGroupCostService {
 
     @Override
     public void delete(Long sectionGroupCostId) {
-        this.sectionGroupCostRepository.delete(sectionGroupCostId);
+        this.sectionGroupCostRepository.deleteById(sectionGroupCostId);
     }
 
     @Override
