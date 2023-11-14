@@ -1,14 +1,17 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments implements JdbcMigration {
+public class V227__Migrate_TeachingCallReceipts_Comments_To_TeachingCallComments extends BaseJavaMigration {
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Create TeachingCallComments table
         String createTeachingCallComments = "CREATE TABLE IF NOT EXISTS `TeachingCallComments` ("
                 + "`Id` INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,"

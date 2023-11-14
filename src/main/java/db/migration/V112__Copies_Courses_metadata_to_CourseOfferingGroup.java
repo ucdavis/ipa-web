@@ -1,16 +1,19 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
 
-public class V112__Copies_Courses_metadata_to_CourseOfferingGroup implements JdbcMigration {
+public class V112__Copies_Courses_metadata_to_CourseOfferingGroup extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
 		// Add required metadata columns to CourseOfferingGroups
 		PreparedStatement psAddMetadataColumns = connection.prepareStatement(
 			" ALTER TABLE `CourseOfferingGroups`" +

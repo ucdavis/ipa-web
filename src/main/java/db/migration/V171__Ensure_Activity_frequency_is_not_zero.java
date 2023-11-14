@@ -1,14 +1,17 @@
 package db.migration;
 
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
+import org.flywaydb.core.api.migration.Context;
 
-public class V171__Ensure_Activity_frequency_is_not_zero implements JdbcMigration {
+public class V171__Ensure_Activity_frequency_is_not_zero extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Find all activities
 
         PreparedStatement psActivities = connection.prepareStatement("SELECT * FROM `Activities`");

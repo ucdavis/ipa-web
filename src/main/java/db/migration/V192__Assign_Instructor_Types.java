@@ -1,13 +1,14 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.flywaydb.core.api.migration.Context;
 
-public class V192__Assign_Instructor_Types implements JdbcMigration {
+public class V192__Assign_Instructor_Types extends BaseJavaMigration {
     static Long INSTRUCTOR_ROLE = 15L;
 
     // Instructor Types
@@ -24,11 +25,13 @@ public class V192__Assign_Instructor_Types implements JdbcMigration {
      * Will also delete instructorTypeCosts with no amount set.
      * This is in preparation for dropping the description column and making instructorTypeCosts optional.
      *
-     * @param connection
+     * @param context
      * @throws Exception
      */
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psInstructorTypeCosts = connection.prepareStatement("SELECT * FROM `InstructorTypeCosts`");
         connection.setAutoCommit(false);
 

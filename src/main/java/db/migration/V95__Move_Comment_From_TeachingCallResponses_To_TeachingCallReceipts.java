@@ -4,13 +4,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
 
-public class V95__Move_Comment_From_TeachingCallResponses_To_TeachingCallReceipts implements JdbcMigration {
+public class V95__Move_Comment_From_TeachingCallResponses_To_TeachingCallReceipts extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+		Connection connection = context.getConnection();
+
 		// Add the Comment column to TeachingCallReceipts
 		String createColumnQuery = "ALTER TABLE `TeachingCallReceipts`"
 				+ " ADD COLUMN `Comment` TEXT NULL DEFAULT NULL;";

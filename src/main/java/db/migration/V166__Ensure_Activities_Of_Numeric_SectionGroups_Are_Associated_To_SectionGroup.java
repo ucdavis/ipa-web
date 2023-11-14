@@ -1,14 +1,17 @@
 package db.migration;
 
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
+import org.flywaydb.core.api.migration.Context;
 
-public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_SectionGroup implements JdbcMigration {
+public class V166__Ensure_Activities_Of_Numeric_SectionGroups_Are_Associated_To_SectionGroup extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Find all activities
         // Is the activity associated to a section?
         // If the section has a numeric sequenceNumber, add a sectionGroup association and remove the section association

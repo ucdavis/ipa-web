@@ -1,10 +1,13 @@
 package db.migration;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 import java.sql.*;
+import org.flywaydb.core.api.migration.Context;
 
-public class V148__Migrate_Teaching_Assistant_UserRoles implements JdbcMigration {
+public class V148__Migrate_Teaching_Assistant_UserRoles extends BaseJavaMigration {
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psUserRoles = connection.prepareStatement("SELECT * FROM `UserRoles` WHERE `RoleId` = ? OR `RoleId` = ?;");
         psUserRoles.setLong(1, 6L);
         psUserRoles.setLong(2, 7L);
