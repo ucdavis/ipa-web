@@ -18,4 +18,4 @@ jobs:
     secrets:
       access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-rds-cert: ${ secrets.RDS_US_WEST_2_BUNDLE_PEM }}
+      aws-rds-cert: ${{ secrets.RDS_US_WEST_2_BUNDLE_PEM }}
