@@ -35,8 +35,8 @@ ENV IPA_URL_FRONTEND $IPA_URL_FRONTEND
 ARG CAS_URL
 ENV CAS_URL $CAS_URL
 
-COPY ./us-west-2-bundle.pem us-west-2-bundle.pem
-RUN keytool -import -noprompt -trustcacerts -alias aws_us_west_2_bundle -file us-west-2-bundle.pem -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts"
+COPY import-rds-certs.sh .
+RUN ./import-rds-certs.sh
 
 COPY ./gradle gradle
 COPY ./gradlew gradlew
