@@ -1,18 +1,21 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.flywaydb.core.api.migration.Context;
 
 /**
  * Created by okadri on 8/30/16.
  */
-public class V128__Merge_Shared_Activities_And_Set_SectionGroupId implements JdbcMigration {
+public class V128__Merge_Shared_Activities_And_Set_SectionGroupId extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psSectionGroupsWithSharedActivities = null;
 
         try {

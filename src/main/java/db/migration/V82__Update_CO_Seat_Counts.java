@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
-public class V82__Update_CO_Seat_Counts implements JdbcMigration {
+public class V82__Update_CO_Seat_Counts extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+		Connection connection = context.getConnection();
+
 		// Loop over all COs ...
 		PreparedStatement fetchCOsStatement = connection.prepareStatement("SELECT CourseOfferingId FROM CourseOfferings");
 		ResultSet rsFetchCos = fetchCOsStatement.executeQuery();

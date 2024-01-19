@@ -1,21 +1,24 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V204__Fix_numeric_activities implements JdbcMigration {
+public class V204__Fix_numeric_activities extends BaseJavaMigration {
 
   /**
    * Identify activities that are inappropriately connected to sections that are numeric,
    * And connect them instead to the parent sectionGroup
-   * @param connection
+   * @param context
    * @throws Exception
    */
   @Override
-  public void migrate(Connection connection) throws Exception {
+  public void migrate(Context context) throws Exception {
+    Connection connection = context.getConnection();
+
     PreparedStatement psActivities = connection.prepareStatement("SELECT a.Id, s.sectionGroupId FROM Sections s, Activities a WHERE s.SequenceNumber > 0 AND a.SectionId IS NOT NULL AND a.sectionId = s.Id;");
     connection.setAutoCommit(false);
 

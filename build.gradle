@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.9.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.7.17")
     }
 }
 
@@ -36,10 +36,13 @@ test {
 }
 
 dependencies {
+    runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.boot:spring-boot-starter-mail")
+    compile("org.springframework.boot:spring-boot-starter-validation")
     compile("org.springframework.ldap:spring-ldap-ldif-core:2.3.2.RELEASE")
     compile("io.jsonwebtoken:jjwt:0.9.0")
     compile("commons-io:commons-io:2.6")
@@ -53,7 +56,7 @@ dependencies {
     compile("org.slf4j:slf4j-api:1.7.25")
     compile("org.apache.commons:commons-lang3:3.7")
     compile("javax.mail:mail:1.4.7")
-    compile("org.flywaydb:flyway-core:5.0.7")
+    compile("org.flywaydb:flyway-core:7.7.3")
     compile("org.apache.httpcomponents:httpclient:4.5.9")
     compile("org.javers:javers-core:2.4.1")
     compile("javax.xml.bind:jaxb-api:2.3.1")

@@ -1,20 +1,22 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V217__Fix_sectionGroupCost_units implements JdbcMigration {
+public class V217__Fix_sectionGroupCost_units extends BaseJavaMigration {
 
     /**
      * Fixes sectionGroupCosts that were in-correctly created without units
-     * @param connection
+     * @param context
      * @throws Exception
      */
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
         PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts WHERE UnitsHigh IS NULL AND UnitsLow IS NULL;");
         connection.setAutoCommit(false);
 

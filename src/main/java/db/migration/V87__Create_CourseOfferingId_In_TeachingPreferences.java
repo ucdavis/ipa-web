@@ -4,13 +4,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
 
-public class V87__Create_CourseOfferingId_In_TeachingPreferences implements JdbcMigration {
+public class V87__Create_CourseOfferingId_In_TeachingPreferences extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
 		String createColumnQuery = "ALTER TABLE `TeachingPreferences`"
 				+ " ADD COLUMN `CourseOfferings_CourseOfferingId` INT(11) NULL";
 		PreparedStatement createColumnStatement = connection.prepareStatement(createColumnQuery);

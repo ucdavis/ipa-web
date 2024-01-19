@@ -1,20 +1,23 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.flywaydb.core.api.migration.Context;
 
 /**
  * Created by Lloyd on 6/15/16.
  */
 
-public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments implements JdbcMigration {
+public class V114__Copies_TeachingPreferences_metadata_To_TeachingAssignments extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) {
+    public void migrate(Context context) {
+        Connection connection = context.getConnection();
+
         PreparedStatement psAllTeachingAssignments = null;
         PreparedStatement psAddMetadataColumns = null;
 

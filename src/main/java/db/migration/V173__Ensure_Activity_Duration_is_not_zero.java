@@ -1,16 +1,19 @@
 package db.migration;
 
 import edu.ucdavis.dss.ipa.api.helpers.Utilities;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
 import java.util.Calendar;
 import java.util.Date;
+import org.flywaydb.core.api.migration.Context;
 
-public class V173__Ensure_Activity_Duration_is_not_zero implements JdbcMigration {
+public class V173__Ensure_Activity_Duration_is_not_zero extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Find all activities
 
         PreparedStatement psActivities = connection.prepareStatement("SELECT * FROM `Activities`");

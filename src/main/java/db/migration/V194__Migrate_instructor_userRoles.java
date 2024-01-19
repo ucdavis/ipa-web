@@ -1,6 +1,6 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,8 +9,9 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import org.flywaydb.core.api.migration.Context;
 
-public class V194__Migrate_instructor_userRoles implements JdbcMigration {
+public class V194__Migrate_instructor_userRoles extends BaseJavaMigration {
     // Instructor Roles
     public static final int SENATE_INSTRUCTOR_ROLE = 1;
     public static final int FEDERATION_INSTRUCTOR_ROLE = 8;
@@ -26,11 +27,13 @@ public class V194__Migrate_instructor_userRoles implements JdbcMigration {
     /**
      * Converts any 'instructor'-ish userRoles into an instructor role with a relevant instructorType
      *
-     * @param connection
+     * @param context
      * @throws Exception
      */
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psUsers = connection.prepareStatement("SELECT * FROM `Users`");
         connection.setAutoCommit(false);
 

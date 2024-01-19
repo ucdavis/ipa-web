@@ -1,21 +1,24 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V199__Migrate_AI_placeholder_To_TeachingAssignment implements JdbcMigration {
+public class V199__Migrate_AI_placeholder_To_TeachingAssignment extends BaseJavaMigration {
     static Long ASSOCIATE_INSTRUCTOR = 3L;
 
     /**
      * Migrates AI placeholders into new teachingAssignments with instructorType 'AI'
-     * @param connection
+     * @param context
      * @throws Exception
      */
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psSectionGroups = connection.prepareStatement("SELECT * FROM SectionGroups WHERE ShowPlaceholderAI = 1");
         connection.setAutoCommit(false);
 
