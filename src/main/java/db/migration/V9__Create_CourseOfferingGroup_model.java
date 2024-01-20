@@ -7,12 +7,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
-public class V9__Create_CourseOfferingGroup_model implements JdbcMigration {
+public class V9__Create_CourseOfferingGroup_model extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+		Connection connection = context.getConnection();
 
 		// Create the CourseOfferingGroups table
 		String createCOG = "CREATE TABLE IF NOT EXISTS `CourseOfferingGroups` ("

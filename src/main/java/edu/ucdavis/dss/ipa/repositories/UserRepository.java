@@ -13,8 +13,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	
 	User findByToken(String token);
 
-	User findById(Long id);
-
 	@Query("SELECT u FROM User u WHERE u.loginId LIKE :query% OR u.firstName LIKE :query% OR u.lastName LIKE :query%")
 	List<User> findByFirstNameOrLastNameOrLoginId(@Param("query") String query);
 

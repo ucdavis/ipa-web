@@ -20,7 +20,7 @@ public class JpaExpenseItemTypeService implements ExpenseItemTypeService {
 
     @Override
     public ExpenseItemType findById(long ExpenseItemTypeId) {
-        return ExpenseItemTypeRepository.findById(ExpenseItemTypeId);
+        return ExpenseItemTypeRepository.findById(ExpenseItemTypeId).orElse(null);
     }
 
     @Override

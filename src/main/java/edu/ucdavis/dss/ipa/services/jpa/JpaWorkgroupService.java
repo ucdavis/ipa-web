@@ -158,6 +158,6 @@ public class JpaWorkgroupService implements WorkgroupService {
 
 	@Override
 	public void delete(Long workgroupId) {
-		workgroupRepository.delete(workgroupId);
+		workgroupRepository.deleteById(workgroupId);
 	}
 }

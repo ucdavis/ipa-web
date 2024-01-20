@@ -1,14 +1,17 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import org.flywaydb.core.api.migration.Context;
 
-public class V188__Remove_persist_lineItems_that_should_be_implicit implements JdbcMigration {
+public class V188__Remove_persist_lineItems_that_should_be_implicit extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Find all lineItems
         PreparedStatement psLineItems = connection.prepareStatement("SELECT * FROM `LineItems`");
 

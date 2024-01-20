@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
-public class V7__Make_EmployeeId_Unique implements JdbcMigration {
+public class V7__Make_EmployeeId_Unique extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+		Connection connection = context.getConnection();
+
 		String duplicates = "SELECT DISTINCT(i1.`InstructorId`), i1.`EmployeeId`"
 				+ " FROM `Instructors` i1, `Instructors` i2"
 				+ " WHERE i1.`InstructorId` > i2.`InstructorId`"

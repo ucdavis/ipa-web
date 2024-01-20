@@ -25,7 +25,7 @@ public class JpaScheduleInstructorNoteService implements ScheduleInstructorNoteS
 
 	@Override
 	public ScheduleInstructorNote findById(Long id) {
-		return scheduleInstructorNoteRepository.findOne(id);
+		return scheduleInstructorNoteRepository.findById(id).orElse(null);
 	}
 
 	@Override

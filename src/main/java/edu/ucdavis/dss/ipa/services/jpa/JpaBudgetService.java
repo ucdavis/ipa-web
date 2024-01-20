@@ -54,7 +54,7 @@ public class JpaBudgetService implements BudgetService {
 
     @Override
     public Budget findById(long budgetId) {
-        return budgetRepository.findById(budgetId);
+        return budgetRepository.findById(budgetId).orElse(null);
     }
 
     @Override

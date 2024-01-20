@@ -1,22 +1,25 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V208__Persist_Implicit_SectionGroupCosts implements JdbcMigration {
+public class V208__Persist_Implicit_SectionGroupCosts extends BaseJavaMigration {
 
 	/**
 	 * Currently, budgetScenarios would only persist sectionGroupCosts when a user wants to override a value from the schedule,
 	 * And the sectionGroupCost would only store override values, null indicating no override.
 	 * This migration will ensure that all sectionGroups have a corresponding sectionGroupCost and that any null fields are updated to store a snapshot of the current value
-	 * @param connection
+	 * @param context
 	 * @throws Exception
 	 */
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
 		// For each sectionGroup
 		// For each budgetScenario in the same schedule as the sectionGroup
 		// Query for a sectionGroupCost that matches the sectionGroupId and budgetScenarioId

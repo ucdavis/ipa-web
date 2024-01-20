@@ -60,13 +60,13 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	public Activity findOneById(Long id) {
-		return this.activityRepository.findOne(id);
+		return this.activityRepository.findById(id).orElse(null);
 	}
 
 	@Override
 	@Transactional
 	public void deleteActivityById(Long id) {
-		activityRepository.delete(id);
+		activityRepository.deleteById(id);
 	}
 
 	@Override

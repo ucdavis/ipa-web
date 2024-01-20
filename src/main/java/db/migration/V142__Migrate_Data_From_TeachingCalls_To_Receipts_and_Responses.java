@@ -1,13 +1,16 @@
 package db.migration;
 
-        import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+        import org.flywaydb.core.api.migration.BaseJavaMigration;
 
         import java.sql.*;
+        import org.flywaydb.core.api.migration.Context;
 
-public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses implements JdbcMigration {
+public class V142__Migrate_Data_From_TeachingCalls_To_Receipts_and_Responses extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psTeachingCalls = connection.prepareStatement("SELECT * FROM `TeachingCalls`");
 
         try {

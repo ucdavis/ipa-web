@@ -2,45 +2,20 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
-name: Push image to ECR and force new ECS deploy
+name: Deploy to Amazon ECS
 
 jobs:
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
-
-      - name: Copy root pem
-        run: 'echo $RDS_ROOT_PEM | base64 -d > rds-ca-2019-root.pem'
-        shell: bash
-        env:
-          RDS_ROOT_PEM: ${{secrets.RDS_ROOT_PEM}}
-
-      - name: Copy us-west-2 pem
-        run: 'echo $RDS_US_WEST_2_PEM | base64 -d > rds-ca-2019-us-west-2.pem'
-        shell: bash
-        env:
-          RDS_US_WEST_2_PEM: ${{secrets.RDS_US_WEST_2_PEM}}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and redeploy
-        uses: jaroldwong/ecr-push-and-ecs-deploy@v1
-        with:
-          ecr-registry: ${{ steps.login-ecr.outputs.registry }}
-          ecr-repository: 'ipa-web-prod'
-          ecs-cluster: 'legacy'
-          ecs-service: 'ipa-web-prod'
+  build:
+    uses:
+      ucdavis-lsit/actions/.github/workflows/deploy.yml@main
+    with:
+      cluster: 'legacy'
+      repo: 'ipa-web-prod'
+      certificate: 'us-west-2-bundle'
+      service: 'ipa-web-prod'
+    secrets:
+      access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      aws-rds-cert: ${{ secrets.RDS_US_WEST_2_BUNDLE_PEM }}

@@ -23,13 +23,13 @@ public class JpaSectionService implements SectionService {
 	@Override
 	@Transactional
 	public boolean delete(Long id) {
-		this.sectionRepository.delete(id);
+		this.sectionRepository.deleteById(id);
 		return true;
 	}
 
 	@Override
 	public Section getOneById(Long id) {
-		return this.sectionRepository.findById(id);
+		return this.sectionRepository.findById(id).orElse(null);
 	}
 
 	/**

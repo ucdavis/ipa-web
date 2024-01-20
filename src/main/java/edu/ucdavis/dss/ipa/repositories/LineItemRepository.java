@@ -16,8 +16,6 @@ public interface LineItemRepository extends CrudRepository<LineItem, Long> {
             " AND b.id = :budgetId ")
     List<LineItem> findByBudgetId(@Param("budgetId") Long budgetId);
 
-    LineItem findById(Long lineItemId);
-
     void deleteById(long lineItemId);
 
     @Modifying

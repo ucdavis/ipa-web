@@ -9,8 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface InstructorTypeCostRepository extends CrudRepository<InstructorTypeCost, Long> {
-    InstructorTypeCost findById(Long instructorTypeId);
-
     void deleteById(long instructorTypeCostId);
 
     InstructorTypeCost findByInstructorTypeIdAndBudgetId(long instructorTypeId, long budgetId);

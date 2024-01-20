@@ -22,7 +22,7 @@ public class JpaSupportStaffService implements SupportStaffService {
 
     @Override
     public SupportStaff findOneById(long instructionalSupportStaffId) {
-        return this.supportStaffRepository.findById(instructionalSupportStaffId);
+        return this.supportStaffRepository.findById(instructionalSupportStaffId).orElse(null);
     }
 
     @Override

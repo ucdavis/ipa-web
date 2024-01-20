@@ -22,8 +22,6 @@ public interface ExpenseItemRepository extends CrudRepository<ExpenseItem, Long>
             " AND bs.id = :budgetScenarioId ")
     List<ExpenseItem> findByBudgetScenarioId(@Param("budgetScenarioId") Long budgetScenarioId);
 
-    ExpenseItem findById(Long expenseItemId);
-
     void deleteById(long expenseItemId);
 
     @Modifying

@@ -61,7 +61,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 	@Override
 	public UserRole getOneById(Long id) {
-		return this.userRoleRepository.findOne(id);
+		return this.userRoleRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class JpaUserRoleService implements UserRoleService {
 			userRole.setRole(role);
 
 			if (roleName.equals("instructor")) {
-				InstructorType instructorType = instructorTypeRepository.findById(7L);
+				InstructorType instructorType = instructorTypeRepository.findById(7L).orElse(null);
 				userRole.setInstructorType(instructorType);
 			}
 

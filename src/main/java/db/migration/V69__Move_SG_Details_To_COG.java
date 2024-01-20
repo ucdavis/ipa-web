@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 
-public class V69__Move_SG_Details_To_COG implements JdbcMigration {
+public class V69__Move_SG_Details_To_COG extends BaseJavaMigration {
 
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
 		PreparedStatement statement0 = connection.prepareStatement("SELECT cogs.* FROM `CourseOfferingGroups` cogs");
 
 		try {

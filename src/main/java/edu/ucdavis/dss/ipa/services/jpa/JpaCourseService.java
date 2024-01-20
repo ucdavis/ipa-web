@@ -23,7 +23,7 @@ public class JpaCourseService implements CourseService {
 
 	@Override
 	public Course getOneById(Long id) {
-		return this.courseRepository.findOne(id);
+		return this.courseRepository.findById(id).orElse(null);
 	}
 
 	private Course save(Course course) {
@@ -121,7 +121,7 @@ public class JpaCourseService implements CourseService {
 		try {
 			course.setTags(new ArrayList<Tag>());
 			this.save(course);
-			this.courseRepository.delete(id);
+			this.courseRepository.deleteById(id);
 
 			return true;
 		} catch (EmptyResultDataAccessException e) {

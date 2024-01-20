@@ -27,7 +27,7 @@ public class JpaTagService implements TagService {
 
 	@Override
 	public Tag getOneById(Long id) {
-		return this.trackRepository.findOne(id);
+		return this.trackRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class JpaTagService implements TagService {
 	@Override
 	public Tag archiveById(Long id) {
 		
-		Tag tag = this.trackRepository.findOne(id);
+		Tag tag = this.trackRepository.findById(id).orElse(null);
 
 		// Remove this tag from COGs only in active schedules
 		for (Course cog : tag.getCourses()){

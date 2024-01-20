@@ -1,23 +1,26 @@
 package db.migration;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import org.flywaydb.core.api.migration.Context;
 
 /**
  * Created by okadri on 6/16/16.
  */
-public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern implements JdbcMigration {
+public class V116__Split_Courses_With_More_Than_One_Sequence_Pattern extends BaseJavaMigration {
 
     public boolean isNumeric(String s) {
         return s.matches("[-+]?\\d*\\.?\\d+");
     }
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psAllCourses = null;
 
         try {

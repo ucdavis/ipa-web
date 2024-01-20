@@ -34,7 +34,7 @@ public class JpaInstructorService implements InstructorService {
 
 	@Override
 	public Instructor getOneById(Long id) {
-		return this.instructorRepository.findById(id);
+		return this.instructorRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class JpaInstructorService implements InstructorService {
 		if (instructor.getTeachingAssignments().size() == 0 &&
 			instructor.getTeachingCallResponses().size() == 0 &&
 			instructor.getTeachingCallReceipts().size() == 0) {
-				instructorRepository.delete(instructor.getId());
+				instructorRepository.deleteById(instructor.getId());
 		}
 	}
 

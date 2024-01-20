@@ -1,15 +1,18 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.flywaydb.core.api.migration.Context;
 
-public class V144__Merge_Duplicate_Courses implements JdbcMigration {
+public class V144__Merge_Duplicate_Courses extends BaseJavaMigration {
 
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         PreparedStatement psCourses = connection.prepareStatement("SELECT * FROM `Courses`");
         List<Long> courseIdsAlreadyProcessed = new ArrayList<>();
 

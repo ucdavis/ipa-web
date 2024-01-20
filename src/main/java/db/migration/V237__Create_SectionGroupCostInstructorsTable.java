@@ -1,6 +1,6 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -10,10 +10,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.flywaydb.core.api.migration.Context;
 
-public class V237__Create_SectionGroupCostInstructorsTable implements JdbcMigration {
+public class V237__Create_SectionGroupCostInstructorsTable extends BaseJavaMigration {
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         connection.setAutoCommit(false);
         try {
             // Extend Reason Size on SectionGroupCost Table

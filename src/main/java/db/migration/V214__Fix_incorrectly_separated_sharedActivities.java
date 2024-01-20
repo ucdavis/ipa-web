@@ -1,6 +1,7 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 import org.joda.time.DateTime;
 
 import java.sql.Connection;
@@ -13,15 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class V214__Fix_incorrectly_separated_sharedActivities implements JdbcMigration {
+public class V214__Fix_incorrectly_separated_sharedActivities extends BaseJavaMigration {
 
     /**
      * Refactors repeated activities within a sectionGroup into a single shared activity
-     * @param connection
+     * @param context
      * @throws Exception
      */
     @Override
-    public void migrate(Connection connection) throws Exception {
+    public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
         // Look through all letter based sectionGroups
         // If each section has an activity that matches on day/start/end/type, delete those sections and create a sharedActivity with those options
         // use a hashmap of occurences, and a hashmap of matching activity ids

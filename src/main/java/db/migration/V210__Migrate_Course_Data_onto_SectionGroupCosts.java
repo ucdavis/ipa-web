@@ -1,21 +1,24 @@
 package db.migration;
 
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.flywaydb.core.api.migration.Context;
 
-public class V210__Migrate_Course_Data_onto_SectionGroupCosts implements JdbcMigration {
+public class V210__Migrate_Course_Data_onto_SectionGroupCosts extends BaseJavaMigration {
 
 	/**
 	 * Fills in the new fields on sectionGroupCosts to ensure they can continue to display properly,
 	 * Even if the course/sectionGroup they were created from is deleted
-	 * @param connection
+	 * @param context
 	 * @throws Exception
 	 */
 	@Override
-	public void migrate(Connection connection) throws Exception {
+	public void migrate(Context context) throws Exception {
+        Connection connection = context.getConnection();
+
 		PreparedStatement psSectionGroupCosts = connection.prepareStatement("SELECT * FROM SectionGroupCosts;");
 		connection.setAutoCommit(false);
 
