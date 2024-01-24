@@ -4,7 +4,7 @@ WORKDIR /usr/src
 COPY . .
 RUN gradle build --no-daemon -x check -x test
 
-FROM openjdk:8-jdk-alpine
+FROM amazoncorretto:8-alpine-jre
 RUN apk --no-cache add openssl
 
 EXPOSE 8080
