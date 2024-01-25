@@ -217,6 +217,11 @@ public class SectionGroup extends BaseEntity {
 			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
 			return String.format(format, this.getUnitsVariable());
 		} else if (course.getUnitsHigh() != null) {
+			if (course.getUnitsLow() == 0f && course.getUnitsHigh() == 0f) {
+				// Placeholder course
+				return String.valueOf(0);
+			}
+
 			String unitsHighFormat = course.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";
 			String unitsLowFormat = course.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
 
