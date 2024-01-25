@@ -9,6 +9,4 @@ public interface WorkloadAssignmentRepository extends CrudRepository<WorkloadAss
     WorkloadAssignment findById(long id);
 
     List<WorkloadAssignment> findByWorkloadSnapshotId(long id);
-
-    WorkloadAssignment save(WorkloadAssignment workloadAssignment);
 }

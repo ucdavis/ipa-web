@@ -434,7 +434,7 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
             a.setWorkloadSnapshot(workloadSnapshot);
         }
 
-        return (List<WorkloadAssignment>) workloadAssignmentRepository.save(assignments);
+        return assignments;
     }
 
     private String calculateCourseType(Course course) {

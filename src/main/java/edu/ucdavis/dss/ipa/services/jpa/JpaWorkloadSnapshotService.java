@@ -53,7 +53,7 @@ public class JpaWorkloadSnapshotService implements WorkloadSnapshotService {
         WorkloadSnapshot snapshot = workloadSnapshotRepository.findByBudgetScenarioId(budgetScenarioId);
 
         if (snapshot != null) {
-            workloadSnapshotRepository.delete(snapshot.getId());
+            workloadSnapshotRepository.delete(snapshot);
         }
     };
 }
