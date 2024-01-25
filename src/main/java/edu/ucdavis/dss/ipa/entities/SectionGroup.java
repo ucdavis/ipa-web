@@ -217,6 +217,11 @@ public class SectionGroup extends BaseEntity {
 			String format = this.getUnitsVariable() % 1 == 0 ? "%.0f" : "%.1f";
 			return String.format(format, this.getUnitsVariable());
 		} else if (course.getUnitsHigh() != null) {
+			if (course.getUnitsLow() == 0f && course.getUnitsHigh() == 0f) {
+				// Placeholder course
+				return String.valueOf(0);
+			}
+
 			String unitsHighFormat = course.getUnitsHigh() % 1 == 0 ? "%.0f" : "%.1f";
 			String unitsLowFormat = course.getUnitsLow() % 1 == 0 ? "%.0f" : "%.1f";
 
@@ -226,6 +231,16 @@ public class SectionGroup extends BaseEntity {
 			return String.format(format, course.getUnitsLow());
 		} else {
 			return null;
+		}
+	}
+
+	@Transient
+	public String getDisplayUnits(Boolean isWorkload) {
+		// use 0 for variable courses for Workload/SCH purposes
+		if (isWorkload) {
+			return String.valueOf(0);
+		} else {
+			return getDisplayUnits();
 		}
 	}
 }

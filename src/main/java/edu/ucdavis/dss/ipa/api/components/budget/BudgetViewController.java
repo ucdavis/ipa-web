@@ -12,6 +12,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.View;
@@ -47,6 +48,7 @@ public class BudgetViewController {
     @Inject InstructorTypeService instructorTypeService;
     @Inject ExpenseItemService expenseItemService;
     @Inject ExpenseItemTypeService expenseItemTypeService;
+    @Inject WorkloadSnapshotService workloadSnapshotService;
 
     @Value("${IPA_URL_API}")
     String ipaUrlApi;
@@ -122,6 +124,7 @@ public class BudgetViewController {
 
     @RequestMapping(value = "/api/budgetView/budgets/{budgetId}/budgetScenarios/{budgetScenarioId}/budgetRequest", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
+    @Transactional
     public BudgetScenarioView createBudgetRequestScenario(@PathVariable long budgetId,
                                                           @PathVariable long budgetScenarioId,
                                                           HttpServletResponse httpResponse) {
@@ -139,6 +142,8 @@ public class BudgetViewController {
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
 
         BudgetScenario budgetRequestScenario = budgetScenarioService.createBudgetRequestScenario(workGroupId, budgetScenarioId);
+
+        WorkloadSnapshot workloadSnapshot = workloadSnapshotService.create(workGroupId, budgetRequestScenario.getId());
 
         return budgetViewFactory.createBudgetScenarioView(budgetRequestScenario);
     };
@@ -180,6 +185,8 @@ public class BudgetViewController {
         // Authorization check
         Long workGroupId = budgetScenario.getBudget().getSchedule().getWorkgroup().getId();
         authorizer.hasWorkgroupRoles(workGroupId, "academicPlanner", "reviewer");
+
+        workloadSnapshotService.deleteByBudgetScenarioId(budgetScenarioId);
 
         budgetScenarioService.deleteById(budgetScenarioId);
 

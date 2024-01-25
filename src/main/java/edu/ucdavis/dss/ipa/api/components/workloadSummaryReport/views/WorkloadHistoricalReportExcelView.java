@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views;
 
+import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,16 +14,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 public class WorkloadHistoricalReportExcelView extends AbstractXlsxView {
-    private Map<Long, List<InstructorAssignment>> instructorAssignmentsMap;
+    private Map<Long, List<WorkloadAssignment>> workloadAssignmentMap;
 
-    public WorkloadHistoricalReportExcelView(Map<Long, List<InstructorAssignment>> instructorAssignmentsMap) {
-        this.instructorAssignmentsMap = instructorAssignmentsMap;
+    public WorkloadHistoricalReportExcelView(Map<Long, List<WorkloadAssignment>> workloadAssignmentMap) {
+        this.workloadAssignmentMap = workloadAssignmentMap;
     }
 
     @Override
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook,
                                       HttpServletRequest request, HttpServletResponse response) {
-        List<Long> years = this.instructorAssignmentsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(
+        List<Long> years = this.workloadAssignmentMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(
             Collectors.toList());
 
         String filename = "attachment; filename=\"" + years.get(0) + " Workload Historical Report.xlsx";
@@ -37,8 +38,8 @@ public class WorkloadHistoricalReportExcelView extends AbstractXlsxView {
                     "Offering", "Enrollment", "Planned Seats", "Previous Enrollment (YoY)",
                     "Previous Enrollment (Last Offered)", "Units", "SCH", "Note"));
 
-            for (InstructorAssignment instructorAssignment : instructorAssignmentsMap.get(year)) {
-                ExcelHelper.writeRowToSheet(worksheet, instructorAssignment.toList());
+            for (WorkloadAssignment workloadAssignment : workloadAssignmentMap.get(year)) {
+                ExcelHelper.writeRowToSheet(worksheet, workloadAssignment.toList());
             }
         }
 

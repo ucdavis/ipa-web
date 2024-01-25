@@ -216,7 +216,7 @@ public class Term implements Serializable {
 	static public String getShortDescription(String termCode) {
 		if(termCode == null) throw new IllegalArgumentException("termCode cannot be null");
 
-		String year = getYear(termCode);
+		String year = getYear(termCode).substring(2);
 		String term = termCode.length() == 2 ? termCode : termCode.substring(4);
 		int code = Integer.parseInt(term);
 
@@ -260,6 +260,23 @@ public class Term implements Serializable {
 
 	@Transient
 	public static String getAcademicYearFromYear(long year) {
-        return year + "-" + String.valueOf(year + 1).substring(2,4);
-    }
+		return year + "-" + String.valueOf(year + 1).substring(2,4);
+	}
+
+	@Transient
+	public static String getFullName(String termCode) {
+		if (termCode == null) {
+			return null;
+		}
+
+		return getRegistrarName(termCode)  + " " + getYear(termCode);
+	}
+
+	@Transient
+	public static String getPreviousYearTermCode(String termCode) {
+		if (termCode == null) throw new IllegalArgumentException("termCode cannot be null");
+		if (termCode.length() != 6) throw new IllegalArgumentException("Cannot get previousYearTermCode if termCode is short");
+
+		return Integer.parseInt(termCode.substring(0, 4)) - 1 + termCode.substring(4, 6);
+	}
 }
