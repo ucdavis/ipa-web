@@ -5,7 +5,7 @@ COPY . .
 RUN gradle build --no-daemon -x check -x test
 
 FROM amazoncorretto:8-alpine-jre
-RUN apk --no-cache add fontconfig freetype
+RUN apk --no-cache add fontconfig freetype font-dejavu
 RUN apk --no-cache add openssl
 
 EXPOSE 8080
