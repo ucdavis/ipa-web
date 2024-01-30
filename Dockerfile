@@ -1,10 +1,10 @@
-FROM gradle:6.9-jdk8 AS builder
+FROM gradle:7.6.3-jdk17 AS builder
 USER root
 WORKDIR /usr/src
 COPY . .
 RUN gradle build --no-daemon -x check -x test
 
-FROM amazoncorretto:8-alpine-jre
+FROM eclipse-temurin:17-jre-alpine
 RUN apk --no-cache add fontconfig freetype font-dejavu
 RUN apk --no-cache add openssl
 
