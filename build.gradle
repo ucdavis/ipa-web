@@ -52,7 +52,11 @@ dependencies {
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("org.apache.commons:commons-lang3:3.7")
     implementation("javax.mail:mail:1.4.7")
-    implementation("org.flywaydb:flyway-core:7.7.3")
+
+    // Flyway
+    implementation("org.flywaydb:flyway-core:9.22.3")
+    implementation("org.flywaydb:flyway-mysql:9.22.3")
+
     implementation("org.apache.httpcomponents:httpclient:4.5.9")
     implementation("org.javers:javers-core:2.4.1")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
