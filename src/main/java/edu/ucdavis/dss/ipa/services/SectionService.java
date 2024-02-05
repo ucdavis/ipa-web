@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import org.springframework.validation.annotation.Validated;

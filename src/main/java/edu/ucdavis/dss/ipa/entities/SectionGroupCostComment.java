@@ -1,14 +1,13 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostCommentDeserializer;
-import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupCostDeserializer;
 
 import java.util.Date;
 

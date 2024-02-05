@@ -3,7 +3,7 @@ package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views;
 
 import org.javers.core.metamodel.annotation.DiffIgnore;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

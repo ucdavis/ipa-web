@@ -5,7 +5,7 @@ import edu.ucdavis.dss.ipa.repositories.ReasonCategoryRepository;
 import edu.ucdavis.dss.ipa.services.ReasonCategoryService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Service

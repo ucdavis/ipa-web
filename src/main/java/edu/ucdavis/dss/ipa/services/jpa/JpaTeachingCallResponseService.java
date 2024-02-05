@@ -2,13 +2,10 @@ package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import org.springframework.stereotype.Service;

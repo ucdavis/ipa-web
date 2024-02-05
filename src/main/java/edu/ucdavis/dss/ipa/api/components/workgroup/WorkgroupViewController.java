@@ -5,8 +5,8 @@ import edu.ucdavis.dss.ipa.api.components.workgroup.views.factories.WorkgroupVie
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 public class WorkgroupViewController {

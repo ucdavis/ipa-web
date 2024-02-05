@@ -9,7 +9,7 @@ import edu.ucdavis.dss.ipa.repositories.SectionGroupCostRepository;
 import edu.ucdavis.dss.ipa.services.SectionGroupCostService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 
 @Service

@@ -3,7 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.repositories.CourseRepository;

@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.services.TagService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @RestController
 public class WorkgroupViewTagController {

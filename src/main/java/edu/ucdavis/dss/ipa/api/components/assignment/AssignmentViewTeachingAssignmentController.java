@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import edu.ucdavis.dss.dw.dto.DwCourse;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;

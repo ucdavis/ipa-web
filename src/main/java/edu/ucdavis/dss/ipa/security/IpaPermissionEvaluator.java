@@ -5,7 +5,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 
 public class IpaPermissionEvaluator implements PermissionEvaluator {

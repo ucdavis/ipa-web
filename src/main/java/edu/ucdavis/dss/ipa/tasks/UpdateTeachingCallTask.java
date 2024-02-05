@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.tasks;
 
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;

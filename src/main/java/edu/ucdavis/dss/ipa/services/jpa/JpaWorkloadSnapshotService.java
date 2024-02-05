@@ -10,7 +10,7 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
 import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

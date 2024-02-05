@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.services.TeachingCallCommentService;
 import edu.ucdavis.dss.ipa.services.TeachingCallReceiptService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @Service
 public class JpaTeachingCallCommentService implements TeachingCallCommentService {

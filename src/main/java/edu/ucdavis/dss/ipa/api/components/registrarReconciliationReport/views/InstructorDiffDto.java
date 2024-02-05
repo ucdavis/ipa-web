@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.registrarReconciliationReport.views;
 
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 public class InstructorDiffDto {
 

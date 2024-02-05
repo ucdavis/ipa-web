@@ -5,10 +5,9 @@ import edu.ucdavis.dss.ipa.repositories.SyncActionRepository;
 import edu.ucdavis.dss.ipa.services.SyncActionService;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @Service
 public class JpaSyncActionService implements SyncActionService {

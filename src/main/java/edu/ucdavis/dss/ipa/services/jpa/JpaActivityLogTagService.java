@@ -3,9 +3,7 @@ package edu.ucdavis.dss.ipa.services.jpa;
 import edu.ucdavis.dss.ipa.entities.ActivityLogTag;
 //import edu.ucdavis.dss.ipa.repositories.ActivityLogTagRepository;
 import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
-import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 
 //@Service

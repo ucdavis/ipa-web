@@ -1,13 +1,12 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import org.hibernate.Hibernate;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import edu.ucdavis.dss.ipa.services.TermService;
-import edu.ucdavis.dss.ipa.services.UserService;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 
 @Service
