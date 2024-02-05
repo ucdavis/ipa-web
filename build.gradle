@@ -43,9 +43,12 @@ dependencies {
     implementation("org.hibernate:hibernate-validator-annotation-processor:5.2.5.Final")
     implementation("org.apache.poi:poi:3.17")
     implementation("org.apache.poi:poi-ooxml:3.17")
-    implementation("ch.qos.logback:logback-core:1.2.3")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("org.slf4j:slf4j-api:1.7.25")
+
+    // Logging
+    implementation("ch.qos.logback:logback-core:1.4.14")
+    implementation("ch.qos.logback:logback-classic:1.4.14")
+    implementation("org.slf4j:slf4j-api:2.0.11")
+
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("org.apache.commons:commons-lang3:3.7")
     implementation("javax.mail:mail:1.4.7")
