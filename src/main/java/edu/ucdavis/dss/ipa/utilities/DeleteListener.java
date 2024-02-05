@@ -79,7 +79,7 @@ public class DeleteListener implements PostCommitDeleteEventListener {
     }
 
     @Override
-    public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
+    public boolean requiresPostCommitHandling(EntityPersister entityPersister) {
         return true;
     }
 
