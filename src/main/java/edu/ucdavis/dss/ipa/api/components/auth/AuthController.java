@@ -14,6 +14,10 @@ import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.UserRoleService;
 import edu.ucdavis.dss.ipa.services.UserService;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -63,8 +67,8 @@ public class AuthController {
         // Check if the token exists, else check for CAS
         if (securityDTO.token != null) {
             try {
-                Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
-                        .parseClaimsJws(securityDTO.token).getBody();
+                Claims claims = Jwts.parser().verifyWith(getSecretKey()).build()
+                    .parseSignedClaims(securityDTO.token).getPayload();
 
                 // Ensure token is not expired before we refresh it
                 Date now = new Date();
@@ -115,12 +119,12 @@ public class AuthController {
             // Update the user lastAccessed value
             userService.updateLastAccessed(user);
 
-            securityDTO.token = Jwts.builder().setSubject(loginId)
+            securityDTO.token = Jwts.builder().subject(loginId)
                     .claim("loginId", loginId)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
-                    .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
+                    .issuedAt(new Date())
+                    .signWith(getSecretKey()).compact();
             securityDTO.setLoginId(loginId);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);
@@ -192,8 +196,8 @@ public class AuthController {
         Date expirationDate = calendarNow.getTime();
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
-                    .parseClaimsJws(securityDTO.token).getBody();
+            Claims claims = Jwts.parser().verifyWith(getSecretKey()).build()
+                .parseSignedClaims(securityDTO.token).getPayload();
 
             // Deserialize tokens
             String realUserLoginId = (String) claims.get("realUserLoginId");
@@ -230,13 +234,13 @@ public class AuthController {
             List<ScheduleTermState> termStates = scheduleTermStateService.getScheduleTermStatesByLoginId(loginIdToImpersonate);
 
             // Rebuild token
-            securityDTO.token = Jwts.builder().setSubject(loginIdToImpersonate)
+            securityDTO.token = Jwts.builder().subject(loginIdToImpersonate)
                     .claim("userRoles", userRoles)
                     .claim("loginId", loginIdToImpersonate)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
-                    .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
+                    .issuedAt(new Date())
+                    .signWith(getSecretKey()).compact();
             securityDTO.setLoginId(loginIdToImpersonate);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);
@@ -271,8 +275,8 @@ public class AuthController {
         Date expirationDate = calendarNow.getTime();
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
-                    .parseClaimsJws(securityDTO.token).getBody();
+            Claims claims = Jwts.parser().verifyWith(getSecretKey()).build()
+                .parseSignedClaims(securityDTO.token).getPayload();
 
             // Deserialize token
             String realUserLoginId = (String) claims.get("realUserLoginId");
@@ -283,13 +287,13 @@ public class AuthController {
             User realUser = userService.getOneByLoginId(realUserLoginId);
 
             // Rebuild token
-            securityDTO.token = Jwts.builder().setSubject(realUserLoginId)
+            securityDTO.token = Jwts.builder().subject(realUserLoginId)
                     .claim("userRoles", userRoles)
                     .claim("loginId", realUserLoginId)
                     .claim("realUserLoginId", realUserLoginId)
                     .claim("expirationDate", expirationDate)
-                    .setIssuedAt(new Date())
-                    .signWith(SignatureAlgorithm.HS256, jwtSigningKey).compact();
+                    .issuedAt(new Date())
+                    .signWith(getSecretKey()).compact();
             securityDTO.setLoginId(realUserLoginId);
             securityDTO.setRealUserLoginId(realUserLoginId);
             securityDTO.setUserRoles(userRoles);
@@ -304,5 +308,9 @@ public class AuthController {
         }
 
         return securityDTO;
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSigningKey));
     }
 }

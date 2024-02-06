@@ -4,7 +4,10 @@ import edu.ucdavis.dss.ipa.security.Authorization;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -41,8 +44,8 @@ public class JwtFilter extends GenericFilterBean {
             final String token = authHeader.substring(7); // The part after "Bearer "
 
             try {
-                final Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
-                        .parseClaimsJws(token).getBody();
+                final Claims claims = Jwts.parser().verifyWith(getSecretKey()).build()
+                        .parseSignedClaims(token).getPayload();
 
                 authorization.setLoginId((String) claims.get("loginId"));
                 authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
@@ -90,5 +93,9 @@ public class JwtFilter extends GenericFilterBean {
 
     public void setJwtSigningKey(String jwtSigningKey) {
         this.jwtSigningKey = jwtSigningKey;
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.jwtSigningKey));
     }
 }
