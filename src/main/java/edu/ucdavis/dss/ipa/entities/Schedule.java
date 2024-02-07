@@ -95,9 +95,6 @@ public class Schedule implements Serializable {
 	public void setWorkgroup(Workgroup workgroup)
 	{
 		this.workgroup = workgroup;
-		if (!workgroup.getSchedules().contains(this)) {
-			workgroup.getSchedules().add(this);
-		}
 	}
 
 	public String getSecretToken() {
