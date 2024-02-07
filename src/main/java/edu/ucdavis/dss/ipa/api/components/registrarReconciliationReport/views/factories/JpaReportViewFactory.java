@@ -52,6 +52,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
 		Javers javers = JaversBuilder
 				.javers()
+				.withInitialChanges(false)
 				.withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
 				.build();
 		List<SectionDiffView> diffView = new ArrayList<>();

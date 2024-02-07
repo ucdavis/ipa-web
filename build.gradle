@@ -58,8 +58,8 @@ dependencies {
     implementation("org.flywaydb:flyway-mysql:9.22.3")
 
     implementation("org.apache.httpcomponents:httpclient:4.5.9")
-    implementation("org.javers:javers-core:2.4.1")
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.651")
+    implementation("org.javers:javers-core:7.3.7")
     implementation("com.mysql:mysql-connector-j:8.0.33")
 
     testImplementation("junit:junit")
