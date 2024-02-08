@@ -3,8 +3,8 @@ package edu.ucdavis.dss.ipa.services;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import edu.ucdavis.dss.ipa.entities.StudentSupportPreference;
 import edu.ucdavis.dss.ipa.entities.SupportStaff;

@@ -5,9 +5,9 @@ import edu.ucdavis.dss.ipa.repositories.SectionRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.validation.Valid;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Service

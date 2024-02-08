@@ -11,7 +11,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

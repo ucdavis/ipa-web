@@ -1,21 +1,22 @@
 package edu.ucdavis.dss.ipa.config;
 
-import edu.ucdavis.dss.ipa.entities.UserRole;
 import edu.ucdavis.dss.ipa.security.Authorization;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtFilter extends GenericFilterBean {
@@ -43,8 +44,8 @@ public class JwtFilter extends GenericFilterBean {
             final String token = authHeader.substring(7); // The part after "Bearer "
 
             try {
-                final Claims claims = Jwts.parser().setSigningKey(jwtSigningKey)
-                        .parseClaimsJws(token).getBody();
+                final Claims claims = Jwts.parser().verifyWith(getSecretKey()).build()
+                        .parseSignedClaims(token).getPayload();
 
                 authorization.setLoginId((String) claims.get("loginId"));
                 authorization.setRealUserLoginId((String) claims.get("realUserLoginId"));
@@ -92,5 +93,9 @@ public class JwtFilter extends GenericFilterBean {
 
     public void setJwtSigningKey(String jwtSigningKey) {
         this.jwtSigningKey = jwtSigningKey;
+    }
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.jwtSigningKey));
     }
 }

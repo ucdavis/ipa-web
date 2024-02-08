@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.tasks;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.services.InstructorSupportCallResponseService;
 import edu.ucdavis.dss.ipa.services.StudentSupportCallResponseService;

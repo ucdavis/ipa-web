@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.api.components.assignment;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.security.Authorizer;

@@ -1,6 +1,6 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import org.springframework.stereotype.Service;

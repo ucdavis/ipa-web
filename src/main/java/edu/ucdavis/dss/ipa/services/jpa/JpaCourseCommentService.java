@@ -6,9 +6,7 @@ import edu.ucdavis.dss.ipa.security.Authorization;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.inject.Inject;
 
 @Service
 public class JpaCourseCommentService implements CourseCommentService {

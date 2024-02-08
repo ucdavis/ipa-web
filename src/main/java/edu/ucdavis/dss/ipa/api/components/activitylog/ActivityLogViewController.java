@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.services.ActivityLogService;
 import edu.ucdavis.dss.ipa.services.ActivityLogTagService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 

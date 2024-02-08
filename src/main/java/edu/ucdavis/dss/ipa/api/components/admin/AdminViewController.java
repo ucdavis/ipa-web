@@ -7,7 +7,7 @@ import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @RestController
 public class AdminViewController {

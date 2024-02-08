@@ -4,7 +4,6 @@ import edu.ucdavis.dss.dw.dto.DwCourse;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.services.ActivityService;
 import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.*;
 
 @Service

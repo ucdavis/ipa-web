@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.UserService;

@@ -4,8 +4,8 @@ import edu.ucdavis.dss.ipa.config.AutowireHelper;
 import edu.ucdavis.dss.ipa.config.JwtFilter;
 import edu.ucdavis.dss.ipa.exceptions.handlers.MvcExceptionHandler;
 import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
-import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
-import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
+import org.apereo.cas.client.util.HttpServletRequestWrapperFilter;
+import org.apereo.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 @EnableScheduling
@@ -119,7 +118,7 @@ public class Application {
      */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurerAdapter() {
+        return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**").allowedOrigins("http://localhost:9000", "https://test-ipa.dss.ucdavis.edu", "https://ipa.ucdavis.edu").allowCredentials(true).allowedMethods("*");

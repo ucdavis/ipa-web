@@ -3,9 +3,8 @@ package edu.ucdavis.dss.ipa.services;
 import edu.ucdavis.dss.ipa.entities.SyncAction;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @Validated
 public interface SyncActionService {

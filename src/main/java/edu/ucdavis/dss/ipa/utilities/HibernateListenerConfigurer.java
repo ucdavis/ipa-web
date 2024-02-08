@@ -1,16 +1,14 @@
 package edu.ucdavis.dss.ipa.utilities;
 
+import jakarta.annotation.PostConstruct;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.sql.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
-import java.awt.*;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 
 @Component
 public class HibernateListenerConfigurer {

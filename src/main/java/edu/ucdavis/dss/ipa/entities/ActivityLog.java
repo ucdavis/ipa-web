@@ -7,14 +7,14 @@ import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

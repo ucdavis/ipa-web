@@ -5,8 +5,7 @@ import edu.ucdavis.dss.ipa.repositories.StudentSupportPreferenceRepository;
 import edu.ucdavis.dss.ipa.services.*;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import java.lang.reflect.Array;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 

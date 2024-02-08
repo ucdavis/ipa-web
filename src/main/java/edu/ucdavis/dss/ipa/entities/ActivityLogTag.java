@@ -2,12 +2,10 @@ package edu.ucdavis.dss.ipa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 
 //@Entity
 public class ActivityLogTag {

@@ -3,7 +3,7 @@ package edu.ucdavis.dss.ipa.security;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * Helper functions to perform authorization checks in controllers, etc.

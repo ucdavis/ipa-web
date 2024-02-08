@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.repositories.AuditLogRepository;
 import edu.ucdavis.dss.ipa.services.AuditLogService;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 
 @Service

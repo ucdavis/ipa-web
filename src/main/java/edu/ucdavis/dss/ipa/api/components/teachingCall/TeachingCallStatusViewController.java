@@ -15,7 +15,7 @@ import edu.ucdavis.dss.ipa.services.*;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -149,7 +149,7 @@ public class ExcelHelper {
 
                 Cell nextCell = row.getCell(x);
                 if (nextCell != null) {
-                    Cell newCell = row.createCell(x - 1, nextCell.getCellTypeEnum());
+                    Cell newCell = row.createCell(x - 1, nextCell.getCellType());
                     cloneCell(newCell, nextCell);
                 }
             }
@@ -164,7 +164,7 @@ public class ExcelHelper {
         cNew.setCellComment(cOld.getCellComment());
         cNew.setCellStyle(cOld.getCellStyle());
 
-        switch (cOld.getCellTypeEnum()) {
+        switch (cOld.getCellType()) {
             case BOOLEAN: {
                 cNew.setCellValue(cOld.getBooleanCellValue());
                 break;

@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 	@Inject

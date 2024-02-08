@@ -2,8 +2,8 @@ package edu.ucdavis.dss.ipa.entities.validation;
 
 import edu.ucdavis.dss.ipa.entities.Activity;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidActivityValidator implements ConstraintValidator<ValidActivity, Activity> {
 

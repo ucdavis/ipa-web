@@ -1,12 +1,10 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
 
 /**
  * Information provided by the UCD Registrar.

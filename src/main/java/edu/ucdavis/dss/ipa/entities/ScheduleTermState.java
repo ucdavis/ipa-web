@@ -1,14 +1,11 @@
 package edu.ucdavis.dss.ipa.entities;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.ucdavis.dss.ipa.entities.enums.TermState;
-import edu.ucdavis.dss.ipa.api.views.ScheduleViews;
-import edu.ucdavis.dss.ipa.api.views.WorkgroupViews;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduleTermState {

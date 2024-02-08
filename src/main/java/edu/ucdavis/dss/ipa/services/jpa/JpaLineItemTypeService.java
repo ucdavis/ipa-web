@@ -4,7 +4,7 @@ import edu.ucdavis.dss.ipa.entities.LineItemType;
 import edu.ucdavis.dss.ipa.repositories.LineItemTypeRepository;
 import edu.ucdavis.dss.ipa.services.LineItemTypeService;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.springframework.stereotype.Service;
 
 @Service

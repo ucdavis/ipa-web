@@ -20,11 +20,12 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	List<User> findByLoginIds(@Param("loginIds") List<String> loginIds);
 
 	@Query( " SELECT DISTINCT u" +
-			" FROM User u, TeachingAssignment ta, Schedule s, Budget b" +
+			" FROM User u, Instructor i, TeachingAssignment ta, Schedule s, Budget b" +
 			" WHERE b.id = :budgetId" +
 			" AND b.schedule = s" +
 			" AND ta.schedule = s" +
-			" AND ta.instructor = u"
+			" AND ta.instructor = i" +
+			" AND i.loginId = u.loginId"
 	)
 	List<User> findByTeachingAssignments(@Param("budgetId") long budgetId);
 }

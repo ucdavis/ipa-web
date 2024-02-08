@@ -21,7 +21,6 @@ import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.SyncActionService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -53,6 +52,7 @@ public class JpaReportViewFactory implements ReportViewFactory {
 	public List<SectionDiffView> createDiffView(long workgroupId, long year, String termCode) {
 		Javers javers = JaversBuilder
 				.javers()
+				.withInitialChanges(false)
 				.withListCompareAlgorithm(ListCompareAlgorithm.LEVENSHTEIN_DISTANCE)
 				.build();
 		List<SectionDiffView> diffView = new ArrayList<>();

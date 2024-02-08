@@ -2,7 +2,7 @@ package edu.ucdavis.dss.ipa.utilities;
 
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitUpdateEventListener;
@@ -86,7 +86,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
     }
 
     @Override
-    public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
+    public boolean requiresPostCommitHandling(EntityPersister entityPersister) {
         return true;
     }
 

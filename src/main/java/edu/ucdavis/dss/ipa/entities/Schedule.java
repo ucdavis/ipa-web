@@ -3,12 +3,10 @@ package edu.ucdavis.dss.ipa.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -97,9 +95,6 @@ public class Schedule implements Serializable {
 	public void setWorkgroup(Workgroup workgroup)
 	{
 		this.workgroup = workgroup;
-		if (!workgroup.getSchedules().contains(this)) {
-			workgroup.getSchedules().add(this);
-		}
 	}
 
 	public String getSecretToken() {

@@ -6,9 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import edu.ucdavis.dss.ipa.api.deserializers.CourseDeserializer;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,9 +68,9 @@ public class Course extends BaseEntity {
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "Courses_has_Tags", joinColumns = {
-			@JoinColumn(name = "CourseId", nullable = false, updatable = false) },
+			@JoinColumn(name = "CourseId", nullable = false, updatable = false, insertable = false) },
 			inverseJoinColumns = { @JoinColumn(name = "TagId",
-			nullable = false, updatable = false) })
+			nullable = false, updatable = false, insertable = false) })
 	@JsonIgnore
 	@JsonDeserialize
 	public List<Tag> getTags() {

@@ -6,17 +6,14 @@ import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitInsertEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
-import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.support.RequestContext;
 
-import javax.inject.Inject;
-import java.util.Arrays;
+import jakarta.inject.Inject;
 import java.util.UUID;
 
 @Component
@@ -76,7 +73,7 @@ public class InsertListener implements PostCommitInsertEventListener
     }
 
     @Override
-    public boolean requiresPostCommitHanding(EntityPersister entityPersister) {
+    public boolean requiresPostCommitHandling(EntityPersister entityPersister) {
         return true;
     }
 

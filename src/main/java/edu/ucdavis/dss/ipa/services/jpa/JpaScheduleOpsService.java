@@ -1,36 +1,28 @@
 package edu.ucdavis.dss.ipa.services.jpa;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import edu.ucdavis.dss.dw.dto.DwActivity;
 import edu.ucdavis.dss.dw.dto.DwSection;
 import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
-import edu.ucdavis.dss.ipa.entities.Schedule;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.services.ActivityService;
-import edu.ucdavis.dss.ipa.services.CourseService;
 import edu.ucdavis.dss.ipa.services.InstructorService;
-import edu.ucdavis.dss.ipa.services.RoleService;
 import edu.ucdavis.dss.ipa.services.ScheduleOpsService;
 import edu.ucdavis.dss.ipa.services.ScheduleService;
-import edu.ucdavis.dss.ipa.services.ScheduleTermStateService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.services.SectionService;
 import edu.ucdavis.dss.ipa.services.TermService;
-import edu.ucdavis.dss.ipa.services.UserRoleService;
-import edu.ucdavis.dss.ipa.services.UserService;
-import edu.ucdavis.dss.ipa.services.WorkgroupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import edu.ucdavis.dss.ipa.repositories.DataWarehouseRepository;
-import edu.ucdavis.dss.ipa.repositories.ScheduleRepository;
 
 import java.util.*;
 
@@ -159,7 +151,7 @@ public class JpaScheduleOpsService implements ScheduleOpsService {
 
 						try {
 							activityService.saveActivity(activity);
-						} catch (javax.validation.ConstraintViolationException e) {
+						} catch (jakarta.validation.ConstraintViolationException e) {
 							log.error("Could not save activity based on DW activity:" + dwActivity);
 						}
 					}

@@ -1,7 +1,7 @@
 package edu.ucdavis.dss.ipa.entities.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class NotBlankValidator implements ConstraintValidator<NotBlank, CharSequence> {
 	@Override
