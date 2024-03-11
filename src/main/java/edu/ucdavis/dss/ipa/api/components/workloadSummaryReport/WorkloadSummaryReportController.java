@@ -206,15 +206,16 @@ public class WorkloadSummaryReportController {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
-    @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/downloadMultiple/{file}", method = RequestMethod.POST)
-    public ResponseEntity downloadMultipleDepartments(@PathVariable long workgroupId, @PathVariable long year, @PathVariable String file) {
+    @RequestMapping(value = "/api/workloadSummaryReport/years/{year}/downloadMultiple/{filename}", method = RequestMethod.POST)
+    public ResponseEntity downloadMultipleDepartments(@PathVariable long year, @PathVariable String filename) {
         authorizer.isDeansOffice();
 
-        String filename = null;
-        if (file.equals("workloadSummaries")) {
+        if (filename.equals("workloadSummaries")) {
             filename = year + "_Workload_Summary_Report.xlsx";
-        } else if (file.equals("workloadSnapshots")) {
+        } else if (filename.equals("workloadSnapshots")) {
             filename = year + "_Workload_Snapshots.xlsx";
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found.");
         }
 
         byte[] bytes = s3Service.download(filename);
