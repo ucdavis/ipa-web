@@ -71,7 +71,7 @@ public class JpaUserRoleService implements UserRoleService {
 
 		List<UserRole> workgroupUserRoles = new ArrayList<UserRole>();
 		for( UserRole userRole : user.getUserRoles() ) {
-			if ( userRole.getWorkgroup() != null && userRole.getWorkgroup().equals(workgroup) ) {
+			if ( userRole.getWorkgroup() != null && userRole.getWorkgroup().getId() == workgroup.getId() ) {
 				workgroupUserRoles.add(userRole);
 			}
 		}
