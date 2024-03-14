@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
 @RestController
 public class WorkloadSummaryReportController {
@@ -156,7 +157,7 @@ public class WorkloadSummaryReportController {
                                                       @RequestBody Optional<Map<Long, List<Long>>> departmentSnapshots
                                                       ) {
         authorizer.isDeansOffice();
-        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + ".xlsx";
+        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + "_TEST.xlsx";
 
         // overwrite with empty file to update modified time
         s3Service.upload(fileName, new byte[0]);
@@ -281,21 +282,21 @@ public class WorkloadSummaryReportController {
 
         Map<String, Map<String, Long>> status = new HashMap<>();
 
-        ObjectMetadata workloadSummaries = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
-        ObjectMetadata workloadSnapshots = s3Service.getMetadata(year + "_Workload_Snapshots.xlsx");
+        HeadObjectResponse workloadSummaries = s3Service.getMetadata(year + "_Workload_Summary_Report.xlsx");
+        HeadObjectResponse workloadSnapshots = s3Service.getMetadata(year + "_Workload_Snapshots.xlsx");
         if (workloadSummaries != null) {
             Map<String, Long> md = new HashMap<>();
 
-            md.put("lastModified", workloadSummaries.getLastModified().getTime());
-            md.put("contentLength", workloadSummaries.getContentLength());
+            md.put("lastModified", workloadSummaries.lastModified().toEpochMilli());
+            md.put("contentLength", workloadSummaries.contentLength());
 
             status.put("workloadSummaries", md);
         }
 
         if (workloadSnapshots != null) {
             Map<String, Long> md = new HashMap<>();
-            md.put("lastModified", workloadSnapshots.getLastModified().getTime());
-            md.put("contentLength", workloadSnapshots.getContentLength());
+            md.put("lastModified", workloadSnapshots.lastModified().toEpochMilli());
+            md.put("contentLength", workloadSnapshots.contentLength());
 
             status.put("workloadSnapshots", md);
         }

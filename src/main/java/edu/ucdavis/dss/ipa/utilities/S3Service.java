@@ -1,51 +1,58 @@
 package edu.ucdavis.dss.ipa.utilities;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 public class S3Service {
-    private final AmazonS3 s3client;
+    private final S3Client s3;
     @Value("${AWS_S3_BUCKET}")
-    String s3Bucket;
+    String bucketName;
 
-    public S3Service(AmazonS3 s3client) {
-        this.s3client = s3client;
+    public S3Service(S3Client s3) {
+        this.s3 = s3;
     }
 
     public void upload(String filename, byte[] bytes) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("application/vnd.openxmlformats-officedocumsent.spreadsheetml.sheet");
-        metadata.setContentLength(Long.valueOf(bytes.length));
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(filename)
+            .contentType("application/vnd.openxmlformats-officedocumsent.spreadsheetml.sheet")
+            .contentLength((long) bytes.length)
+            .build();
 
-        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-
-        s3client.putObject(s3Bucket, filename, is, metadata);
+        s3.putObject(objectRequest, RequestBody.fromBytes(bytes));
     }
 
     public byte[] download(String filename) {
-        S3Object object = s3client.getObject(s3Bucket, filename);
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            .bucket(bucketName)
+            .key(filename)
+            .build();
+
         try {
-            return IOUtils.toByteArray(object.getObjectContent());
-        } catch (IOException e) {
+            return s3.getObjectAsBytes(getObjectRequest).asByteArray();
+        } catch (S3Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public ObjectMetadata getMetadata(String filename) {
+    public HeadObjectResponse getMetadata(String filename) {
         try {
-            ObjectMetadata omd = s3client.getObjectMetadata(s3Bucket, filename);
-            return omd;
-        } catch (AmazonS3Exception e) {
+            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(bucketName).key(filename).build();
+
+            return s3.headObject(headObjectRequest);
+        } catch (S3Exception e) {
             // File not found
             return null;
         }
@@ -53,6 +60,9 @@ public class S3Service {
 
     @Async
     public void delete(String filename) {
-        s3client.deleteObject(s3Bucket, filename);
+        DeleteObjectRequest deleteObjectRequest =
+            DeleteObjectRequest.builder().bucket(bucketName).key(filename).build();
+
+        s3.deleteObject(deleteObjectRequest);
     }
 }

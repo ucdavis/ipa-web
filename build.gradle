@@ -39,7 +39,6 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
-    implementation("commons-io:commons-io:2.15.1")
     implementation("org.apache.poi:poi:5.2.5")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
@@ -53,6 +52,7 @@ dependencies {
     implementation("org.javers:javers-core:7.3.7")
     implementation("com.mysql:mysql-connector-j:8.3.0")
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.651")
+    implementation("software.amazon.awssdk:s3:2.25.7")
 
     testImplementation("junit:junit")
     testImplementation("com.h2database:h2:1.4.199")
