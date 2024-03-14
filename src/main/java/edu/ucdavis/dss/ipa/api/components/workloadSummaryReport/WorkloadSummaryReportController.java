@@ -157,7 +157,7 @@ public class WorkloadSummaryReportController {
                                                       @RequestBody Optional<Map<Long, List<Long>>> departmentSnapshots
                                                       ) {
         authorizer.isDeansOffice();
-        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + "_TEST.xlsx";
+        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + ".xlsx";
 
         // overwrite with empty file to update modified time
         s3Service.upload(fileName, new byte[0]);
