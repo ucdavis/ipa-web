@@ -2,7 +2,6 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.joda.time.DateTime;
 
 import java.sql.Connection;
 import java.sql.Date;

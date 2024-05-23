@@ -1,6 +1,5 @@
 package edu.ucdavis.dss.ipa.api.components.workloadSummaryReport;
 
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories.WorkloadSummaryReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.User;
 import edu.ucdavis.dss.ipa.entities.UserRole;
