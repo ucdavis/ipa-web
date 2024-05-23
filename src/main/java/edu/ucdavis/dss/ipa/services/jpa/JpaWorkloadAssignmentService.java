@@ -138,11 +138,9 @@ public class JpaWorkloadAssignmentService implements WorkloadAssignmentService {
         }
 
         List<DwCensus> termCodeCensus =
-            termCodeCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream)
-                .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList());
+            termCodeCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream).toList();
         List<DwCensus> courseCensus =
-            courseCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream)
-                .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList());
+            courseCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream).toList();
 
         Map<String, Map<String, Long>> termCodeCensusMap = generateCensusMap(termCodeCensus);
         Map<String, Map<String, Long>> courseCensusMap = generateCensusMap(courseCensus);

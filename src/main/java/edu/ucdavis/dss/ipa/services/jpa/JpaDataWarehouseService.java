@@ -46,8 +46,7 @@ public class JpaDataWarehouseService implements DataWarehouseService {
         }
 
         List<DwCensus> censusList =
-            courseCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream)
-                .filter(c -> "CURRENT".equals(c.getSnapshotCode())).collect(Collectors.toList());
+            courseCensusFutures.stream().map(CompletableFuture::join).flatMap(Collection::stream).toList();
 
         Map<String, Map<String, Long>> censusMap = new HashMap<>();
 
