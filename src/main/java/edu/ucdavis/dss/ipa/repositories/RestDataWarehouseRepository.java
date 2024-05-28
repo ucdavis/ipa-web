@@ -27,21 +27,16 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	@Value("${DW_TOKEN}")
 	String dwToken;
 
-	@Value("${DW_PORT}")
-	String dwPort;
-
 	/**
 	 * Returns a list of people from DW or null on error.
 	 *
 	 * @param query
 	 * @return
-     */
+	*/
 	public List<DwPerson> searchPeople(String query) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-			
 			return dwClient.searchPeople(query);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
@@ -54,11 +49,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 * @return a list of DwTerms
 	 */
 	public List<DwTerm> getTerms() {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
 			return dwClient.getTerms();
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
@@ -73,11 +66,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 * @return
 	 */
 	public DwPerson getPersonByLoginId(String loginId) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
 			return dwClient.getPersonByLoginId(loginId);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
@@ -87,11 +78,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public DwCourse findCourse(String subjectCode, String courseNumber, String effectiveTermCode) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
 			return dwClient.findCourse(subjectCode, courseNumber, effectiveTermCode);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
@@ -101,11 +90,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public List<DwCourse> searchCourses(String query) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
 			return dwClient.searchCourses(query);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
@@ -122,11 +109,9 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	 */
 	@Override
 	public List<DwSection> getSectionsByTermCodeAndUniqueKeys(String termCode, List<String> uniqueKeys) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
 			List<DwSection> dwSections = new ArrayList<>();
 
 			// Split calls to DW to control the GET param length
@@ -150,14 +135,10 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public List<DwSection> getSectionsBySubjectCodeAndYear(String subjectCode, Long year) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
-			List<DwSection> dwSections = dwClient.getDetailedSectionsBySubjectCodeAndYear(subjectCode, year);
-
-			return dwSections;
+			return dwClient.getDetailedSectionsBySubjectCodeAndYear(subjectCode, year);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
@@ -166,14 +147,10 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 
 	@Override
 	public List<DwSection> getSectionsBySubjectCodeAndTermCode(String subjectCode, String termCode) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
-			List<DwSection> dwSections = dwClient.getDetailedSectionsBySubjectCodeAndTermCode(subjectCode, termCode);
-
-			return dwSections;
+			return dwClient.getDetailedSectionsBySubjectCodeAndTermCode(subjectCode, termCode);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
@@ -181,14 +158,10 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	public List<DwCensus> getCensusBySubjectCodeAndTermCode(String subjectCode, String termCode) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
-			List<DwCensus> dwCensuses = dwClient.getCensusBySubjectCodeAndTermCode(subjectCode, termCode);
-
-			return dwCensuses;
+			return dwClient.getCensusBySubjectCodeAndTermCode(subjectCode, termCode);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
@@ -196,14 +169,10 @@ public class RestDataWarehouseRepository implements DataWarehouseRepository {
 	}
 
 	public List<DwCensus> getCensusBySubjectCodeAndCourseNumber(String subjectCode, String courseNumber) {
-		DwClient dwClient;
+		DwClient dwClient = new DwClient(dwUrl, dwToken);
 
 		try {
-			dwClient = new DwClient(dwUrl, dwToken, dwPort);
-
-			List<DwCensus> dwCensuses = dwClient.getCensusBySubjectCodeAndCourseNumber(subjectCode, courseNumber);
-
-			return dwCensuses;
+			return dwClient.getCensusBySubjectCodeAndCourseNumber(subjectCode, courseNumber);
 		} catch (Exception e) {
 			emailService.reportException(e, this.getClass().getName());
 			return null;
