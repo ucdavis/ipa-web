@@ -3,7 +3,7 @@ package edu.ucdavis.dss.dw.dto;
 import static edu.ucdavis.dss.ipa.api.helpers.Utilities.isNumeric;
 
 public class DwCensus {
-    String courseNumber, subjectCode, snapshotCode, sequenceNumber, crn, termCode;
+    String courseNumber, subjectCode, snapshotCode, sequenceNumber, crn, termCode, scheduleCode;
     long currentEnrolledCount, maxEnrollmentCount, waitCount, currentAvailableSeatCount, availableWaitCount, studentCount;
 
     public String getCourseNumber() {
@@ -100,6 +100,14 @@ public class DwCensus {
 
     public void setStudentCount(long studentCount) {
         this.studentCount = studentCount;
+    }
+
+    public String getScheduleCode() {
+        return scheduleCode;
+    }
+
+    public void setScheduleCode(String scheduleCode) {
+        this.scheduleCode = scheduleCode;
     }
 
     /**
