@@ -56,6 +56,7 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
     public void buildReportSheet(Workbook wb, List<WorkloadAssignment> workloadAssignments) {
         Sheet worksheet = wb.createSheet("Workload Summary Report");
+        worksheet.createRow(0);
 
         List<Object> instructorSectionHeaders =
             Arrays.asList("Instructor", "Term", "Description", "Offering", "Enrollment / Seats",
