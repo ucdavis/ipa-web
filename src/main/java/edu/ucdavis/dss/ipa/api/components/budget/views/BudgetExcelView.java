@@ -203,11 +203,11 @@ public class BudgetExcelView extends AbstractXlsxView {
                 }
 
                 if (unnamedInstructors.size() > 0) {
-                    for (int i = 0; i < unnamedInstructors.size(); i++) {
-                        scheduleCostValues.add(unnamedInstructors.get(i));
-                        scheduleCostValues.add("");
-                        numberOfInstructorColumns--;
-                    }
+					for (String unnamedInstructor : unnamedInstructors) {
+						scheduleCostValues.add(unnamedInstructor);
+						scheduleCostValues.add(unnamedInstructor);
+						numberOfInstructorColumns--;
+					}
                 }
 
                 for (int i = 0; i < numberOfInstructorColumns; i++) {
