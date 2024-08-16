@@ -58,10 +58,6 @@ public class BudgetExcelView extends AbstractXlsxView {
 
         Sheet scheduleCostSheet = workbook.createSheet("Schedule Cost");
 
-        /* Can't easily check if the sheet has a course with multiple instructors until the rows are written
-           Opting to start with two and then deleting if not needed */
-        boolean scenarioHasMultipleInstructors = false;
-        final int SECOND_INSTRUCTOR_COLUMN = 16;
         scheduleCostSheet = ExcelHelper.setSheetHeader(scheduleCostSheet, Arrays.asList(
            "Year",
            "Department",
@@ -195,8 +191,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                     sectionGroupCost.getEnrollment(),
                     currentEnrollment,
                     sectionGroupCost.getSectionCount()));
-
-                if (namedInstructors.size() + unnamedInstructors.size() > 1) { scenarioHasMultipleInstructors = true; }
 
                 // Each instructor has two columns: Name and Type
                 int numberOfInstructorColumns = 2;
@@ -381,13 +375,6 @@ public class BudgetExcelView extends AbstractXlsxView {
                 );
             }
 
-        }
-
-        // clean up unused instructor columns
-        if (scenarioHasMultipleInstructors == false) {
-            // instructor has two columns, name and type
-            ExcelHelper.deleteColumn(workbook.getSheet("Schedule Cost"), SECOND_INSTRUCTOR_COLUMN);
-            ExcelHelper.deleteColumn(workbook.getSheet("Schedule Cost"), SECOND_INSTRUCTOR_COLUMN);
         }
 
         // Expand columns to length of largest value
