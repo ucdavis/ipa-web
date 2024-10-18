@@ -104,6 +104,22 @@ public class ExpenseItem extends BaseEntity {
         }
     }
 
+    @Transient
+    public String getExpenseItemInstructorTypeDescription() {
+        if(expenseItemType != null) {
+            String instructorType = expenseItemType.getDescription().replace(" Cost", "");
+            if (instructorType.contains("Augmentation")) {
+                return instructorType.replace(" Augmentation", " - Augmentation");
+            } else if (instructorType.contains("Emeriti")) {
+                return instructorType.replace("Emeriti", "Emeriti - Recalled");
+            } else {
+                return instructorType;
+            }
+        } else {
+            return "";
+        }
+    }
+
     @JsonProperty("termDescription")
     @Transient
     public String getTermDescription() {

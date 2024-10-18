@@ -96,7 +96,15 @@ public class BudgetExcelView extends AbstractXlsxView {
         fundsSheet = ExcelHelper.setSheetHeader(fundsSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Category", "Description", "Notes", "Comments", "Account Number", "Document Number", "Amount"));
 
         Sheet expensesSheet = workbook.createSheet("Other Costs");
-        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet, Arrays.asList("Year", "Department", "Scenario Name", "Term", "Type", "Description", "Amount"));
+        expensesSheet = ExcelHelper.setSheetHeader(expensesSheet,
+            Arrays.asList("Year", "Department", "Scenario Name", "Term", "", "", "Description",
+            "", "", "", "", "", "", "", "",
+            "Instructor Type",
+            "", "", "", "", "", "", "",
+            "", // TAs
+            "", "", "", "",
+            "Cost"
+        ));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
         instructorSalariesSheet = ExcelHelper.setSheetHeader(instructorSalariesSheet, Arrays.asList("Year", "Department", "Instructor", "Type", "Cost"));
@@ -275,14 +283,30 @@ public class BudgetExcelView extends AbstractXlsxView {
 
                 if(termCodes.contains(expenseItem.getTermCode())){
                     List<Object> cellValues = Arrays.asList(
-                            year,
-                            budgetScenarioExcelView.getWorkgroup().getName(),
-                            scenarioName,
-                            Term.getRegistrarName(expenseItem.getTermCode()),
-                            expenseItem.getExpenseItemTypeDescription(),
-                            expenseItem.getDescription(),
-                            expenseItem.getAmount());
-                    expensesSheet = ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
+                        year,
+                        budgetScenarioExcelView.getWorkgroup().getName(),
+                        scenarioName,
+                        Term.getRegistrarName(expenseItem.getTermCode()),
+                        "", "",
+                        expenseItem.getDescription(),
+                        "", "", "", "", "", "", "", "",
+                        expenseItem.getExpenseItemInstructorTypeDescription(),
+                        "", "", "", "", "", "", "",
+                        "", // TAs value
+                        "", // Readers value
+                        "", "", "",
+                        expenseItem.getAmount()
+                        // "", "", ""
+                        );
+
+                    ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
+
+                    expensesSheet.setColumnHidden(4, true);
+                    expensesSheet.setColumnHidden(5, true);
+                    for (int colIndex = 7; colIndex < 28; colIndex++) {
+                        if (colIndex == 15) { continue; } // Instructor Type
+                        expensesSheet.setColumnHidden(colIndex, true);
+                    }
                 }
 
             }
