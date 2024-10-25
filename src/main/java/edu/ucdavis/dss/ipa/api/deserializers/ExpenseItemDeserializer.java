@@ -51,6 +51,14 @@ public class ExpenseItemDeserializer extends JsonDeserializer<Object> {
             expenseItem.setAmount(amount);
         }
 
+        if (node.has("taCount") && !node.get("readerCount").isNull()) {
+            expenseItem.setTaCount(node.get("taCount").floatValue());
+        }
+
+        if (node.has("readerCount") && !node.get("readerCount").isNull()) {
+            expenseItem.setReaderCount(node.get("readerCount").floatValue());
+        }
+
         return expenseItem;
     }
 }

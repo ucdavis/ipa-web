@@ -19,6 +19,7 @@ public class ExpenseItem extends BaseEntity {
     private String description;
     private ExpenseItemType expenseItemType;
     private String termCode;
+    private Float taCount, readerCount;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,5 +129,21 @@ public class ExpenseItem extends BaseEntity {
         } else {
             return "";
         }
+    }
+
+    public Float getTaCount() {
+        return taCount;
+    }
+
+    public void setTaCount(Float taCount) {
+        this.taCount = taCount;
+    }
+
+    public Float getReaderCount() {
+        return readerCount;
+    }
+
+    public void setReaderCount(Float readerCount) {
+        this.readerCount = readerCount;
     }
 }

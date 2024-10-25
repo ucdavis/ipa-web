@@ -101,9 +101,10 @@ public class BudgetExcelView extends AbstractXlsxView {
             "", "", "", "", "", "", "", "",
             "Instructor Type",
             "", "", "", "", "", "", "",
-            "", // TAs
-            "", "", "", "",
+            "TAs", "Readers",
+            "", "", "",
             "Cost"
+//            "", "", ""
         ));
 
         Sheet instructorSalariesSheet = workbook.createSheet("Instructor Salaries");
@@ -292,11 +293,16 @@ public class BudgetExcelView extends AbstractXlsxView {
                         "", "", "", "", "", "", "", "",
                         expenseItem.getExpenseItemInstructorTypeDescription(),
                         "", "", "", "", "", "", "",
-                        "", // TAs value
-                        "", // Readers value
+                        expenseItem.getTaCount(),
+                        expenseItem.getReaderCount(),
                         "", "", "",
                         expenseItem.getAmount()
                         // "", "", ""
+                        // below are extra calculated columns in Sandra's spreadsheet
+                        // "", // calculated Instr Type
+                        // "", // Sub-Course
+                        // "", // Common Good
+                        // "" // WE
                         );
 
                     ExcelHelper.writeRowToSheet(expensesSheet, cellValues);
@@ -305,6 +311,8 @@ public class BudgetExcelView extends AbstractXlsxView {
                     expensesSheet.setColumnHidden(5, true);
                     for (int colIndex = 7; colIndex < 28; colIndex++) {
                         if (colIndex == 15) { continue; } // Instructor Type
+                        if (colIndex == 23) { continue; } // TA Count
+                        if (colIndex == 24) { continue; } // Reader Count
                         expensesSheet.setColumnHidden(colIndex, true);
                     }
                 }
