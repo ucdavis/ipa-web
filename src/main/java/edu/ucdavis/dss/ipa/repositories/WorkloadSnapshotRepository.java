@@ -7,6 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface WorkloadSnapshotRepository extends CrudRepository<WorkloadSnapshot, Long> {
     WorkloadSnapshot findById(long id);
 
+    List<WorkloadSnapshot> findByWorkgroupId(long workgroupId);
+
     List<WorkloadSnapshot> findByWorkgroupIdAndYear(long workgroupId, long year);
 
     WorkloadSnapshot findByBudgetScenarioId(long budgetScenarioId);

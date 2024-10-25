@@ -108,29 +108,32 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
     @Override
     @Transactional
-    public CompletableFuture<byte[]> createWorkloadSummaryReportBytes(Map<Long, List<Long>> departmentSnapshots, long year) {
+    public CompletableFuture<byte[]> createWorkloadSummaryReportBytes(
+        Map<Long, Map<String, Map<String, Long>>> departmentSnapshots, long year) {
         Instant start = Instant.now();
 
-        Set<Map.Entry<Long, List<Long>>> entries = departmentSnapshots.entrySet();
+        Set<Map.Entry<Long, Map<String, Map<String, Long>>>> entries = departmentSnapshots.entrySet();
 
         List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
         System.out.println("Generating workload report for " + entries.size() + " departments");
 
         int count = 0;
-        for (Map.Entry<Long, List<Long>> department : entries) {
+        for (Map.Entry<Long, Map<String, Map<String, Long>>> department : entries) {
             ++count;
 
             long workgroupId = department.getKey();
             System.out.println(count + ". Generating for workgroupId: " + workgroupId);
 
-            if (department.getValue().size() == 1) {
-                // only 1 snapshot selected, include live data
-                workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, year));
-            }
+            for (Map.Entry<String, Map<String, Long>> entry : department.getValue().entrySet()) {
+                Long snapshotId = entry.getValue().get("snapshotId");
+                Long liveDataYear = entry.getValue().get("liveDataYear");
 
-
-            for (long snapshotId : department.getValue()) {
-                workloadAssignments.addAll(workloadAssignmentService.findByWorkloadSnapshotId(snapshotId));
+                if (snapshotId == 0) {
+                    // use live data
+                    workloadAssignments.addAll(workloadAssignmentService.generateWorkloadAssignments(workgroupId, liveDataYear));
+                } else {
+                    workloadAssignments.addAll(workloadAssignmentService.findByWorkloadSnapshotId(snapshotId));
+                }
             }
         }
 

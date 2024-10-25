@@ -26,6 +26,10 @@ public class JpaWorkloadSnapshotService implements WorkloadSnapshotService {
         return workloadSnapshotRepository.findById(workloadSnapshotId);
     }
 
+    public List<WorkloadSnapshot> findByWorkgroupId(long workgroupId) {
+        return workloadSnapshotRepository.findByWorkgroupId(workgroupId);
+    }
+
     public List<WorkloadSnapshot> findByWorkgroupIdAndYear(long workgroupId, long year) {
         return workloadSnapshotRepository.findByWorkgroupIdAndYear(workgroupId, year);
     }
