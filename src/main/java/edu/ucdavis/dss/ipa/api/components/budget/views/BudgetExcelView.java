@@ -1,5 +1,7 @@
 package edu.ucdavis.dss.ipa.api.components.budget.views;
 
+import edu.ucdavis.dss.ipa.api.components.budget.constants.CommonGood;
+import edu.ucdavis.dss.ipa.api.components.budget.constants.WritingExperience;
 import edu.ucdavis.dss.ipa.api.helpers.SpringContext;
 import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
@@ -89,7 +91,9 @@ public class BudgetExcelView extends AbstractXlsxView {
            "Support Cost",
            "Instructor Cost",
            "Total Cost",
-           "Course Type"
+           "Course Type",
+           "Common Good?",
+           "WE"
         ));
 
         Sheet fundsSheet = workbook.createSheet("Funds");
@@ -238,7 +242,9 @@ public class BudgetExcelView extends AbstractXlsxView {
                         supportCost,
                         instructorCost,
                         supportCost + instructorCost,
-                        getCourseType(sectionGroupCost)
+                        getCourseType(sectionGroupCost),
+                        getCommonGood(sectionGroupCost),
+                        getWritingExperience(sectionGroupCost)
                     )
                 );
 
@@ -592,5 +598,18 @@ public class BudgetExcelView extends AbstractXlsxView {
         } else {
             return "Upper";
         }
+    }
+
+    private String getCommonGood(SectionGroupCost sectionGroupCost) {
+        return CommonGood.COURSES.contains(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber())
+            ? "CG"
+            : "Other";
+    }
+
+
+    private String getWritingExperience(SectionGroupCost sectionGroupCost) {
+        return WritingExperience.COURSES.contains(sectionGroupCost.getSubjectCode() + sectionGroupCost.getCourseNumber())
+            ? "WE"
+            : "";
     }
 }
