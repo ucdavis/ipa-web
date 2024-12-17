@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface TeachingAssignmentRepository extends CrudRepository<TeachingAssignment, Long> {
 	TeachingAssignment findOneBySectionGroupAndInstructorAndTermCode(SectionGroup sectionGroup, Instructor instructor, String termCode);
+	TeachingAssignment findOneBySectionGroupAndInstructorAndTermCodeAndApprovedTrue(SectionGroup sectionGroup, Instructor instructor, String termCode);
 
 	TeachingAssignment findOneByInstructorIdAndScheduleIdAndTermCodeAndBuyoutAndAndCourseReleaseAndSabbaticalAndInResidenceAndWorkLifeBalanceAndLeaveOfAbsenceAndSabbaticalInResidenceAndJointAppointmentAndInterdisciplinaryTeachingAndWorkLoadCredit(
 			Long instructorId, Long scheduleId, String termCode, Boolean buyout, Boolean courseRelease, Boolean sabbatical, Boolean inResidence, Boolean workLifeBalance, Boolean leaveOfAbsence, Boolean sabbaticalInResidence, Boolean jointAppointment, Boolean interdisciplinaryTeaching, Boolean workLoadCredit);

@@ -57,6 +57,9 @@ public class JpaTeachingAssignmentService implements TeachingAssignmentService {
 	public TeachingAssignment findOneBySectionGroupAndInstructorAndTermCode(SectionGroup sectionGroup, Instructor instructor, String termCode) {
 		return teachingAssignmentRepository.findOneBySectionGroupAndInstructorAndTermCode(sectionGroup, instructor, termCode);
 	}
+	public TeachingAssignment findOneBySectionGroupAndInstructorAndTermCodeAndApprovedTrue(SectionGroup sectionGroup, Instructor instructor, String termCode) {
+		return teachingAssignmentRepository.findOneBySectionGroupAndInstructorAndTermCodeAndApprovedTrue(sectionGroup, instructor, termCode);
+	}
 
 	@Override
 	public TeachingAssignment findOneById(Long id) {

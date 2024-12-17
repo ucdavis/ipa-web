@@ -22,6 +22,8 @@ public interface TeachingAssignmentService {
 
 	TeachingAssignment findOneBySectionGroupAndInstructorAndTermCode(SectionGroup sectionGroup, Instructor instructor, String termCode);
 
+	TeachingAssignment findOneBySectionGroupAndInstructorAndTermCodeAndApprovedTrue(SectionGroup sectionGroup, Instructor instructor, String termCode);
+
 	TeachingAssignment findOrCreateOneBySectionGroupAndInstructor(SectionGroup sectionGroup, Instructor instructor);
 
 	List<TeachingAssignment> findByScheduleIdAndInstructorId(long scheduleId, long instructorId);
