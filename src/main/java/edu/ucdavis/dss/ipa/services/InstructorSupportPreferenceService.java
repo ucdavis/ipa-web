@@ -14,7 +14,7 @@ public interface InstructorSupportPreferenceService {
      */
     List<Long> updatePriorities(List<Long> instructorInstructionalSupportPreferenceIds, long sectionGroupId);
 
-    InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long sectionGroupId);
+    InstructorSupportPreference create (long instructionalSupportStaffId, long instructorId, long sectionGroupId, String appointmentType);
 
     Long delete(Long studentInstructionalSupportPreferenceId);
 

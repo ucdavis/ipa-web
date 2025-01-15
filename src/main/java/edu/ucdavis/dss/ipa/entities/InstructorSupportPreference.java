@@ -23,6 +23,7 @@ public class InstructorSupportPreference implements Serializable {
     private SupportStaff supportStaff;
     private Instructor instructor;
     private long priority;
+    private String appointmentType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,5 +109,13 @@ public class InstructorSupportPreference implements Serializable {
 
     public void setPriority(long priority) {
         this.priority = priority;
+    }
+
+    public String getAppointmentType() {
+        return appointmentType;
+    }
+
+    public void setAppointmentType(String appointmentType) {
+        this.appointmentType = appointmentType;
     }
 }
