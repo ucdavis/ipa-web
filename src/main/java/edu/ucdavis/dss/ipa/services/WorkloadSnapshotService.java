@@ -9,6 +9,8 @@ public interface WorkloadSnapshotService {
 
     WorkloadSnapshot findById(long workloadSnapshotId);
 
+    List<WorkloadSnapshot> findByWorkgroupId(long workgroupId);
+
     List<WorkloadSnapshot> findByWorkgroupIdAndYear(long workgroupId, long year);
 
     void deleteByBudgetScenarioId(long budgetScenarioId);

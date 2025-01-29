@@ -27,7 +27,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,6 +70,9 @@ public class WorkloadSummaryReportController {
     @Value("${IPA_URL_FRONTEND}")
     String ipaUrlFrontend;
 
+    @Autowired
+    private Environment env;
+
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<WorkloadAssignment> getWorkloadSummaryReportView(
@@ -86,14 +91,16 @@ public class WorkloadSummaryReportController {
         Map<String, Map<String, Object>> departmentSnapshots = new HashMap<>();
 
         for (Workgroup userWorkgroup : userWorkgroups) {
-            List<WorkloadSnapshot> workloadSnapshots = new ArrayList<>();
-            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year - 1));
-            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year));
+			List<WorkloadSnapshot> workloadSnapshots =
+				new ArrayList<>(workloadSnapshotService.findByWorkgroupId(userWorkgroup.getId()));
+//            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year - 1));
+//            workloadSnapshots.addAll(workloadSnapshotService.findByWorkgroupIdAndYear(userWorkgroup.getId(), year));
 
             Map<String, Object> department = new HashMap<>();
             department.put("name", userWorkgroup.getName());
             department.put("workgroupId", userWorkgroup.getId());
             department.put("snapshots", workloadSnapshots);
+            department.put("years", workloadSnapshots.stream().map(WorkloadSnapshot::getYear).distinct().toList());
 
             departmentSnapshots.put(userWorkgroup.getName(), department);
         }
@@ -153,10 +160,11 @@ public class WorkloadSummaryReportController {
     @RequestMapping(value = "/api/workloadSummaryReport/{workgroupId}/years/{year}/generateMultiple", method = RequestMethod.POST)
     public ResponseEntity generateMultipleDepartments(@PathVariable long workgroupId,
                                                       @PathVariable long year,
-                                                      @RequestBody Optional<Map<Long, List<Long>>> departmentSnapshots
+                                                      @RequestBody Optional<Map<Long, Map<String, Map<String, Long>>>> departmentSnapshots
                                                       ) {
         authorizer.isDeansOffice();
-        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") + ".xlsx";
+        final String fileName = year + (departmentSnapshots.isPresent() ? "_Workload_Snapshots" : "_Workload_Summary_Report") +
+            (env.matchesProfiles("development") ? "_TEST.xlsx" : ".xlsx");
 
         // overwrite with empty file to update modified time
         s3Service.upload(fileName, new byte[0]);
