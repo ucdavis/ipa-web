@@ -294,7 +294,8 @@ public class AssignmentViewTeachingAssignmentController {
 
                         // Looking for teachingAssignments from the relevant instructor
                         if (slotTeachingAssignmentInstructor.getId() == instructorDto.getId()
-                        && slotTeachingAssignment.getTermCode().equals(teachingAssignmentDto.getTermCode())) {
+                            && slotTeachingAssignment.getTermCode().equals(teachingAssignmentDto.getTermCode()) &&
+                            slotTeachingAssignment.isFromInstructor()) {
                             teachingAssignmentIdsToDelete.add(slotTeachingAssignment.getId());
                             teachingAssignmentsToDelete.add(slotTeachingAssignment);
                         }
