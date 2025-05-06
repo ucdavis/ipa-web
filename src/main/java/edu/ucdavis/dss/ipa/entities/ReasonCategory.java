@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ReasonCategory {
     private long id;
     private String description;
+    private boolean archived;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +36,11 @@ public class ReasonCategory {
         this.description = description;
     }
 
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
 }
