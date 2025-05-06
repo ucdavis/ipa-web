@@ -8,10 +8,7 @@ VALUES
   (102, 'External Buyout'),
   (103, 'Course Release'),
   (104, 'Work Load Credit'),
-  (105, 'Editor'),
-  (106, 'Leave of Absence'),
-  (107, 'Fellowship'),
-  (108, 'FMLA'),
-  (109, 'Work Life Balance'),
-  (110, 'Conversion'),
-  (111, 'Other');
+  (105, 'Leave of Absence'),
+  (106, 'Fellowship'),
+  (107, 'Work Life Balance'),
+  (108, 'Other');
