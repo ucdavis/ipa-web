@@ -41,6 +41,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
 
         Sheet worksheet = workbook.createSheet(year + "-" + String.valueOf(year + 1).substring(2, 4));
 
+        List<String> columnNames = Arrays.asList("Course", "Instructor", "Days", "Hours", "Cap", "Prior");
         List<String> termHeaders = new ArrayList<>();
         List<Object> sectionHeaders = new ArrayList<>();
         List<List<Object>> dataRows = new ArrayList<>();
@@ -49,7 +50,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
         for (ScheduleSummaryReportView scheduleSummaryReportView : scheduleSummaryReportViewList) {
             String shortTermCode = scheduleSummaryReportView.getTermCode();
             termHeaders.addAll(Arrays.asList(Term.getRegistrarName(shortTermCode), "", "", "", "", ""));
-            sectionHeaders.addAll(Arrays.asList("Course", "Instructor", "Days", "Hours", "Cap", "Prior"));
+            sectionHeaders.addAll(columnNames);
 
             List<SectionGroup> termSectionGroups = scheduleSummaryReportView.getSectionGroups().stream()
                 .sorted(Comparator.comparing(sg -> sg.getCourse().getCourseNumber())).collect(
@@ -112,27 +113,25 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     lastOfferedCensus
                 ));
 
-                // add filler if previous course number was different
-                if (i > 0 && currentSectionGroup.getCourse().getCourseNumber()
-                    .compareTo(termSectionGroups.get(i - 1).getCourse().getCourseNumber()) != 0) {
+                // add spaces between courses
+                if (i > 0 && currentSectionGroup.getCourse().getShortDescription()
+                    .compareTo(termSectionGroups.get(i - 1).getCourse().getShortDescription()) != 0) {
 
-                    int spaces = rowValues.size();
-
-                    if (completedTerm > 0) {
-                        List<Object> row;
-                        if (currentRow < dataRows.size()) {
-                            row = dataRows.get(currentRow);
-                            fillRow(row, "", spaces);
-                        } else {
-                            row = new ArrayList<>();
-                            fillRow(row, "", spaces * completedTerm);
-                            dataRows.add(row);
-                        }
-                        currentRow++;
-                    } else {
+                    if (currentRow == dataRows.size()) {
                         List<Object> emptyRow = new ArrayList<>();
-                        fillRow(emptyRow, "", spaces);
+                        fillRow(emptyRow, "", columnNames.size() * (completedTerm + 1));
                         dataRows.add(new ArrayList<>(emptyRow));
+                        currentRow += 1;
+                    } else {
+                        if (currentRow + 1 >= dataRows.size()) {
+                            List<Object> emptyRow = new ArrayList<>();
+                            fillRow(emptyRow, "", columnNames.size() * (completedTerm + 1));
+                            dataRows.add(new ArrayList<>(emptyRow));
+                        } else {
+                            List<Object> row = dataRows.get(currentRow + 1);
+                            fillRow(row, "", columnNames.size());
+                        }
+                        currentRow += 2;
                     }
                 }
 
@@ -140,6 +139,11 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     // start another column
                     if (currentRow < dataRows.size()) {
                         // append to existing row
+                        int expectedColumns = completedTerm * columnNames.size();
+                        int currentColumns = dataRows.get(currentRow).size();
+                        if (dataRows.get(currentRow).size() < expectedColumns) {
+                            fillRow(dataRows.get(currentRow), "", expectedColumns - currentColumns);
+                        }
                         dataRows.get(currentRow).addAll(rowValues);
 
                         if (currentSectionGroup.getSections().size() > 1 &&
@@ -188,6 +192,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                         int spaces = completedTerm * rowValues.size();
                         fillRow(rowValues, "", spaces, 0);
                         dataRows.add(rowValues);
+                        currentRow++;
 
                         // can be removed?
                         if (currentSectionGroup.getSections().size() > 1) {
@@ -210,6 +215,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                     }
                 } else {
                     dataRows.add(rowValues);
+                    currentRow++;
 
                     if (currentSectionGroup.getSections().size() > 1) {
                         for (Section section : currentSectionGroup.getSections()) {
@@ -224,11 +230,10 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
                                     ""
                                 )
                             ));
+                            currentRow++;
                         }
                     }
                 }
-
-                currentRow++;
             }
             completedTerm++;
         }
