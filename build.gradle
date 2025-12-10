@@ -59,6 +59,6 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("junit:junit")
-    testImplementation("com.h2database:h2:1.4.199")
+    testImplementation("com.h2database:h2")
     testImplementation("com.jayway.jsonpath:json-path:2.4.0")
 }
