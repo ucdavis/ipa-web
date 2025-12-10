@@ -1,4 +1,4 @@
-FROM gradle:7.6.3-jdk17 AS builder
+FROM gradle:8.14.3-jdk17 AS builder
 USER root
 WORKDIR /usr/src
 COPY . .
