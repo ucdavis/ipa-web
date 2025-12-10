@@ -1,3 +1,5 @@
+#!/bin/sh
+
 mydir=tmp/certs
 if [ ! -e "${mydir}" ]
 then
