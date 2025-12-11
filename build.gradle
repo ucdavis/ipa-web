@@ -48,8 +48,8 @@ dependencies {
     implementation("org.flywaydb:flyway-mysql")
     implementation("com.mysql:mysql-connector-j")
 
-    implementation("org.apache.poi:poi:5.2.5")
-    implementation("org.apache.poi:poi-ooxml:5.2.5")
+    implementation("org.apache.poi:poi:5.4.0")
+    implementation("org.apache.poi:poi-ooxml:5.4.0")
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.apache.commons:commons-lang3")
