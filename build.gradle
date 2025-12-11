@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.2'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.5'
     id 'checkstyle'
     id 'idea'
 }
@@ -54,7 +54,7 @@ dependencies {
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.apache.httpcomponents.client5:httpclient5")
-    implementation("org.javers:javers-core:7.3.7")
+    implementation("org.javers:javers-core:7.6.1")
     implementation("software.amazon.awssdk:s3:2.25.7")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
