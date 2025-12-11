@@ -12,7 +12,7 @@ awk 'split_after == 1 {n++;split_after=0} /-----END CERTIFICATE-----/ {split_aft
 for CERT in rds-ca-*; do
   alias=$(openssl x509 -noout -text -in $CERT | awk '/Subject:/ {sub(/.*CN *= */, ""); print; exit}')
   echo "Importing $alias"
-  keytool -import -file ${CERT} -alias "${alias}" -storepass changeit -keystore "$JAVA_HOME/jre/lib/security/cacerts" -noprompt
+  keytool -import -file ${CERT} -alias "${alias}" -storepass changeit -noprompt -cacerts
   rm $CERT
 done
 
