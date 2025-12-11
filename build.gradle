@@ -54,7 +54,7 @@ dependencies {
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.apache.httpcomponents.client5:httpclient5")
-    implementation("org.javers:javers-core:7.6.1")
+    implementation("org.javers:javers-core:7.9.0")
     implementation("software.amazon.awssdk:s3:2.25.7")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
