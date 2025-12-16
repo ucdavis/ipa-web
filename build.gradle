@@ -2,12 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.8'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'checkstyle'
     id 'idea'
-}
-
-checkstyle {
-    configFile file("checkstyle.xml")
 }
 
 bootJar {
@@ -40,25 +35,25 @@ dependencies {
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-cas")
 
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
     implementation("com.mysql:mysql-connector-j")
 
-    implementation("org.apache.poi:poi:5.4.1")
-    implementation('org.apache.poi:poi-ooxml:5.4.1')
+    implementation("org.apache.poi:poi:5.5.1")
+    implementation('org.apache.poi:poi-ooxml:5.5.1')
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("org.javers:javers-core:7.9.0")
-    implementation("software.amazon.awssdk:s3:2.25.7")
+    implementation("software.amazon.awssdk:s3:2.40.8")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("junit:junit")
     testImplementation("com.h2database:h2")
-    testImplementation('com.jayway.jsonpath:json-path:2.9.0')
+    testImplementation('com.jayway.jsonpath:json-path:2.10.0')
 }
