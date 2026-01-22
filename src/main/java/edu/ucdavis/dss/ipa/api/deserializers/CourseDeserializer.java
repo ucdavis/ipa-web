@@ -46,6 +46,9 @@ public class CourseDeserializer extends JsonDeserializer<Object> {
         if (node.has("sequencePattern")) {
             course.setSequencePattern(node.get("sequencePattern").textValue());
         }
+        if (node.has("topic")) {
+            course.setTopic(node.get("topic").textValue());
+        }
         if (node.has("unitsLow")) {
             course.setUnitsLow(node.get("unitsLow").floatValue());
         }

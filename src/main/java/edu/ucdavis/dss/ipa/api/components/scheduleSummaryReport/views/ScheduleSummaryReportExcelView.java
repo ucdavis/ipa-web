@@ -91,7 +91,9 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                     continue;
                 }
                 Row excelHeader = sheet.createRow(row);
-                excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle());
+                String topic = course.getTopic();
+                String topicString = (topic == null || topic.isBlank()) ? "" : ": " + topic;
+                excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle() + topicString);
                 // Set Instructors column
                 col = 1;
                 List<String> instructorNames = new java.util.ArrayList<>();

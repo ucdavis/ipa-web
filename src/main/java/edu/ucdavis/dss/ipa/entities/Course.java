@@ -28,7 +28,7 @@ public class Course extends BaseEntity {
 	private Schedule schedule;
 	private List<SectionGroup> sectionGroups = new ArrayList<>();
 	private List<Tag> tags = new ArrayList<Tag>(0);
-	private String note;
+	private String note, topic;
 	private List<CourseComment> courseComments = new ArrayList<>();
 
 	@Id
@@ -207,6 +207,11 @@ public class Course extends BaseEntity {
 	public void setNote(String note) {
 		this.note = note;
 	}
+
+	@JsonProperty("topic")
+	public String getTopic() { return topic;}
+
+	public void setTopic(String topic) { this.topic = topic; }
 
 	@JsonProperty("courseComments")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true)

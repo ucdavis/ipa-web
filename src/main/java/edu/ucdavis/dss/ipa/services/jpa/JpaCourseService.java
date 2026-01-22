@@ -71,6 +71,7 @@ public class JpaCourseService implements CourseService {
 		originalCourse.setUnitsHigh(newCourse.getUnitsHigh());
 		originalCourse.setSequencePattern(newCourse.getSequencePattern());
 		originalCourse.setNote(newCourse.getNote());
+		originalCourse.setTopic(newCourse.getTopic());
 
 		return this.courseRepository.save(originalCourse);
 	}
