@@ -147,6 +147,7 @@ public class CourseViewController {
 		originalSectionGroup.setReaderAppointments(sectionGroup.getReaderAppointments());
 
 		originalSectionGroup.setUnitsVariable(sectionGroup.getUnitsVariable());
+		originalSectionGroup.setTopic(sectionGroup.getTopic());
 
 		if (!originalSectionGroup.getTermCode().equals(sectionGroup.getTermCode())) {
 			// need to update live data sgc termCode here or it'll get deleted on budgetView load

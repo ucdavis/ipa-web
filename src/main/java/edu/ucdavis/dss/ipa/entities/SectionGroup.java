@@ -37,6 +37,7 @@ public class SectionGroup extends BaseEntity {
 	private Integer plannedSeats;
 	private Float teachingAssistantAppointments, readerAppointments, unitsVariable;
 	private Boolean showTheStaff = false;
+	private String topic;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -233,6 +234,10 @@ public class SectionGroup extends BaseEntity {
 			return null;
 		}
 	}
+
+	@JsonProperty("topic")
+	public String getTopic() { return topic;}
+	public void setTopic(String topic) { this.topic = topic; }
 
 	@Transient
 	public String getDisplayUnits(Boolean isWorkload) {

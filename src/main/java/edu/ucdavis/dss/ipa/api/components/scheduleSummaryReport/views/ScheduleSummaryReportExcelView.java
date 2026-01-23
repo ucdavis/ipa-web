@@ -91,7 +91,7 @@ public class ScheduleSummaryReportExcelView extends AbstractXlsView {
                     continue;
                 }
                 Row excelHeader = sheet.createRow(row);
-                String topic = course.getTopic();
+                String topic = sectionGroup.getTopic();
                 String topicString = (topic == null || topic.isBlank()) ? "" : ": " + topic;
                 excelHeader.createCell(col).setCellValue(course.getShortDescription() + " - " + course.getTitle() + topicString);
                 // Set Instructors column

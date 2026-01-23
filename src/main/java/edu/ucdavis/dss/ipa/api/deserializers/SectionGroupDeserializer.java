@@ -56,6 +56,10 @@ public class SectionGroupDeserializer extends JsonDeserializer<Object> {
 			sg.setUnitsVariable(node.get("unitsVariable").floatValue());
 		}
 
+		if (node.has("topic")) {
+			sg.setTopic(node.get("topic").textValue());
+		}
+
 		return sg;
 	}
 
