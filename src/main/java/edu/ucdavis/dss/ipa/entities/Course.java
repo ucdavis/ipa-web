@@ -67,10 +67,11 @@ public class Course extends BaseEntity {
 	}
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "Courses_has_Tags", joinColumns = {
-			@JoinColumn(name = "CourseId", nullable = false, updatable = false, insertable = false) },
-			inverseJoinColumns = { @JoinColumn(name = "TagId",
-			nullable = false, updatable = false, insertable = false) })
+	@JoinTable(
+		name = "Courses_has_Tags",
+		joinColumns = { @JoinColumn(name = "CourseId", nullable = false) },
+		inverseJoinColumns = { @JoinColumn(name = "TagId", nullable = false) }
+	)
 	@JsonIgnore
 	@JsonDeserialize
 	public List<Tag> getTags() {
