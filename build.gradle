@@ -28,15 +28,17 @@ test {
 configurations.configureEach {
     resolutionStrategy.dependencySubstitution {
         // Substitute jdk15on with jdk18on
-        substitute module("org.bouncycastle:bcpkix-jdk15on") using module("org.bouncycastle:bcpkix-jdk18on:1.78.1") because "Java 21 support"
-        substitute module("org.bouncycastle:bcprov-jdk15on") using module("org.bouncycastle:bcprov-jdk18on:1.78.1") because "Java 21 support"
+        substitute module("org.bouncycastle:bcpkix-jdk15on") using module("org.bouncycastle:bcpkix-jdk18on:1.83") because "Java 21 support"
+        substitute module("org.bouncycastle:bcprov-jdk15on") using module("org.bouncycastle:bcprov-jdk18on:1.83") because "Java 21 support"
     }
 }
 
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:3.5.11")
+    implementation enforcedPlatform("com.fasterxml.jackson:jackson-bom:2.21.1")
     constraints {
         implementation("com.nimbusds:nimbus-jose-jwt:10.8")
+        implementation("org.apache.commons:commons-lang3:3.20.0")
     }
 
     implementation("org.springframework.security:spring-security-cas")
