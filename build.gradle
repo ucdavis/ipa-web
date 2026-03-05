@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.11'
-    id 'io.spring.dependency-management' version '1.1.7'
     id 'idea'
 }
 
@@ -26,7 +25,21 @@ test {
     testLogging.showStandardStreams = true
 }
 
+configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        // Substitute jdk15on with jdk18on
+        substitute module("org.bouncycastle:bcpkix-jdk15on") using module("org.bouncycastle:bcpkix-jdk18on:1.78.1") because "Java 21 support"
+        substitute module("org.bouncycastle:bcprov-jdk15on") using module("org.bouncycastle:bcprov-jdk18on:1.78.1") because "Java 21 support"
+    }
+}
+
 dependencies {
+    implementation platform("org.springframework.boot:spring-boot-dependencies:3.5.11")
+    constraints {
+        implementation("com.nimbusds:nimbus-jose-jwt:10.8")
+    }
+
+    implementation("org.springframework.security:spring-security-cas")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
