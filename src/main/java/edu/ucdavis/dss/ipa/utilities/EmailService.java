@@ -12,6 +12,7 @@ public interface EmailService {
      */
     boolean send(String recipientEmail, String messageBody, String messageSubject);
     boolean send(String recipientEmail, String messageBody, String messageSubject, Boolean htmlMode);
+    boolean send(String recipientEmail, String messageBody, String messageSubject, String filename, String contentType, byte[] attachment);
 
     /**
      * Sends email if runningMode is production or staging, else email is suppressed.

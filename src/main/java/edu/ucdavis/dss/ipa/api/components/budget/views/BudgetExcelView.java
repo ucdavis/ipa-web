@@ -7,6 +7,8 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
 import edu.ucdavis.dss.ipa.services.SectionGroupService;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.servlet.view.document.AbstractXlsxView;
 
 import static edu.ucdavis.dss.ipa.api.helpers.Utilities.round;
@@ -53,6 +56,21 @@ public class BudgetExcelView extends AbstractXlsxView {
     protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setHeader("Content-Type", "multipart/mixed; charset=\"utf-8\"");
         response.setHeader("Content-Disposition", "attachment; filename=\"Budget-Report.xlsx\"");
+
+        fillWorkbook(workbook);
+    }
+
+    public byte[] toByteArray() {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            fillWorkbook(workbook);
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate XLSX bytes", e);
+        }
+    }
+
+    private void fillWorkbook(Workbook workbook) throws IOException {
         Integer MAX_COLUMN_CHARACTERS = 50;
         Integer minimumNoteColumnWidth = 10;
         Sheet budgetSummarySheet = workbook.createSheet("Budget Summary");

@@ -33,6 +33,18 @@ public class ConsoleEmailService implements EmailService {
     }
 
     @Override
+    public boolean send(String recipientEmail, String messageBody, String messageSubject, String filename, String contentType, byte[] attachment) {
+        log.info("ConsoleEmailService will 'send' e-mail to log only.");
+        log.info("\tTo           : " + recipientEmail);
+        log.info("\tSubject      : " + messageSubject);
+        log.info("\tBody         : \n" + messageBody);
+        log.info("\tFilename     : \n" + filename);
+        log.info("\tContent-Type : \n" + contentType);
+
+        return true;
+    }
+
+    @Override
     public boolean reportException(Exception e, String additionalDetails) {
         String recipientEmail = "dssit-devs-exceptions@ucdavis.edu";
         String messageSubject = e.getMessage();

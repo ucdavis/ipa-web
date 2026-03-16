@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -62,6 +63,11 @@ public class DefaultEmailService implements EmailService {
 		return sendEmail(recipientEmail, messageBody, messageSubject, htmlMode);
 	}
 
+	@Override
+	public boolean send(String recipientEmail, String messageBody, String messageSubject, String filename, String contentType, byte[] attachment) {
+		return sendEmail(recipientEmail, messageBody, messageSubject, true, filename, contentType, attachment);
+	}
+
 	/**
 	 * Send exception report email to developers.
 	 *
@@ -112,6 +118,10 @@ public class DefaultEmailService implements EmailService {
 	}
 
 	private boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode) {
+		return sendEmail(recipientEmail, messageBody, messageSubject, htmlMode, null, null, null);
+	}
+
+	private boolean sendEmail(String recipientEmail, String messageBody, String messageSubject, boolean htmlMode, String filename, String contentType, byte[] attachment) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 
 		if(messageSubject == null) {
@@ -136,11 +146,17 @@ public class DefaultEmailService implements EmailService {
 		MimeMessage message = sender.createMimeMessage();
 
 		try {
-			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+			boolean hasAttachment = attachment != null && attachment.length > 0;
+			boolean isMultipart = htmlMode || hasAttachment;
+			MimeMessageHelper helper = new MimeMessageHelper(message, isMultipart, "UTF-8");
 			helper.setTo(recipientEmail);
 			helper.setFrom(smtpFrom);
 			helper.setSubject(messageSubject);
 			helper.setText(messageBody, htmlMode);
+
+			if (hasAttachment) {
+				helper.addAttachment(filename, new ByteArrayResource(attachment), contentType);
+			}
 
 			sender.send(message);
 		} catch (MailException e) {
