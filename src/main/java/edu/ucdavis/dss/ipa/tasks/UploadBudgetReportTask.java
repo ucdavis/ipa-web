@@ -2,8 +2,13 @@ package edu.ucdavis.dss.ipa.tasks;
 
 import edu.ucdavis.dss.ipa.api.components.budget.views.BudgetExcelView;
 import edu.ucdavis.dss.ipa.api.components.budget.views.factories.BudgetViewFactory;
+import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories.WorkloadSummaryReportViewFactory;
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
+import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
+import edu.ucdavis.dss.ipa.entities.WorkloadSnapshot;
 import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
+import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
+import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -20,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 
 /**
- * Daily dump of latest Budget Scenarios to Box folder
+ * Daily dump of latest Budget Requests and corresponding Workload Snapshot to Box folder
  */
 @Service
 @Profile({"production", "staging", "development"})
@@ -30,11 +35,18 @@ public class UploadBudgetReportTask {
     @Value("${BOX_UPLOAD_EMAIL:}")
     String boxUploadEmail;
     @Inject
+    private EmailService emailService;
+    @Inject
     private BudgetViewFactory budgetViewFactory;
     @Inject
     private BudgetScenarioService budgetScenarioService;
     @Inject
-    private EmailService emailService;
+    private WorkloadSnapshotService workloadSnapshotService;
+    @Inject
+    private WorkloadSummaryReportViewFactory workloadSummaryReportViewFactory;
+    @Inject
+    private WorkloadAssignmentService workloadAssignmentService;
+
 
     // Run every night at 10pm
     @Scheduled(cron = "0 0 22 ? * MON-FRI", zone = "America/Los_Angeles")
@@ -64,28 +76,38 @@ public class UploadBudgetReportTask {
                 93L, 94L, 95L, 96L, 97L, 67L, 99L, 100L);
 
         List<BudgetScenario> latestBudgetRequests = new ArrayList<>();
+        List<WorkloadSnapshot> latestWorkloadSnapshots = new ArrayList<>();
 
         for (Long workgroupId : lsWorkgroupIds) {
             List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
 
-            BudgetScenario latestRequest =
-                budgetScenarios.stream().filter(BudgetScenario::getIsBudgetRequest)
-                    .max(Comparator.comparing(BudgetScenario::getCreationDate)).orElse(null);
-            latestBudgetRequests.add(latestRequest);
+            budgetScenarios.stream().filter(BudgetScenario::getIsBudgetRequest)
+                .max(Comparator.comparing(BudgetScenario::getCreationDate)).ifPresent(latestBudgetRequests::add);
 
+            List<WorkloadSnapshot> workloadSnapshots =
+                workloadSnapshotService.findByWorkgroupIdAndYear(workgroupId, year);
+            workloadSnapshots.stream().max(Comparator.comparing(WorkloadSnapshot::getCreatedAt))
+                .ifPresent(latestWorkloadSnapshots::add);
         }
 
         BudgetExcelView budgetReport = budgetViewFactory.createBudgetExcelView(latestBudgetRequests);
+        byte[] budgetReportBytes = budgetReport.toByteArray();
 
-
+        List<WorkloadAssignment> workloadAssignments = new ArrayList<>();
+        for (WorkloadSnapshot workloadSnapshot : latestWorkloadSnapshots) {
+            workloadAssignments.addAll(workloadAssignmentService.findByWorkloadSnapshotId(workloadSnapshot.getId()));
+        }
+        byte[] workloadReport =
+            workloadSummaryReportViewFactory.generateWorkloadSummaryReportBytesFromAssignments(workloadAssignments);
 
         try {
-            byte[] budgetReportBytes = budgetReport.toByteArray();
-
-
             emailService.send(boxUploadEmail, "Intentionally blank", "Budget Report Upload",
                 "Budget Report Download_FY" + displayYear + " Initial.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", budgetReportBytes);
+
+            emailService.send(boxUploadEmail, "Intentionally blank", "Workload Snapshot Upload",
+                displayYear + " Workload Initial Snapshot.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", workloadReport);
         } catch (Exception e) {
             log.debug("Could not complete uploadBudgetReport()");
             e.printStackTrace();

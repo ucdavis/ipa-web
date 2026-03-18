@@ -91,19 +91,7 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
         System.out.println("Finished gathering data, writing to excel");
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        WorkloadSummaryReportExcelView.buildRawAssignmentsSheet(workbook, workloadAssignments);
-        ExcelHelper.expandHeaders(workbook);
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
-            workbook.write(bos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return CompletableFuture.completedFuture(bos.toByteArray());
+        return CompletableFuture.completedFuture(generateWorkloadSummaryReportBytesFromAssignments(workloadAssignments));
     }
 
     @Override
@@ -142,18 +130,17 @@ public class JpaWorkloadSummaryReportViewFactory implements WorkloadSummaryRepor
 
         System.out.println("Finished gathering data, writing to excel");
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        WorkloadSummaryReportExcelView.buildRawAssignmentsSheet(workbook, workloadAssignments);
-        ExcelHelper.expandHeaders(workbook);
+        return CompletableFuture.completedFuture(generateWorkloadSummaryReportBytesFromAssignments(workloadAssignments));
+    }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
-            workbook.write(bos);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public byte[] generateWorkloadSummaryReportBytesFromAssignments(List<WorkloadAssignment> workloadAssignments) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            WorkloadSummaryReportExcelView.buildRawAssignmentsSheet(workbook, workloadAssignments);
+            ExcelHelper.expandHeaders(workbook);
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate byte array", e);
         }
-
-        return CompletableFuture.completedFuture(bos.toByteArray());
     }
 }
