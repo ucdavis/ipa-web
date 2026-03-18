@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,6 @@ public class UploadBudgetReportTask {
 
     // Run every night at 10pm
     @Scheduled(cron = "0 0 22 ? * MON-FRI", zone = "America/Los_Angeles")
-    @Async
     @Transactional
     public void uploadBudgetReport() {
         if (runningTask) {
@@ -57,7 +55,7 @@ public class UploadBudgetReportTask {
         }
 
         long year = Long.parseLong(Year.now().toString());
-        String fiscalYear = String.format("FY%02d-%02d", year % 100, (year + 1) % 100);
+        String displayYear = String.format("%02d-%02d", year % 100, (year + 1) % 100);
 
         // get latest budget scenarios for a FY
         List<Long> lsWorkgroupIds =
@@ -65,27 +63,29 @@ public class UploadBudgetReportTask {
                 38L, 50L, 51L, 45L, 40L, 16L, 66L, 69L, 46L, 53L, 59L, 65L, 76L, 89L, 54L, 14L, 56L, 17L, 28L, 43L, 78L,
                 93L, 94L, 95L, 96L, 97L, 67L, 99L, 100L);
 
-        List<BudgetScenario> latestBudgetScenarios = new ArrayList<>();
+        List<BudgetScenario> latestBudgetRequests = new ArrayList<>();
 
         for (Long workgroupId : lsWorkgroupIds) {
             List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
 
-            BudgetScenario latest =
-                budgetScenarios.stream().max(Comparator.comparing(BudgetScenario::getCreationDate)).orElse(null);
+            BudgetScenario latestRequest =
+                budgetScenarios.stream().filter(BudgetScenario::getIsBudgetRequest)
+                    .max(Comparator.comparing(BudgetScenario::getCreationDate)).orElse(null);
+            latestBudgetRequests.add(latestRequest);
 
-            latestBudgetScenarios.add(latest);
         }
 
+        BudgetExcelView budgetReport = budgetViewFactory.createBudgetExcelView(latestBudgetRequests);
 
-        BudgetExcelView excelView = budgetViewFactory.createBudgetExcelView(latestBudgetScenarios);
+
 
         try {
-            byte[] xlsxBytes = excelView.toByteArray();
+            byte[] budgetReportBytes = budgetReport.toByteArray();
+
 
             emailService.send(boxUploadEmail, "Intentionally blank", "Budget Report Upload",
-                "Budget Report Download_" + fiscalYear + " Initial.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", xlsxBytes);
-
+                "Budget Report Download_FY" + displayYear + " Initial.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", budgetReportBytes);
         } catch (Exception e) {
             log.debug("Could not complete uploadBudgetReport()");
             e.printStackTrace();
