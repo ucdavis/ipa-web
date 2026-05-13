@@ -47,7 +47,7 @@ dependencies {
 
     implementation("org.apache.poi:poi:5.5.1")
     implementation('org.apache.poi:poi-ooxml:5.5.1')
-    implementation("jakarta.inject:jakarta.inject-api:2.0.1")
+    implementation("jakarta.inject:jakarta.inject-api")
     implementation("jakarta.xml.bind:jakarta.xml.bind-api")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.apache.httpcomponents.client5:httpclient5")
@@ -57,5 +57,5 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("junit:junit")
     testImplementation("com.h2database:h2")
-    testImplementation('com.jayway.jsonpath:json-path:2.10.0')
+    testImplementation('com.jayway.jsonpath:json-path')
 }
