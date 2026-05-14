@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -95,7 +94,6 @@ public class WorkloadSummaryReportExcelView extends AbstractXlsxView {
 
             Cell cell = row.createCell(0);
             cell.setCellValue(instructorType.getDescription().toUpperCase());
-            cell.setCellType(CellType.STRING);
 
             ExcelHelper.writeRowToSheet(worksheet, instructorSectionHeaders);
 
