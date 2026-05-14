@@ -19,7 +19,7 @@ import java.util.List;
 
 public class UrlEncryptor {
     // FIXME: downloadSecretKey does not survive reboots. Do we need this stuff anymore?
-    private static String downloadSecretKey = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+    private static String downloadSecretKey = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
     public static String encrypt(String salt, String IpAddress) {
         try {
