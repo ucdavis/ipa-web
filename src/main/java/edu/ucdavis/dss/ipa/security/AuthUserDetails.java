@@ -8,9 +8,9 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.toSet;
-import static org.springframework.util.StringUtils.isEmpty;
 
 public class AuthUserDetails implements UserDetails, Principal {
 
@@ -123,7 +123,7 @@ public class AuthUserDetails implements UserDetails, Principal {
 
     @Override
     public String toString() {
-        if (!isEmpty(getEmail())) {
+        if (StringUtils.hasText(getEmail())) {
             return String.format( "%s ( %s, %s )", getName(), getLoginId(), getEmail() );
         }
         else {
