@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.IgnoredErrorType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -90,13 +89,11 @@ public class ExcelHelper {
             } else if (cellValues.get(i) instanceof String) {
                 Cell cell = row.createCell(i);
                 cell.setCellValue(cellValues.get(i).toString());
-                cell.setCellType(CellType.STRING);
             } else {
                 try {
                     Double cellValue = Double.parseDouble(cellValues.get(i).toString());
                     Cell cell = row.createCell(i);
                     cell.setCellValue(cellValue);
-                    cell.setCellType(CellType.NUMERIC);
                 } catch (NumberFormatException nfe) {
                     row.createCell(i).setCellValue(cellValues.get(i).toString());
                 }

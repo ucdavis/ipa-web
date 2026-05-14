@@ -44,7 +44,7 @@ public class ScheduleSummaryReportController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/terms/" + termCode + "/excel";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
@@ -95,7 +95,7 @@ public class ScheduleSummaryReportController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/excel";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
@@ -146,7 +146,7 @@ public class ScheduleSummaryReportController {
         authorizer.hasWorkgroupRoles(workgroupId, "academicPlanner", "reviewer");
 
         String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/"+ year + "/excel/simple";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
@@ -198,7 +198,7 @@ public class ScheduleSummaryReportController {
 
         String url = ipaUrlApi + "/download/scheduleSummaryReportView/workgroups/" + workgroupId + "/years/" + year +
             "/excel/annual";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {

@@ -52,7 +52,7 @@ public class SupportCallResponseReportController {
         String url =
             ipaUrlApi + "/download/supportCallResponseReportView/workgroups/" + workgroupId +
                 "/years/" + year + "/termCode/" + termShortCode + "/excel";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
@@ -99,7 +99,7 @@ public class SupportCallResponseReportController {
         String url =
             ipaUrlApi + "/download/supportCallResponseReportView/workgroups/" + workgroupId +
                 "/years/" + year + "/excel";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {

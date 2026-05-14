@@ -137,7 +137,7 @@ public class InstructionalSupportAssignmentsController {
 
         String url = ipaUrlApi + "/download/instructionalSupportView/workgroups/" + workgroupId + "/years/" + year +
             "/termCode/" + shortTermCode + "/excel";
-        String salt = RandomStringUtils.randomAlphanumeric(16).toUpperCase();
+        String salt = RandomStringUtils.secure().nextAlphanumeric(16).toUpperCase();
 
         String ipAddress = httpRequest.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
