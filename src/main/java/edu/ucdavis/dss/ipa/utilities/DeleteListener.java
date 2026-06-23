@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitDeleteEventListener;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.persister.entity.EntityPersister;
@@ -60,7 +59,6 @@ public class DeleteListener implements PostCommitDeleteEventListener {
                     sb.append("\nDeleted ");
                     sb.append("**" + entityDescription + "**");
 
-                    Session session = postDeleteEvent.getPersister().getFactory().openTemporarySession();
                     AuditLog auditLogEntry = new AuditLog();
                     auditLogEntry.setMessage(sb.toString());
                     auditLogEntry.setLoginId(authorizer.getLoginId());
@@ -69,8 +67,8 @@ public class DeleteListener implements PostCommitDeleteEventListener {
                     auditLogEntry.setYear(Integer.parseInt(year));
                     auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity));
                     auditLogEntry.setTransactionId(transactionId);
-                    session.save(auditLogEntry);
-                    session.close();
+                    postDeleteEvent.getPersister().getFactory()
+                        .inTransaction(session -> session.persist(auditLogEntry));
                 }
             }
         } catch (Exception ex) {

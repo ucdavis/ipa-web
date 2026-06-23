@@ -1,9 +1,9 @@
 package edu.ucdavis.dss.ipa.utilities;
 
 import jakarta.annotation.PostConstruct;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ public class HibernateListenerConfigurer {
 
     @PostConstruct
     protected void init() {
-        SessionFactoryImpl sessionFactory = emf.unwrap(SessionFactoryImpl.class);
+        SessionFactoryImplementor sessionFactory = emf.unwrap(SessionFactoryImplementor.class);
         EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
         registry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(updateListener);
         registry.getEventListenerGroup(EventType.POST_COMMIT_INSERT).appendListener(insertListener);

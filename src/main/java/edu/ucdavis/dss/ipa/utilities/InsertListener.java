@@ -3,7 +3,6 @@ package edu.ucdavis.dss.ipa.utilities;
 import edu.ucdavis.dss.ipa.entities.AuditLog;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitInsertEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
 import org.hibernate.persister.entity.EntityPersister;
@@ -54,7 +53,6 @@ public class InsertListener implements PostCommitInsertEventListener
                         userDisplayName
                     );
 
-                    Session session = postInsertEvent.getPersister().getFactory().openTemporarySession();
                     AuditLog auditLogEntry = new AuditLog();
                     auditLogEntry.setMessage(message);
                     auditLogEntry.setLoginId(authorizer.getLoginId());
@@ -63,8 +61,8 @@ public class InsertListener implements PostCommitInsertEventListener
                     auditLogEntry.setYear(Integer.parseInt(year));
                     auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity));
                     auditLogEntry.setTransactionId(transactionId);
-                    session.save(auditLogEntry);
-                    session.close();
+                    postInsertEvent.getPersister().getFactory()
+                        .inTransaction(session -> session.persist(auditLogEntry));
                 }
             }
         } catch (Exception ex) {

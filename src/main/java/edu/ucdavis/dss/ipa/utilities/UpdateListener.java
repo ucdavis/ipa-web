@@ -4,7 +4,6 @@ import edu.ucdavis.dss.ipa.entities.*;
 import edu.ucdavis.dss.ipa.security.Authorizer;
 import jakarta.inject.Inject;
 import edu.ucdavis.dss.ipa.services.WorkgroupService;
-import org.hibernate.Session;
 import org.hibernate.event.spi.PostCommitUpdateEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.persister.entity.EntityPersister;
@@ -47,7 +46,7 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                     String module = ActivityLogFormatter.getModuleDisplayName(moduleRaw, entity);
 
                     String[] props =
-                            postUpdateEvent.getPersister().getEntityMetamodel().getPropertyNames();
+                            postUpdateEvent.getPersister().getPropertyNames();
                     Object[] oldState = postUpdateEvent.getOldState();
                     Object[] state = postUpdateEvent.getState();
                     String userDisplayName = authorizer.getUserDisplayName();
@@ -66,7 +65,6 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                                 userDisplayName);
                         String year = ActivityLogFormatter.getYear(entity);
 
-                        Session session = postUpdateEvent.getPersister().getFactory().openTemporarySession();
                         AuditLog auditLogEntry = new AuditLog();
                         auditLogEntry.setMessage(message);
                         auditLogEntry.setLoginId(authorizer.getLoginId());
@@ -75,8 +73,8 @@ public class UpdateListener implements PostCommitUpdateEventListener {
                         auditLogEntry.setYear(Integer.parseInt(year));
                         auditLogEntry.setModule(ActivityLogFormatter.getFormattedModule(moduleRaw, entity, props[i]));
                         auditLogEntry.setTransactionId(transactionId);
-                        session.save(auditLogEntry);
-                        session.close();
+                        postUpdateEvent.getPersister().getFactory()
+                                .inTransaction(session -> session.persist(auditLogEntry));
                     }
                 }
             }
