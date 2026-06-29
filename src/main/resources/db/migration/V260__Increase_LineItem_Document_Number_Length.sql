@@ -1,0 +1,1 @@
+ALTER TABLE `LineItems` MODIFY `DocumentNumber` VARCHAR(255) NULL;
