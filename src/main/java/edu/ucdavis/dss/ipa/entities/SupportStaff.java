@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import org.hibernate.annotations.Formula;
+
 import edu.ucdavis.dss.ipa.entities.validation.Email;
 import edu.ucdavis.dss.ipa.api.views.InstructorViews;
 import edu.ucdavis.dss.ipa.api.views.SectionGroupViews;
@@ -35,6 +37,7 @@ public class SupportStaff implements Serializable {
     private String lastName;
     private String email;
     private String loginId;
+    private int cumulativeTaAssignments;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -109,5 +112,18 @@ public class SupportStaff implements Serializable {
     public void setLoginId(String loginId)
     {
         this.loginId = loginId;
+    }
+
+    @Formula("(SELECT COUNT(*) FROM SupportAssignments sa " +
+             "WHERE sa.SupportStaffId = Id AND sa.appointmentType = 'teachingAssistant')")
+    @JsonProperty
+    public int getCumulativeTaAssignments()
+    {
+        return this.cumulativeTaAssignments;
+    }
+
+    public void setCumulativeTaAssignments(int cumulativeTaAssignments)
+    {
+        this.cumulativeTaAssignments = cumulativeTaAssignments;
     }
 }
