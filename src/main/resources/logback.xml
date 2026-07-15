@@ -35,6 +35,7 @@
     <logger name="TermUpdateTask" level="DEBUG" />
     <logger name="UpdateCourseTask" level="DEBUG" />
     <logger name="UploadBudgetReportTask" level="DEBUG" />
+    <logger name="DatamartTask" level="DEBUG" />
 
     <logger name="EmailUtility" level="INFO">
         <appender-ref ref="FILE" />

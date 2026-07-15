@@ -44,6 +44,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-mysql")
     implementation("com.mysql:mysql-connector-j")
+    implementation("com.oracle.database.jdbc:ojdbc11:23.8.0.25.04")
 
     implementation("org.apache.poi:poi:5.5.1")
     implementation('org.apache.poi:poi-ooxml:5.5.1')
