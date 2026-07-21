@@ -365,7 +365,7 @@ public class BudgetCalculationService {
         return calculateSeats(sectionGroupCost).multiply(calculateUnits(sectionGroupCost));
     }
 
-    private long calculateSectionGroupInstructorTypeId(
+    public long calculateSectionGroupInstructorTypeId(
             SectionGroupCostInstructor sectionGroupCostInstructor, Workgroup workgroup) {
         if(sectionGroupCostInstructor.getInstructorType() != null){
             return sectionGroupCostInstructor.getInstructorType().getId();

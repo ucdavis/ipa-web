@@ -34,10 +34,14 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
                 + ", department " + reportView.getDepartmentCode()));
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(""));
 
-        // planned counts are courses; actuals are payroll headcount/FTE — one person can teach
-        // several planned courses, so the two count columns are different units
+        // setSheetHeader writes the column headers at row 0 so expandHeaders autosizes columns off
+        // these short labels, not the long provenance line above (which lands at row 1).
+        // Planned Courses counts course assignments; Planned People counts distinct named
+        // instructors (one person can teach several courses) and is comparable to Actual People
         ExcelHelper.setSheetHeader(sheet, Arrays.asList(
-            "Instructor Type", "Planned Cost", "Planned Courses", "Actual People", "Actual FTE",
+            "Instructor Type", "Planned Cost", "Planned Courses", "Planned People",
+            "Planned Placeholders", "Actual People", "Banner TA Assignments", "Banner TA Individuals",
+            "Actual FTE",
             "Actual Total Compensation", "Actual Salary", "Actual Fringe", "Paid Jul-Sep",
             "Comparable Salary", "Variance", "% Variance", "Notes"));
 
@@ -58,7 +62,11 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
                 category.getInstructorType(),
                 category.getPlannedCost(),
                 category.getPlannedCount(),
+                category.getPlannedPeople(),
+                category.getPlannedPlaceholders(),
                 category.getActualPeople(),
+                category.getBannerTaAssignments(),
+                category.getBannerTaIndividuals(),
                 category.getActualFte(),
                 category.getActualTotalCompensation(),
                 category.getActualSalary(),
@@ -72,7 +80,7 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
 
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(""));
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
-            "Total (compared categories)", totalPlannedCost, null, null, null, null, null, null, null,
+            "Total (compared categories)", totalPlannedCost, null, null, null, null, null, null, null, null, null, null, null,
             totalComparableSalary, totalVariance, percentVariance(totalVariance, totalPlannedCost), ""));
 
         ExcelHelper.expandHeaders(workbook);

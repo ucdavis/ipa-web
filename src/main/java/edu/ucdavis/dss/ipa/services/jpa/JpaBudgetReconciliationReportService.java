@@ -11,9 +11,12 @@ import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.ExpenseItem;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
+import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
+import edu.ucdavis.dss.ipa.entities.enums.InstructorType;
 import edu.ucdavis.dss.ipa.entities.enums.TermDescription;
+import edu.ucdavis.dss.ipa.repositories.BannerRepository;
 import edu.ucdavis.dss.ipa.repositories.DatamartRepository;
 import edu.ucdavis.dss.ipa.services.BudgetCalculationService;
 import edu.ucdavis.dss.ipa.services.BudgetReconciliationReportService;
@@ -26,11 +29,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -45,6 +51,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     @Inject ExpenseItemService expenseItemService;
     @Inject BudgetCalculationService budgetCalculationService;
     @Inject DatamartRepository datamartRepository;
+    /* optional: only present when BANNER_URL is configured */
+    @Autowired(required = false) BannerRepository bannerRepository;
 
     /* categories whose regular-year pay starts in October, so Jul-Sep actuals are Summer Session */
     private static final Set<String> SUMMER_SESSION_BEARING_TYPES =
@@ -53,6 +61,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     /* Ladder Faculty is state-funded ($0 in the SIB budget) — context row, not a variance */
     private static final Set<String> CONTEXT_ONLY_TYPES =
         Set.of("Ladder Faculty", DopeSummaryCalculator.UNMAPPED);
+
+    /* planned via per-course headcount fields rather than instructor assignments */
+    private static final Set<String> NON_ASSIGNMENT_TYPES = Set.of("TAs", "Readers");
 
     private static final Map<String, BudgetSummary[]> BUDGET_SUMMARY_BY_INSTRUCTOR_TYPE = buildBudgetSummaryMap();
 
@@ -99,6 +110,31 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             budget, budgetScenario, sectionGroupCosts, termCodes, workgroup, lineItems, expenseItems);
         Map<BudgetSummary, BigDecimal> planned = termTotals.get("combined");
 
+        // planned people: distinct named instructors per category (one person can be assigned to
+        // several courses); planned placeholders: type-only assignments that name no person, so
+        // they are counted per assignment. Both categorized the way calculateTermTotals categorizes costs.
+        Map<String, Set<Long>> plannedPeopleByType = new LinkedHashMap<>();
+        Map<String, Integer> plannedPlaceholdersByType = new LinkedHashMap<>();
+        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
+            for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCost.getSectionGroupCostInstructors()) {
+                long instructorTypeId = budgetCalculationService
+                    .calculateSectionGroupInstructorTypeId(sectionGroupCostInstructor, workgroup);
+                InstructorType instructorType = Arrays.stream(InstructorType.values())
+                    .filter(type -> type.getId() == instructorTypeId).findFirst().orElse(null);
+
+                if (instructorType == null) {
+                    continue;
+                }
+
+                if (sectionGroupCostInstructor.getInstructor() != null) {
+                    plannedPeopleByType.computeIfAbsent(instructorType.getDescription(), k -> new HashSet<>())
+                        .add(sectionGroupCostInstructor.getInstructor().getId());
+                } else {
+                    plannedPlaceholdersByType.merge(instructorType.getDescription(), 1, Integer::sum);
+                }
+            }
+        }
+
         // actuals side: Datamart DOPE tallies for the matching fiscal year
         List<DopeRecord> dopeRecords = datamartRepository.getDopeRecords(departmentCode, fiscalYear);
         if (dopeRecords == null) {
@@ -106,12 +142,33 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         }
         DopeSummary tallies = DopeSummaryCalculator.calculate(dopeRecords);
 
+        // actual TA assignments from Banner: one row per TA-section-term appointment, scoped to this
+        // budget's course subjects and academic-year terms. Supplementary and only attached to the
+        // TAs row; null when Banner isn't configured or the query fails.
+        List<String> subjectCodes = sectionGroupCosts.stream()
+            .map(SectionGroupCost::getSubjectCode).filter(Objects::nonNull).distinct()
+            .collect(Collectors.toList());
+        BannerRepository.TaCounts bannerTaCounts = bannerRepository != null
+            ? bannerRepository.getTaCounts(subjectCodes, termCodes) : null;
+        Integer bannerTaAssignments = bannerTaCounts != null ? bannerTaCounts.assignments() : null;
+        Integer bannerTaIndividuals = bannerTaCounts != null ? bannerTaCounts.individuals() : null;
+
         List<BudgetReconciliationCategoryView> categories = new ArrayList<>();
         for (Map.Entry<String, BudgetSummary[]> entry : BUDGET_SUMMARY_BY_INSTRUCTOR_TYPE.entrySet()) {
+            // TA/Reader plans are headcount fields on the course, not instructor assignments
+            boolean assignmentBased = !NON_ASSIGNMENT_TYPES.contains(entry.getKey());
+
             categories.add(buildCategory(entry.getKey(), planned.get(entry.getValue()[0]),
-                planned.get(entry.getValue()[1]), tallies.getByInstructorType().get(entry.getKey())));
+                planned.get(entry.getValue()[1]),
+                assignmentBased
+                    ? plannedPeopleByType.getOrDefault(entry.getKey(), Set.of()).size() : null,
+                assignmentBased
+                    ? plannedPlaceholdersByType.getOrDefault(entry.getKey(), 0) : null,
+                "TAs".equals(entry.getKey()) ? bannerTaAssignments : null,
+                "TAs".equals(entry.getKey()) ? bannerTaIndividuals : null,
+                tallies.getByInstructorType().get(entry.getKey())));
         }
-        categories.add(buildCategory(DopeSummaryCalculator.UNMAPPED, null, null,
+        categories.add(buildCategory(DopeSummaryCalculator.UNMAPPED, null, null, null, null, null, null,
             tallies.getByInstructorType().get(DopeSummaryCalculator.UNMAPPED)));
 
         return new BudgetReconciliationReportView(workgroupId, year, fiscalYear, departmentCode,
@@ -131,20 +188,29 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     private BudgetReconciliationCategoryView buildCategory(String instructorType, BigDecimal plannedCost,
-                                                           BigDecimal plannedCount, DopeTotals tally) {
+                                                           BigDecimal plannedCount, Integer plannedPeople,
+                                                           Integer plannedPlaceholders,
+                                                           Integer bannerTaAssignments,
+                                                           Integer bannerTaIndividuals, DopeTotals tally) {
         boolean includedInComparison = !CONTEXT_ONLY_TYPES.contains(instructorType);
 
         if (tally == null) {
             tally = new DopeTotals();
         }
 
-        BigDecimal comparableSalary = SUMMER_SESSION_BEARING_TYPES.contains(instructorType)
-            ? tally.getAcademicYearSalary() : tally.getSalary();
+        // for summer-bearing types, headcount/FTE/salary all exclude Jul-Sep so they line up with
+        // the academic-year plan; 12-month appointments keep full-year figures
+        boolean summerBearing = SUMMER_SESSION_BEARING_TYPES.contains(instructorType);
+        int actualPeople = summerBearing ? tally.getAcademicYearPeople() : tally.getPeople();
+        BigDecimal actualFte = summerBearing ? tally.getAcademicYearFte() : tally.getFte();
+        BigDecimal comparableSalary = summerBearing ? tally.getAcademicYearSalary() : tally.getSalary();
         BigDecimal variance = includedInComparison && plannedCost != null
             ? comparableSalary.subtract(plannedCost) : null;
 
         return new BudgetReconciliationCategoryView(instructorType, includedInComparison,
-            plannedCost, plannedCount, tally.getPeople(), tally.getFte(), tally.getTotalCompensation(),
+            plannedCost, plannedCount, plannedPeople, plannedPlaceholders,
+            bannerTaAssignments, bannerTaIndividuals,
+            actualPeople, actualFte, tally.getTotalCompensation(),
             tally.getSalary(), tally.getJulSepCompensation(), comparableSalary, variance);
     }
 }

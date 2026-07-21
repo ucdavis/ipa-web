@@ -7,7 +7,9 @@ import java.math.BigDecimal;
  */
 public class DopeTotals {
     int people;
+    int academicYearPeople;
     BigDecimal fte = BigDecimal.ZERO;
+    BigDecimal academicYearFte = BigDecimal.ZERO;
     BigDecimal totalCompensation = BigDecimal.ZERO;
     BigDecimal salary = BigDecimal.ZERO;
     BigDecimal julSepCompensation = BigDecimal.ZERO;
@@ -17,8 +19,18 @@ public class DopeTotals {
         return people;
     }
 
+    /** Headcount excluding people with activity only in Jul-Sep; parallel to getAcademicYearSalary(). */
+    public int getAcademicYearPeople() {
+        return academicYearPeople;
+    }
+
     public BigDecimal getFte() {
         return fte;
+    }
+
+    /** FTE averaged over Oct-Jun months only; parallel to getAcademicYearSalary(). */
+    public BigDecimal getAcademicYearFte() {
+        return academicYearFte;
     }
 
     public BigDecimal getTotalCompensation() {

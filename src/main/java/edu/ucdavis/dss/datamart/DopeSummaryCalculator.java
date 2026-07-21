@@ -64,7 +64,9 @@ public class DopeSummaryCalculator {
     /* per person within one job code or instructor type */
     private static class PersonTally {
         Map<Integer, BigDecimal> fteByMonth = new HashMap<>();
+        boolean academicYearPresent = false;
         BigDecimal fte = BigDecimal.ZERO;
+        BigDecimal academicYearFte = BigDecimal.ZERO;
         BigDecimal totalCompensation = BigDecimal.ZERO;
         BigDecimal salary = BigDecimal.ZERO;
         BigDecimal julSepCompensation = BigDecimal.ZERO;
@@ -93,6 +95,9 @@ public class DopeSummaryCalculator {
 
             if (instructorTypeFor(jobCodeDescription) == null) {
                 unmappedJobCodes.add(dopeRecord.getJobCode() + " " + jobCodeDescription);
+            }
+            if (dopeRecord.getFiscalMonth() >= 4) {
+                personTally.academicYearPresent = true;
             }
             if (dopeRecord.getFte() != null) {
                 personTally.fteByMonth.merge(dopeRecord.getFiscalMonth(), dopeRecord.getFte(), BigDecimal::max);
@@ -128,20 +133,17 @@ public class DopeSummaryCalculator {
                 PersonTally personTally = personEntry.getValue();
                 employeeIds.add(personEntry.getKey());
 
-                BigDecimal personFte = BigDecimal.ZERO;
-                if (!personTally.fteByMonth.isEmpty()) {
-                    BigDecimal fteSum = personTally.fteByMonth.values().stream()
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    personFte = fteSum.divide(
-                        new BigDecimal(personTally.fteByMonth.size()), 2, RoundingMode.HALF_UP);
-                }
+                BigDecimal personFte = averageFte(personTally.fteByMonth, false);
+                BigDecimal personAcademicYearFte = averageFte(personTally.fteByMonth, true);
 
-                addPerson(tally, personTally, personFte);
+                addPerson(tally, personTally, personFte, personAcademicYearFte);
 
                 PersonTally typePerson = peopleByInstructorType
                     .computeIfAbsent(instructorType, k -> new HashMap<>())
                     .computeIfAbsent(personEntry.getKey(), k -> new PersonTally());
                 typePerson.fte = typePerson.fte.add(personFte);
+                typePerson.academicYearFte = typePerson.academicYearFte.add(personAcademicYearFte);
+                typePerson.academicYearPresent = typePerson.academicYearPresent || personTally.academicYearPresent;
                 typePerson.totalCompensation = typePerson.totalCompensation.add(personTally.totalCompensation);
                 typePerson.salary = typePerson.salary.add(personTally.salary);
                 typePerson.julSepCompensation = typePerson.julSepCompensation.add(personTally.julSepCompensation);
@@ -155,7 +157,7 @@ public class DopeSummaryCalculator {
         for (Map.Entry<String, Map<String, PersonTally>> typeEntry : peopleByInstructorType.entrySet()) {
             DopeTotals tally = new DopeTotals();
             for (PersonTally person : typeEntry.getValue().values()) {
-                addPerson(tally, person, person.fte);
+                addPerson(tally, person, person.fte, person.academicYearFte);
             }
             byInstructorType.put(typeEntry.getKey(), tally);
         }
@@ -163,12 +165,32 @@ public class DopeSummaryCalculator {
         return new DopeSummary(byJobCodeDescription, byInstructorType, unmappedJobCodes, employeeIds.size());
     }
 
-    private static void addPerson(DopeTotals tally, PersonTally personTally, BigDecimal personFte) {
+    private static void addPerson(DopeTotals tally, PersonTally personTally,
+                                  BigDecimal personFte, BigDecimal personAcademicYearFte) {
         tally.people++;
         tally.fte = tally.fte.add(personFte);
+        tally.academicYearFte = tally.academicYearFte.add(personAcademicYearFte);
+        if (personTally.academicYearPresent) {
+            tally.academicYearPeople++;
+        }
         tally.totalCompensation = tally.totalCompensation.add(personTally.totalCompensation);
         tally.salary = tally.salary.add(personTally.salary);
         tally.julSepCompensation = tally.julSepCompensation.add(personTally.julSepCompensation);
         tally.julSepSalary = tally.julSepSalary.add(personTally.julSepSalary);
+    }
+
+    /* average monthly FTE over months present; academicYearOnly drops Jul-Sep (fiscal months 1-3) */
+    private static BigDecimal averageFte(Map<Integer, BigDecimal> fteByMonth, boolean academicYearOnly) {
+        BigDecimal sum = BigDecimal.ZERO;
+        int count = 0;
+        for (Map.Entry<Integer, BigDecimal> monthEntry : fteByMonth.entrySet()) {
+            if (academicYearOnly && monthEntry.getKey() <= 3) {
+                continue;
+            }
+            sum = sum.add(monthEntry.getValue());
+            count++;
+        }
+        return count == 0 ? BigDecimal.ZERO
+            : sum.divide(new BigDecimal(count), 2, RoundingMode.HALF_UP);
     }
 }
