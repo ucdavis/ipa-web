@@ -54,10 +54,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     /* optional: only present when BANNER_URL is configured */
     @Autowired(required = false) BannerRepository bannerRepository;
 
-    /* categories whose regular-year pay starts in October, so Jul-Sep actuals are Summer Session */
-    private static final Set<String> SUMMER_SESSION_BEARING_TYPES =
-        Set.of("TAs", "Associate Instructor", "Readers");
-
     /* Ladder Faculty is state-funded ($0 in the SIB budget) — context row, not a variance */
     private static final Set<String> CONTEXT_ONLY_TYPES =
         Set.of("Ladder Faculty", DopeSummaryCalculator.UNMAPPED);
@@ -200,7 +196,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
 
         // for summer-bearing types, headcount/FTE/salary all exclude Jul-Sep so they line up with
         // the academic-year plan; 12-month appointments keep full-year figures
-        boolean summerBearing = SUMMER_SESSION_BEARING_TYPES.contains(instructorType);
+        boolean summerBearing = DopeSummaryCalculator.SUMMER_SESSION_BEARING_TYPES.contains(instructorType);
         int actualPeople = summerBearing ? tally.getAcademicYearPeople() : tally.getPeople();
         BigDecimal actualFte = summerBearing ? tally.getAcademicYearFte() : tally.getFte();
         BigDecimal comparableSalary = summerBearing ? tally.getAcademicYearSalary() : tally.getSalary();

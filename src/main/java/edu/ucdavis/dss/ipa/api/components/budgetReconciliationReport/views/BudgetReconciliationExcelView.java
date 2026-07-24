@@ -25,7 +25,18 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
             "attachment; filename=\"Budget-Reconciliation-%s-FY%d.xlsx\"",
             reportView.getDepartmentCode(), reportView.getFiscalYear()));
 
-        Sheet sheet = workbook.createSheet("Budget Reconciliation");
+        writeSheet(workbook, reportView, "Budget Reconciliation");
+        ExcelHelper.expandHeaders(workbook);
+    }
+
+    /**
+     * Writes the reconciliation report into a sheet of the given workbook, so other downloads (e.g.
+     * staffing-by-course) can embed this report as a tab under their own sheet name. The caller is
+     * responsible for calling ExcelHelper.expandHeaders(workbook) once after all sheets are written.
+     */
+    public static void writeSheet(Workbook workbook, BudgetReconciliationReportView reportView,
+                                  String sheetName) {
+        Sheet sheet = workbook.createSheet(sheetName);
 
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
             "Budget: " + reportView.getBudgetScenarioName() + " (" + reportView.getYear() + "-"
@@ -82,11 +93,9 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
             "Total (compared categories)", totalPlannedCost, null, null, null, null, null, null, null, null, null, null, null,
             totalComparableSalary, totalVariance, percentVariance(totalVariance, totalPlannedCost), ""));
-
-        ExcelHelper.expandHeaders(workbook);
     }
 
-    private String percentVariance(BigDecimal variance, BigDecimal plannedCost) {
+    private static String percentVariance(BigDecimal variance, BigDecimal plannedCost) {
         if (variance == null || plannedCost == null || plannedCost.compareTo(BigDecimal.ZERO) == 0) {
             return "";
         }

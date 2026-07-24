@@ -13,7 +13,11 @@ import jakarta.inject.Inject;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 @Profile({"development", "production", "staging"})
@@ -93,6 +97,50 @@ public class DatamartRepository {
 
         try {
             return datamartJdbcTemplate.query(DOPE_SQL, parameters, DatamartRepository::mapDopeRecord);
+        } catch (Exception e) {
+            emailService.reportException(e, this.getClass().getName());
+            return null;
+        }
+    }
+
+    /* which departments a set of employees were paid in for a fiscal year — no DEPT_CD filter, so it
+       finds pay OUTSIDE the department being reported. LEFT JOIN the ORG view for a readable title,
+       falling back to the dept code when a dept is absent from ORG (an inner join would silently drop
+       those DOPE rows, misreporting a paid person as having no record). Bounded by employeeIds. */
+    private static final String DEPARTMENTS_BY_EMPLOYEE_SQL = """
+        SELECT DISTINCT DOPE.EMPLOYEE_ID "Employee ID", DOPE.DEPT_CD "Department Code",
+               ORG.DEPT_TTL "Department Title"
+        FROM LS_HCMODS.UCD_DM_DOPE_DATA_V DOPE
+          LEFT JOIN LS_HCMODS.UCD_ORGANIZATION_D_V ORG ON ORG.DEPT_CD = DOPE.DEPT_CD
+        WHERE DOPE.EMPLOYEE_ID IN (:employeeIds)
+          AND DOPE.FISCAL_YEAR = :fiscalYear
+        """;
+
+    /**
+     * For each given employee id, the set of departments they were paid in that fiscal year (across
+     * all departments) — the readable title, or the dept code where the title is missing. Null on
+     * error. An id absent from the result had no DOPE payroll that year.
+     */
+    public Map<String, Set<String>> getDepartmentsByEmployee(Set<String> employeeIds, int fiscalYear) {
+        if (employeeIds.isEmpty()) {
+            return Map.of();
+        }
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+            .addValue("employeeIds", employeeIds)
+            .addValue("fiscalYear", fiscalYear);
+
+        try {
+            Map<String, Set<String>> departmentsByEmployee = new HashMap<>();
+            datamartJdbcTemplate.query(DEPARTMENTS_BY_EMPLOYEE_SQL, parameters, rs -> {
+                String title = rs.getString("Department Title");
+                String department = title != null && !title.isBlank()
+                    ? title : rs.getString("Department Code");
+                departmentsByEmployee
+                    .computeIfAbsent(rs.getString("Employee ID"), k -> new HashSet<>())
+                    .add(department);
+            });
+            return departmentsByEmployee;
         } catch (Exception e) {
             emailService.reportException(e, this.getClass().getName());
             return null;

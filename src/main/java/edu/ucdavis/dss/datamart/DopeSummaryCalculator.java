@@ -73,12 +73,27 @@ public class DopeSummaryCalculator {
         BigDecimal julSepSalary = BigDecimal.ZERO;
     }
 
+    /* instructor types whose regular-year pay starts in October, so Jul-Sep pay is Summer Session
+       (Dean's Office Rec #1). Faculty/lecturers are 12-month-spread and are NOT summer-bearing. */
+    public static final Set<String> SUMMER_SESSION_BEARING_TYPES =
+        Set.of("TAs", "Associate Instructor", "Readers");
+
     /* B/E/E salary-scale variants (e.g. PROF-AY-B/E/E) map like their base titles */
     public static String instructorTypeFor(String jobCodeDescription) {
         String normalized = jobCodeDescription.endsWith("-B/E/E")
             ? jobCodeDescription.substring(0, jobCodeDescription.length() - "-B/E/E".length())
             : jobCodeDescription;
         return INSTRUCTOR_TYPE_BY_JOB_CODE_DESCRIPTION.get(normalized);
+    }
+
+    /* true when this job code belongs to a summer-bearing student category (TA/AI/Reader), so its
+       Jul-Sep pay is Summer Session and should be dropped from an academic-year figure */
+    public static boolean isSummerSessionBearing(String jobCodeDescription) {
+        if (jobCodeDescription == null) {
+            return false;
+        }
+        String instructorType = instructorTypeFor(jobCodeDescription);
+        return instructorType != null && SUMMER_SESSION_BEARING_TYPES.contains(instructorType);
     }
 
     public static DopeSummary calculate(List<DopeRecord> dopeRecords) {
