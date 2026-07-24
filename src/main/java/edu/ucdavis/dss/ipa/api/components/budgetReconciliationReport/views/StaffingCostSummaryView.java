@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.staffingByCourseReport.views;
+package edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views;
 
 import java.math.BigDecimal;
 

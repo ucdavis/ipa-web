@@ -1,4 +1,4 @@
-package edu.ucdavis.dss.ipa.api.components.staffingByCourseReport.views;
+package edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views;
 
 import java.math.BigDecimal;
 
@@ -9,8 +9,9 @@ import java.math.BigDecimal;
  * a person is listed once per course (deduped across sections), with sections = the number of
  * section CRNs they're assigned to for that course.
  *
- * Cost fields (actual side, when the Datamart is available) come from name-matching the Banner
- * person to a DOPE payroll person. costMatch is matched/unmatched/ambiguous; person* are the
+ * Cost fields (actual side, when the Datamart is available) come from matching the Banner person to
+ * a DOPE payroll person by empl id. costMatch is the match outcome (matched / funded elsewhere / no
+ * DOPE record / no empl id — see DopeCostService.PersonCostResult); person* are the
  * instructor's full DOPE pay (repeated on every course they teach — do NOT sum per course);
  * allocated* are that pay split evenly across their courses (sums to the person total).
  */
@@ -56,7 +57,7 @@ public class CourseStaffingPersonView {
         return sections;
     }
 
-    /** matched / unmatched / ambiguous; null on planned rows and when the Datamart isn't available */
+    /** the match outcome label; null on planned rows and when the Datamart isn't available */
     public String getCostMatch() {
         return costMatch;
     }
