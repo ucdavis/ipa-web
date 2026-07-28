@@ -31,7 +31,7 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
                                       HttpServletRequest request, HttpServletResponse response) {
         response.setHeader("Content-Disposition", String.format(
             "attachment; filename=\"Budget-Reconciliation-%s-FY%d.xlsx\"",
-            reportView.getDepartmentCode(), reportView.getFiscalYear()));
+            reportView.getWorkgroupCode(), reportView.getFiscalYear()));
 
         buildByCategorySheet(workbook.createSheet("By Category"));
         buildByCourseSheet(workbook.createSheet("By Course"));
@@ -44,23 +44,18 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
 
     /* planned vs actual cost per instructor type, scoped to the payroll department */
     private void buildByCategorySheet(Sheet sheet) {
-        ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
-            "Budget: " + reportView.getBudgetScenarioName() + " (" + reportView.getYear() + "-"
-                + (reportView.getYear() + 1) + ")",
-            "Actuals: UCPath fiscal year " + reportView.getFiscalYear()
-                + ", department " + reportView.getDepartmentCode()));
-        ExcelHelper.writeRowToSheet(sheet, Arrays.asList(""));
-
-        // setSheetHeader writes the column headers at row 0 so expandHeaders autosizes columns off
-        // these short labels, not the long provenance line above (which lands at row 1).
-        // Planned Courses counts course assignments; Planned People counts distinct named
-        // instructors (one person can teach several courses) and is comparable to Actual People
+        // Headers must be the sheet's first physical row: expandHeaders only autosizes columns that
+        // have a cell in that row, so anything narrower leaves later columns at the default width.
+        // Nothing may be written above them either — setSheetHeader createRow(0)s and would overwrite
+        // it. Columns name their source — IPA (the budget scenario), Payroll (UCPath DOPE) and Banner
+        // — matching the Source column on the By Course tab. IPA Count is the plan's count field:
+        // course assignments for the faculty and lecturer categories, but TAs' and Readers' own units,
+        // which is why it isn't called Courses.
         ExcelHelper.setSheetHeader(sheet, Arrays.asList(
-            "Instructor Type", "Planned Cost", "Planned Courses", "Planned People",
-            "Planned Placeholders", "Actual People", "Banner TA Assignments", "Banner TA Individuals",
-            "Actual FTE",
-            "Actual Total Compensation", "Actual Salary", "Actual Fringe", "Paid Jul-Sep",
-            "Comparable Salary", "Variance", "% Variance", "Notes"));
+            "Instructor Type", "IPA Cost", "IPA Count", "Payroll Individuals",
+            "Banner TA Assignments", "Banner TA Individuals", "Payroll FTE",
+            "Actual Total Compensation", "Actual Salary", "Actual Fringe", "Jul-Sep Salary",
+            "Academic Year Salary", "Variance", "% Variance"));
 
         BigDecimal totalPlannedCost = BigDecimal.ZERO;
         BigDecimal totalComparableSalary = BigDecimal.ZERO;
@@ -75,12 +70,13 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
                     ? category.getVariance() : BigDecimal.ZERO);
             }
 
+            // context rows carry no variance, so they say so in the label rather than in a Notes
+            // column that would be blank on every other row
             ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
-                category.getInstructorType(),
+                category.isIncludedInComparison() ? category.getInstructorType()
+                    : category.getInstructorType() + " (context only)",
                 category.getPlannedCost(),
                 category.getPlannedCount(),
-                category.getPlannedPeople(),
-                category.getPlannedPlaceholders(),
                 category.getActualPeople(),
                 category.getBannerTaAssignments(),
                 category.getBannerTaIndividuals(),
@@ -88,17 +84,19 @@ public class BudgetReconciliationExcelView extends AbstractXlsxView {
                 category.getActualTotalCompensation(),
                 category.getActualSalary(),
                 category.getActualTotalCompensation().subtract(category.getActualSalary()),
-                category.getActualJulSepCompensation(),
+                // salary-only, so it's in the same units as the column before and after it: where a
+                // category is summer-bearing, Actual Salary - Jul-Sep Salary = Comparable Salary
+                category.getActualJulSepSalary(),
                 category.getComparableSalary(),
                 category.getVariance(),
-                percentVariance(category.getVariance(), category.getPlannedCost()),
-                category.isIncludedInComparison() ? "" : "Context only - not compared"));
+                percentVariance(category.getVariance(), category.getPlannedCost())));
         }
 
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(""));
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
-            "Total (compared categories)", totalPlannedCost, null, null, null, null, null, null, null, null, null, null, null,
-            totalComparableSalary, totalVariance, percentVariance(totalVariance, totalPlannedCost), ""));
+            "Total (compared categories)", totalPlannedCost,
+            null, null, null, null, null, null, null, null, null,
+            totalComparableSalary, totalVariance, percentVariance(totalVariance, totalPlannedCost)));
     }
 
     /* planned (IPA) vs actual (Banner) staffing per course, one collapsible outline group per course */

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,22 +32,21 @@ public class BudgetReconciliationReportController {
     @Inject BudgetReconciliationReportService budgetReconciliationReportService;
 
     /**
-     * @param departmentCode the payroll DEPT_CD for the workgroup, e.g. "040250". Required — it is
-     *                       what scopes the DOPE actuals the report reconciles against.
+     * The payroll department scoping the actuals comes from the workgroup's own DepartmentCode, so
+     * there is no way to pair one department's plan with another's payroll. A workgroup without one
+     * is a 400 — either it is outside this report's Letters &amp; Science scope, or unmapped.
      */
     @RequestMapping(value = "/dev/budgetReconciliationReportView/workgroups/{workgroupId}/years/{year}",
         method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public BudgetReconciliationReportView showReport(@PathVariable long workgroupId, @PathVariable long year,
-                                                     @RequestParam("departmentCode") String departmentCode) {
-        return budgetReconciliationReportService.generate(workgroupId, year, departmentCode);
+    public BudgetReconciliationReportView showReport(@PathVariable long workgroupId, @PathVariable long year) {
+        return budgetReconciliationReportService.generate(workgroupId, year);
     }
 
     @RequestMapping(value = "/dev/budgetReconciliationReportView/workgroups/{workgroupId}/years/{year}/excel",
         method = RequestMethod.GET)
-    public BudgetReconciliationExcelView downloadExcel(@PathVariable long workgroupId, @PathVariable long year,
-                                                       @RequestParam("departmentCode") String departmentCode) {
+    public BudgetReconciliationExcelView downloadExcel(@PathVariable long workgroupId, @PathVariable long year) {
         return new BudgetReconciliationExcelView(
-            budgetReconciliationReportService.generate(workgroupId, year, departmentCode));
+            budgetReconciliationReportService.generate(workgroupId, year));
     }
 }

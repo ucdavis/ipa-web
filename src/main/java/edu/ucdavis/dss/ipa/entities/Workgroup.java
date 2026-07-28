@@ -24,7 +24,7 @@ import java.util.Set;
 @JsonDeserialize(using = WorkgroupDeserializer.class)
 public class Workgroup extends BaseEntity {
 	private long id;
-	private String name, code;
+	private String name, code, departmentCode;
 	private Set<Schedule> schedules = new HashSet<Schedule>();
 	private List<Tag> tags = new ArrayList<Tag>();
 	private List<UserRole> userRoles = new ArrayList<UserRole>();
@@ -70,6 +70,25 @@ public class Workgroup extends BaseEntity {
 	public void setCode(String code)
 	{
 		this.code = code;
+	}
+
+	/**
+	 * UCPath payroll department code (DOPE DEPT_CD, e.g. "040250") this workgroup's instructional
+	 * payroll lands in. Null for workgroups outside the Letters &amp; Science scope of the budget
+	 * reconciliation report, or not yet mapped. Distinct from {@link #getCode()}, the 4-char
+	 * subject-style WorkgroupCode. Deliberately not exposed in JSON — it is an internal mapping,
+	 * not part of the workgroup API.
+	 */
+	@Basic
+	@Column(name = "DepartmentCode", length = 6)
+	public String getDepartmentCode()
+	{
+		return this.departmentCode;
+	}
+
+	public void setDepartmentCode(String departmentCode)
+	{
+		this.departmentCode = departmentCode;
 	}
 
 

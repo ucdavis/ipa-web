@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class BudgetReconciliationReportView {
     long workgroupId;
+    String workgroupCode;
     long year;
     int fiscalYear;
     String departmentCode;
@@ -24,12 +25,14 @@ public class BudgetReconciliationReportView {
     List<CourseStaffingView> courses;
     StaffingCostSummaryView costSummary;
 
-    public BudgetReconciliationReportView(long workgroupId, long year, int fiscalYear,
-                                          String departmentCode, String budgetScenarioName,
+    public BudgetReconciliationReportView(long workgroupId, String workgroupCode, long year,
+                                          int fiscalYear, String departmentCode,
+                                          String budgetScenarioName,
                                           List<BudgetReconciliationCategoryView> categories,
                                           List<CourseStaffingView> courses,
                                           StaffingCostSummaryView costSummary) {
         this.workgroupId = workgroupId;
+        this.workgroupCode = workgroupCode;
         this.year = year;
         this.fiscalYear = fiscalYear;
         this.departmentCode = departmentCode;
@@ -41,6 +44,11 @@ public class BudgetReconciliationReportView {
 
     public long getWorkgroupId() {
         return workgroupId;
+    }
+
+    /** the workgroup's short subject-style code (e.g. "CLA"), used to name the download */
+    public String getWorkgroupCode() {
+        return workgroupCode;
     }
 
     public long getYear() {

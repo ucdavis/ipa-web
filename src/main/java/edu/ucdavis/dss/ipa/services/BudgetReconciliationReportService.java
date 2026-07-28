@@ -9,8 +9,8 @@ public interface BudgetReconciliationReportService {
      * instructor type) and By Course (Banner assignments vs planned instructors). Each view is
      * omitted when its source isn't configured.
      *
-     * @param departmentCode the payroll DEPT_CD the workgroup's payroll lands in, e.g. "040250" —
-     *                       required, since it scopes the actuals being reconciled against
+     * The payroll department scoping the actuals comes from the workgroup's own DepartmentCode. A
+     * workgroup without one is outside this report's Letters &amp; Science scope, or unmapped.
      */
-    BudgetReconciliationReportView generate(long workgroupId, long year, String departmentCode);
+    BudgetReconciliationReportView generate(long workgroupId, long year);
 }

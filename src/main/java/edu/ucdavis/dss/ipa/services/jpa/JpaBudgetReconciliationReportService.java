@@ -45,7 +45,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Profile({"development", "production", "staging"})
@@ -65,9 +67,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     /* Ladder Faculty is state-funded ($0 in the SIB budget) — context row, not a variance */
     private static final Set<String> CONTEXT_ONLY_TYPES =
         Set.of("Ladder Faculty", DopeSummaryCalculator.UNMAPPED);
-
-    /* planned via per-course headcount fields rather than instructor assignments */
-    private static final Set<String> NON_ASSIGNMENT_TYPES = Set.of("TAs", "Readers");
 
     private static final String PLACEHOLDER_ROLE = "Staff (placeholder)";
 
@@ -91,13 +90,15 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     @Override
-    public BudgetReconciliationReportView generate(long workgroupId, long year, String departmentCode) {
+    public BudgetReconciliationReportView generate(long workgroupId, long year) {
         int fiscalYear = (int) year + 1;
 
         // ---- planned side, shared by both views ----
         Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         BudgetScenario budgetScenario = selectScenario(workgroupId, year);
         Workgroup workgroup = budget.getSchedule().getWorkgroup();
+
+        String departmentCode = departmentCodeFor(workgroup);
 
         List<String> termCodes = new ArrayList<>();
         for (String termCodeShort : Arrays.asList(TermDescription.FALL.getShortTermCode(),
@@ -147,8 +148,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         Map<String, DopeCostService.PersonCostResult> costByPerson = dopeCostService.resolveCosts(
             dopeRecords, instructorPersonIds, emplIdByPerson, coursesByPerson, fiscalYear);
 
-        return new BudgetReconciliationReportView(workgroupId, year, fiscalYear, departmentCode,
-            budgetScenario.getName(),
+        return new BudgetReconciliationReportView(workgroupId, workgroup.getCode(), year, fiscalYear,
+            departmentCode, budgetScenario.getName(),
             buildCategories(budget, budgetScenario, workgroup, termCodes, sectionGroupCosts,
                 subjectCodes, dopeSummary),
             buildCourses(workgroup, sectionGroupCosts, assignments, costByPerson),
@@ -173,28 +174,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             budget, budgetScenario, sectionGroupCosts, termCodes, workgroup, lineItems, expenseItems);
         Map<BudgetSummary, BigDecimal> planned = termTotals.get("combined");
 
-        // planned people: distinct named instructors per category (one person can be assigned to
-        // several courses); planned placeholders: type-only assignments that name no person, so
-        // they are counted per assignment. Both categorized the way calculateTermTotals categorizes costs.
-        Map<String, Set<Long>> plannedPeopleByType = new LinkedHashMap<>();
-        Map<String, Integer> plannedPlaceholdersByType = new LinkedHashMap<>();
-        for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
-            for (SectionGroupCostInstructor sectionGroupCostInstructor : sectionGroupCost.getSectionGroupCostInstructors()) {
-                InstructorType instructorType = instructorTypeFor(sectionGroupCostInstructor, workgroup);
-
-                if (instructorType == null) {
-                    continue;
-                }
-
-                if (sectionGroupCostInstructor.getInstructor() != null) {
-                    plannedPeopleByType.computeIfAbsent(instructorType.getDescription(), k -> new HashSet<>())
-                        .add(sectionGroupCostInstructor.getInstructor().getId());
-                } else {
-                    plannedPlaceholdersByType.merge(instructorType.getDescription(), 1, Integer::sum);
-                }
-            }
-        }
-
         // actual TA assignments from Banner: one row per TA-section-term appointment, scoped to this
         // budget's course subjects and academic-year terms. Supplementary and only attached to the
         // TAs row; null when Banner isn't configured or the query fails.
@@ -205,20 +184,13 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
 
         List<BudgetReconciliationCategoryView> categories = new ArrayList<>();
         for (Map.Entry<String, BudgetSummary[]> entry : BUDGET_SUMMARY_BY_INSTRUCTOR_TYPE.entrySet()) {
-            // TA/Reader plans are headcount fields on the course, not instructor assignments
-            boolean assignmentBased = !NON_ASSIGNMENT_TYPES.contains(entry.getKey());
-
             categories.add(buildCategory(entry.getKey(), planned.get(entry.getValue()[0]),
                 planned.get(entry.getValue()[1]),
-                assignmentBased
-                    ? plannedPeopleByType.getOrDefault(entry.getKey(), Set.of()).size() : null,
-                assignmentBased
-                    ? plannedPlaceholdersByType.getOrDefault(entry.getKey(), 0) : null,
                 "TAs".equals(entry.getKey()) ? bannerTaAssignments : null,
                 "TAs".equals(entry.getKey()) ? bannerTaIndividuals : null,
                 dopeSummary.getByInstructorType().get(entry.getKey())));
         }
-        categories.add(buildCategory(DopeSummaryCalculator.UNMAPPED, null, null, null, null, null, null,
+        categories.add(buildCategory(DopeSummaryCalculator.UNMAPPED, null, null, null, null,
             dopeSummary.getByInstructorType().get(DopeSummaryCalculator.UNMAPPED)));
 
         return categories;
@@ -294,6 +266,24 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         return courses;
     }
 
+    /**
+     * The payroll DEPT_CD scoping the actuals, taken from the workgroup itself — so a caller cannot
+     * pair one department's plan with another's payroll.
+     */
+    private String departmentCodeFor(Workgroup workgroup) {
+        String departmentCode = workgroup.getDepartmentCode();
+
+        if (departmentCode == null || departmentCode.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(
+                "Workgroup %d (%s) has no department code, so there are no payroll actuals to "
+                    + "reconcile. Either it is outside this report's Letters & Science scope, or its "
+                    + "DepartmentCode has not been populated yet.",
+                workgroup.getId(), workgroup.getName()));
+        }
+
+        return departmentCode;
+    }
+
     /* the approved budget request, falling back to the most recent scenario */
     private BudgetScenario selectScenario(long workgroupId, long year) {
         List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
@@ -307,8 +297,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     private BudgetReconciliationCategoryView buildCategory(String instructorType, BigDecimal plannedCost,
-                                                           BigDecimal plannedCount, Integer plannedPeople,
-                                                           Integer plannedPlaceholders,
+                                                           BigDecimal plannedCount,
                                                            Integer bannerTaAssignments,
                                                            Integer bannerTaIndividuals, DopeTotals tally) {
         boolean includedInComparison = !CONTEXT_ONLY_TYPES.contains(instructorType);
@@ -326,11 +315,11 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         BigDecimal variance = includedInComparison && plannedCost != null
             ? comparableSalary.subtract(plannedCost) : null;
 
-        return new BudgetReconciliationCategoryView(instructorType, includedInComparison,
-            plannedCost, plannedCount, plannedPeople, plannedPlaceholders,
-            bannerTaAssignments, bannerTaIndividuals,
+        return new BudgetReconciliationCategoryView(instructorType, includedInComparison, summerBearing,
+            plannedCost, plannedCount, bannerTaAssignments, bannerTaIndividuals,
             actualPeople, actualFte, tally.getTotalCompensation(),
-            tally.getSalary(), tally.getJulSepCompensation(), comparableSalary, variance);
+            tally.getSalary(), tally.getJulSepCompensation(), tally.getJulSepSalary(),
+            comparableSalary, variance);
     }
 
     /* the planned instructor type for an assignment, categorized the way calculateTermTotals does */
