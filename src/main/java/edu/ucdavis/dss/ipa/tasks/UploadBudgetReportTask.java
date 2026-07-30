@@ -79,10 +79,11 @@ public class UploadBudgetReportTask {
         List<WorkloadSnapshot> latestWorkloadSnapshots = new ArrayList<>();
 
         for (Long workgroupId : lsWorkgroupIds) {
-            List<BudgetScenario> budgetScenarios = budgetScenarioService.findbyWorkgroupIdAndYear(workgroupId, year);
+            List<BudgetScenario> budgetRequests =
+                budgetScenarioService.findBudgetRequestsByWorkgroupIdAndYear(workgroupId, year);
 
-            budgetScenarios.stream().filter(BudgetScenario::getIsBudgetRequest)
-                .max(Comparator.comparing(BudgetScenario::getCreationDate)).ifPresent(latestBudgetRequests::add);
+            budgetRequests.stream().max(Comparator.comparing(BudgetScenario::getCreationDate))
+                .ifPresent(latestBudgetRequests::add);
 
             List<WorkloadSnapshot> workloadSnapshots =
                 workloadSnapshotService.findByWorkgroupIdAndYear(workgroupId, year);
