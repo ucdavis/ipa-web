@@ -16,3 +16,4 @@ bin/
 rds-combined-ca-bundle.der
 *.pem
 datamart-*.csv
+datamart-reports-2025

@@ -21,6 +21,7 @@ public class StaffingCostSummaryView {
     int noDopeRecord;
     int noEmplId;
     BigDecimal departmentSalary;
+    BigDecimal departmentSummerSalary;
     BigDecimal departmentBenefits;
     BigDecimal departmentCompensation;
     BigDecimal departmentFte;
@@ -29,6 +30,7 @@ public class StaffingCostSummaryView {
     public StaffingCostSummaryView(BigDecimal attributedSalary, BigDecimal attributedCompensation,
                                    int matchedById, int fundedElsewhere, int noDopeRecord,
                                    int noEmplId, BigDecimal departmentSalary,
+                                   BigDecimal departmentSummerSalary,
                                    BigDecimal departmentBenefits, BigDecimal departmentCompensation,
                                    BigDecimal departmentFte, int departmentPeople) {
         this.attributedSalary = attributedSalary;
@@ -38,6 +40,7 @@ public class StaffingCostSummaryView {
         this.noDopeRecord = noDopeRecord;
         this.noEmplId = noEmplId;
         this.departmentSalary = departmentSalary;
+        this.departmentSummerSalary = departmentSummerSalary;
         this.departmentBenefits = departmentBenefits;
         this.departmentCompensation = departmentCompensation;
         this.departmentFte = departmentFte;
@@ -70,6 +73,14 @@ public class StaffingCostSummaryView {
 
     public BigDecimal getDepartmentSalary() {
         return departmentSalary;
+    }
+
+    /**
+     * The Summer Session share of departmentSalary. attributed* already exclude it, so subtracting
+     * this puts the department total on the same academic-year basis as the attributed figures.
+     */
+    public BigDecimal getDepartmentSummerSalary() {
+        return departmentSummerSalary;
     }
 
     public BigDecimal getDepartmentBenefits() {

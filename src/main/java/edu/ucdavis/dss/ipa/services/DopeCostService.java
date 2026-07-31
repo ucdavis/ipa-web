@@ -9,12 +9,16 @@ import edu.ucdavis.dss.ipa.repositories.DatamartRepository;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -38,20 +42,142 @@ public class DopeCostService {
      * empl id); label is the human-readable form. The pay figures are set only when matched
      * in-department — a person funded elsewhere has no cost in this department to report.
      */
-    public record PersonCostResult(String status, String label, String jobCode,
+    public record PersonCostResult(String status, String label,
+                                   Map<String, Set<Integer>> monthsByJobCode,
                                    BigDecimal personSalary, BigDecimal personCost,
-                                   BigDecimal allocatedSalary, BigDecimal allocatedCost,
-                                   BigDecimal summerSalary) {
+                                   Map<String, Map<Integer, BigDecimal>> fteByMonthByJobCode) {
 
-        static PersonCostResult matched(String jobCode, BigDecimal personSalary, BigDecimal personCost,
-                                        BigDecimal allocatedSalary, BigDecimal allocatedCost,
-                                        BigDecimal summerSalary) {
-            return new PersonCostResult("id", "matched (empl id)", jobCode, personSalary, personCost,
-                allocatedSalary, allocatedCost, summerSalary);
+        static PersonCostResult matched(Map<String, Set<Integer>> monthsByJobCode,
+                                        BigDecimal personSalary, BigDecimal personCost,
+                                        Map<String, Map<Integer, BigDecimal>> fteByMonthByJobCode) {
+            return new PersonCostResult("id", "matched (empl id)", monthsByJobCode, personSalary,
+                personCost, fteByMonthByJobCode);
+        }
+
+        /**
+         * The person's DOPE job code description(s) for this term and these instructor types, so the
+         * column agrees with the FTE beside it: a TA row names their TA title, not the Reader appointment
+         * they also hold, and a Fall row names only what they were paid as in Oct-Dec.
+         *
+         * **Term-scoped as of 2026-07-30, and it must stay in step with fteFor.** Before that it listed
+         * every matching title in the fiscal year, which put `LECT-AY, LECT-AY-CONTINUING` beside a Fall
+         * `Term FTE` of 0.67 — the pre-six appointment had ended in August, so naming it on a Fall course
+         * row asserted a title the person did not hold while teaching it.
+         *
+         * Null when nothing matches — a Banner assignment we cannot corroborate with a payroll
+         * appointment of the same kind, which reads as blank rather than as a mismatched title.
+         */
+        public String jobCodesFor(Set<Integer> fiscalMonths, Set<String> instructorTypes) {
+            if (monthsByJobCode == null) {
+                return null;
+            }
+            String joined = String.join(", ",
+                relevantJobCodes(codesActiveInTerm(monthsByJobCode, fiscalMonths), instructorTypes));
+            return joined.isBlank() ? null : joined;
+        }
+
+        /**
+         * The job codes with any activity in the term's fiscal months. Applied **before** the role
+         * fallback below, not after: a title held only outside this term would otherwise satisfy the
+         * role match, suppress the fallback, and leave the cell blank once the month filter ran.
+         *
+         * Two overloads rather than one generic, because the two maps hold months differently — the job
+         * code column needs only presence, the FTE column needs the value too.
+         */
+        private static Set<String> codesActiveInTerm(Map<String, Set<Integer>> monthsByJobCode,
+                                                     Set<Integer> fiscalMonths) {
+            return activeInTerm(monthsByJobCode, Set::stream, fiscalMonths);
+        }
+
+        private static Set<String> fteCodesActiveInTerm(
+                Map<String, Map<Integer, BigDecimal>> fteByMonthByJobCode, Set<Integer> fiscalMonths) {
+            return activeInTerm(fteByMonthByJobCode, months -> months.keySet().stream(), fiscalMonths);
+        }
+
+        private static <V> Set<String> activeInTerm(Map<String, V> byJobCode,
+                                                    Function<V, Stream<Integer>> months,
+                                                    Set<Integer> fiscalMonths) {
+            return byJobCode.entrySet().stream()
+                .filter(entry -> months.apply(entry.getValue()).anyMatch(fiscalMonths::contains))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toCollection(TreeSet::new));
+        }
+
+        /**
+         * The job codes a row should read: those matching the row's role, or — when none match — the
+         * person's **unmapped** titles instead.
+         *
+         * The fallback exists because role scoping alone hid real appointments. `ADJ PROF-AY` maps to no
+         * instructor type, so an adjunct professor teaching a course showed a blank job code and blank
+         * FTE, indistinguishable from having no payroll record at all. Falling back says "nothing matched
+         * this role, but here is what they are actually paid as", which is the question the column exists
+         * to answer.
+         *
+         * It is a fallback rather than a widening: a TA holding both a TA and a Reader appointment still
+         * reads only the TA title, because the Reader title *is* mapped and so never reaches this branch.
+         */
+        private static Set<String> relevantJobCodes(Collection<String> jobCodes,
+                                                    Set<String> instructorTypes) {
+            Set<String> matching = jobCodes.stream()
+                .filter(jobCode -> matchesType(jobCode, instructorTypes))
+                .collect(Collectors.toCollection(TreeSet::new));
+            if (!matching.isEmpty()) {
+                return matching;
+            }
+            return jobCodes.stream()
+                .filter(jobCode -> DopeSummaryCalculator.instructorTypeFor(jobCode) == null)
+                .collect(Collectors.toCollection(TreeSet::new));
+        }
+
+        /**
+         * Whether a job code belongs to one of these instructor types. **The null check is required, not
+         * defensive:** instructorTypeFor returns null for any unmapped job code — a GSR, a postdoc, a
+         * staff title, or one we deliberately unmapped like RECALL FACULTY — and instructorTypes is a
+         * Set.of(), which throws NullPointerException on contains(null) rather than returning false.
+         */
+        private static boolean matchesType(String jobCode, Set<String> instructorTypes) {
+            String type = DopeSummaryCalculator.instructorTypeFor(jobCode);
+            return type != null && instructorTypes.contains(type);
         }
 
         static PersonCostResult status(String status, String label) {
-            return new PersonCostResult(status, label, null, null, null, null, null, null);
+            return new PersonCostResult(status, label, null, null, null, null);
+        }
+
+        /**
+         * The person's appointment level in one term, counting only job codes belonging to the given
+         * instructor types — so a TA row reads TA titles and a Reader appointment does not inflate it.
+         *
+         * A LEVEL, on the same definition By Category uses: monthly FTE is summed across the matching job
+         * codes so concurrent titles add up, then the **highest** month of the term is taken. A 50%
+         * appointment reads 0.50. Null when nothing matches, which keeps the cell blank rather than
+         * showing a misleading zero.
+         */
+        public BigDecimal fteFor(Set<Integer> fiscalMonths, Set<String> instructorTypes) {
+            if (fteByMonthByJobCode == null) {
+                return null;
+            }
+            // same term restriction then role-then-unmapped fallback as the job code column, in the same
+            // order, so the two agree on every row
+            Set<String> useCodes = relevantJobCodes(
+                fteCodesActiveInTerm(fteByMonthByJobCode, fiscalMonths), instructorTypes);
+
+            Map<Integer, BigDecimal> byMonth = new HashMap<>();
+            fteByMonthByJobCode.forEach((jobCode, months) -> {
+                if (!useCodes.contains(jobCode)) {
+                    return;
+                }
+                months.forEach((month, fte) -> {
+                    if (fiscalMonths.contains(month)) {
+                        byMonth.merge(month, fte, BigDecimal::add);
+                    }
+                });
+            });
+            if (byMonth.isEmpty()) {
+                return null;
+            }
+            return byMonth.values().stream().reduce(BigDecimal.ZERO, BigDecimal::max)
+                .setScale(2, RoundingMode.HALF_UP);
         }
     }
 
@@ -67,12 +193,10 @@ public class DopeCostService {
      *
      * @param personIds       Banner person ids to resolve (real instructors, not placeholders)
      * @param emplIdByPerson  person id -> normalized UCPath empl id, where the crosswalk had one
-     * @param coursesByPerson person id -> distinct courses taught, the even-split denominator
      */
     public Map<String, PersonCostResult> resolveCosts(List<DopeRecord> dopeRecords,
                                                       Set<String> personIds,
                                                       Map<String, String> emplIdByPerson,
-                                                      Map<String, Set<String>> coursesByPerson,
                                                       int fiscalYear) {
         Map<String, PersonCost> costByEmplId = buildCostByEmplId(dopeRecords);
         Map<String, PersonCostResult> resultByPerson = new HashMap<>();
@@ -86,13 +210,9 @@ public class DopeCostService {
             }
             PersonCost cost = costByEmplId.get(emplId);
             if (cost != null) {
-                int courseCount = Math.max(1, coursesByPerson.getOrDefault(personId, Set.of()).size());
-                BigDecimal divisor = new BigDecimal(courseCount);
                 resultByPerson.put(personId, PersonCostResult.matched(
-                    String.join(", ", cost.jobCodeDescriptions), cost.salary, cost.compensation,
-                    cost.salary.divide(divisor, 2, RoundingMode.HALF_UP),
-                    cost.compensation.divide(divisor, 2, RoundingMode.HALF_UP),
-                    cost.summerSalary));
+                    cost.monthsByJobCode, cost.salary, cost.compensation,
+                    cost.fteByMonthByJobCode));
             } else {
                 unresolvedEmplIds.add(emplId);
             }
@@ -124,10 +244,12 @@ public class DopeCostService {
                                              Map<String, PersonCostResult> costByPerson) {
         // department totals via the person-first calculator (accurate FTE, not a raw row sum)
         BigDecimal salary = BigDecimal.ZERO;
+        BigDecimal summerSalary = BigDecimal.ZERO;
         BigDecimal compensation = BigDecimal.ZERO;
         BigDecimal fte = BigDecimal.ZERO;
         for (DopeTotals totals : dopeSummary.getByInstructorType().values()) {
             salary = salary.add(totals.getSalary());
+            summerSalary = summerSalary.add(totals.getSummerSalary());
             compensation = compensation.add(totals.getTotalCompensation());
             fte = fte.add(totals.getFte());
         }
@@ -149,8 +271,8 @@ public class DopeCostService {
         }
 
         return new StaffingCostSummaryView(attributedSalary, attributedCompensation,
-            matchedById, fundedElsewhere, noDopeRecord, noEmplId, salary, compensation.subtract(salary),
-            compensation, fte, dopeSummary.getDistinctEmployees());
+            matchedById, fundedElsewhere, noDopeRecord, noEmplId, salary, summerSalary,
+            compensation.subtract(salary), compensation, fte, dopeSummary.getDistinctEmployees());
     }
 
     /* UCPath emplid and Banner WOBEUCD_EMP_ID compared trimmed (Oracle CHAR columns pad with spaces) */
@@ -181,27 +303,48 @@ public class DopeCostService {
                     }
                 }
             }
-            // summer job codes stay out of the DOPE Job Code column — only AY codes describe the match
-            if (!isSummer && record.getJobCodeDescription() != null) {
-                cost.jobCodeDescriptions.add(record.getJobCodeDescription());
+            // Keyed on the month the pay was EARNED — DopeSummaryCalculator#earnedFiscalMonth explains why
+            // the posting month put a July appointment on a Fall course row at 1.50 FTE. A retro row
+            // (earn month != posting month) may not ESTABLISH a month, only net into one. Summer job codes
+            // stay out entirely: only academic-year codes describe the match.
+            Integer earnedMonth = DopeSummaryCalculator.earnedFiscalMonth(record);
+            boolean retro = earnedMonth != null && earnedMonth.intValue() != record.getFiscalMonth();
+            String jobCode = record.getJobCodeDescription() != null
+                ? record.getJobCodeDescription() : "(none)";
+            String position = record.getPositionNumber() != null ? record.getPositionNumber() : "(none)";
+
+            if (!isSummer && earnedMonth != null && !retro) {
+                if (record.getJobCodeDescription() != null) {
+                    cost.monthCandidates
+                        .computeIfAbsent(record.getJobCodeDescription(), k -> new HashMap<>())
+                        .computeIfAbsent(earnedMonth, k -> new HashSet<>())
+                        .add(position);
+                }
+                if (record.getFte() != null) {
+                    cost.fteCandidates
+                        .computeIfAbsent(jobCode, k -> new HashMap<>())
+                        .computeIfAbsent(earnedMonth, k -> new HashMap<>())
+                        .merge(position, record.getFte(), BigDecimal::max);
+                }
+            }
+            // every row nets, retro included — that is how a reversal cancels the month it reverses
+            if (!isSummer && earnedMonth != null && record.getMonetaryAmount() != null) {
+                cost.net
+                    .computeIfAbsent(jobCode, k -> new HashMap<>())
+                    .computeIfAbsent(earnedMonth, k -> new HashMap<>())
+                    .merge(position, record.getMonetaryAmount(), BigDecimal::add);
             }
         }
+        // every row seen, so reversals can now be netted and the position key collapsed away
+        byEmplId.values().forEach(PersonCost::settle);
         return byEmplId;
     }
 
     /* Summer Session pay, excluded from the course-attributed cost (the view shows only
-       Fall/Winter/Spring courses). NOTE: this is a stricter rule than the By Category view's, which
-       relies on DopeSummaryCalculator and does NOT drop explicit Summer Session job codes — so the
-       two views' salary figures do not tie. Unify before this leaves the prototype.
-       (a) explicit Summer Session job codes (e.g. LECT IN SUMMER SESSION) are dropped outright, and
-       (b) for the summer-bearing student categories (TA/AI/Reader) Jul-Sep pay is Summer Session.
-       12-month faculty/lecturer pay is kept whole (their salary is spread across summer months). */
+       Fall/Winter/Spring courses). Shares DopeSummaryCalculator's rule with the By Category view, so
+       the two views' salary figures rest on the same definition of the academic year. */
     private static boolean isSummerPay(DopeRecord record) {
-        String jobCode = record.getJobCodeDescription();
-        if (jobCode != null && jobCode.toUpperCase().contains("SUMMER")) {
-            return true;
-        }
-        return record.getFiscalMonth() <= 3 && DopeSummaryCalculator.isSummerSessionBearing(jobCode);
+        return DopeSummaryCalculator.isSummerPay(record.getJobCodeDescription(), record.getFiscalMonth());
     }
 
     /* per-person DOPE totals; salary/compensation are academic-year (summer excluded), summerSalary
@@ -210,6 +353,52 @@ public class DopeCostService {
         BigDecimal salary = BigDecimal.ZERO;
         BigDecimal compensation = BigDecimal.ZERO;
         BigDecimal summerSalary = BigDecimal.ZERO;
-        final Set<String> jobCodeDescriptions = new TreeSet<>();
+        /* Staging, collapsed by settle() once every row has been seen. Position is a key only so a
+           reversal can cancel the appointment it reverses; it never reaches PersonCostResult. */
+        final Map<String, Map<Integer, Set<String>>> monthCandidates = new HashMap<>();
+        final Map<String, Map<Integer, Map<String, BigDecimal>>> fteCandidates = new HashMap<>();
+        final Map<String, Map<Integer, Map<String, BigDecimal>>> net = new HashMap<>();
+
+        /* job code description -> the fiscal months it was live in. Presence only; the DOPE Job Code
+           column needs to know which titles were held in a term, not what they paid. Includes titles
+           carrying no FTE, which is why it is separate from fteByMonthByJobCode rather than derived from
+           its key set — an adjunct with pay but no FTE still belongs in the column. */
+        final Map<String, Set<Integer>> monthsByJobCode = new HashMap<>();
+        /* job code description -> fiscal month -> FTE, summed across positions after reversed
+           position-months are dropped. Kept as monthly detail rather than one number, because By Course
+           slices it per term and per role — see PersonCostResult#fteFor. Summer months never enter. */
+        final Map<String, Map<Integer, BigDecimal>> fteByMonthByJobCode = new HashMap<>();
+
+        /**
+         * Drop every position-month whose pay nets to zero or less, then collapse positions away. A
+         * reversed appointment was never held: English FY2026 cancelled a 0.86 `LECT-AY-1/9` in December
+         * and restated it as a 0.57 `LECT-AY` on a new position, and counting both read 1.43 FTE.
+         *
+         * A position-month with no monetary row at all is kept — absent money is not a reversal.
+         */
+        void settle() {
+            fteCandidates.forEach((jobCode, byMonth) -> byMonth.forEach((month, byPosition) -> {
+                BigDecimal fte = BigDecimal.ZERO;
+                for (Map.Entry<String, BigDecimal> entry : byPosition.entrySet()) {
+                    if (live(jobCode, month, entry.getKey())) {
+                        fte = fte.add(entry.getValue());
+                    }
+                }
+                if (fte.signum() > 0) {
+                    fteByMonthByJobCode.computeIfAbsent(jobCode, k -> new HashMap<>()).put(month, fte);
+                }
+            }));
+            monthCandidates.forEach((jobCode, byMonth) -> byMonth.forEach((month, positions) -> {
+                if (positions.stream().anyMatch(position -> live(jobCode, month, position))) {
+                    monthsByJobCode.computeIfAbsent(jobCode, k -> new HashSet<>()).add(month);
+                }
+            }));
+        }
+
+        private boolean live(String jobCode, Integer month, String position) {
+            BigDecimal amount = net.getOrDefault(jobCode, Map.of())
+                .getOrDefault(month, Map.of()).get(position);
+            return amount == null || amount.signum() > 0;
+        }
     }
 }

@@ -7,55 +7,38 @@ import java.math.BigDecimal;
  */
 public class BudgetReconciliationCategoryView {
     String instructorType;
-    boolean includedInComparison, summerBearing;
+    boolean includedInComparison;
     BigDecimal plannedCost, plannedCount;
-    Integer bannerTaAssignments, bannerTaIndividuals;
     int actualPeople;
-    BigDecimal actualFte, actualTotalCompensation, actualSalary, actualJulSepCompensation,
-        actualJulSepSalary, comparableSalary, variance;
+    BigDecimal actualFte, actualTotalCompensation, actualSalary, summerSalary, comparableSalary,
+        difference;
 
     public BudgetReconciliationCategoryView(String instructorType, boolean includedInComparison,
-                                            boolean summerBearing,
                                             BigDecimal plannedCost, BigDecimal plannedCount,
-                                            Integer bannerTaAssignments, Integer bannerTaIndividuals,
                                             int actualPeople, BigDecimal actualFte,
                                             BigDecimal actualTotalCompensation, BigDecimal actualSalary,
-                                            BigDecimal actualJulSepCompensation,
-                                            BigDecimal actualJulSepSalary,
-                                            BigDecimal comparableSalary, BigDecimal variance) {
+                                            BigDecimal summerSalary,
+                                            BigDecimal comparableSalary, BigDecimal difference) {
         this.instructorType = instructorType;
         this.includedInComparison = includedInComparison;
-        this.summerBearing = summerBearing;
         this.plannedCost = plannedCost;
         this.plannedCount = plannedCount;
-        this.bannerTaAssignments = bannerTaAssignments;
-        this.bannerTaIndividuals = bannerTaIndividuals;
         this.actualPeople = actualPeople;
         this.actualFte = actualFte;
         this.actualTotalCompensation = actualTotalCompensation;
         this.actualSalary = actualSalary;
-        this.actualJulSepCompensation = actualJulSepCompensation;
-        this.actualJulSepSalary = actualJulSepSalary;
+        this.summerSalary = summerSalary;
         this.comparableSalary = comparableSalary;
-        this.variance = variance;
+        this.difference = difference;
     }
 
     public String getInstructorType() {
         return instructorType;
     }
 
-    /** false for context rows (Ladder Faculty, Unmapped) whose variance is not meaningful */
+    /** false for context rows (Ladder Faculty, Unmapped) whose difference is not meaningful */
     public boolean isIncludedInComparison() {
         return includedInComparison;
-    }
-
-    /**
-     * True for the categories whose regular pay starts in October (TAs, Associate Instructor,
-     * Readers), so their Jul-Sep salary is treated as Summer Session and dropped from
-     * comparableSalary. False everywhere else, where Jul-Sep pay is kept.
-     */
-    public boolean isSummerBearing() {
-        return summerBearing;
     }
 
     public BigDecimal getPlannedCost() {
@@ -68,23 +51,6 @@ public class BudgetReconciliationCategoryView {
      */
     public BigDecimal getPlannedCount() {
         return plannedCount;
-    }
-
-    /**
-     * Actual TA assignment rows from Banner (each TA-section-term appointment counts once) for the
-     * academic year. Set only on the TAs row; null elsewhere and when Banner is not configured.
-     * Not comparable to actualPeople — one TA teaching several sections counts multiple times here.
-     */
-    public Integer getBannerTaAssignments() {
-        return bannerTaAssignments;
-    }
-
-    /**
-     * Distinct TA individuals from Banner (by PIDM) for the academic year. Set only on the TAs row.
-     * Roughly comparable to actualPeople, but counts by course subject vs actualPeople's payroll dept.
-     */
-    public Integer getBannerTaIndividuals() {
-        return bannerTaIndividuals;
     }
 
     public int getActualPeople() {
@@ -103,26 +69,21 @@ public class BudgetReconciliationCategoryView {
         return actualSalary;
     }
 
-    /** Jul-Sep pay, salary and benefits together. Context: only the salary part is ever deducted. */
-    public BigDecimal getActualJulSepCompensation() {
-        return actualJulSepCompensation;
-    }
-
     /**
-     * The salary-only part of Jul-Sep pay — the figure actually subtracted from actualSalary to get
-     * comparableSalary, but only where summerBearing is true. Reported on every category so a
-     * non-summer-bearing row still shows what it kept.
+     * Summer Session salary, the amount deducted from actualSalary to reach comparableSalary. Zero on
+     * the 12-month faculty and lecturer categories, so actualSalary - summerSalary = comparableSalary
+     * holds on every row.
      */
-    public BigDecimal getActualJulSepSalary() {
-        return actualJulSepSalary;
+    public BigDecimal getSummerSalary() {
+        return summerSalary;
     }
 
-    /** salary compared against plan: excludes Jul-Sep (Summer Session) for TA/AI/Reader categories */
+    /** salary compared against plan: full salary less Summer Session pay */
     public BigDecimal getComparableSalary() {
         return comparableSalary;
     }
 
-    public BigDecimal getVariance() {
-        return variance;
+    public BigDecimal getDifference() {
+        return difference;
     }
 }

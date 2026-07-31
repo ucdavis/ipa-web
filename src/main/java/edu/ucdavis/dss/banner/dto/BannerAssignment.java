@@ -89,13 +89,16 @@ public class BannerAssignment {
         this.middleInitial = middleInitial;
     }
 
+    /**
+     * "First Last". The middle initial is deliberately left out (2026-07-29) so this matches how IPA
+     * renders an instructor — Instructor.getFullName() is firstName + lastName and IPA holds no middle
+     * name — which makes the planned and actual columns of the By Course tab visually comparable.
+     * getMiddleInitial() still exposes it if anything ever needs to disambiguate two people.
+     */
     public String getFullName() {
         StringBuilder name = new StringBuilder();
         if (firstName != null && !firstName.isBlank()) {
             name.append(firstName.trim()).append(' ');
-        }
-        if (middleInitial != null && !middleInitial.isBlank()) {
-            name.append(middleInitial.trim()).append(". ");
         }
         if (lastName != null && !lastName.isBlank()) {
             name.append(lastName.trim());

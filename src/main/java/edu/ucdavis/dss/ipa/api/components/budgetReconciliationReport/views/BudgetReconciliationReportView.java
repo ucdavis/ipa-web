@@ -21,25 +21,33 @@ public class BudgetReconciliationReportView {
     int fiscalYear;
     String departmentCode;
     String budgetScenarioName;
+    PlannedTotalsView plannedTotals;
     List<BudgetReconciliationCategoryView> categories;
     List<CourseStaffingView> courses;
     StaffingCostSummaryView costSummary;
+    Integer bannerTaAssignments, bannerTaIndividuals;
 
     public BudgetReconciliationReportView(long workgroupId, String workgroupCode, long year,
                                           int fiscalYear, String departmentCode,
                                           String budgetScenarioName,
+                                          PlannedTotalsView plannedTotals,
                                           List<BudgetReconciliationCategoryView> categories,
                                           List<CourseStaffingView> courses,
-                                          StaffingCostSummaryView costSummary) {
+                                          StaffingCostSummaryView costSummary,
+                                          Integer bannerTaAssignments,
+                                          Integer bannerTaIndividuals) {
         this.workgroupId = workgroupId;
         this.workgroupCode = workgroupCode;
         this.year = year;
         this.fiscalYear = fiscalYear;
         this.departmentCode = departmentCode;
         this.budgetScenarioName = budgetScenarioName;
+        this.plannedTotals = plannedTotals;
         this.categories = categories;
         this.courses = courses;
         this.costSummary = costSummary;
+        this.bannerTaAssignments = bannerTaAssignments;
+        this.bannerTaIndividuals = bannerTaIndividuals;
     }
 
     public long getWorkgroupId() {
@@ -67,6 +75,11 @@ public class BudgetReconciliationReportView {
         return budgetScenarioName;
     }
 
+    /** the scenario's own bottom line, so the plan side ties to the approved budget page */
+    public PlannedTotalsView getPlannedTotals() {
+        return plannedTotals;
+    }
+
     public List<BudgetReconciliationCategoryView> getCategories() {
         return categories;
     }
@@ -79,5 +92,23 @@ public class BudgetReconciliationReportView {
     /** cost-match diagnostics; null when Banner isn't configured, leaving nothing to match */
     public StaffingCostSummaryView getCostSummary() {
         return costSummary;
+    }
+
+    /**
+     * Banner TA assignment rows for the budgeted subjects and academic-year terms — one per
+     * TA-section-term, so a TA on three sections counts three times. Reported alongside the payroll
+     * figures rather than on the TAs category row, which invited reading it as a headcount.
+     * Null when Banner isn't configured.
+     */
+    public Integer getBannerTaAssignments() {
+        return bannerTaAssignments;
+    }
+
+    /**
+     * Distinct Banner TA individuals (by PIDM) for the budgeted subjects. Counted by course subject
+     * while the payroll figures are counted by department code, so the two only roughly agree.
+     */
+    public Integer getBannerTaIndividuals() {
+        return bannerTaIndividuals;
     }
 }
