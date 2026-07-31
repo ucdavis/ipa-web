@@ -6,7 +6,7 @@ import edu.ucdavis.dss.ipa.api.components.workloadSummaryReport.views.factories.
 import edu.ucdavis.dss.ipa.entities.BudgetScenario;
 import edu.ucdavis.dss.ipa.entities.WorkloadAssignment;
 import edu.ucdavis.dss.ipa.entities.WorkloadSnapshot;
-import edu.ucdavis.dss.ipa.services.BudgetScenarioService;
+import edu.ucdavis.dss.ipa.repositories.BudgetScenarioRepository;
 import edu.ucdavis.dss.ipa.services.WorkloadAssignmentService;
 import edu.ucdavis.dss.ipa.services.WorkloadSnapshotService;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
@@ -39,7 +39,7 @@ public class UploadBudgetReportTask {
     @Inject
     private BudgetViewFactory budgetViewFactory;
     @Inject
-    private BudgetScenarioService budgetScenarioService;
+    private BudgetScenarioRepository budgetScenarioRepository;
     @Inject
     private WorkloadSnapshotService workloadSnapshotService;
     @Inject
@@ -79,11 +79,11 @@ public class UploadBudgetReportTask {
         List<WorkloadSnapshot> latestWorkloadSnapshots = new ArrayList<>();
 
         for (Long workgroupId : lsWorkgroupIds) {
-            List<BudgetScenario> budgetRequests =
-                budgetScenarioService.findBudgetRequestsByWorkgroupIdAndYear(workgroupId, year);
+            List<BudgetScenario> budgetScenarios =
+                budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroupId, year);
 
-            budgetRequests.stream().max(Comparator.comparing(BudgetScenario::getCreationDate))
-                .ifPresent(latestBudgetRequests::add);
+            budgetScenarios.stream().filter(BudgetScenario::getIsBudgetRequest)
+                .max(Comparator.comparing(BudgetScenario::getCreationDate)).ifPresent(latestBudgetRequests::add);
 
             List<WorkloadSnapshot> workloadSnapshots =
                 workloadSnapshotService.findByWorkgroupIdAndYear(workgroupId, year);
