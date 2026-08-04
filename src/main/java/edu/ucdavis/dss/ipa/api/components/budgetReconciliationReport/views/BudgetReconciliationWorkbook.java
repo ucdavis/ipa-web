@@ -5,14 +5,21 @@ import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.List;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * Builds the reconciliation workbook: two data tables, nothing else. By Category answers what each
- * instructor category cost against plan; By Course answers who taught what and at what cost.
+ * Builds the reconciliation workbook: two data tables and a compact data dictionary. By Category
+ * answers what each instructor category cost against plan; By Course answers who taught what and at
+ * what cost.
  *
  * Diagnostics stay out of the workbook by decision (2026-07-28) — the cost-match counts, department
  * payroll totals, Banner TA counts and the plan tie-out are all still computed and served on the JSON
@@ -23,6 +30,27 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * and delegates.
  */
 public class BudgetReconciliationWorkbook {
+    private static final List<List<String>> BY_CATEGORY_DATA_DICTIONARY = List.of(
+        List.of("Instructor Type",
+            "IPA instructor category. UCPath DOPE rows are tallied through job code mappings."),
+        List.of("IPA Cost",
+            "Budget scenario planned cost for the category."),
+        List.of("IPA Count",
+            "Course assignments for faculty and lecturer categories; TAs and Readers are counted in "
+                + "their own units, which vary by department."),
+        List.of("Payroll Individuals",
+            "Distinct people with UCPath pay in the category during Oct-Jun, scoped to the payroll "
+                + "department code."),
+        List.of("FTE Appointments",
+            "Sum of each individual's highest appointment level in Oct-Jun. A level, not a total: "
+                + "half time reads 0.5 whether it ran one quarter or three."),
+        List.of("Academic Year Salary",
+            "UCPath salary expense less Summer Session pay, excluding fringe records."),
+        List.of("Difference",
+            "Academic Year Salary minus IPA Cost."),
+        List.of("% Difference",
+            "Difference divided by IPA Cost."));
+
     private final BudgetReconciliationReportView reportView;
 
     public BudgetReconciliationWorkbook(BudgetReconciliationReportView reportView) {
@@ -82,6 +110,7 @@ public class BudgetReconciliationWorkbook {
         }
 
         writeBannerTaCheck(sheet);
+        writeByCategoryDataDictionary(sheet);
     }
 
     /**
@@ -104,24 +133,74 @@ public class BudgetReconciliationWorkbook {
             reportView.getBannerTaIndividuals()));
     }
 
+    /** Brief definitions beside the report, so unlike units and data scopes are not read as peers. */
+    private void writeByCategoryDataDictionary(Sheet sheet) {
+        writeBlankRow(sheet);
+
+        CellStyle titleStyle = sheet.getWorkbook().createCellStyle();
+        Font titleFont = sheet.getWorkbook().createFont();
+        titleFont.setBold(true);
+        titleFont.setFontHeightInPoints((short) 12);
+        titleStyle.setFont(titleFont);
+
+        String title = String.format("%s, UCPath DOPE FY%d",
+            reportView.budgetScenarioHeading(), reportView.getFiscalYear());
+        Row titleRow = writeSectionLabel(sheet, title, BY_CATEGORY_LAST_COLUMN);
+        applyStyle(titleRow, 0, BY_CATEGORY_LAST_COLUMN, titleStyle);
+
+        CellStyle labelStyle = sheet.getWorkbook().createCellStyle();
+        Font labelFont = sheet.getWorkbook().createFont();
+        labelFont.setBold(true);
+        labelStyle.setFont(labelFont);
+        labelStyle.setVerticalAlignment(VerticalAlignment.TOP);
+
+        CellStyle descriptionStyle = sheet.getWorkbook().createCellStyle();
+        descriptionStyle.setWrapText(true);
+        descriptionStyle.setVerticalAlignment(VerticalAlignment.TOP);
+
+        for (List<String> definition : BY_CATEGORY_DATA_DICTIONARY) {
+            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+            Cell label = row.createCell(0);
+            label.setCellValue(definition.get(0));
+            label.setCellStyle(labelStyle);
+
+            Cell description = row.createCell(1);
+            description.setCellValue(definition.get(1));
+            description.setCellStyle(descriptionStyle);
+            sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(),
+                1, BY_CATEGORY_LAST_COLUMN));
+            row.setHeightInPoints(30);
+        }
+    }
+
     private static void writeBlankRow(Sheet sheet) {
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList("", ""));
     }
 
     /* Merged, so a long heading can't stretch column A: autoSizeColumn skips merged cells but measures
        every other row in a column, not just the header. Metric labels below stay short for that reason. */
-    private static void writeSectionLabel(Sheet sheet, String label, int lastColumn) {
-        ExcelHelper.writeRowToSheet(sheet, Arrays.asList(label));
-        sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(),
-            0, lastColumn));
+    private static Row writeSectionLabel(Sheet sheet, String label, int lastColumn) {
+        Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+        row.createCell(0).setCellValue(label);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 0, lastColumn));
+        return row;
+    }
+
+    private static void applyStyle(Row row, int firstColumn, int lastColumn, CellStyle style) {
+        for (int column = firstColumn; column <= lastColumn; column++) {
+            Cell cell = row.getCell(column);
+            if (cell == null) {
+                cell = row.createCell(column);
+            }
+            cell.setCellStyle(style);
+        }
     }
 
     /* planned (IPA) vs actual (Banner) staffing per course, flat with a blank row between courses */
     void buildByCourseSheet(Sheet sheet) {
         // The "Staffing by course: <scenario> (2025-2026)" title row was removed 2026-07-30, so headers
-        // are now row 0. **Nothing in the workbook names the budget scenario any more** — that title was
-        // the only place either tab carried it, and it is now on the JSON endpoint alone. See Q10: a
-        // report that cannot say which budget it compared against.
+        // are now row 0. The scenario and payroll year remain visible in the By Category dictionary
+        // heading without displacing either tab's data headers.
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
             "Term", "Subject", "Course", "Title", "Source", "Name", "Role", "DOPE Job Code",
             "Sections", "Term FTE"));

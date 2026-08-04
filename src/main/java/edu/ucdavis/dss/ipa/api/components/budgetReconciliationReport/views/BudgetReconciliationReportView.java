@@ -1,5 +1,6 @@
 package edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,6 +74,23 @@ public class BudgetReconciliationReportView {
 
     public String getBudgetScenarioName() {
         return budgetScenarioName;
+    }
+
+    /** Workbook heading: workgroup + scenario, comma-separated when the payroll plan is combined. */
+    String budgetScenarioHeading() {
+        String[] scenarios = budgetScenarioName.split("; ", -1);
+        if (scenarios.length == 1) {
+            return workgroupCode + " " + budgetScenarioName;
+        }
+
+        List<String> labels = new ArrayList<>();
+        for (String scenario : scenarios) {
+            int separator = scenario.indexOf(": ");
+            labels.add(separator < 0
+                ? scenario
+                : scenario.substring(0, separator) + " " + scenario.substring(separator + 2));
+        }
+        return String.join(", ", labels);
     }
 
     /** the scenario's own bottom line, so the plan side ties to the approved budget page */
