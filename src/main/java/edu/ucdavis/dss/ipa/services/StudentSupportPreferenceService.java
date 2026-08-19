@@ -26,6 +26,4 @@ public interface StudentSupportPreferenceService {
     List<StudentSupportPreference> findByScheduleIdAndTermCodeAndSupportStaffId(long id, String termCode, long supportStaffId);
 
     List<StudentSupportPreference> findByScheduleId(long scheduleId);
-
-    List<StudentSupportPreference> findBySupportStaffIdAndTermCode(long supportStaffId, String termCode);
 }
