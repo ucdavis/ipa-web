@@ -148,6 +148,11 @@ public class Activity extends BaseEntity {
 			this.activityTypeCode.getActivityTypeCode() == 'L';
 	}
 
+	@Transient
+	public boolean isLaboratory() {
+		return this.activityTypeCode.getActivityTypeCode() == 'C';
+	}
+
 	/**
 	 * dayIndicator is a 7 digit string with each digit representing a day
 	 * of the week, the first digit being Sunday and the last being Saturday

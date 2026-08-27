@@ -61,22 +61,26 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
             for (int i = 0; i < termSectionGroups.size(); i++) {
                 SectionGroup currentSectionGroup = termSectionGroups.get(i);
 
-                Activity lectureActivity = null;
-                if (currentSectionGroup.getActivities().size() == 1) {
-                    lectureActivity = currentSectionGroup.getActivities().get(0);
-                } else if (currentSectionGroup.getActivities().size() > 0) {
-                    lectureActivity =
-                        currentSectionGroup.getActivities().stream().filter(Activity::isLecture).findFirst()
-                            .orElse(null);
+                Activity primaryActivity = null;
+                List<Activity> sectionGroupActivities = currentSectionGroup.getActivities();
+                boolean isLaboratoryCourse =
+                    currentSectionGroup.getCourse().getCourseNumber().matches("[0-9]+L");
+
+                if (sectionGroupActivities.size() == 1) {
+                    primaryActivity = sectionGroupActivities.getFirst();
+                } else if (sectionGroupActivities.size() > 1) {
+                    primaryActivity = isLaboratoryCourse
+                        ? sectionGroupActivities.stream().filter(Activity::isLaboratory).findFirst().orElse(null)
+                        : sectionGroupActivities.stream().filter(Activity::isLecture).findFirst().orElse(null);
                 } else if (currentSectionGroup.getSections().size() > 0) {
-                    lectureActivity = currentSectionGroup.getSections().get(0).getActivities().stream().filter(
+                    primaryActivity = currentSectionGroup.getSections().get(0).getActivities().stream().filter(
                         Activity::isLecture).findFirst().orElse(null);
                 }
 
-                String days = lectureActivity != null ?
-                    lectureActivity.getDayIndicatorDescription() : "";
-                String hours = lectureActivity != null ?
-                    lectureActivity.getTimeDescription() : "";
+                String days = primaryActivity != null ?
+                    primaryActivity.getDayIndicatorDescription() : "";
+                String hours = primaryActivity != null ?
+                    primaryActivity.getTimeDescription() : "";
 
                 // prior enrollment?
                 Map<String, Map<String, Long>> courseCensusMap = scheduleSummaryReportView.getCourseCensus();
