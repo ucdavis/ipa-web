@@ -4,6 +4,7 @@ import edu.ucdavis.dss.ipa.entities.Activity;
 import edu.ucdavis.dss.ipa.entities.Course;
 import edu.ucdavis.dss.ipa.entities.Section;
 import edu.ucdavis.dss.ipa.entities.SectionGroup;
+import edu.ucdavis.dss.ipa.entities.TeachingAssignment;
 import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.utilities.ExcelHelper;
 import java.time.LocalDateTime;
@@ -86,6 +87,11 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
 
                 Course course = currentSectionGroup.getCourse();
 
+                String instructorNames = currentSectionGroup.getTeachingAssignments().stream()
+                    .filter(TeachingAssignment::isApproved)
+                    .map(TeachingAssignment::getInstructorDisplayName)
+                    .collect(Collectors.joining(", "));
+
                 String lastOfferedCensus = null;
                 String lastOfferedCourseKey =
                     course.getSubjectCode() + "-" + course.getCourseNumber() + "-" +
@@ -105,8 +111,7 @@ public class ScheduleSummaryReportAnnualExcelView extends AbstractXlsxView {
 
                 List<Object> rowValues = new ArrayList<>(Arrays.asList(
                     currentSectionGroup.getCourse().getShortDescription(),
-                    currentSectionGroup.getTeachingAssignments().size() > 0 ?
-                        currentSectionGroup.getTeachingAssignments().get(0).getInstructorDisplayName() : null,
+                    instructorNames,
                     days,
                     hours,
                     currentSectionGroup.getPlannedSeats(),
