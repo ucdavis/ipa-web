@@ -18,6 +18,7 @@ import java.util.List;
 public class BudgetReconciliationReportView {
     long workgroupId;
     String workgroupCode;
+    String fteDepartmentName;
     long year;
     int fiscalYear;
     String departmentCode;
@@ -28,7 +29,8 @@ public class BudgetReconciliationReportView {
     StaffingCostSummaryView costSummary;
     Integer bannerTaAssignments, bannerTaIndividuals;
 
-    public BudgetReconciliationReportView(long workgroupId, String workgroupCode, long year,
+    public BudgetReconciliationReportView(long workgroupId, String workgroupCode,
+                                          String fteDepartmentName, long year,
                                           int fiscalYear, String departmentCode,
                                           String budgetScenarioName,
                                           PlannedTotalsView plannedTotals,
@@ -39,6 +41,7 @@ public class BudgetReconciliationReportView {
                                           Integer bannerTaIndividuals) {
         this.workgroupId = workgroupId;
         this.workgroupCode = workgroupCode;
+        this.fteDepartmentName = fteDepartmentName;
         this.year = year;
         this.fiscalYear = fiscalYear;
         this.departmentCode = departmentCode;
@@ -55,9 +58,14 @@ public class BudgetReconciliationReportView {
         return workgroupId;
     }
 
-    /** the workgroup's short subject-style code (e.g. "CLA"), used to name the download */
+    /** the workgroup's short subject-style code (e.g. "CLA"), used in the workbook heading */
     public String getWorkgroupCode() {
         return workgroupCode;
+    }
+
+    /** the Budget Office's FTE Department (e.g. "German &amp; Russian"); used to name the download */
+    public String getFteDepartmentName() {
+        return fteDepartmentName;
     }
 
     public long getYear() {

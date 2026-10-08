@@ -9,8 +9,8 @@ public interface BudgetReconciliationReportService {
      * instructor type) and By Course (Banner assignments vs planned instructors). Each view is
      * omitted when its source isn't configured.
      *
-     * The payroll department scoping the actuals comes from the workgroup's own DepartmentCode. A
-     * workgroup without one is outside this report's Letters &amp; Science scope, or unmapped.
+     * The payroll department scoping the actuals is looked up from the workgroup's code in
+     * FteDepartment. A workgroup not listed there is outside this report's Letters &amp; Science scope.
      */
     BudgetReconciliationReportView generate(long workgroupId, long year);
 }

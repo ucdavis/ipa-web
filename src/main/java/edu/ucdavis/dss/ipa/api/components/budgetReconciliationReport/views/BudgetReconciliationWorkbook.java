@@ -60,10 +60,13 @@ public class BudgetReconciliationWorkbook {
     static final int BY_COURSE_LAST_COLUMN = 9;
     static final int BY_CATEGORY_LAST_COLUMN = 7;
 
-    /** The suggested file name, used by both the download header and the batch task. */
+    /**
+     * The suggested file name, used by both the download header and the batch task. A slash
+     * ("Middle East/South Asia Studies") would make a subdirectory when the task writes to disk.
+     */
     public String fileName() {
         return String.format("Budget-Reconciliation-%s-FY%d.xlsx",
-            reportView.getWorkgroupCode(), reportView.getFiscalYear());
+            reportView.getFteDepartmentName().replace("/", "-"), reportView.getFiscalYear());
     }
 
     /** A new workbook. Caller closes it. */

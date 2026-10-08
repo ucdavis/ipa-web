@@ -5,6 +5,7 @@ import edu.ucdavis.dss.datamart.DopeSummary;
 import edu.ucdavis.dss.datamart.DopeSummaryCalculator;
 import edu.ucdavis.dss.datamart.DopeTotals;
 import edu.ucdavis.dss.datamart.dto.DopeRecord;
+import edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.FteDepartment;
 import edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views.BudgetReconciliationCategoryView;
 import edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views.BudgetReconciliationReportView;
 import edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views.CourseStaffingPersonView;
@@ -62,7 +63,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     @Inject TermService termService;
     @Inject ExpenseItemService expenseItemService;
     @Inject BudgetCalculationService budgetCalculationService;
-    /* resolves the sibling programs on a shared payroll code — see PROGRAMS_BY_PAYROLL_DEPARTMENT */
+    /* resolves the sibling programs on a shared payroll code — see FteDepartment */
     @Inject WorkgroupService workgroupService;
     /* required: DOPE actuals are what the report reconciles against, so it is gated with them */
     @Inject DopeCostService dopeCostService;
@@ -78,26 +79,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         Set.of("Ladder Faculty", DopeSummaryCalculator.UNMAPPED);
 
     private static final String PLACEHOLDER_ROLE = "Staff (placeholder)";
-
-    /**
-     * The payroll departments that carry more than one program, keyed by DOPE `DEPT_CD`. A report for any
-     * member covers the whole group: request CHN and you get CHN + JPN, because DOPE cannot split a shared
-     * code and each program's plan would otherwise be compared against the entire department's payroll.
-     * FY2026 made that vivid — MSA, ARB, HEB, HIN, PER and PUN each reported the same $373,675 of
-     * Continuing Lecturer actuals against plans from $0 to $160,038.
-     *
-     * **Hardcoded, and a fourth copy of "the L&S scope"** alongside `DatamartTask`'s department list,
-     * `datamart-generate-all-reports.sh`'s workgroup ids, and the `Workgroups.DepartmentCode` column this
-     * is keyed on. It should become `findByDepartmentCode` against that column, which cannot drift —
-     * see the TODO in the dev notes. Codes not listed here report alone.
-     */
-    private static final Map<String, List<String>> PROGRAMS_BY_PAYROLL_DEPARTMENT = Map.of(
-        "040025", List.of("CHN", "JPN"),
-        "040027", List.of("ARB", "HEB", "HIN", "MSA", "PER", "PUN"),
-        "040030", List.of("AHI", "ART"),
-        "040140", List.of("FRE", "ITA"),
-        "040170", List.of("GER", "RUS"),
-        "040330", List.of("POR", "SPA"));
 
     /* TA and Reader cost is per-course counts x rate rather than a SectionGroupCostInstructor, so it
        sits outside REPLACEMENT_COST — see plannedTotalsFrom */
@@ -152,8 +133,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         Workgroup workgroup = budget.getSchedule().getWorkgroup();
 
-        String departmentCode = departmentCodeFor(workgroup);
-        List<Workgroup> payrollGroup = payrollDepartmentGroup(workgroup, departmentCode);
+        FteDepartment fteDepartment = fteDepartmentFor(workgroup);
+        String departmentCode = fteDepartment.payrollCode();
+        List<Workgroup> payrollGroup = payrollDepartmentGroup(workgroup, fteDepartment);
 
         List<String> termCodes = new ArrayList<>();
         for (String termCodeShort : Arrays.asList(TermDescription.FALL.getShortTermCode(),
@@ -233,7 +215,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         BannerRepository.TaCounts bannerTaCounts = bannerRepository != null
             ? bannerRepository.getTaCounts(subjectCodes, termCodes) : null;
 
-        return new BudgetReconciliationReportView(workgroupId, workgroup.getCode(), year, fiscalYear,
+        return new BudgetReconciliationReportView(workgroupId, workgroup.getCode(), fteDepartment.name(),
+            year, fiscalYear,
             departmentCode, String.join("; ", scenarioNames),
             plannedTotalsFrom(planned),
             buildCategories(planned, dopeSummary),
@@ -401,21 +384,20 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /**
-     * The payroll DEPT_CD scoping the actuals, taken from the workgroup itself — so a caller cannot
-     * pair one department's plan with another's payroll.
+     * The payroll department scoping the actuals, looked up from the workgroup itself — so a caller
+     * cannot pair one department's plan with another's payroll.
      */
-    private String departmentCodeFor(Workgroup workgroup) {
-        String departmentCode = workgroup.getDepartmentCode();
+    private FteDepartment fteDepartmentFor(Workgroup workgroup) {
+        FteDepartment fteDepartment = FteDepartment.forWorkgroupCode(workgroup.getCode());
 
-        if (departmentCode == null || departmentCode.isBlank()) {
+        if (fteDepartment == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(
-                "Workgroup %d (%s) has no department code, so there are no payroll actuals to "
-                    + "reconcile. Either it is outside this report's Letters & Science scope, or its "
-                    + "DepartmentCode has not been populated yet.",
+                "Workgroup %d (%s) has no payroll department, so there are no payroll actuals to "
+                    + "reconcile. It is outside this report's Letters & Science scope.",
                 workgroup.getId(), workgroup.getName()));
         }
 
-        return departmentCode;
+        return fteDepartment;
     }
 
     /**
@@ -456,18 +438,14 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
      * the whole request fails, rather than reporting a partial plan against the full department's payroll
      * — which is the very mismatch this rollup exists to remove, just smaller.
      */
-    private List<Workgroup> payrollDepartmentGroup(Workgroup requested, String departmentCode) {
-        List<String> codes = PROGRAMS_BY_PAYROLL_DEPARTMENT.get(departmentCode);
-        if (codes == null) {
-            return List.of(requested);
-        }
+    private List<Workgroup> payrollDepartmentGroup(Workgroup requested, FteDepartment fteDepartment) {
         List<Workgroup> group = new ArrayList<>();
-        for (String code : codes) {
+        for (String code : fteDepartment.programs()) {
             Workgroup member = code.equals(requested.getCode())
                 ? requested : workgroupService.findOneByCode(code);
             if (member == null) {
-                throw new IllegalStateException("Payroll department " + departmentCode + " lists program "
-                    + code + ", but no workgroup has that code");
+                throw new IllegalStateException("Payroll department " + fteDepartment.payrollCode()
+                    + " lists program " + code + ", but no workgroup has that code");
             }
             group.add(member);
         }

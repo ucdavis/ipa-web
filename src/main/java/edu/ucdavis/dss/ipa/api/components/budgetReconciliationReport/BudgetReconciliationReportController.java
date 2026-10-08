@@ -32,9 +32,9 @@ public class BudgetReconciliationReportController {
     @Inject BudgetReconciliationReportService budgetReconciliationReportService;
 
     /**
-     * The payroll department scoping the actuals comes from the workgroup's own DepartmentCode, so
-     * there is no way to pair one department's plan with another's payroll. A workgroup without one
-     * is a 400 — either it is outside this report's Letters &amp; Science scope, or unmapped.
+     * The payroll department scoping the actuals is looked up from the workgroup's code in
+     * FteDepartment, so there is no way to pair one department's plan with another's payroll. A
+     * workgroup not listed there is a 400 — it is outside this report's Letters &amp; Science scope.
      */
     @RequestMapping(value = "/dev/budgetReconciliationReportView/workgroups/{workgroupId}/years/{year}",
         method = RequestMethod.GET, produces = "application/json")
