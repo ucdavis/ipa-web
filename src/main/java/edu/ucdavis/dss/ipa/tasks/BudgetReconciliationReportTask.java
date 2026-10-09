@@ -45,7 +45,7 @@ public class BudgetReconciliationReportTask implements ApplicationRunner, ExitCo
     private static final String XLSX_CONTENT_TYPE =
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-    @Value("${BOX_UPLOAD_EMAIL:}")
+    @Value("${SIB_BOX_EMAIL:}")
     String boxUploadEmail;
 
     @Inject
@@ -67,7 +67,7 @@ public class BudgetReconciliationReportTask implements ApplicationRunner, ExitCo
         Path outputDir = outputDirValues != null ? Path.of(outputDirValues.get(0)) : null;
 
         if (outputDir == null && boxUploadEmail.isBlank()) {
-            log.error("BOX_UPLOAD_EMAIL is not configured; pass --outputDir to write the workbooks locally");
+            log.error("SIB_BOX_EMAIL is not configured; pass --outputDir to write the workbooks locally");
             exitCode = 1;
             return;
         }
