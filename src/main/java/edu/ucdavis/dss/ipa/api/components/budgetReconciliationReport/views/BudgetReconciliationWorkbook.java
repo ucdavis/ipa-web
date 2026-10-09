@@ -22,12 +22,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * what cost.
  *
  * Diagnostics stay out of the workbook by decision (2026-07-28) — the cost-match counts, department
- * payroll totals, Banner TA counts and the plan tie-out are all still computed and served on the JSON
- * endpoint, but a reviewer reading the spreadsheet gets the comparison, not the plumbing behind it.
- *
- * Deliberately free of the servlet API, so it can be unit-tested without a web request and reused outside
- * one. `BudgetReconciliationExcelView` is the only caller today — it adds the Content-Disposition header
- * and delegates.
+ * payroll totals, Banner TA counts and the plan tie-out are all still computed on the report view, but
+ * a reviewer reading the spreadsheet gets the comparison, not the plumbing behind it.
  */
 public class BudgetReconciliationWorkbook {
     private static final List<List<String>> BY_CATEGORY_DATA_DICTIONARY = List.of(
@@ -74,8 +70,7 @@ public class BudgetReconciliationWorkbook {
         return writeInto(new XSSFWorkbook());
     }
 
-    /** Fills an existing workbook — the download path, where Spring supplies one. */
-    public Workbook writeInto(Workbook workbook) {
+    private Workbook writeInto(Workbook workbook) {
         buildByCategorySheet(workbook.createSheet("By Category"));
         buildByCourseSheet(workbook.createSheet("By Course"));
         ExcelHelper.expandHeaders(workbook);
@@ -118,8 +113,8 @@ public class BudgetReconciliationWorkbook {
 
     /**
      * The one aggregate that earns a place in the workbook. TAs are ~58% of compared salary (FY2026,
-     * L&S-wide), and this is the only independent count of them — everything else stays on the JSON
-     * endpoint. Banner counts TA-of-record assignments within the budget's course subjects while
+     * L&S-wide), and this is the only independent count of them — everything else stays off the
+     * workbook. Banner counts TA-of-record assignments within the budget's course subjects while
      * Payroll Individuals counts everyone paid as a TA under the department code, so the two are a
      * sanity check on each other, NOT a reconciliation: they are not expected to be equal.
      */
