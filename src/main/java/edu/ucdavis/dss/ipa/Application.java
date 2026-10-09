@@ -7,11 +7,9 @@ import edu.ucdavis.dss.ipa.security.SecurityHeaderFilter;
 import org.apereo.cas.client.util.HttpServletRequestWrapperFilter;
 import org.apereo.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.beans.factory.annotation.Value;
-import java.util.Arrays;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -129,11 +127,6 @@ public class Application {
     }
 
     public static void main(final String[] args) throws Exception {
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
-
-        // One-off job runs must exit so their container stops instead of staying up as a web service
-        if (Arrays.asList(args).contains("--runDatamartTask")) {
-            System.exit(SpringApplication.exit(context));
-        }
+        SpringApplication.run(Application.class, args);
     }
 }
