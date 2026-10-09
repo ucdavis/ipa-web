@@ -49,10 +49,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Profile({"development", "production", "staging"})
@@ -391,7 +389,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         FteDepartment fteDepartment = FteDepartment.forWorkgroupCode(workgroup.getCode());
 
         if (fteDepartment == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(
+            throw new IllegalArgumentException(String.format(
                 "Workgroup %d (%s) has no payroll department, so there are no payroll actuals to "
                     + "reconcile. It is outside this report's Letters & Science scope.",
                 workgroup.getId(), workgroup.getName()));

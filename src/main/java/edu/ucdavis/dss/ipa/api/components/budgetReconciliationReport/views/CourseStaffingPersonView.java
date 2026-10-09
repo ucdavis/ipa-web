@@ -47,9 +47,9 @@ public class CourseStaffingPersonView {
     }
 
     /**
-     * The match outcome label; null on planned rows and when the Datamart isn't available. **JSON only
-     * since 2026-07-29** — the workbook dropped its Cost Match column, since the match is always by empl
-     * id and dopeJobCode above already carries the informative cases.
+     * The match outcome label; null on planned rows and when the Datamart isn't available. **Not in the
+     * workbook since 2026-07-29** — it dropped its Cost Match column, since the match is always by empl
+     * id and dopeJobCode below already carries the informative cases.
      */
     public String getCostMatch() {
         return costMatch;
@@ -60,7 +60,7 @@ public class CourseStaffingPersonView {
      * (e.g. `RECALL TEACHING` — an emeritus/recall tell), otherwise the funded-elsewhere label naming
      * the departments that do pay them. Null when neither is known: no DOPE row for that fiscal year, or
      * no crosswalk empl id. Since 2026-07-29 this is the only match information on the By Course tab —
-     * costMatch below still distinguishes all four outcomes for JSON consumers.
+     * costMatch above still distinguishes all four outcomes.
      */
     public String getDopeJobCode() {
         return dopeJobCode;
