@@ -16,6 +16,9 @@ repositories {
 
 ext['tomcat.version'] = '10.1.60'
 ext['netty.version'] = '4.1.137.Final'
+ext['jackson-bom.version'] = '2.21.7'
+ext['httpclient5.version'] = '5.6.4'
+ext['httpcore5.version'] = '5.4.3'
 
 java {
     toolchain {
