@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "DATAMART_URL")
+@ConditionalOnNotWebApplication
 public class BudgetReconciliationReportTask implements ApplicationRunner, ExitCodeGenerator {
     private final Logger log = LoggerFactory.getLogger("BudgetReconciliationReportTask");
     private int exitCode = 0;

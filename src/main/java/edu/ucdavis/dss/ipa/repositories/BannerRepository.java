@@ -5,6 +5,7 @@ import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,6 +27,7 @@ import java.util.List;
 @Repository
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "BANNER_DATABASE_URL")
+@ConditionalOnNotWebApplication
 public class BannerRepository {
     private static final Logger log = LoggerFactory.getLogger(BannerRepository.class);
 

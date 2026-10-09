@@ -3,6 +3,7 @@ package edu.ucdavis.dss.ipa.repositories;
 import edu.ucdavis.dss.datamart.dto.DopeRecord;
 import edu.ucdavis.dss.ipa.utilities.EmailService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -22,6 +23,7 @@ import java.util.Set;
 @Repository
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "DATAMART_URL")
+@ConditionalOnNotWebApplication
 public class DatamartRepository {
     @Inject EmailService emailService;
     @Inject @Qualifier("datamartJdbcTemplate") NamedParameterJdbcTemplate datamartJdbcTemplate;

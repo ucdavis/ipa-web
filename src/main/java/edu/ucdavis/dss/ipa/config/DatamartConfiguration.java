@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @Configuration
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "DATAMART_URL")
+@ConditionalOnNotWebApplication
 public class DatamartConfiguration {
     /* host:port/service_name, e.g. example.rds.aws.ait.ucdavis.edu:1521/service */
     @Value("${DATAMART_URL}")

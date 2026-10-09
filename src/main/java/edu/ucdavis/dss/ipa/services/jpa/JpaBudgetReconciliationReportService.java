@@ -47,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "DATAMART_URL")
+@ConditionalOnNotWebApplication
 public class JpaBudgetReconciliationReportService implements BudgetReconciliationReportService {
     @Inject BudgetService budgetService;
     @Inject BudgetScenarioRepository budgetScenarioRepository;

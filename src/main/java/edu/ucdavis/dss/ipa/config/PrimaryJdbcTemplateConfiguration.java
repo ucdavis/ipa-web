@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @Configuration
 @Profile({"development", "production", "staging"})
 @ConditionalOnExpression("'${DATAMART_URL:}' != '' or '${BANNER_DATABASE_URL:}' != ''")
+@ConditionalOnNotWebApplication
 public class PrimaryJdbcTemplateConfiguration {
     @Bean
     @Primary

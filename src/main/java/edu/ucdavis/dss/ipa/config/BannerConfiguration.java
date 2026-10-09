@@ -2,6 +2,7 @@ package edu.ucdavis.dss.ipa.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @Configuration
 @Profile({"development", "production", "staging"})
 @ConditionalOnProperty(name = "BANNER_DATABASE_URL")
+@ConditionalOnNotWebApplication
 public class BannerConfiguration {
     /* SID form host:port:SID (Banner uses a SID, not a service name); code prepends
        jdbc:oracle:thin:@. For a service name instead, set //host:port/service_name here. */
