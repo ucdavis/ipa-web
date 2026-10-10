@@ -110,12 +110,12 @@ public class BudgetReconciliationReportView {
         return categories;
     }
 
-    /** By Course rows; planned-only when Banner isn't configured */
+    /** By Course rows */
     public List<CourseStaffingView> getCourses() {
         return courses;
     }
 
-    /** cost-match diagnostics; null when Banner isn't configured, leaving nothing to match */
+    /** cost-match diagnostics */
     public StaffingCostSummaryView getCostSummary() {
         return costSummary;
     }
@@ -124,7 +124,6 @@ public class BudgetReconciliationReportView {
      * Banner TA assignment rows for the budgeted subjects and academic-year terms — one per
      * TA-section-term, so a TA on three sections counts three times. Reported alongside the payroll
      * figures rather than on the TAs category row, which invited reading it as a headcount.
-     * Null when Banner isn't configured.
      */
     public Integer getBannerTaAssignments() {
         return bannerTaAssignments;

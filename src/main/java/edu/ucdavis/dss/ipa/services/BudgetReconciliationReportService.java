@@ -6,8 +6,7 @@ public interface BudgetReconciliationReportService {
     /**
      * Compares the approved budget (standard rates) for a workgroup's academic year against actuals
      * for the matching fiscal year (year + 1), in two views: By Category (Datamart DOPE payroll by
-     * instructor type) and By Course (Banner assignments vs planned instructors). Each view is
-     * omitted when its source isn't configured.
+     * instructor type) and By Course (Banner assignments vs planned instructors).
      *
      * The payroll department scoping the actuals is looked up from the workgroup's code in
      * FteDepartment. A workgroup not listed there is outside this report's Letters &amp; Science scope.

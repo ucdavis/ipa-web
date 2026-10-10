@@ -20,7 +20,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile({"development", "production", "staging"})
-@ConditionalOnProperty(name = "DATAMART_URL")
 @ConditionalOnNotWebApplication
 public class DopeCostService {
     @Inject DatamartRepository datamartRepository;

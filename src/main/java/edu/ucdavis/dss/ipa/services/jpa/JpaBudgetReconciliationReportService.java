@@ -46,16 +46,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Profile({"development", "production", "staging"})
-@ConditionalOnProperty(name = "DATAMART_URL")
 @ConditionalOnNotWebApplication
 public class JpaBudgetReconciliationReportService implements BudgetReconciliationReportService {
     @Inject BudgetService budgetService;
@@ -67,9 +64,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     @Inject WorkgroupService workgroupService;
     /* required: DOPE actuals are what the report reconciles against, so it is gated with them */
     @Inject DopeCostService dopeCostService;
-    /* optional: Banner supplies the actual course assignments the By Course view compares against,
+    /* required: Banner supplies the actual course assignments the By Course view compares against,
        and the TA counts on the By Category TAs row */
-    @Autowired(required = false) BannerRepository bannerRepository;
+    @Inject BannerRepository bannerRepository;
 
     /* Ladder Faculty carries no SIB plan to compare against — LADDER_FACULTY_COST is $0 in all 49
        FY2026 scenarios, verified 2026-07-30 — so it is a context row rather than a difference. This is
@@ -185,12 +182,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         }
         DopeSummary dopeSummary = DopeSummaryCalculator.calculate(dopeRecords);
 
-        List<BannerAssignment> assignments = List.of();
-        if (bannerRepository != null) {
-            assignments = bannerRepository.getCourseAssignments(subjectCodes, termCodes);
-            if (assignments == null) {
-                throw new IllegalStateException("Banner query failed for workgroup " + workgroupId);
-            }
+        List<BannerAssignment> assignments = bannerRepository.getCourseAssignments(subjectCodes, termCodes);
+        if (assignments == null) {
+            throw new IllegalStateException("Banner query failed for workgroup " + workgroupId);
         }
 
         // per Banner person: empl id (for the DOPE match) and whether they are a real instructor
@@ -210,10 +204,11 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         Map<String, DopeCostService.PersonCostResult> costByPerson = dopeCostService.resolveCosts(
             dopeRecords, instructorPersonIds, emplIdByPerson, fiscalYear);
 
-        // actual TA counts from Banner, scoped to this budget's course subjects and academic-year
-        // terms; null when Banner isn't configured or the query failed
-        BannerRepository.TaCounts bannerTaCounts = bannerRepository != null
-            ? bannerRepository.getTaCounts(subjectCodes, termCodes) : null;
+        // actual TA counts from Banner, scoped to this budget's course subjects and academic-year terms
+        BannerRepository.TaCounts bannerTaCounts = bannerRepository.getTaCounts(subjectCodes, termCodes);
+        if (bannerTaCounts == null) {
+            throw new IllegalStateException("Banner TA counts query failed for workgroup " + workgroupId);
+        }
 
         return new BudgetReconciliationReportView(workgroupId, workgroup.getCode(), fteDepartment.name(),
             year, fiscalYear,
@@ -221,12 +216,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             plannedTotalsFrom(planned),
             buildCategories(planned, dopeSummary),
             buildCourses(workgroupByCostId, sectionGroupCosts, assignments, costByPerson),
-            // the cost bridge only means something with both sides: Banner people to match, DOPE to
-            // match them against. Without Banner the counts would all read zero against a real
-            // department total, which invites "nothing matched" when nothing was ever attempted.
-            bannerRepository == null ? null : dopeCostService.summarize(dopeSummary, costByPerson),
-            bannerTaCounts != null ? bannerTaCounts.assignments() : null,
-            bannerTaCounts != null ? bannerTaCounts.individuals() : null);
+            dopeCostService.summarize(dopeSummary, costByPerson),
+            bannerTaCounts.assignments(),
+            bannerTaCounts.individuals());
     }
 
     /** the budget scenario's combined (whole-year) term totals */
@@ -300,8 +292,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
 
     /**
      * By Course: planned instructors from the budget scenario paired with Banner's actual
-     * assignments, per course. Planned-only when Banner isn't configured; DOPE cost is attached to
-     * the actual rows when costByPerson is present.
+     * assignments, per course. DOPE cost is attached to the actual rows when costByPerson is present.
      */
     private List<CourseStaffingView> buildCourses(
             Map<Long, Workgroup> workgroupByCostId, List<SectionGroupCost> sectionGroupCosts,
