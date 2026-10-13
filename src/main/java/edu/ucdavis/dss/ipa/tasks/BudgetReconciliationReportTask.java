@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
  *
  *   --outputDir=tmp/reports  write the workbooks locally instead of emailing them
  *   --workgroups=CLA,GER     build only the departments covering those programs
- *   --year=2025              academic start year (2025 = AY 2025-26, FY2026); defaults to current
+ *   --year=2025              academic start year (2025 = AY 2025-26, FY2026); defaults to the previous one
  */
 @Service
 @Profile({"development", "production", "staging"})
@@ -85,7 +85,7 @@ public class BudgetReconciliationReportTask implements ApplicationRunner, ExitCo
         List<String> yearValues = args.getOptionValues("year");
         long year;
         if (yearValues == null) {
-            year = currentAcademicYear();
+            year = previousAcademicYear();
         } else if (yearValues.get(0).matches("\\d{4}")) {
             year = Long.parseLong(yearValues.get(0));
         } else {
@@ -124,10 +124,11 @@ public class BudgetReconciliationReportTask implements ApplicationRunner, ExitCo
         return FteDepartment.ALL.stream().filter(selected::contains).toList();
     }
 
-    /* the academic year starts in July with the fiscal year, so Jan-Jun belongs to last year's */
-    private long currentAcademicYear() {
+    /* the academic year starts in July with the fiscal year, so Jan-Jun belongs to last year's; the
+       previous one is the last whose payroll has closed */
+    private long previousAcademicYear() {
         LocalDate today = LocalDate.now(ZoneId.of("America/Los_Angeles"));
-        return today.getMonthValue() >= 7 ? today.getYear() : today.getYear() - 1;
+        return today.getMonthValue() >= 7 ? today.getYear() - 1 : today.getYear() - 2;
     }
 
     private void generateReports(List<FteDepartment> fteDepartments, long year, Path outputDir) {
