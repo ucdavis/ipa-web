@@ -115,7 +115,8 @@ public class SupportCallResponseReportExcelView extends AbstractXlsxView {
                 for (int i = 0; i < sortedSupportPreferences.size(); i++) {
                     StudentSupportPreference preference = sortedSupportPreferences.get(i);
 
-                    cellString += preference.getPriority() + ") "
+                    // Priorities are numbered across every department, use position as rank
+                    cellString += (i + 1) + ") "
                         + preference.getSectionGroup().getCourse().getSubjectCode() + " "
                         + preference.getSectionGroup().getCourse().getCourseNumber() + " - "
                         +

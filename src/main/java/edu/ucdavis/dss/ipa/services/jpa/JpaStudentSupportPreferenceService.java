@@ -77,7 +77,12 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         for (Course course : schedule.getCourses()) {
             for (SectionGroup sectionGroup : course.getSectionGroups()) {
                 if (termCode.equals(sectionGroup.getTermCode())) {
-                    preferences.addAll(sectionGroup.getStudentInstructionalSupportCallPreferences());
+                    for (StudentSupportPreference preference : sectionGroup.getStudentInstructionalSupportCallPreferences()) {
+                        // Exclude preferences when their section group moved after preference creation.
+                        if (termCode.equals(preference.getTermCode())) {
+                            preferences.add(preference);
+                        }
+                    }
                 }
             }
         }
@@ -97,11 +102,6 @@ public class JpaStudentSupportPreferenceService implements StudentSupportPrefere
         }
 
         return filteredPreferences;
-    }
-
-    @Override
-    public List<StudentSupportPreference> findBySupportStaffIdAndTermCode(long supportStaffId, String termCode) {
-        return studentSupportPreferenceRepository.findBySupportStaffIdAndTermCode(supportStaffId, termCode);
     }
 
     @Override

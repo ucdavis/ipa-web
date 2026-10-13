@@ -37,7 +37,7 @@ public class SupportStaff implements Serializable {
     private String lastName;
     private String email;
     private String loginId;
-    private int cumulativeTaAssignments;
+    private int taQuarterCount;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,16 +114,18 @@ public class SupportStaff implements Serializable {
         this.loginId = loginId;
     }
 
-    @Formula("(SELECT COUNT(*) FROM SupportAssignments sa " +
+    @Formula("(SELECT COUNT(DISTINCT sg.termCode) FROM SupportAssignments sa " +
+             "LEFT JOIN Sections s ON s.Id = sa.SectionId " +
+             "LEFT JOIN SectionGroups sg ON sg.Id = COALESCE(sa.SectionGroupId, s.SectionGroupId) " +
              "WHERE sa.SupportStaffId = Id AND sa.appointmentType = 'teachingAssistant')")
     @JsonProperty
-    public int getCumulativeTaAssignments()
+    public int getTaQuarterCount()
     {
-        return this.cumulativeTaAssignments;
+        return this.taQuarterCount;
     }
 
-    public void setCumulativeTaAssignments(int cumulativeTaAssignments)
+    public void setTaQuarterCount(int taQuarterCount)
     {
-        this.cumulativeTaAssignments = cumulativeTaAssignments;
+        this.taQuarterCount = taQuarterCount;
     }
 }
