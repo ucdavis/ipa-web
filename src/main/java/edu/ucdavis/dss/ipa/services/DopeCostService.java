@@ -190,13 +190,16 @@ public class DopeCostService {
 
         Map<String, Set<String>> departmentsByEmployee =
             datamartRepository.getDepartmentsByEmployee(unresolvedEmplIds, fiscalYear);
+        if (departmentsByEmployee == null) {
+            throw new IllegalStateException("Datamart departments-by-employee query failed for FY" + fiscalYear);
+        }
 
         for (String personId : personIds) {
             if (resultByPerson.containsKey(personId)) {
                 continue;
             }
             String emplId = emplIdByPerson.get(personId);
-            Set<String> departments = departmentsByEmployee == null ? null : departmentsByEmployee.get(emplId);
+            Set<String> departments = departmentsByEmployee.get(emplId);
             if (departments != null && !departments.isEmpty()) {
                 resultByPerson.put(personId, PersonCostResult.status("elsewhere",
                     "funded elsewhere (" + String.join(", ", new TreeSet<>(departments)) + ")"));
