@@ -70,9 +70,7 @@ public class BudgetReconciliationCategoryView {
     }
 
     /**
-     * Summer Session salary, the amount deducted from actualSalary to reach comparableSalary. Zero on
-     * the 12-month faculty and lecturer categories, so actualSalary - summerSalary = comparableSalary
-     * holds on every row.
+     * Summer Session salary, the amount deducted from actualSalary to reach comparableSalary.
      */
     public BigDecimal getSummerSalary() {
         return summerSalary;

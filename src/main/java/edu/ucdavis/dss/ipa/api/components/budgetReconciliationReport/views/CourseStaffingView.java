@@ -39,10 +39,8 @@ public class CourseStaffingView {
     }
 
     /**
-     * The course title from the budget scenario's own `SectionGroupCost.Title`. **Null for a course that
-     * exists only on the Banner side** — an unbudgeted course has no IPA row to read a title from, and
-     * ZIVASGN carries no title, so filling it would mean joining further Banner tables into a query the
-     * DB load constrains.
+     * The course title from the budget scenario. Null for a course that exists only on the Banner side:
+     * ZIVASGN carries no title, and joining more Banner tables would add database load.
      */
     public String getTitle() {
         return title;

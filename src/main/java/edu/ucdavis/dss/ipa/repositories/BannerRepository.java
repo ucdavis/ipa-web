@@ -32,8 +32,7 @@ public class BannerRepository {
     @Inject EmailService emailService;
     @Inject @Qualifier("bannerJdbcTemplate") NamedParameterJdbcTemplate bannerJdbcTemplate;
 
-    /* ZIVASGN is one row per person-CRN-term TA assignment; assignments = rows, individuals =
-       distinct people (ZIVASGN_PIDM). FCTG_CODE 'TA' selects TA appointments. */
+    /* ZIVASGN is one row per person-CRN-term assignment; FCTG_CODE 'TA' selects TA appointments */
     private static final String TA_COUNTS_SQL = """
         SELECT COUNT(*) AS ASSIGNMENTS, COUNT(DISTINCT ZIVASGN_PIDM) AS INDIVIDUALS
         FROM BANINST1.ZIVASGN
@@ -42,8 +41,7 @@ public class BannerRepository {
           AND ZIVASGN_TERM_CODE IN (:termCodes)
         """;
 
-    /** TA assignment rows and distinct individuals; a TA on several sections counts once for
-        individuals but once per section-term for assignments. */
+    /** a TA on several sections counts once for individuals but once per section-term for assignments */
     public record TaCounts(int assignments, int individuals) {}
 
     /**
@@ -69,9 +67,8 @@ public class BannerRepository {
         }
     }
 
-    /* every instructional assignment (all FCTG codes) for staffing-by-course, one row per person-CRN;
-       LEFT JOIN GENERAL.WOBEUCD maps PIDM -> UCPath employee id for the DOPE cost match. The
-       subject+term filters still bound the scan; the join only touches those PIDMs. */
+    /* GENERAL.WOBEUCD maps PIDM -> UCPath employee id for the DOPE match; LEFT JOIN keeps people
+       without one */
     private static final String COURSE_ASSIGNMENTS_SQL = """
         SELECT ZIVASGN_TERM_CODE, ZIVASGN_SUBJ_CODE, ZIVASGN_CRSE_NUMB, ZIVASGN_FCTG_CODE,
                ZIVASGN_PIDM, WOBEUCD_EMP_ID, ZIVASGN_LAST_NAME, ZIVASGN_FIRST_NAME,

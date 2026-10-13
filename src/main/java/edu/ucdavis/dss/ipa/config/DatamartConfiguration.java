@@ -23,10 +23,6 @@ public class DatamartConfiguration {
     @Value("${DATAMART_PASSWORD}")
     String datamartPassword;
 
-    // The @Primary MySQL NamedParameterJdbcTemplate that must accompany this custom template lives
-    // in PrimaryJdbcTemplateConfiguration, so it is declared once whether Datamart, Banner, or both
-    // Oracle connections are active.
-
     // The datamart DataSource must not be exposed as a bean, or Spring Boot's
     // autoconfiguration of the primary (MySQL) datasource will back off.
     @Bean

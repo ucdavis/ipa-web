@@ -12,20 +12,17 @@ import java.util.Set;
 import org.junit.Test;
 
 /**
- * The By Course per-row lookups: term-scoped, role-scoped FTE and the matching job-code label. Pure
- * record methods, so no Spring, servlet or Oracle.
+ * The By Course per-row lookups: term-scoped, role-scoped FTE and the matching job-code label.
  *
  * The first test is a regression: an unmapped job code made instructorTypeFor return null, and
- * Set.of().contains(null) throws rather than returning false, so any matched person holding a GSR,
- * postdoc or staff title blew up the whole report with a NullPointerException.
+ * Set.of().contains(null) throws rather than returning false, failing the whole report.
  */
 public class DopeCostServicePersonCostResultTest {
     private static final Set<Integer> FALL = Set.of(4, 5, 6);
     private static final Set<Integer> WINTER = Set.of(7, 8, 9);
     private static final Set<String> TA_ROLE = Set.of("TAs");
 
-    /* both maps are derived from one fixture, since in real data they are populated from the same rows.
-       Position numbers and reversals are settled inside buildCostByEmplId, so they never appear here. */
+    /* both maps come from one fixture, since in real data they are populated from the same rows */
     private static PersonCostResult matched(Map<String, Map<Integer, BigDecimal>> fteByMonthByJobCode) {
         Map<String, Set<Integer>> monthsByJobCode = new HashMap<>();
         fteByMonthByJobCode.forEach((jobCode, months) ->
@@ -74,13 +71,11 @@ public class DopeCostServicePersonCostResultTest {
     }
 
     /**
-     * The job code column is term-scoped too, and must stay in step with the FTE beside it. PSC's real
-     * case: a pre-six appointment that ended in August was still named on a Fall row whose FTE came only
-     * from the person's continuing appointment.
+     * The job code column is term-scoped too, and must stay in step with the FTE beside it: an
+     * appointment that ended in August must not be named on a Fall row.
      */
     @Test
     public void jobCodeColumnIsScopedToTheRowsTermLikeFte() {
-        // PSC's real shape: two employee records on two positions, so these genuinely are two appointments
         PersonCostResult result = matched(Map.of(
             "LECT-AY", months("0.83", 1, 2),
             "LECT-AY-CONTINUING",
@@ -113,9 +108,8 @@ public class DopeCostServicePersonCostResultTest {
     }
 
     /**
-     * An adjunct professor maps to no instructor type, so role scoping alone hid them entirely: blank job
-     * code and blank FTE, indistinguishable from having no payroll record. PSC's real case — one person,
-     * 0.53 FTE, against a planned Instructor line.
+     * An adjunct professor maps to no instructor type, so role scoping alone would hide them: blank job
+     * code and blank FTE, indistinguishable from having no payroll record.
      */
     @Test
     public void unmappedTitleFallsBackRatherThanReadingBlank() {

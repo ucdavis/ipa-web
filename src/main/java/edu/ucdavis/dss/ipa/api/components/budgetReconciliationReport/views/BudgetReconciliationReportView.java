@@ -6,14 +6,10 @@ import java.util.List;
 /**
  * The approved budget reconciled against actuals, in two views of the same year.
  *
- * categories (By Category) rolls up by instructor type and is scoped to a payroll department —
- * ALL payroll in that DEPT_CD, instructional or not. courses (By Course) pairs planned instructors
- * with Banner's actual assignments and is scoped to the budget scenario's course subjects, which
- * includes people paid by other departments.
- *
- * The two views therefore cover different populations and are NOT expected to tie. costSummary
- * quantifies the gap: how much of the department's payroll was attributed to a course, and how many
- * instructors fell outside the department's payroll entirely.
+ * categories (By Category) is scoped to a payroll department: all payroll in that DEPT_CD,
+ * instructional or not. courses (By Course) is scoped to the budget scenario's course subjects, which
+ * includes people paid by other departments. The two views cover different populations and are not
+ * expected to tie.
  */
 public class BudgetReconciliationReportView {
     long workgroupId;
@@ -58,12 +54,11 @@ public class BudgetReconciliationReportView {
         return workgroupId;
     }
 
-    /** the workgroup's short subject-style code (e.g. "CLA"), used in the workbook heading */
     public String getWorkgroupCode() {
         return workgroupCode;
     }
 
-    /** the Budget Office's FTE Department (e.g. "German &amp; Russian"); used to name the download */
+    /** the Budget Office's FTE Department (e.g. "German &amp; Russian"); names the workbook file */
     public String getFteDepartmentName() {
         return fteDepartmentName;
     }
@@ -101,7 +96,6 @@ public class BudgetReconciliationReportView {
         return String.join(", ", labels);
     }
 
-    /** the scenario's own bottom line, so the plan side ties to the approved budget page */
     public PlannedTotalsView getPlannedTotals() {
         return plannedTotals;
     }
@@ -110,28 +104,25 @@ public class BudgetReconciliationReportView {
         return categories;
     }
 
-    /** By Course rows */
     public List<CourseStaffingView> getCourses() {
         return courses;
     }
 
-    /** cost-match diagnostics */
     public StaffingCostSummaryView getCostSummary() {
         return costSummary;
     }
 
     /**
-     * Banner TA assignment rows for the budgeted subjects and academic-year terms — one per
-     * TA-section-term, so a TA on three sections counts three times. Reported alongside the payroll
-     * figures rather than on the TAs category row, which invited reading it as a headcount.
+     * One per TA-section-term, so a TA on three sections counts three times. Reported apart from the
+     * TAs category row, which invited reading it as a headcount.
      */
     public Integer getBannerTaAssignments() {
         return bannerTaAssignments;
     }
 
     /**
-     * Distinct Banner TA individuals (by PIDM) for the budgeted subjects. Counted by course subject
-     * while the payroll figures are counted by department code, so the two only roughly agree.
+     * Counted by course subject while the payroll figures are counted by department code, so the two
+     * only roughly agree.
      */
     public Integer getBannerTaIndividuals() {
         return bannerTaIndividuals;

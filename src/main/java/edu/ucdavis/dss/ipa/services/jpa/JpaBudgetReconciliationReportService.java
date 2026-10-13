@@ -60,33 +60,26 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     @Inject TermService termService;
     @Inject ExpenseItemService expenseItemService;
     @Inject BudgetCalculationService budgetCalculationService;
-    /* resolves the sibling programs on a shared payroll code — see FteDepartment */
     @Inject WorkgroupService workgroupService;
-    /* required: DOPE actuals are what the report reconciles against, so it is gated with them */
     @Inject DopeCostService dopeCostService;
-    /* required: Banner supplies the actual course assignments the By Course view compares against,
-       and the TA counts on the By Category TAs row */
     @Inject BannerRepository bannerRepository;
 
-    /* Ladder Faculty carries no SIB plan to compare against — LADDER_FACULTY_COST is $0 in all 49
-       FY2026 scenarios, verified 2026-07-30 — so it is a context row rather than a difference. This is
-       NOT a funding-source claim: an earlier comment here said "state-funded", which nothing verifies
-       (the DOPE query selects FUND_CODE and no code reads it). Removed at the user's direction. */
+    /* Ladder Faculty carries no SIB plan to compare against, so it is a context row rather than a
+       difference. This is not a claim about its funding source. */
     private static final Set<String> CONTEXT_ONLY_TYPES =
         Set.of("Ladder Faculty", DopeSummaryCalculator.UNMAPPED);
 
     private static final String PLACEHOLDER_ROLE = "Staff (placeholder)";
 
     /* TA and Reader cost is per-course counts x rate rather than a SectionGroupCostInstructor, so it
-       sits outside REPLACEMENT_COST — see plannedTotalsFrom */
+       sits outside REPLACEMENT_COST */
     private static final Set<String> COUNT_BASED_TYPES = Set.of("TAs", "Readers");
 
     /**
      * The plan's keys for each reported category, in display order, laid out as alternating
-     * [cost, count] pairs. **More than one pair means the category absorbs another** — Unit 18 Pre-Six
-     * Lecturer carries Continuing Lecturer - Augmentation too, because an augmentation is a lecturer
-     * asked to teach an extra course: still a lecturer title, and temporary. Both sides are merged, so
-     * no row is left holding a plan it can never match an actual against.
+     * [cost, count] pairs. More than one pair means the category absorbs another: Unit 18 Pre-Six
+     * Lecturer carries Continuing Lecturer - Augmentation too, matching the payroll mapping in
+     * DopeSummaryCalculator. The two must change together.
      */
     private static final Map<String, BudgetSummary[]> BUDGET_SUMMARY_BY_INSTRUCTOR_TYPE = buildBudgetSummaryMap();
 
@@ -109,24 +102,15 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /**
-     * One report generation is one transaction. **Keep this even though only the HTTP path calls it now:**
-     * the planned side walks lazy associations — `budget.getSchedule()`, the scenario's section-group costs
-     * and their instructors — and the HTTP path gets away without a transaction only because
-     * `spring.jpa.open-in-view=true` holds a session open for the request. A batch runner that called this
-     * outside a request failed every workgroup with `LazyInitializationException` on `Schedule` until this
-     * was added; that runner is gone, but the dependency on an app-wide setting is not something this
-     * method should rest on, least of all through a Spring Boot upgrade.
-     *
-     * Not `readOnly = true`, deliberately: `findOrCreateByWorkgroupIdAndYear` below can still insert a
-     * Schedule and Budget, and a read-only transaction sets FlushMode.MANUAL, which would drop that write
-     * silently rather than failing.
+     * The planned side walks lazy associations, and the job has no open-in-view session, so the report
+     * needs its own transaction. Not readOnly: findOrCreateByWorkgroupIdAndYear can insert a Schedule
+     * and Budget, and a read-only transaction would drop that write silently.
      */
     @Override
     @Transactional
     public BudgetReconciliationReportView generate(long workgroupId, long year) {
         int fiscalYear = (int) year + 1;
 
-        // ---- planned side, shared by both views ----
         Budget budget = budgetService.findOrCreateByWorkgroupIdAndYear(workgroupId, year);
         Workgroup workgroup = budget.getSchedule().getWorkgroup();
 
@@ -141,9 +125,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         }
 
         // The plan is the union across the payroll group, so it faces the same population the single DOPE
-        // query below returns. Each program keeps its own scenario and its own workgroup — the latter
-        // matters because calculateSectionGroupInstructorTypeId resolves a cost line's instructor type
-        // against the workgroup that owns it, so the group's costs cannot share one.
+        // query below returns. Each program keeps its own workgroup because
+        // calculateSectionGroupInstructorTypeId resolves a cost line's instructor type against the
+        // workgroup that owns it.
         List<SectionGroupCost> sectionGroupCosts = new ArrayList<>();
         Map<Long, Workgroup> workgroupByCostId = new HashMap<>();
         Map<BudgetSummary, BigDecimal> planned = new EnumMap<>(BudgetSummary.class);
@@ -175,7 +159,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             .map(SectionGroupCost::getSubjectCode).filter(Objects::nonNull).distinct()
             .collect(Collectors.toList());
 
-        // ---- actuals side, shared by both views: one DOPE query and one tally serve the whole report ----
         List<DopeRecord> dopeRecords = dopeCostService.getDopeRecords(departmentCode, fiscalYear);
         if (dopeRecords == null) {
             throw new IllegalStateException("Datamart query failed for department " + departmentCode);
@@ -187,8 +170,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             throw new IllegalStateException("Banner query failed for workgroup " + workgroupId);
         }
 
-        // per Banner person: empl id (for the DOPE match) and whether they are a real instructor
-        // rather than a "The Staff" placeholder
         Map<String, String> emplIdByPerson = new HashMap<>();
         Set<String> instructorPersonIds = new HashSet<>();
         for (BannerAssignment assignment : assignments) {
@@ -204,7 +185,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         Map<String, DopeCostService.PersonCostResult> costByPerson = dopeCostService.resolveCosts(
             dopeRecords, instructorPersonIds, emplIdByPerson, fiscalYear);
 
-        // actual TA counts from Banner, scoped to this budget's course subjects and academic-year terms
         BannerRepository.TaCounts bannerTaCounts = bannerRepository.getTaCounts(subjectCodes, termCodes);
         if (bannerTaCounts == null) {
             throw new IllegalStateException("Banner TA counts query failed for workgroup " + workgroupId);
@@ -221,7 +201,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             bannerTaCounts.individuals());
     }
 
-    /** the budget scenario's combined (whole-year) term totals */
     private Map<BudgetSummary, BigDecimal> plannedTermTotals(
             Budget budget, BudgetScenario budgetScenario, Workgroup workgroup,
             List<String> termCodes, List<SectionGroupCost> sectionGroupCosts) {
@@ -236,11 +215,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     /**
      * The scenario's bottom line, decomposed so the reported categories add up to it.
      *
-     * REPLACEMENT_COST is misleadingly named upstream: calculateTermTotals accumulates EVERY
-     * instructor assignment's cost into it, not just replacements. So it is the total of all
-     * SectionGroupCostInstructor cost, and subtracting the ten categorized instructor types leaves
-     * whatever landed in no category. TA and Reader cost is excluded from that subtraction because it
-     * comes from per-course counts and never passes through an assignment.
+     * REPLACEMENT_COST is misleadingly named upstream: calculateTermTotals accumulates every
+     * instructor assignment's cost into it, not just replacements. Subtracting the categorized
+     * instructor types leaves whatever landed in no category.
      */
     private PlannedTotalsView plannedTotalsFrom(Map<BudgetSummary, BigDecimal> planned) {
         BigDecimal categorizedInstructorCost = BigDecimal.ZERO;
@@ -257,8 +234,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             planned.get(BudgetSummary.TOTAL_TEACHING_COST));
     }
 
-    /* Sums a category's cost keys (offset 0) or count keys (offset 1) from the plan. The map's values
-       are alternating [cost, count] pairs, so a merged category contributes more than one of each. */
+    /* offset 0 sums a category's cost keys, offset 1 its count keys */
     private static BigDecimal sumPlanned(Map<BudgetSummary, BigDecimal> planned, BudgetSummary[] keys,
                                          int offset) {
         BigDecimal total = BigDecimal.ZERO;
@@ -271,10 +247,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         return total;
     }
 
-    /**
-     * By Category: the approved budget's per-instructor-type cost against the payroll department's
-     * DOPE actuals.
-     */
     private List<BudgetReconciliationCategoryView> buildCategories(
             Map<BudgetSummary, BigDecimal> planned, DopeSummary dopeSummary) {
         List<BudgetReconciliationCategoryView> categories = new ArrayList<>();
@@ -290,17 +262,12 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         return categories;
     }
 
-    /**
-     * By Course: planned instructors from the budget scenario paired with Banner's actual
-     * assignments, per course. DOPE cost is attached to the actual rows when costByPerson is present.
-     */
     private List<CourseStaffingView> buildCourses(
             Map<Long, Workgroup> workgroupByCostId, List<SectionGroupCost> sectionGroupCosts,
             List<BannerAssignment> assignments,
             Map<String, DopeCostService.PersonCostResult> costByPerson) {
-        // planned staffing per course, keyed term|subject|courseNumber (natural sort term>subj>course)
         Map<String, List<CourseStaffingPersonView>> plannedByCourse = new LinkedHashMap<>();
-        // course titles come from the plan only — a Banner-only course has no IPA row to read one from
+        // titles come from the plan only; Banner's assignment table carries none
         Map<String, String> titleByCourse = new HashMap<>();
         for (SectionGroupCost sectionGroupCost : sectionGroupCosts) {
             String key = courseKey(sectionGroupCost.getTermCode(), sectionGroupCost.getSubjectCode(),
@@ -317,7 +284,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             }
         }
 
-        // dedupe actual staffing within a course: one entry per person+role, sections = CRN count
+        // Banner has one row per person and section (CRN); list each person once per role
         Map<String, LinkedHashMap<String, PersonAssignments>> actualAgg = new LinkedHashMap<>();
         for (BannerAssignment assignment : assignments) {
             String courseKey = courseKey(assignment.getTermCode(), assignment.getSubjectCode(),
@@ -334,8 +301,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         for (Map.Entry<String, LinkedHashMap<String, PersonAssignments>> entry : actualAgg.entrySet()) {
             List<CourseStaffingPersonView> people = new ArrayList<>();
             String termCode = entry.getKey().split("\\|", -1)[0];
-            // instructor of record first, then support: FA, AI, TA, placeholder. Banner returns rows in
-            // no useful order, so without this a course's TA can precede the professor teaching it.
             List<PersonAssignments> ordered = new ArrayList<>(entry.getValue().values());
             ordered.sort(Comparator.comparingInt((PersonAssignments p) -> roleOrder(p.role))
                 .thenComparing(p -> p.name == null ? "" : p.name));
@@ -345,9 +310,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
                 DopeCostService.PersonCostResult result =
                     costByPerson == null ? null : costByPerson.get(person.personId);
                 if (result != null) {
-                    // Both figures are scoped to this row: the term's own fiscal months, and only job
-                    // codes matching the Banner role — so a TA row shows a TA title and a TA-only FTE,
-                    // and the Reader appointment the same person may hold appears in neither
+                    // scoped to this row's term and Banner role, so a TA row leaves out the same person's
+                    // Reader appointment
                     Set<String> roleTypes = instructorTypesFor(person.role);
                     Set<Integer> termMonths = fiscalMonthsFor(termCode);
                     view.setCost(result.label(), payrollDetail(result, termMonths, roleTypes),
@@ -374,10 +338,6 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         return courses;
     }
 
-    /**
-     * The payroll department scoping the actuals, looked up from the workgroup itself — so a caller
-     * cannot pair one department's plan with another's payroll.
-     */
     private FteDepartment fteDepartmentFor(Workgroup workgroup) {
         FteDepartment fteDepartment = FteDepartment.forWorkgroupCode(workgroup.getCode());
 
@@ -394,40 +354,29 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     /**
      * The latest budget request for the workgroup and year.
      *
-     * Calls the **repository**, not `BudgetScenarioService`, and that distinction is the whole point.
-     * `BudgetScenarioService.findbyWorkgroupIdAndYear` runs `createOrUpdateFromLiveData` before returning,
-     * so every report generation created or rewrote a Live Data scenario — a write this report then
-     * discarded, since it only ever wanted the budget request. Harmless once, but 49 needless scenario
-     * rebuilds and their audit rows on a batch run, and unacceptable for a scheduled job. The repository
-     * is a plain `@Query` with no such side effect. **Do not "simplify" this to the service method.**
+     * Calls the repository, not BudgetScenarioService: the service's findbyWorkgroupIdAndYear runs
+     * createOrUpdateFromLiveData, which would rebuild a Live Data scenario on every run. Do not
+     * "simplify" this to the service method.
      *
-     * Reads every scenario and filters `getIsBudgetRequest` here rather than in SQL, matching what master
-     * does in `UploadBudgetReportTask` — master removed the dedicated `findBudgetRequestsByWorkgroupIdAndYear`
-     * query rather than maintain two that differ only by a predicate.
-     *
-     * **No fallback to the latest scenario of any kind** (removed 2026-07-29). That fallback could
-     * silently reconcile against a Live Data scenario, which is exactly the ambiguity Dean's-office Q10
-     * raises: a report unable to say which budget it compared against. Every in-scope department is
-     * expected to have a budget request, so its absence is a real problem worth surfacing — better a 500
-     * on one department than a workbook quietly built on the wrong plan.
+     * No fallback to another scenario type: the report must say which budget it compared against, and
+     * every in-scope department is expected to have a budget request.
      */
     private BudgetScenario selectScenario(Workgroup workgroup, long year) {
         return budgetScenarioRepository.findbyWorkgroupIdAndYear(workgroup.getId(), year).stream()
             .filter(BudgetScenario::getIsBudgetRequest)
             .max(Comparator.comparing(BudgetScenario::getCreationDate))
             // names the workgroup, because with a shared payroll code the one that fails is often not the
-            // one that was requested — CHN's report fails when JPN has no budget request
+            // one that was requested
             .orElseThrow(() -> new IllegalStateException("No budget request for " + workgroup.getCode()
                 + " (workgroup " + workgroup.getId() + ") year " + year));
     }
 
     /**
-     * The workgroups whose plans this report combines: every program sharing the requested workgroup's
-     * payroll department, or just the requested one when its code is unshared.
+     * Every program sharing the requested workgroup's payroll department, or just the requested one
+     * when its code is unshared.
      *
-     * **All-or-nothing, deliberately.** If any member lacks a budget request `selectScenario` throws and
-     * the whole request fails, rather than reporting a partial plan against the full department's payroll
-     * — which is the very mismatch this rollup exists to remove, just smaller.
+     * All-or-nothing, deliberately: if any member is missing, the report fails rather than comparing a
+     * partial plan against the full department's payroll.
      */
     private List<Workgroup> payrollDepartmentGroup(Workgroup requested, FteDepartment fteDepartment) {
         List<Workgroup> group = new ArrayList<>();
@@ -451,13 +400,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
             tally = new DopeTotals();
         }
 
-        // Every figure covers the academic year, on every category (2026-07-29). Headcount and FTE are
-        // narrowed by month — a person paid only in Jul-Sep is out, and FTE averages over Oct-Jun —
-        // while salary is narrowed by the summer rule, which tests job code as well as month. The two
-        // mechanisms differ but now cover the same period, which is what removed the old asymmetry
-        // between them: a 12-month appointment keeps its Jul-Sep salary because that pay is the
-        // academic year spread across twelve months, and its FTE is unchanged because it is present in
-        // every month either way.
+        // Every figure covers the academic year. Headcount and FTE are narrowed by month (Oct-Jun), while
+        // salary is narrowed by the summer rule. A 12-month appointment keeps its Jul-Sep salary because
+        // that pay is the academic year spread across twelve months.
         int actualPeople = tally.getAcademicYearPeople();
         BigDecimal actualFte = tally.getAcademicYearFte();
         BigDecimal comparableSalary = tally.getAcademicYearSalary();
@@ -477,10 +422,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /**
-     * The three fiscal months a term is taught and paid in. The fiscal year starts in July, so month 1
-     * is July; a term code's last two characters are its `TermDescription` suffix — FALL "10", WINTER
-     * "01", SPRING "03". An unrecognised suffix yields an empty set, which leaves FTE blank rather than
-     * quietly attributing the wrong months.
+     * The three fiscal months a term is taught and paid in; fiscal month 1 is July. An unrecognised
+     * suffix yields an empty set, which leaves FTE blank rather than attributing the wrong months.
      */
     private static Set<Integer> fiscalMonthsFor(String termCode) {
         if (termCode == null || termCode.length() < 2) {
@@ -495,10 +438,8 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /**
-     * The instructor types whose DOPE job codes count toward a Banner role's FTE, so a row reads only
-     * the appointment it is actually about: a TA row is not inflated by the same person's Reader or
-     * faculty appointments. `FA` covers every faculty and lecturer title because Banner does not
-     * distinguish them; the DOPE job code in column 8 says which it was.
+     * The instructor types whose DOPE job codes count toward a Banner role's FTE. FA covers every
+     * faculty and lecturer title because Banner does not distinguish them.
      */
     private static Set<String> instructorTypesFor(String bannerRole) {
         if (bannerRole == null) {
@@ -515,14 +456,9 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /**
-     * The one column that says where a person's pay is: their DOPE job code description(s) when they are
-     * paid in this department, otherwise which departments pay them instead. Null when neither is known.
-     *
-     * Replaced a separate Cost Match column (2026-07-29). The match is always by empl id, so naming the
-     * method added nothing, and a blank already means no cost was attributed here. Two consequences:
-     * `no DOPE record` and `unmatched (no empl id)` now read identically as blank — `costSummary` still
-     * counts them separately — and so does a person matched with only Summer Session pay, whose job code
-     * set is empty (see the matchedById issue in the dev notes).
+     * Where a person's pay is: their DOPE job code descriptions when they are paid in this department,
+     * otherwise which departments pay them instead. No DOPE record and no empl id both read as blank
+     * (costSummary counts them separately), as does a person with only Summer Session pay.
      */
     private static String payrollDetail(DopeCostService.PersonCostResult result,
                                        Set<Integer> termMonths, Set<String> roleTypes) {
@@ -541,11 +477,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         return termCode + "|" + subjectCode + "|" + courseNumber;
     }
 
-    /**
-     * Row order within a course's Banner block: `FA` (instructor of record), then `AI`, then `TA`, then
-     * anything unrecognised, then the "The Staff" placeholder last since it names nobody. Any FCTG_CODE
-     * we have not seen sorts before the placeholder rather than disappearing into it.
-     */
+    /* FA is the instructor of record; the "The Staff" placeholder goes last since it names nobody */
     private static int roleOrder(String role) {
         if (PLACEHOLDER_ROLE.equals(role)) {
             return 9;
@@ -562,12 +494,11 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
     }
 
     /* FCTG_CODE NF is the "The Staff" placeholder on 9-series (independent/group study) courses,
-       not a real countable instructor — label it so; other codes (FA/AI/TA) pass through. */
+       not a real countable instructor */
     private static String actualRole(String functionalCategory) {
         return "NF".equalsIgnoreCase(functionalCategory) ? PLACEHOLDER_ROLE : functionalCategory;
     }
 
-    /* one person's assignments to a single course, accumulated across its section CRNs */
     private static class PersonAssignments {
         final String personId;
         final String name;

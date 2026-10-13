@@ -10,17 +10,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
- * Oracle connection to the Banner student system (course/TA assignment data). Mirrors
- * DatamartConfiguration: exposed only as the qualified {@code bannerJdbcTemplate} bean so it never
- * displaces the primary MySQL datasource; the accompanying @Primary MySQL template is declared in
- * PrimaryJdbcTemplateConfiguration. Gated so the web service runs without Banner credentials.
+ * Oracle connection to the Banner student system (course/TA assignment data). Exposed only as the
+ * qualified {@code bannerJdbcTemplate} bean so it never displaces the primary MySQL datasource.
  */
 @Configuration
 @Profile({"development", "production", "staging"})
 @ConditionalOnNotWebApplication
 public class BannerConfiguration {
-    /* SID form host:port:SID (Banner uses a SID, not a service name); code prepends
-       jdbc:oracle:thin:@. For a service name instead, set //host:port/service_name here. */
+    /* host:port:SID; Banner uses a SID, not a service name. For a service name, use
+       //host:port/service_name. */
     @Value("${BANNER_DATABASE_URL}")
     String bannerUrl;
 

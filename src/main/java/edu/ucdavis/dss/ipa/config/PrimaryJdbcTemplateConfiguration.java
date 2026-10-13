@@ -10,15 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 /**
- * Declares the MySQL-backed {@link NamedParameterJdbcTemplate} as {@code @Primary}.
- *
- * Defining any custom NamedParameterJdbcTemplate bean (the Datamart or Banner Oracle ones) makes
- * Spring Boot's auto-configured NamedParameterJdbcTemplate back off, so the MySQL one must be
- * declared explicitly. This lives in its own config — gated on either external Oracle URL being
- * present — so it is declared exactly once whether one or both Oracle connections are active
- * (declaring it inside both DatamartConfiguration and BannerConfiguration would collide when both
- * URLs are set, e.g. the budget reconciliation report). Datamart/Banner consumers must use their
- * @Qualifier'd templates.
+ * Declares the MySQL-backed {@link NamedParameterJdbcTemplate} as {@code @Primary}. Defining the
+ * Datamart and Banner templates makes Spring Boot's auto-configured one back off, so the MySQL one
+ * must be declared explicitly. Datamart and Banner consumers must use their @Qualifier'd templates.
  */
 @Configuration
 @Profile({"development", "production", "staging"})

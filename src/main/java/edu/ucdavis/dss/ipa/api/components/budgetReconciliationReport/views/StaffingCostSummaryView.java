@@ -3,15 +3,10 @@ package edu.ucdavis.dss.ipa.api.components.budgetReconciliationReport.views;
 import java.math.BigDecimal;
 
 /**
- * Departmental actual-cost summary for the staffing-by-course report.
- *
- * department* are the complete DOPE totals for the payroll department (all job codes, including
- * non-instructional), with FTE from the person-first DopeSummaryCalculator (not a raw row sum).
- * attributed* are the pay of the distinct instructors exact-matched by empl id to the department's
- * DOPE — necessarily a subset of the department total; the gap is instructors funded elsewhere plus
- * payroll not tied to a course (research, staff). The counts are distinct instructors by outcome:
- * matched in-department by id, funded elsewhere (paid in another dept), no DOPE record at all, or
- * no crosswalk empl id.
+ * department* are the complete DOPE totals for the payroll department, including non-instructional
+ * job codes. attributed* are the pay of the instructors matched by empl id to the department's DOPE,
+ * a subset of the department total; the gap is instructors paid elsewhere plus payroll not tied to a
+ * course (research, staff).
  */
 public class StaffingCostSummaryView {
     BigDecimal attributedSalary;

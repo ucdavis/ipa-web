@@ -103,10 +103,9 @@ public class DatamartRepository {
         }
     }
 
-    /* which departments a set of employees were paid in for a fiscal year — no DEPT_CD filter, so it
-       finds pay OUTSIDE the department being reported. LEFT JOIN the ORG view for a readable title,
-       falling back to the dept code when a dept is absent from ORG (an inner join would silently drop
-       those DOPE rows, misreporting a paid person as having no record). Bounded by employeeIds. */
+    /* no DEPT_CD filter, so it finds pay outside the department being reported. LEFT JOIN because an
+       inner join would drop DOPE rows whose department is missing from ORG, misreporting a paid person
+       as having no record. */
     private static final String DEPARTMENTS_BY_EMPLOYEE_SQL = """
         SELECT DISTINCT DOPE.EMPLOYEE_ID "Employee ID", DOPE.DEPT_CD "Department Code",
                ORG.DEPT_TTL "Department Title"
@@ -117,9 +116,9 @@ public class DatamartRepository {
         """;
 
     /**
-     * For each given employee id, the set of departments they were paid in that fiscal year (across
-     * all departments) — the readable title, or the dept code where the title is missing. Null on
-     * error. An id absent from the result had no DOPE payroll that year.
+     * For each given employee id, the departments they were paid in that fiscal year: the title, or
+     * the dept code where the title is missing. Null on error. An id absent from the result had no DOPE
+     * payroll that year.
      */
     public Map<String, Set<String>> getDepartmentsByEmployee(Set<String> employeeIds, int fiscalYear) {
         if (employeeIds.isEmpty()) {

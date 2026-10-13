@@ -18,12 +18,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Builds the reconciliation workbook: two data tables and a compact data dictionary. By Category
- * answers what each instructor category cost against plan; By Course answers who taught what and at
- * what cost.
+ * answers what each instructor category cost against plan; By Course answers who taught what.
  *
- * Diagnostics stay out of the workbook by decision (2026-07-28) — the cost-match counts, department
- * payroll totals, Banner TA counts and the plan tie-out are all still computed on the report view, but
- * a reviewer reading the spreadsheet gets the comparison, not the plumbing behind it.
+ * Diagnostics stay out of the workbook by decision: the cost-match counts, department payroll totals
+ * and the plan tie-out are computed on the report view but not written here.
  */
 public class BudgetReconciliationWorkbook {
     private static final List<List<String>> BY_CATEGORY_DATA_DICTIONARY = List.of(
@@ -56,10 +54,7 @@ public class BudgetReconciliationWorkbook {
     static final int BY_COURSE_LAST_COLUMN = 9;
     static final int BY_CATEGORY_LAST_COLUMN = 7;
 
-    /**
-     * The suggested file name, used by both the download header and the batch task. A slash
-     * ("Middle East/South Asia Studies") would make a subdirectory when the task writes to disk.
-     */
+    /* a slash ("Middle East/South Asia Studies") would make a subdirectory when written to disk */
     public String fileName() {
         return String.format("Budget-Reconciliation-%s-FY%d.xlsx",
             reportView.getFteDepartmentName().replace("/", "-"), reportView.getFiscalYear());
@@ -77,23 +72,17 @@ public class BudgetReconciliationWorkbook {
         return workbook;
     }
 
-    /* planned vs actual cost per instructor type, scoped to the payroll department */
     void buildByCategorySheet(Sheet sheet) {
         // Headers must be the sheet's first physical row: expandHeaders only autosizes columns that
-        // have a cell in that row, so anything narrower leaves later columns at the default width.
-        // Nothing may be written above them either — setSheetHeader createRow(0)s and would overwrite
-        // it. Columns name their source — IPA (the budget scenario), Payroll (UCPath DOPE) and Banner
-        // — matching the Source column on the By Course tab. IPA Count is the plan's count field:
-        // course assignments for the faculty and lecturer categories, but TAs' and Readers' own units,
-        // which is why it isn't called Courses.
+        // have a cell in that row, and setSheetHeader creates row 0, overwriting anything above it.
         ExcelHelper.setSheetHeader(sheet, Arrays.asList(
             "Instructor Type", "IPA Cost", "IPA Count", "Payroll Individuals", "FTE Appointments",
             "Academic Year Salary", "Difference", "% Difference"));
 
         for (BudgetReconciliationCategoryView category : reportView.getCategories()) {
             // Unmapped keeps the suffix saying why its difference is blank; Ladder Faculty carries none
-            // by decision. With no totals row there is no other cue that either is excluded from the
-            // comparison, so summing Academic Year Salary down the column overstates it.
+            // by decision. With no totals row, the suffix is the only cue that a row is outside the
+            // comparison; summing Academic Year Salary down the column would overstate it.
             ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
                 DopeSummaryCalculator.UNMAPPED.equals(category.getInstructorType())
                     ? category.getInstructorType() + " (context only)"
@@ -112,11 +101,10 @@ public class BudgetReconciliationWorkbook {
     }
 
     /**
-     * The one aggregate that earns a place in the workbook. TAs are ~58% of compared salary (FY2026,
-     * L&S-wide), and this is the only independent count of them — everything else stays off the
-     * workbook. Banner counts TA-of-record assignments within the budget's course subjects while
-     * Payroll Individuals counts everyone paid as a TA under the department code, so the two are a
-     * sanity check on each other, NOT a reconciliation: they are not expected to be equal.
+     * The one aggregate that earns a place in the workbook: TAs are the largest share of compared
+     * salary, and this is the only independent count of them. Banner counts TA-of-record assignments
+     * within the budget's course subjects while Payroll Individuals counts everyone paid as a TA under
+     * the department code, so the two are a sanity check, not a reconciliation.
      */
     private void writeBannerTaCheck(Sheet sheet) {
         if (reportView.getBannerTaAssignments() == null) {
@@ -131,7 +119,6 @@ public class BudgetReconciliationWorkbook {
             reportView.getBannerTaIndividuals()));
     }
 
-    /** Brief definitions beside the report, so unlike units and data scopes are not read as peers. */
     private void writeByCategoryDataDictionary(Sheet sheet) {
         writeBlankRow(sheet);
 
@@ -176,7 +163,7 @@ public class BudgetReconciliationWorkbook {
     }
 
     /* Merged, so a long heading can't stretch column A: autoSizeColumn skips merged cells but measures
-       every other row in a column, not just the header. Metric labels below stay short for that reason. */
+       every other row in a column. */
     private static Row writeSectionLabel(Sheet sheet, String label, int lastColumn) {
         Row row = sheet.createRow(sheet.getLastRowNum() + 1);
         row.createCell(0).setCellValue(label);
@@ -194,19 +181,13 @@ public class BudgetReconciliationWorkbook {
         }
     }
 
-    /* planned (IPA) vs actual (Banner) staffing per course, flat with a blank row between courses */
     void buildByCourseSheet(Sheet sheet) {
-        // The "Staffing by course: <scenario> (2025-2026)" title row was removed 2026-07-30, so headers
-        // are now row 0. The scenario and payroll year remain visible in the By Category dictionary
-        // heading without displacing either tab's data headers.
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList(
             "Term", "Subject", "Course", "Title", "Source", "Name", "Role", "DOPE Job Code",
             "Sections", "Term FTE"));
 
         // One row per person, with Term/Subject/Course repeated on each so it stands alone, and a blank
-        // row between courses to make the tab scannable. The course header row and the collapsible
-        // outline it anchored were both removed 2026-07-29: once the identity repeats, the header row
-        // carried nothing unique, and a group with no header above it collapses to nothing useful.
+        // row between courses.
         boolean firstCourse = true;
         for (CourseStaffingView course : reportView.getCourses()) {
             if (!firstCourse) {
@@ -219,8 +200,7 @@ public class BudgetReconciliationWorkbook {
             String number = course.getCourseNumber();
             String title = course.getTitle();
 
-            // A budgeted course with nobody assigned has no person rows at all, and without the old
-            // header row it would vanish from the tab entirely — so give it an identity-only row.
+            // a budgeted course with nobody assigned would otherwise vanish from the tab
             if (course.getPlanned().isEmpty() && course.getActual().isEmpty()) {
                 ExcelHelper.writeRowToSheet(sheet, Arrays.asList(term, subject, number, title));
             }
@@ -236,7 +216,6 @@ public class BudgetReconciliationWorkbook {
             }
         }
 
-        // autosize per column (default ignores the merged title, so column A stays narrow)
         for (int column = 0; column <= BY_COURSE_LAST_COLUMN; column++) {
             sheet.autoSizeColumn(column);
         }
