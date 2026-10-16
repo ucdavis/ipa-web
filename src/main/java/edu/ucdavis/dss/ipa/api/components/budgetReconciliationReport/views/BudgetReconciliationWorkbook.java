@@ -51,7 +51,6 @@ public class BudgetReconciliationWorkbook {
         this.reportView = reportView;
     }
 
-    static final int BY_COURSE_LAST_COLUMN = 9;
     static final int BY_CATEGORY_LAST_COLUMN = 7;
 
     /* a slash ("Middle East/South Asia Studies") would make a subdirectory when written to disk */
@@ -62,10 +61,7 @@ public class BudgetReconciliationWorkbook {
 
     /** A new workbook. Caller closes it. */
     public Workbook build() {
-        return writeInto(new XSSFWorkbook());
-    }
-
-    private Workbook writeInto(Workbook workbook) {
+        Workbook workbook = new XSSFWorkbook();
         buildByCategorySheet(workbook.createSheet("By Category"));
         buildByCourseSheet(workbook.createSheet("By Course"));
         ExcelHelper.expandHeaders(workbook);
@@ -107,10 +103,6 @@ public class BudgetReconciliationWorkbook {
      * the department code, so the two are a sanity check, not a reconciliation.
      */
     private void writeBannerTaCheck(Sheet sheet) {
-        if (reportView.getBannerTaAssignments() == null) {
-            return;
-        }
-
         writeBlankRow(sheet);
         writeSectionLabel(sheet, "Banner record of TA in budgeted subject codes", BY_CATEGORY_LAST_COLUMN);
         ExcelHelper.writeRowToSheet(sheet, Arrays.asList("TA assignments",
@@ -214,10 +206,6 @@ public class BudgetReconciliationWorkbook {
                     term, subject, number, title, "Banner", actual.getName(), actual.getRole(),
                     actual.getDopeJobCode(), actual.getSections(), actual.getFte()));
             }
-        }
-
-        for (int column = 0; column <= BY_COURSE_LAST_COLUMN; column++) {
-            sheet.autoSizeColumn(column);
         }
     }
 

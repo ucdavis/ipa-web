@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -235,8 +236,7 @@ public class DopeSummaryCalculator {
 
         for (Map.Entry<String, Map<String, PersonTally>> jobCodeEntry : peopleByJobCode.entrySet()) {
             DopeTotals tally = new DopeTotals();
-            String instructorType = instructorTypeFor(jobCodeEntry.getKey()) != null
-                ? instructorTypeFor(jobCodeEntry.getKey()) : UNMAPPED;
+            String instructorType = Objects.requireNonNullElse(instructorTypeFor(jobCodeEntry.getKey()), UNMAPPED);
 
             for (Map.Entry<String, PersonTally> personEntry : jobCodeEntry.getValue().entrySet()) {
                 PersonTally personTally = personEntry.getValue();

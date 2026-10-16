@@ -17,6 +17,7 @@ import edu.ucdavis.dss.ipa.entities.ExpenseItem;
 import edu.ucdavis.dss.ipa.entities.LineItem;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCost;
 import edu.ucdavis.dss.ipa.entities.SectionGroupCostInstructor;
+import edu.ucdavis.dss.ipa.entities.Term;
 import edu.ucdavis.dss.ipa.entities.Workgroup;
 import edu.ucdavis.dss.ipa.entities.enums.BudgetSummary;
 import edu.ucdavis.dss.ipa.entities.enums.InstructorType;
@@ -308,7 +309,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
                 CourseStaffingPersonView view =
                     new CourseStaffingPersonView(person.name, person.role, person.sections);
                 DopeCostService.PersonCostResult result =
-                    costByPerson == null ? null : costByPerson.get(person.personId);
+                    costByPerson.get(person.personId);
                 if (result != null) {
                     // scoped to this row's term and Banner role, so a TA row leaves out the same person's
                     // Reader appointment
@@ -429,7 +430,7 @@ public class JpaBudgetReconciliationReportService implements BudgetReconciliatio
         if (termCode == null || termCode.length() < 2) {
             return Set.of();
         }
-        return switch (termCode.substring(termCode.length() - 2)) {
+        return switch (Term.getTwoDigitTermCode(termCode)) {
             case "10" -> Set.of(4, 5, 6);    // Oct, Nov, Dec
             case "01" -> Set.of(7, 8, 9);    // Jan, Feb, Mar
             case "03" -> Set.of(10, 11, 12); // Apr, May, Jun
