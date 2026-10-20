@@ -7,6 +7,6 @@ import edu.ucdavis.dss.ipa.entities.Instructor;
 public interface InstructorRepository extends CrudRepository<Instructor, Long> {
 	Instructor findByUcdStudentSID(String ucdStudentSID);
 
-	Instructor findByLoginIdIgnoreCase(String loginId);
+	Instructor findByLoginId(String loginId);
 
 }

@@ -27,7 +27,7 @@ public class JpaSupportStaffService implements SupportStaffService {
 
     @Override
     public SupportStaff findOrCreate(String firstName, String lastName, String email, String loginId) {
-        SupportStaff supportStaff = supportStaffRepository.findByLoginIdIgnoreCase(loginId);
+        SupportStaff supportStaff = supportStaffRepository.findByLoginId(loginId);
 
         // Check to see if supportStaff already exists
         if (supportStaff != null) {
@@ -47,7 +47,7 @@ public class JpaSupportStaffService implements SupportStaffService {
 
     @Override
     public SupportStaff findByLoginId(String loginId) {
-        return this.supportStaffRepository.findByLoginIdIgnoreCase(loginId);
+        return this.supportStaffRepository.findByLoginId(loginId);
     }
 
     /**

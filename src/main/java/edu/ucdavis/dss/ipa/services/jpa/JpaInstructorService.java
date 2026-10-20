@@ -44,7 +44,7 @@ public class JpaInstructorService implements InstructorService {
 
 	@Override
 	public Instructor getOneByLoginId(String loginId) {
-		return this.instructorRepository.findByLoginIdIgnoreCase(loginId);
+		return this.instructorRepository.findByLoginId(loginId);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class JpaInstructorService implements InstructorService {
 	@Override
 	public Instructor findOrCreate(String firstName, String lastName, String email, String loginId, Long workgroupId, String ucdStudentSID) {
 		// 1) Attempt to find by loginId
-		Instructor instructor = instructorRepository.findByLoginIdIgnoreCase(loginId);
+		Instructor instructor = instructorRepository.findByLoginId(loginId);
 
 		// 2) Attempt to find by employeeId
 		if (instructor == null && ucdStudentSID.length() > 0) {
