@@ -25,6 +25,7 @@ import edu.ucdavis.dss.ipa.api.views.UserViews;
 import org.hibernate.annotations.BatchSize;
 
 @Entity
+@BatchSize(size=100)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Users")
 public class User extends BaseEntity {
