@@ -21,7 +21,6 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 	@Inject SectionGroupService sectionGroupService;
 	@Inject CourseService courseService;
 	@Inject UserRoleService userRoleService;
-	@Inject SupportAssignmentService supportAssignmentService;
 	@Inject StudentSupportPreferenceService studentSupportPreferenceService;
 	@Inject InstructorTypeService instructorTypeService;
 	@Inject UserService userService;
@@ -36,13 +35,11 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<SectionGroup> sectionGroups = sectionGroupService.findByCourses(courses);
 		List<InstructorType> instructorTypes = instructorTypeService.getAllInstructorTypes();
 
-		List<SupportAssignment> supportAssignments = supportAssignmentService.findBySectionGroups(sectionGroups);
 		List<Instructor> instructors = userRoleService.getInstructorsByScheduleIdAndWorkgroupId(scheduleId, workgroupId);
 		List<ScheduleInstructorNote> scheduleInstructorNotes = scheduleInstructorNoteService.findByScheduleId(schedule.getId());
 		List<ScheduleTermState> scheduleTermStates = scheduleTermStateService.getScheduleTermStatesBySchedule(schedule);
 		List<TeachingCallReceipt> teachingCallReceipts = schedule.getTeachingCallReceipts();
 		List<TeachingCallResponse> teachingCallResponses = schedule.getTeachingCallResponses();
-		List<Long> instructorIds = userRoleService.getInstructorsByWorkgroupIdAndRoleToken(workgroupId, "instructor");
 		List<UserRole> userRoles = workgroup.getUserRoles();
 		List<SupportStaff> supportStaffList = userRoleService.findActiveSupportStaffByWorkgroupId(workgroupId);
 		List<StudentSupportPreference> studentSupportPreferences = studentSupportPreferenceService.findByScheduleId(scheduleId);
@@ -54,7 +51,7 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 				courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
 				scheduleInstructorNotes, scheduleTermStates, teachingCallReceipts,
 				teachingCallResponses, userId, instructorId, scheduleId,
-				instructorIds, workgroup.getTags(), supportAssignments, supportStaffList, studentSupportPreferences,
+				workgroup.getTags(), supportStaffList, studentSupportPreferences,
 				instructorTypes, userRoles, activeUsers
 		);
 	}

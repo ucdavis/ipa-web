@@ -15,8 +15,6 @@ public class AssignmentView {
     List<ScheduleTermState> scheduleTermStates = new ArrayList<ScheduleTermState>();
     List<TeachingCallReceipt> teachingCallReceipts = new ArrayList<TeachingCallReceipt>();
     List<TeachingCallResponse> teachingCallResponses = new ArrayList<TeachingCallResponse>();
-    List<Long> instructorIds = new ArrayList<Long>();
-    List<SupportAssignment> supportAssignments = new ArrayList<SupportAssignment>();
     List<Tag> tags = new ArrayList<Tag>();
     long instructorId;
     long userId;
@@ -37,9 +35,7 @@ public class AssignmentView {
                           long userId,
                           long instructorId,
                           long scheduleId,
-                          List<Long> instructorIds,
                           List<Tag> tags,
-                          List<SupportAssignment> supportAssignments,
                           List<SupportStaff> supportStaffList,
                           List<StudentSupportPreference> studentSupportPreferences,
                           List<InstructorType> instructorTypes,
@@ -56,10 +52,8 @@ public class AssignmentView {
         setTeachingCallResponses(teachingCallResponses);
         setInstructorId(instructorId);
         setUserId(userId);
-        setInstructorIds(instructorIds);
         setScheduleId(scheduleId);
         setTags(tags);
-        setSupportAssignments(supportAssignments);
         setSupportStaffList(supportStaffList);
         setStudentSupportPreferences(studentSupportPreferences);
         setInstructorTypes(instructorTypes);
@@ -148,14 +142,6 @@ public class AssignmentView {
         this.userId = userId;
     }
 
-    public List<Long> getInstructorIds() {
-        return instructorIds;
-    }
-
-    public void setInstructorIds(List<Long> instructorIds) {
-        this.instructorIds = instructorIds;
-    }
-
     public long getScheduleId() {
         return scheduleId;
     }
@@ -170,14 +156,6 @@ public class AssignmentView {
 
     public void setTags(List<Tag> tags) {
         this.tags = tags;
-    }
-
-    public List<SupportAssignment> getSupportAssignments() {
-        return supportAssignments;
-    }
-
-    public void setSupportAssignments(List<SupportAssignment> supportAssignments) {
-        this.supportAssignments = supportAssignments;
     }
 
     public List<SupportStaff> getSupportStaffList() {
