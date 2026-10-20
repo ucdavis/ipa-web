@@ -109,11 +109,11 @@ public class AssignmentExcelView extends AbstractXlsView {
                 for (TeachingAssignment teachingAssignment : instructor.getTeachingAssignments()) {
                     if (teachingAssignment.isApproved() == false) { continue; }
                     if (teachingAssignment.getSchedule().getId() != this.schedule.getId()) { continue; }
-                    if (state.getTermCode().equals(teachingAssignment.getTermCode()) == false) { continue; }
 
-                    if (teachingAssignment.getInstructor().getId() == 16) {
-                        System.out.println("taco");
-                    }
+                    String termCode = teachingAssignment.getSectionGroup() != null
+                        ? teachingAssignment.getSectionGroup().getTermCode()
+                        : teachingAssignment.getTermCode();
+                    if (state.getTermCode().equals(termCode) == false) { continue; }
 
                     assignmentDescriptions.add(teachingAssignment.getDescription());
                 }
