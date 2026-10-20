@@ -9,6 +9,7 @@ import edu.ucdavis.dss.ipa.api.deserializers.SectionGroupDeserializer;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.BatchSize;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class SectionGroup extends BaseEntity {
 
 	@JsonIgnore
 	@OneToMany(mappedBy="sectionGroup", orphanRemoval = true)
+	@BatchSize(size=100)
 	public List<TeachingAssignment> getTeachingAssignments() {
 		return teachingAssignments;
 	}
@@ -202,6 +204,7 @@ public class SectionGroup extends BaseEntity {
 	@JsonProperty
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "SectionGroupId")
+	@BatchSize(size=100)
 	public List<SchedulingNote> getSchedulingNotes() {
 		return schedulingNotes;
 	}

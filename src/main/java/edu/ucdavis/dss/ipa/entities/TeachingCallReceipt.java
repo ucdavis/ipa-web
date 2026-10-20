@@ -7,6 +7,7 @@ import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.BatchSize;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -66,6 +67,7 @@ public class TeachingCallReceipt implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "teachingCallReceipt", cascade = CascadeType.ALL, orphanRemoval = true)
+	@BatchSize(size=100)
 	@JsonProperty("comments")
 	public List<TeachingCallComment> getTeachingCallComments() { return teachingCallComments; }
 

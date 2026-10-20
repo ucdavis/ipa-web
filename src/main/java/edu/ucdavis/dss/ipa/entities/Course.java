@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import edu.ucdavis.dss.ipa.api.deserializers.CourseDeserializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.BatchSize;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public class Course extends BaseEntity {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true, cascade = {CascadeType.ALL})
+	@BatchSize(size=100)
 	@JsonIgnore
 	public List<SectionGroup> getSectionGroups()
 	{
@@ -72,6 +74,7 @@ public class Course extends BaseEntity {
 		joinColumns = { @JoinColumn(name = "CourseId", nullable = false) },
 		inverseJoinColumns = { @JoinColumn(name = "TagId", nullable = false) }
 	)
+	@BatchSize(size=100)
 	@JsonIgnore
 	@JsonDeserialize
 	public List<Tag> getTags() {
@@ -211,6 +214,7 @@ public class Course extends BaseEntity {
 
 	@JsonProperty("courseComments")
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true)
+	@BatchSize(size=100)
 	@JsonDeserialize
 	public List<CourseComment> getCourseComments() {
 		return courseComments;
