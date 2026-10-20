@@ -49,7 +49,6 @@ public class JpaAssignmentViewFactory implements AssignmentViewFactory {
 		List<TeachingAssignment> teachingAssignments = schedule.getTeachingAssignments();
 
 		Set<User> activeUsers = new HashSet<>(userService.findAllByWorkgroup(workgroup));
-		Set<User> assignedUsers = new HashSet<>(userService.findAllByTeachingAssignments(schedule.getTeachingAssignments()));
 
 		return new AssignmentView(
 				courses, sectionGroups, schedule.getTeachingAssignments(), instructors,
