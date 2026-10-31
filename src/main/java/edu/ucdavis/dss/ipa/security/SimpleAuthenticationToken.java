@@ -1,6 +1,7 @@
 package edu.ucdavis.dss.ipa.security;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +16,7 @@ public class SimpleAuthenticationToken extends AbstractAuthenticationToken {
 	private Object credentials;
 	
 	public SimpleAuthenticationToken(String token) {
-		super(null);
+		super(List.of());
 		this.principal = null;
 		this.credentials = token;
 		setAuthenticated(false);
