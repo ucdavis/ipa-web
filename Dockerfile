@@ -1,4 +1,4 @@
-FROM gradle:8.14.3-jdk21 AS builder
+FROM gradle:8.14.6-jdk21 AS builder
 WORKDIR /usr/src
 
 # cache dependencies
