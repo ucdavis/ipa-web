@@ -45,9 +45,9 @@ public class EmailNotificationTask {
 		}
 		runningTask = true;
 
-		List<Long> workgroupIds = workgroupService.findAllIds();
-
 		try {
+			List<Long> workgroupIds = workgroupService.findAllIds();
+
 			for (Long workgroupId : workgroupIds) {
 				teachingCallReceiptService.sendNotificationsByWorkgroupId(workgroupId);
 				studentSupportCallResponseService.sendNotificationsByWorkgroupId(workgroupId);
