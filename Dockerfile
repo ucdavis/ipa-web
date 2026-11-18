@@ -1,4 +1,4 @@
-FROM gradle:8.14.6-jdk21 AS builder
+FROM gradle:8.14.7-jdk21-corretto-al2023 AS builder
 WORKDIR /usr/src
 
 # cache dependencies
@@ -8,11 +8,9 @@ RUN gradle dependencies --no-daemon
 COPY . .
 RUN gradle build --no-daemon -x check -x test
 
-FROM eclipse-temurin:21-jre
-RUN apt-get update && \
-    apt-get install -y \
-    fontconfig libfreetype6 fonts-dejavu openssl && \
-    rm -rf /var/lib/apt/lists/*
+FROM amazoncorretto:21-al2023-headless
+RUN dnf install -y fontconfig freetype dejavu-sans-fonts openssl wget && \
+    dnf clean all
 
 EXPOSE 8080
 
