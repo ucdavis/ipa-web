@@ -89,6 +89,11 @@ public class JpaUserService implements UserService {
 			user.setLoginId(loginId);
 			user.setEmail(dwPerson.getEmail());
 
+			String iamId = dwPerson.getIamId();
+			if (iamId != null && iamId.length() > 0) {
+				user.setIamId(Long.valueOf(iamId));
+			}
+
 			if (dwPerson.getdFirstName() != null && dwPerson.getdFirstName().length() > 0) {
 				user.setFirstName(dwPerson.getdFirstName());
 			} else {
